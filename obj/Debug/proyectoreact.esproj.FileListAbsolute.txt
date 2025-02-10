@@ -1,0 +1,2 @@
+C:\Users\Ignacio Aguilera\source\repos\ProyectoReact\ProyectoReact\obj\Debug\proyectoreact.esproj.CoreCompileInputs.cache
+C:\Users\Ignacio Aguilera\Desktop\Trabajo (SPA)\ProyectoReact\obj\Debug\ProyectoReact.esproj.CoreCompileInputs.cache
