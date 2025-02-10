@@ -1,0 +1,52 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Ignacio Aguilera\\Desktop\\Trabajo (SPA)\\ProyectoReact\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{150A0FCB-2D1B-4996-93B6-5F1381C5D306}|ProyectoReact.esproj|c:\\users\\ignacio aguilera\\desktop\\trabajo (spa)\\proyectoreact\\proyectoreact.esproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
+      "RelativeMoniker": "D:0:0:{150A0FCB-2D1B-4996-93B6-5F1381C5D306}|ProyectoReact.esproj|solutionrelative:proyectoreact.esproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{150A0FCB-2D1B-4996-93B6-5F1381C5D306}|ProyectoReact.esproj|c:\\users\\ignacio aguilera\\desktop\\trabajo (spa)\\proyectoreact\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{150A0FCB-2D1B-4996-93B6-5F1381C5D306}|ProyectoReact.esproj|solutionrelative:index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ProyectoReact",
+              "DocumentMoniker": "C:\\Users\\Ignacio Aguilera\\Desktop\\Trabajo (SPA)\\ProyectoReact\\ProyectoReact.esproj",
+              "RelativeDocumentMoniker": "ProyectoReact.esproj",
+              "ToolTip": "C:\\Users\\Ignacio Aguilera\\Desktop\\Trabajo (SPA)\\ProyectoReact\\ProyectoReact.esproj",
+              "RelativeToolTip": "ProyectoReact.esproj",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2025-02-10T02:14:24.129Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "index.html",
+              "DocumentMoniker": "C:\\Users\\Ignacio Aguilera\\Desktop\\Trabajo (SPA)\\ProyectoReact\\index.html",
+              "RelativeDocumentMoniker": "index.html",
+              "ToolTip": "C:\\Users\\Ignacio Aguilera\\Desktop\\Trabajo (SPA)\\ProyectoReact\\index.html",
+              "RelativeToolTip": "index.html",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2025-02-10T02:13:40.681Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
