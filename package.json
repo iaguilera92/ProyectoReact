@@ -14,7 +14,8 @@
     "@emotion/styled": "^11.14.0",
     "@fontsource/poppins": "^5.1.1",
     "@mui/icons-material": "^6.4.5",
-    "@mui/material": "^6.4.5",
+    "@mui/material": "^5.16.14",
+    "framer-motion": "^12.4.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
