@@ -13,33 +13,16 @@ import Contacto from "./components/Contacto"; // Importa el componente de contac
 // Puedes crear un componente Home para la página principal
 function Home() {
   return (
-    <Box
-      sx={{
-        m: 2,
-        border: "4px solid white",
-        borderRadius: "20px",
-        overflow: "hidden",
-      }}
-    >
-      <Box
-        sx={{
-          minHeight: "100vh",
-          background: "radial-gradient(circle, #333333 40%, #000000 100%)",
-          color: "white",
-        }}
-      >
-        <Navbar />
-        <Hero />
-        <Box sx={{ minHeight: "100vh" }}>
-          <Features />
-          <Areas />
-        </Box>
-        <Footer />
+    <Box>
+    <Navbar />
+      <Hero />
+      <Box sx={{ minHeight: "100vh" }}>
+        <Features />
+        <Areas />
       </Box>
-    </Box>
+  </Box>
   );
 }
-
 function App() {
   return (
     <Box

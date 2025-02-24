@@ -1,9 +1,22 @@
 import { useState, useEffect } from "react";
-import { AppBar, Toolbar, Typography, Button, IconButton, Drawer, List, ListItem, ListItemButton, ListItemText, Container, Box } from "@mui/material";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  IconButton,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  Container,
+  Box,
+} from "@mui/material";
 import { Menu as MenuIcon } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import "@fontsource/poppins";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 const menuItems = ["Inicio", "Servicios", "Contacto"];
 
@@ -12,9 +25,6 @@ function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
 
-  const handleClick = () => {
-    navigate('/contacto'); // Redirige a /contacto
-  };
   // Detectar el scroll
   useEffect(() => {
     const handleScroll = () => {
@@ -26,6 +36,15 @@ function Navbar() {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  // Maneja el clic en el menú (actualmente redirige a Contacto si es ese ítem)
+  const handleClick = (item) => {
+    setOpen(false);
+    if (item === "Contacto") {
+      navigate("/contacto");
+    }
+    // Aquí puedes agregar lógica para otros ítems si es necesario.
+  };
 
   return (
     <>
@@ -43,7 +62,9 @@ function Navbar() {
         <AppBar
           position="static"
           sx={{
-            backgroundColor: isScrolled ? "rgba(0, 0, 0, 0.8)" : "rgba(0, 0, 0, 0)",
+            backgroundColor: isScrolled
+              ? "rgba(0, 0, 0, 0.8)"
+              : "rgba(0, 0, 0, 0)",
             boxShadow: "none",
             transition: "background-color 0.3s ease-in-out",
             borderRadius: "inherit",
@@ -51,11 +72,13 @@ function Navbar() {
         >
           <Container>
             <Toolbar>
-              {/* Texto animado con Framer Motion */}
+              {/* Título animado, clickeable para redirigir a "/" */}
               <motion.div
                 initial={{ x: -100, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
+                onClick={() => navigate("/")}
+                style={{ cursor: "pointer" }}
               >
                 <Typography
                   variant="h6"
@@ -68,7 +91,7 @@ function Navbar() {
                 </Typography>
               </motion.div>
 
-              {/* Espacio flexible para empujar los botones hacia la derecha */}
+              {/* Espacio flexible para centrar los botones */}
               <Box sx={{ flexGrow: 1 }} />
 
               {/* Menú en escritorio alineado a la derecha con animación */}
@@ -80,7 +103,11 @@ function Navbar() {
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ duration: 0.6, delay: index * 0.2 }}
                   >
-                    <Button color="inherit" sx={{ color: "white", fontFamily: "Poppins, sans-serif" }} onClick={handleClick}>
+                    <Button
+                      color="inherit"
+                      sx={{ color: "white", fontFamily: "Poppins, sans-serif" }}
+                      onClick={() => handleClick(item)}
+                    >
                       {item}
                     </Button>
                   </motion.div>
@@ -106,8 +133,11 @@ function Navbar() {
         <List sx={{ width: 250 }}>
           {menuItems.map((item, index) => (
             <ListItem key={index} disablePadding>
-              <ListItemButton onClick={() => setOpen(false)}>
-                <ListItemText primary={item} sx={{ fontFamily: "Poppins, sans-serif" }} />
+              <ListItemButton onClick={() => handleClick(item)}>
+                <ListItemText
+                  primary={item}
+                  sx={{ fontFamily: "Poppins, sans-serif" }}
+                />
               </ListItemButton>
             </ListItem>
           ))}
