@@ -3,13 +3,18 @@ import { AppBar, Toolbar, Typography, Button, IconButton, Drawer, List, ListItem
 import { Menu as MenuIcon } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import "@fontsource/poppins";
+import { useNavigate } from 'react-router-dom';
 
 const menuItems = ["Inicio", "Servicios", "Contacto"];
 
 function Navbar() {
   const [open, setOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const navigate = useNavigate();
 
+  const handleClick = () => {
+    navigate('/contacto'); // Redirige a /contacto
+  };
   // Detectar el scroll
   useEffect(() => {
     const handleScroll = () => {
@@ -75,7 +80,7 @@ function Navbar() {
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ duration: 0.6, delay: index * 0.2 }}
                   >
-                    <Button color="inherit" sx={{ color: "white", fontFamily: "Poppins, sans-serif" }}>
+                    <Button color="inherit" sx={{ color: "white", fontFamily: "Poppins, sans-serif" }} onClick={handleClick}>
                       {item}
                     </Button>
                   </motion.div>

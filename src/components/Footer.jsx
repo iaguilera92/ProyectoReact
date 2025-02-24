@@ -10,6 +10,7 @@ const Footer = () => {
         backgroundSize: "cover",
         padding: "20px 0",
         color: "white",
+        backgroundPosition: "center -150px"
       }}
     >
       <Container maxWidth="lg">
