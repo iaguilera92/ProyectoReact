@@ -1,13 +1,6 @@
-import {
-  Card,
-  CardActionArea,
-  CardContent,
-  CardMedia,
-  Typography,
-  Grid,
-  Container,
-  Box,
-} from "@mui/material";
+import React from "react";
+import { Grid, Typography, Box, Card, CardActionArea, CardMedia, CardContent } from "@mui/material";
+import "@fontsource/poppins";
 
 const areas = [
   {
@@ -27,7 +20,7 @@ const areas = [
   {
     titulo: "Bancario",
     descripcion:
-      "Implementación de reportes normativos e integración con areas bancarios para transacciones.",
+      "Implementación de reportes normativos e integración con áreas bancarias para transacciones.",
     imagen: "https://www.connectic.cl/wp-content/uploads/2024/08/banco-en-linea-2-90x90.png",
     enlace: "https://www.connectic.cl/contactanos/",
   },
@@ -49,37 +42,53 @@ const areas = [
 
 const Areas = () => {
   return (
-    <Container>
-      <Typography variant="h4" align="center" gutterBottom>
-        Áreas de Proyectos
-      </Typography>
-      <Box sx={{ width: 150, height: 2, backgroundColor: "#00b4ff", mx: "auto", mb: 4 }} />
-      <Grid container spacing={3} justifyContent="center">
-        {areas.map((servicio, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index}>
-            <Card sx={{ maxWidth: 345, mx: "auto", textAlign: "center" }}>
-              <CardActionArea href={servicio.enlace} target="_blank">
-                <CardMedia
-                  component="img"
-                  image={servicio.imagen}
-                  alt={servicio.titulo}
-                  sx={{ width: 90, height: 90, mx: "auto", mt: 2 }}
-                />
-                <CardContent>
-                  <Typography gutterBottom variant="h6" component="div">
-                    {servicio.titulo}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {servicio.descripcion}
-                  </Typography>
-                </CardContent>
-              </CardActionArea>
-            </Card>
-          </Grid>
-        ))}
+    <Box
+      sx={{
+        backgroundImage: "url(https://dsmsolutions.cl/wp-content/uploads/2023/08/integraciones_dsmsolutions.webp)",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+        backgroundSize: "cover",
+        padding: { xs: 4, md: 8 },
+        color: "white",
+      }}
+    >
+      <Grid container justifyContent="center" alignItems="center">
+        {/* Título principal */}
+        <Grid item xs={12}>
+          <Typography variant="h2" align="center" gutterBottom sx={{color: "#000f23", fontFamily: "'Poppins', sans-serif !important", fontWeight: "Bold", marginBottom: "0.15em"}}>
+            Te ofrecemos en nuestra Empresa
+          </Typography>
+          <Box sx={{ width: "63%", height: 2, backgroundColor: "#000f23", mx: "auto", mb: 4 }} />
+        </Grid>
+
+        {/* Tarjetas */}
+        <Grid container spacing={3} justifyContent="center">
+          {areas.map((servicio, index) => (
+            <Grid item xs={12} sm={6} md={4} key={index}>
+              <Card sx={{ maxWidth: 345, mx: "auto", textAlign: "center" }}>
+                <CardActionArea href={servicio.enlace} target="_blank">
+                  <CardMedia
+                    component="img"
+                    image={servicio.imagen}
+                    alt={servicio.titulo}
+                    sx={{ width: 90, height: 90, mx: "auto", mt: 2 }}
+                  />
+                  <CardContent>
+                    <Typography gutterBottom variant="h6">
+                      {servicio.titulo}
+                    </Typography>
+                    <Typography variant="body2" color="text.primary">
+                      {servicio.descripcion}
+                    </Typography>
+                  </CardContent>
+                </CardActionArea>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
       </Grid>
-      <br/>
-    </Container>
+    </Box>
   );
 };
 

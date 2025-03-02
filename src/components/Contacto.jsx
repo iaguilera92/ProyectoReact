@@ -101,9 +101,7 @@ function Contacto() {
               onChange={(e) => setPhone(e.target.value)}
               InputProps={{
                 startAdornment: (
-                  <InputAdornment position="start">
-                    <PhoneIcon sx={{ color: "#1976d2" }} />
-                  </InputAdornment>
+                  <InputAdornment position="start"/>
                 ),
               }}
             />
@@ -127,9 +125,7 @@ function Contacto() {
               onChange={(e) => setMessage(e.target.value)}
               InputProps={{
                 startAdornment: (
-                  <InputAdornment position="start">
-                    <ChatBubbleOutlineIcon sx={{ color: "#1976d2" }} />
-                  </InputAdornment>
+                  <InputAdornment position="start"/>
                 ),
               }}
             />

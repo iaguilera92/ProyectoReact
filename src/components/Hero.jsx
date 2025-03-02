@@ -16,7 +16,7 @@ function Hero() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentText((prev) => (prev + 1) % texts.length);
-    }, 5000);
+    }, 6000);
     return () => clearInterval(interval);
   }, []);
 

@@ -1,5 +1,70 @@
-import { Box, Container, Typography, Link } from "@mui/material";
+import { Box, Container, Typography, Link, keyframes   } from "@mui/material";
+import InstagramIcon from "@mui/icons-material/Instagram";
+import FacebookIcon from "@mui/icons-material/Facebook";
+import LinkedInIcon from "@mui/icons-material/LinkedIn";
 
+// Animación del círculo desapareciendo
+const shrinkCircle = keyframes`
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0); opacity: 0; }
+`;
+
+// Animación del icono creciendo
+const expandIcon = keyframes`
+  0% { transform: scale(1); }
+  100% { transform: scale(1.5); }
+`;
+
+const SocialButton = ({ href, Icon, bgColor, hoverStyles }) => (
+  <Box
+    component="a"
+    href={href}
+    target="_blank"
+    rel="noopener"
+    sx={{
+      width: 40,
+      height: 40,
+      borderRadius: "50%",
+      position: "relative",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      overflow: "hidden",
+      "&:hover .circle": {
+        animation: `${shrinkCircle} 900ms forwards`,
+      },
+      "&:hover .icon": {
+        animation: `${expandIcon} 150ms 150ms ease-in forwards`,
+        ...hoverStyles, // Se aplican los estilos únicos de cada red
+      },
+    }}
+  >
+    {/* Círculo de fondo */}
+    <Box
+      className="circle"
+      sx={{
+        position: "absolute",
+        width: "100%",
+        height: "100%",
+        borderRadius: "50%",
+        background: bgColor,
+        transition: "transform 300ms ease-out",
+      }}
+    />
+
+    {/* Icono con color inicial en blanco */}
+    <Icon
+      className="icon"
+      sx={{
+        color: "white",
+        fontSize: 24,
+        position: "absolute",
+        transition: "color 300ms ease-in, transform 300ms ease-in",
+      }}
+    />
+  </Box>
+);
+            
 const Footer = () => {
   return (
     <Box
@@ -15,8 +80,49 @@ const Footer = () => {
     >
       <Container maxWidth="lg">
         <Box display="flex" justifyContent="space-between" flexWrap="wrap">
-          <Box className="MuiBox-root css-0" sx={{ marginTop: "8vh" }}>
+          <Box className="MuiBox-root css-0" sx={{ marginTop: "2%" }}>
           <h2 class="MuiTypography-root MuiTypography-h6 css-xf79m7-MuiTypography-root">Proyecto React</h2>
+           {/* Redes Sociales */}
+           <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 1 }}>
+              {/* Instagram */}
+              <SocialButton
+                href="https://www.instagram.com/mittarentacar/?hl=es-la"
+                Icon={InstagramIcon}
+                bgColor="linear-gradient(45deg, #cf198c, #f41242)"
+                hoverStyles={{
+                  color: "#cf198c",
+                  background: "-webkit-linear-gradient(45deg, #cf198c, #f41242)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              />
+
+              {/* Facebook con su hover personalizado */}
+              <SocialButton
+                href="https://www.facebook.com/Mittarentacar"
+                Icon={FacebookIcon}
+                bgColor="linear-gradient(45deg, #00B5F5, #002A8F)"
+                hoverStyles={{
+                  color: "white",
+                  background: "-webkit-linear-gradient(45deg, #00B5F5, #002A8F)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              />
+
+              {/* LinkedIn */}
+              <SocialButton
+                href="https://www.linkedin.com/company/mittarentacar/?viewAsMember=true"
+                Icon={LinkedInIcon}
+                bgColor="linear-gradient(45deg, #00B5F5, #0077b7)"
+                hoverStyles={{
+                  color: "#0077b7",
+                  background: "-webkit-linear-gradient(45deg, #00B5F5, #0077b7)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              />
+            </Box>
           </Box>     
 
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
