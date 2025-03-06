@@ -17,11 +17,20 @@
     "@mui/material": "^6.4.5",
     "framer-motion": "^12.4.7",
     "leaflet": "^1.9.4",
+    "particles-bg": "^2.5.5",
     "react": "^19.0.0",
+    "react-awesome-reveal": "^4.3.1",
+    "react-countup": "^6.5.3",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
     "react-leaflet": "^5.0.0",
-    "react-router-dom": "^6.29.0"
+    "react-router-dom": "^6.29.0",
+    "react-tsparticles": "^2.12.2",
+    "three": "^0.174.0",
+    "tsparticles": "^3.8.1",
+    "tsparticles-engine": "^2.12.0",
+    "tsparticles-shape-polygon": "^2.12.0",
+    "vanta": "^0.5.24"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",

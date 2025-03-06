@@ -56,7 +56,7 @@ function Contacto() {
           }}
         >
           {/* Sección del Mapa */}
-          <Box sx={{ my: 4 }}>
+          <Box sx={{ my: 4,  marginTop: "0",}}>
             <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
               <LocationOnIcon sx={{ mr: 1, color: "#1976d2" }} />
               <Typography variant="h6" sx={{ color: "#1976d2" }}>
@@ -148,7 +148,7 @@ function Contacto() {
           }}
         >
           <CheckCircleIcon sx={{ fontSize: 180, color: "green", mb: 2 }} />
-          <Typography variant="h3" sx={{ color: "black" }}>
+          <Typography variant="h4" sx={{ color: "black" }}>
             Se ha enviado la solicitud al contacto correctamente!
           </Typography>
         </Box>

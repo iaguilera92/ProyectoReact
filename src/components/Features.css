@@ -1,0 +1,31 @@
+/* Añadir este CSS en tu archivo global de estilos (puede ser App.css o el archivo de estilos que utilices) */
+
+@keyframes moveLine {
+  0% {
+    transform: translateY(0);
+    opacity: 0.3;
+    border-left: 2px solid rgba(0, 204, 255, 0.5);
+  }
+  50% {
+    transform: translateY(40px);
+    opacity: 0.7;
+    border-left: 2px solid rgba(0, 204, 255, 0.9);
+  }
+  100% {
+    transform: translateY(80px);
+    opacity: 0.3;
+    border-left: 2px solid rgba(0, 204, 255, 0.5);
+  }
+}
+
+.neon-line {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 0;
+  height: 100%;
+  width: 1px;
+  animation: moveLine linear infinite;
+  z-index: 0;
+  pointer-events: none;
+}

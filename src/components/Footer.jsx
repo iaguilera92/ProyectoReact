@@ -1,20 +1,28 @@
-import { Box, Container, Typography, Link, keyframes   } from "@mui/material";
+import { Box, Container, Typography, Link, keyframes } from "@mui/material";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
+import { useInView } from 'react-intersection-observer';
 
-// Animación del círculo desapareciendo
+// Animación del círculo desapareciendo (se achica y desaparece)
 const shrinkCircle = keyframes`
   0% { transform: scale(1); opacity: 1; }
   100% { transform: scale(0); opacity: 0; }
 `;
 
-// Animación del icono creciendo
+// Animación del icono creciendo y cambiando color
 const expandIcon = keyframes`
-  0% { transform: scale(1); }
-  100% { transform: scale(1.5); }
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.5); opacity: 1; }
 `;
 
+// Animación para el logo y los elementos al entrar en vista
+const growElement = keyframes`
+  0% { transform: scale(0.5); opacity: 0.5; }
+  100% { transform: scale(1); opacity: 1; }
+`;
+
+// Botón social
 const SocialButton = ({ href, Icon, bgColor, hoverStyles }) => (
   <Box
     component="a"
@@ -31,11 +39,11 @@ const SocialButton = ({ href, Icon, bgColor, hoverStyles }) => (
       justifyContent: "center",
       overflow: "hidden",
       "&:hover .circle": {
-        animation: `${shrinkCircle} 900ms forwards`,
+        animation: `${shrinkCircle} 300ms forwards`,
       },
       "&:hover .icon": {
-        animation: `${expandIcon} 150ms 150ms ease-in forwards`,
-        ...hoverStyles, // Se aplican los estilos únicos de cada red
+        animation: `${expandIcon} 300ms forwards`,
+        ...hoverStyles,
       },
     }}
   >
@@ -51,8 +59,8 @@ const SocialButton = ({ href, Icon, bgColor, hoverStyles }) => (
         transition: "transform 300ms ease-out",
       }}
     />
-
-    {/* Icono con color inicial en blanco */}
+    
+    {/* Icono de la red social */}
     <Icon
       className="icon"
       sx={{
@@ -64,8 +72,29 @@ const SocialButton = ({ href, Icon, bgColor, hoverStyles }) => (
     />
   </Box>
 );
-            
+
 const Footer = () => {
+  // Usamos useInView para que el logo, los iconos y los elementos de contacto/proveedores se animen al hacer scroll
+  const { ref: logoRef, inView: logoInView } = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
+
+  const { ref: socialRef, inView: socialInView } = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
+
+  const { ref: contactRef, inView: contactInView } = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
+
+  const { ref: providersRef, inView: providersInView } = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
+
   return (
     <Box
       sx={{
@@ -75,15 +104,39 @@ const Footer = () => {
         backgroundSize: "cover",
         padding: "20px 0",
         color: "white",
-        backgroundPosition: "center -150px"
+        backgroundPosition: "center -150px",
       }}
     >
       <Container maxWidth="lg">
         <Box display="flex" justifyContent="space-between" flexWrap="wrap">
-          <Box className="MuiBox-root css-0" sx={{ marginTop: "2%" }}>
-          <h2 class="MuiTypography-root MuiTypography-h6 css-xf79m7-MuiTypography-root">Proyecto React</h2>
-           {/* Redes Sociales */}
-           <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 1 }}>
+          <Box
+            ref={logoRef}
+            className="MuiBox-root css-0"
+            sx={{
+              marginTop: "2%",
+              animation: logoInView ? `${growElement} 1s forwards` : 'none', 
+            }}
+          >
+            <img
+              src="/logo-nxo.png"
+              alt="Logo"
+              style={{
+                height: "75px",
+                marginLeft: "25px",
+                animation: logoInView ? `${growElement} 1s forwards` : 'none',
+              }}
+            />
+            {/* Redes Sociales */}
+            <Box
+              ref={socialRef}
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                gap: 2,
+                mt: 1,
+                animation: socialInView ? `${growElement} 1s forwards` : 'none',
+              }}
+            >
               {/* Instagram */}
               <SocialButton
                 href="https://www.instagram.com/mittarentacar/?hl=es-la"
@@ -97,7 +150,7 @@ const Footer = () => {
                 }}
               />
 
-              {/* Facebook con su hover personalizado */}
+              {/* Facebook */}
               <SocialButton
                 href="https://www.facebook.com/Mittarentacar"
                 Icon={FacebookIcon}
@@ -123,9 +176,47 @@ const Footer = () => {
                 }}
               />
             </Box>
-          </Box>     
-
-        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
+          </Box>
+{/* Contacto */}
+<Box
+            ref={contactRef}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 1,
+              marginTop: "20px",
+              animation: contactInView ? `${growElement} 1s forwards` : 'none',
+            }}
+          >
+            <Typography variant="h6" sx={{ color: "var(--darkreader-text-00b4ff, #1abcff)" }}>
+              Contacto
+            </Typography>
+            <Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <img src="https://www.connectic.cl/wp-content/uploads/2021/04/telephone.png" alt="Teléfono" width={16} />
+              <Link href="tel:+56999999999" color="inherit">+56 987654321</Link>
+            </Typography>
+            <Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <img src="https://www.connectic.cl/wp-content/uploads/2021/04/correo-1.png" alt="Correo" width={16} />
+              <Link href="mailto:aguileraignacio1992@gmail.com" color="inherit">aguileraignacio1992@gmail.com</Link>
+            </Typography>
+            <Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <img src="https://www.connectic.cl/wp-content/uploads/2021/04/location.png" alt="Ubicación" width={16} />
+              Dirección #321, Santiago.
+            </Typography>
+          </Box>
+          {/* Proveedores Para */}
+          <Box
+            ref={providersRef}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 1,
+              marginTop: "20px",
+              animation: providersInView ? `${growElement} 1s forwards` : 'none',
+            }}
+          >
             <Typography variant="h6" sx={{ color: "var(--darkreader-text-00b4ff, #1abcff)" }}>
               Proveedores Para
             </Typography>
@@ -139,30 +230,12 @@ const Footer = () => {
               alt="Convenio Marco"
               width={180}
             />
-          </Box> 
-          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
-  <Typography variant="h6" sx={{ color: "var(--darkreader-text-00b4ff, #1abcff)" }}>
-    Contacto
-  </Typography>
-  
-  <Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-    <img src="https://www.connectic.cl/wp-content/uploads/2021/04/telephone.png" alt="Teléfono" width={16} />
-    <Link href="tel:+56999999999" color="inherit">+56 987654321</Link>
-  </Typography>
-  
-  <Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-    <img src="https://www.connectic.cl/wp-content/uploads/2021/04/correo-1.png" alt="Correo" width={16} />
-    <Link href="mailto:aguileraignacio1992@gmail.com" color="inherit">aguileraignacio1992@gmail.com</Link>
-  </Typography>
-  
-  <Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-    <img src="https://www.connectic.cl/wp-content/uploads/2021/04/location.png" alt="Ubicación" width={16} />
-    Dirección #321, Santiago.
-  </Typography>
-</Box>
+          </Box>
+
+          
         </Box>
 
-        <Typography variant="body2" align="center" mt={2} sx={{marginTop: "3vh"}}>
+        <Typography variant="body2" align="center" mt={2} sx={{ marginTop: "3vh" }}>
           @Proyecto React 2025
         </Typography>
       </Container>

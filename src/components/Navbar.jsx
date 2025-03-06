@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import {
   AppBar,
   Toolbar,
-  Typography,
   Button,
   IconButton,
   Drawer,
@@ -37,11 +36,17 @@ function Navbar() {
     };
   }, []);
 
-  // Maneja el clic en el menú (actualmente redirige a Contacto si es ese ítem)
+  // Maneja el clic en el menú
   const handleClick = (item) => {
     setOpen(false);
     if (item === "Contacto") {
+      // Navegar a la ruta "/contacto"
       navigate("/contacto");
+
+      // Asegurarse de hacer scroll al principio después de la navegación
+      setTimeout(() => {
+        window.scrollTo(0, 0); // O usa window.scrollIntoView()
+      }, 0);
     }
     // Aquí puedes agregar lógica para otros ítems si es necesario.
   };
@@ -74,21 +79,17 @@ function Navbar() {
             <Toolbar>
               {/* Título animado, clickeable para redirigir a "/" */}
               <motion.div
-                initial={{ x: -100, opacity: 0 }}
+                initial={{ x: -200, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
                 onClick={() => navigate("/")}
                 style={{ cursor: "pointer" }}
               >
-                <Typography
-                  variant="h6"
-                  sx={{
-                    color: "white",
-                    fontFamily: "Poppins, sans-serif",
-                  }}
-                >
-                  Proyecto React
-                </Typography>
+                <img
+                  src="/logo-nxo.png"
+                  alt="Logo"
+                  style={{ height: '75px', marginTop: '10px', marginLeft: '100px'}} // Ajusta el tamaño según necesites
+                />
               </motion.div>
 
               {/* Espacio flexible para centrar los botones */}
