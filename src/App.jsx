@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { ThemeProvider } from "@mui/material/styles";
 import { CssBaseline, Box, IconButton } from "@mui/material";
 import { Routes, Route } from "react-router-dom";
@@ -11,202 +11,132 @@ import Footer from "./components/Footer";
 import Areas from "./components/Areas";
 import Contacto from "./components/Contacto";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
-import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward"; // Icono de flecha hacia arriba
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 
-// Componente Home (página principal)
 function Home() {
   return (
     <Box>
       <Hero />
-      <Box sx={{ minHeight: "100vh" }}>
+      <Box>
         <Features />
-        <Areas />
       </Box>
     </Box>
   );
 }
 
 function App() {
-  const [openBubble, setOpenBubble] = useState(false);
+  const [showContacto, setShowContacto] = useState(false);
   const [showArrow, setShowArrow] = useState(false);
+  const [openBubble, setOpenBubble] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const contactoRef = useRef(null); // Crear ref para la sección de contacto
 
-  // Detectar el scroll
   useEffect(() => {
-    const timer1 = setTimeout(() => {
-      setOpenBubble(true);
-    }, 2000);
-    const timer2 = setTimeout(() => {
-      setOpenBubble(false);
-    }, 5000);
-
-    // Mostrar la flecha solo después de haber hecho scroll hacia abajo
     const handleScroll = () => {
-      if (window.scrollY > 300) { // Muestra la flecha cuando se hace scroll hacia abajo
-        setShowArrow(true);
-      } else {
-        setShowArrow(false);
+      const areasSection = document.getElementById("areas-section");
+      if (areasSection) {
+        const rect = areasSection.getBoundingClientRect();
+        setShowContacto(rect.top < window.innerHeight * 0.5);
       }
+      setShowArrow(window.scrollY > 300);
     };
 
     window.addEventListener("scroll", handleScroll);
-    
-    return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-      window.removeEventListener("scroll", handleScroll);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Función para desplazar hacia arriba
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setOpenBubble(true); // Hacer visible el diálogo después de 2 segundos
+    }, 2000);
+    return () => clearTimeout(timer); // Limpiar el temporizador si el componente se desmonta
+  }, []);
+
+  useEffect(() => {
+    if (openBubble && hasInteracted) {
+      const notificationSound = new Audio("/whatsapp-notification.mp3");
+      notificationSound.play().catch((err) => console.error("Error al reproducir el sonido:", err));
+    }
+  }, [openBubble, hasInteracted]);
+
+  useEffect(() => {
+    if (openBubble) {
+      const timer = setTimeout(() => {
+        setOpenBubble(false); // Desaparecer el diálogo después de 3 segundos
+      }, 3000);
+      return () => clearTimeout(timer); // Limpiar el timeout si el componente se desmonta
+    }
+  }, [openBubble]);
+
   const scrollToTop = () => {
+    // Desplazarse a la parte superior
     window.scrollTo({
       top: 0,
       behavior: "smooth",
     });
   };
 
+  const handleUserInteraction = () => {
+    setHasInteracted(true);
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Box
-        sx={{
-          m: 2,
-          border: "4px solid white",
-          borderRadius: "20px",
-          overflow: "hidden",
-        }}
-      >
-        <Box
-          sx={{
-            minHeight: "100vh",
-            background: "radial-gradient(circle, #111111 20%, #000000 80%)",
-            color: "white",
-            position: "relative",
-          }}
-        >
-          <Navbar />
+      <Box sx={{ m: 2, border: "4px solid white", borderRadius: "20px", overflow: "hidden" }}>
+        <Box sx={{ minHeight: "100vh", background: "radial-gradient(circle, #111111 20%, #000000 80%)", color: "white", position: "relative" }}>
+          <Navbar contactoRef={contactoRef} /> {/* Pasamos el ref al Navbar */}
           <Box sx={{ minHeight: "100vh" }}>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/contacto" element={<Contacto />} />
             </Routes>
+            <Box id="areas-section">
+              <Areas />
+            </Box>
+            <Box ref={contactoRef}> {/* La sección de contacto ahora tiene el ref */}
+              <Contacto />
+            </Box>
           </Box>
           <Footer />
 
-          {/* Botón flotante de WhatsApp con animación de deslizamiento desde la derecha */}
-          <Box
-            sx={{
-              position: "fixed",
-              bottom: "40px",
-              right: "40px",
-              width: "60px",
-              height: "60px",
-              backgroundColor: "#25d366",
-              color: "#FFF",
-              borderRadius: "50px",
-              textAlign: "center",
-              fontSize: "30px",
-              boxShadow: "2px 2px 3px #999",
-              zIndex: 100,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              transition: "all 0.5s ease-in-out", // Transición para aparecer
-              transform: "translateX(100%)", // Empieza fuera de la pantalla
-              opacity: 0, // Invisible al principio
-              animation: "slideIn 0.5s forwards 1s", // Animación para hacer aparecer el botón
-            }}
-          >
-            <a
-              href="https://api.whatsapp.com/send?phone=56992914526"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                color: "inherit",
-                textDecoration: "none",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "100%",
-                height: "100%",
-              }}
-            >
+          <Box sx={{
+            position: "fixed", bottom: "40px", right: "40px", zIndex: 100,
+            transition: "bottom 0.3s ease", // Agregar transiciones suaves
+          }}>
+            <IconButton onClick={() => {
+              window.open("https://api.whatsapp.com/send?phone=56992914526", "_blank");
+              handleUserInteraction();
+            }} sx={{
+              width: "60px", height: "60px", backgroundColor: "#25d366", color: "#FFF", borderRadius: "50%",
+              boxShadow: "2px 2px 3px #999", "&:hover": { backgroundColor: "#1ebe5d" }, zIndex: 101,
+            }}>
               <WhatsAppIcon sx={{ fontSize: "30px" }} />
-            </a>
+            </IconButton>
+
+            {openBubble && (
+              <Box sx={{
+                position: "fixed", bottom: "110px", right: "40px", backgroundColor: "#fff", color: "#000",
+                boxShadow: "0 4px 8px rgba(0,0,0,0.2)", borderRadius: "20px", padding: "8px 16px",
+                fontFamily: "Poppins, sans-serif", zIndex: 102, opacity: openBubble ? 1 : 0,
+                transform: openBubble ? "translateX(0)" : "translateX(100%)", transition: "transform 0.5s ease, opacity 0.5s ease",
+              }} onClick={() => setOpenBubble(false)}>
+                Puedes escribirnos directamente al wsp!
+              </Box>
+            )}
           </Box>
 
-          {/* Diálogo emergente estilo burbuja con fade in/out */}
-          <Box
-            sx={{
-              position: "fixed",
-              bottom: "110px",
-              right: "40px",
-              backgroundColor: "#fff",
-              color: "#000",
-              boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
-              borderRadius: "20px",
-              padding: "8px 16px",
-              fontFamily: "Poppins, sans-serif",
-              zIndex: 101,
-              opacity: openBubble ? 1 : 0,
-              transition: "opacity 0.5s ease",
-            }}
-          >
-            Puedes escribirnos directamente al wsp!
-          </Box>
-
-          {/* Flecha para volver al inicio, solo visible después de bajar en el scroll */}
           {showArrow && (
-            <IconButton
-              onClick={scrollToTop}
-              sx={{
-                position: "fixed",
-                bottom: "120px", // Justo encima del botón de WhatsApp
-                right: "40px",
-                backgroundColor: "#fff",
-                color: "#000",
-                borderRadius: "50%",
-                padding: "10px",
-                boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.2)",
-                zIndex: 101,
-                transition: "transform 0.3s ease-in-out",
-                opacity: 1,
-                animation: "fadeIn 0.5s ease-in-out", // Animación de aparición
-                "&:hover": {
-                  transform: "scale(1)", // Agranda al hacer hover
-                  cursor: "pointer", // Cambia el cursor a pointer
-                  backgroundColor: "#000", // Fondo negro al hacer hover
-                  color: "#fff", // Flecha blanca al hacer hover
-                },
-              }}
-            >
+            <IconButton onClick={scrollToTop} sx={{
+              position: "fixed", bottom: "120px", right: "40px", backgroundColor: "#fff", color: "#000",
+              borderRadius: "50%", padding: "10px", boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.2)", zIndex: 101,
+              transition: "transform 0.3s ease-in-out", "&:hover": { transform: "scale(1.1)", cursor: "pointer", backgroundColor: "#000", color: "#fff" }
+            }}>
               <ArrowUpwardIcon sx={{ fontSize: "30px" }} />
             </IconButton>
           )}
         </Box>
       </Box>
-
-      <style>{`
-        @keyframes slideIn {
-          0% {
-            transform: translateX(100%);
-            opacity: 0;
-          }
-          100% {
-            transform: translateX(0);
-            opacity: 1;
-          }
-        }
-
-        @keyframes fadeIn {
-          0% {
-            opacity: 0;
-          }
-          100% {
-            opacity: 1;
-          }
-        }
-      `}</style>
     </ThemeProvider>
   );
 }

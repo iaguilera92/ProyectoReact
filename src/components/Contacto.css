@@ -1,10 +1,38 @@
-@keyframes bounce {
-    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-    40% { transform: translateY(-20px); }
-    60% { transform: translateY(-10px); }
-  }
-  
-  .leaflet-marker-icon.bounce {
-    animation: bounce 1s infinite;
-  }
-  
+.image {
+  background-position: center center;
+  position: absolute;
+  width: 60%; /* Aseguramos que cubra el 100% del contenedor */
+  height: 100%;
+  background-size: cover; /* Asegura que la imagen cubra toda el área sin distorsión */
+  transform: skewX(-20deg); /* Sigue el ladeo */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 2;
+  transition: all 1.1s ease-in-out;
+}
+
+.image-left {
+  left: -10%; /* 20% fuera de la pantalla */
+  background-image: url('/mapa.jpg');
+  transform-origin: right center;
+  z-index: 3;
+}
+
+.image-right {
+  right: -10%; /* 20% fuera de la pantalla */
+  background-image: url('/contactar.jpg');
+  transform-origin: left center;
+  z-index: 3;
+}
+
+.animate-left {
+  left: -115%; /* Mueve la imagen hacia la izquierda, cubriendo el contenido */
+  z-index: 4;
+}
+
+.animate-right {
+  right: -115%; /* Mueve la imagen hacia la derecha, cubriendo el contenido */
+  z-index: 4;
+}

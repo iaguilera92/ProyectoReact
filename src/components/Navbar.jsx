@@ -19,10 +19,9 @@ import { useNavigate } from "react-router-dom";
 
 const menuItems = ["Inicio", "Servicios", "Contacto"];
 
-function Navbar() {
+function Navbar({ contactoRef }) {
   const [open, setOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const navigate = useNavigate();
 
   // Detectar el scroll
   useEffect(() => {
@@ -40,15 +39,21 @@ function Navbar() {
   const handleClick = (item) => {
     setOpen(false);
     if (item === "Contacto") {
-      // Navegar a la ruta "/contacto"
-      navigate("/contacto");
-
-      // Asegurarse de hacer scroll al principio después de la navegación
-      setTimeout(() => {
-        window.scrollTo(0, 0); // O usa window.scrollIntoView()
-      }, 0);
+      // Hacer scroll al componente Contacto usando el ref
+      contactoRef.current.scrollIntoView({ behavior: "smooth" });
     }
-    // Aquí puedes agregar lógica para otros ítems si es necesario.
+
+    if (item === "Inicio") {
+      scrollToTop();
+    }
+  };
+
+  // Función para hacer scroll hacia el inicio
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   return (
@@ -77,25 +82,27 @@ function Navbar() {
         >
           <Container>
             <Toolbar>
-              {/* Título animado, clickeable para redirigir a "/" */}
               <motion.div
                 initial={{ x: -200, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
-                onClick={() => navigate("/")}
                 style={{ cursor: "pointer" }}
               >
                 <img
-                  src="/logo-nxo.png"
+                  src="/logo-react.png"
                   alt="Logo"
-                  style={{ height: '75px', marginTop: '10px', marginLeft: '100px'}} // Ajusta el tamaño según necesites
+                  style={{
+                    height: "75px",
+                    marginTop: "10px",
+                    marginLeft: "100px",
+                    cursor: "pointer", // Hacer que el logo sea clickeable
+                  }}
+                  onClick={scrollToTop} // Agregar función de scroll al hacer clic
                 />
               </motion.div>
 
-              {/* Espacio flexible para centrar los botones */}
               <Box sx={{ flexGrow: 1 }} />
 
-              {/* Menú en escritorio alineado a la derecha con animación */}
               <Box sx={{ display: { xs: "none", md: "flex" }, gap: 2 }}>
                 {menuItems.map((item, index) => (
                   <motion.div
@@ -115,7 +122,6 @@ function Navbar() {
                 ))}
               </Box>
 
-              {/* Botón hamburguesa en móvil */}
               <IconButton
                 color="inherit"
                 edge="end"
@@ -129,7 +135,6 @@ function Navbar() {
         </AppBar>
       </Box>
 
-      {/* Menú desplegable en móvil */}
       <Drawer anchor="right" open={open} onClose={() => setOpen(false)}>
         <List sx={{ width: 250 }}>
           {menuItems.map((item, index) => (

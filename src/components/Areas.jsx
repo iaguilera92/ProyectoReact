@@ -29,104 +29,62 @@ const Areas = () => {
         color: "white",
       }}
     >
-      <Grid container spacing={3} alignItems="center">
-        {/* Sección de contadores */}
+      <Grid container spacing={4} alignItems="center">
         <Grid item xs={12} md={6} ref={ref}>
           <Grid container spacing={3}>
             {data.map((item, index) => (
               <Grid item xs={12} sm={6} key={index}>
                 <motion.div
                   whileHover={{
-                    rotate: 15, // Rota a la derecha cuando el mouse pasa por encima
+                    rotate: 5,
                     transition: { duration: 0.3, ease: "easeInOut" },
                   }}
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                  }}
+                  style={{ display: "flex", justifyContent: "center" }}
                 >
                   <Box
                     sx={{
                       textAlign: "center",
-                      backgroundColor: "var(--darkreader-background-ffffff, #181a1b)",
+                      backgroundColor: "rgba(24, 26, 27, 0.9)",
                       color: "white",
                       padding: 3,
                       borderRadius: 2,
-                      height: "150px", // Asegurar tamaño uniforme
+                      width: "100%",
+                      height: 150,
                       display: "flex",
                       flexDirection: "column",
                       justifyContent: "center",
-                      fontFamily: "'Poppins', sans-serif", // Mantener el fontFamily
+                      alignItems: "center",
+                      fontFamily: "'Poppins', sans-serif",
                       transition: "all 0.3s ease-in-out",
+                      cursor: "pointer"
                     }}
                   >
-                    <Typography variant="h3" component="h1" gutterBottom>
+                    <Typography variant="h3" gutterBottom>
                       +<CountUp start={0} end={inView ? item.count : 0} duration={3} />
                     </Typography>
-                    {/* Texto con animación palabra por palabra */}
-                    <motion.div
-                      initial={{ x: "100%" }} // Comienza fuera de la vista (a la derecha)
-                      animate={{
-                        x: inView ? 0 : "100%", // Se mueve a su posición original cuando entra en vista
-                      }}
-                      transition={{
-                        duration: 1, // Duración de la animación
-                        ease: "easeOut", // Suavizado de la animación
-                      }}
-                    >
-                      {/* Aquí se separan las palabras */}
-                      <div
-                        style={{
-                          display: "flex",
-                          flexWrap: "wrap",
-                          justifyContent: "center",
-                          fontFamily: "'Poppins', sans-serif", // Mantener el fontFamily
-                        }}
-                      >
-                        {item.text.split(" ").map((word, wordIndex) => (
-                          <motion.span
-                            key={wordIndex}
-                            initial={{ opacity: 0, x: "100%" }} // Empieza desde la derecha y invisible
-                            animate={{
-                              opacity: inView ? 1 : 0, // Se hace visible cuando entra en vista
-                              x: inView ? 0 : "100%", // Se mueve a su posición original
-                            }}
-                            transition={{
-                              duration: 0.5,
-                              delay: wordIndex * 0.2, // Cada palabra aparece con un retraso secuencial
-                              ease: "easeOut",
-                            }}
-                            style={{
-                              marginRight: "5px", // Espacio entre las palabras reducido
-                            }}
-                          >
-                            {word}{" "}
-                          </motion.span>
-                        ))}
-                      </div>
-                    </motion.div>
+                    <Typography variant="body1" sx={{ maxWidth: "90%" }}>
+                      {item.text}
+                    </Typography>
                   </Box>
                 </motion.div>
               </Grid>
             ))}
           </Grid>
         </Grid>
-
-        {/* Sección de imagen animada */}
         <Grid item xs={12} md={6} display="flex" justifyContent="center" ref={imgRef}>
           <motion.img
             src="https://www.connectic.cl/wp-content/uploads/2024/07/Daco_5762223-400x316.png"
             alt="Daco_5762223"
             width={400}
             height={316}
-            initial={{ opacity: 0, y: -50 }}  // Imagen comienza fuera de vista (arriba)
+            initial={{ opacity: 0, y: -50 }}
             animate={{
-              opacity: imgInView ? 1 : 0,  // Se vuelve visible cuando está en vista
-              y: imgInView ? ["0px", "-10px", "0px"] : "-50px", // Efecto de boteo solo cuando está en vista
+              opacity: imgInView ? 1 : 0,
+              y: imgInView ? [0, -10, 0] : -50,
             }}
             transition={{
-              opacity: { duration: 1, ease: "easeOut" }, // Transición de opacidad
-              y: { duration: 2, repeat: Infinity, ease: "easeInOut" }, // Efecto de boteo infinito
+              opacity: { duration: 1, ease: "easeOut" },
+              y: { duration: 2, repeat: Infinity, ease: "easeInOut" },
             }}
             style={{ position: "relative" }}
           />

@@ -118,7 +118,7 @@ const Footer = () => {
             }}
           >
             <img
-              src="/logo-nxo.png"
+              src="/logo-react.png"
               alt="Logo"
               style={{
                 height: "75px",
