@@ -1,10 +1,10 @@
 .image {
   background-position: center center;
   position: absolute;
-  width: 60%; /* Aseguramos que cubra el 100% del contenedor */
-  height: 100%;
+  width: 50%; /* Aseguramos que cubra el 100% del contenedor */
+  height: 100vh;
   background-size: cover; /* Asegura que la imagen cubra toda el área sin distorsión */
-  transform: skewX(-20deg); /* Sigue el ladeo */
+  /*transform: skewX(-20deg); /* Sigue el ladeo */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -14,14 +14,14 @@
 }
 
 .image-left {
-  left: -10%; /* 20% fuera de la pantalla */
+  left: 0%; /* 20% fuera de la pantalla */
   background-image: url('/mapa.jpg');
   transform-origin: right center;
   z-index: 3;
 }
 
 .image-right {
-  right: -10%; /* 20% fuera de la pantalla */
+  right: 0%; /* 20% fuera de la pantalla */
   background-image: url('/contactar.jpg');
   transform-origin: left center;
   z-index: 3;
@@ -35,4 +35,54 @@
 .animate-right {
   right: -115%; /* Mueve la imagen hacia la derecha, cubriendo el contenido */
   z-index: 4;
+}
+
+
+/* Estilo del Loader */
+#loader {
+  display: block;
+  position: relative;
+  left: 50%;
+  top: 50%;
+  width: 150px;
+  height: 150px;
+  margin: -75px 0 0 -75px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  border-top-color: white;
+  animation: spin 1.4s linear infinite;
+  z-index: 1001;
+}
+
+#loader:before,
+#loader:after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  border-top-color: white;
+  animation: spin 3s linear infinite;
+}
+
+#loader:before {
+  top: 5px;
+  left: 5px;
+  right: 5px;
+  bottom: 5px;
+}
+
+#loader:after {
+  top: 15px;
+  left: 15px;
+  right: 15px;
+  bottom: 15px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

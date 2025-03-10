@@ -8,6 +8,8 @@ import {
   Typography,
   Box,
   Button,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { motion } from "framer-motion";
@@ -16,21 +18,21 @@ import { FaHubspot } from "react-icons/fa";
 // Datos de ejemplo
 const features = [
   {
-    id: 1015,
+    id: 1,
     title: "BI",
     desc: "Servicios Business Intelligence: desarrollamos plataformas BI para agilizar y recopilar información.",
     image: "https://www.dsmsolutions.cl/wp-content/uploads/2023/08/bi_dsmsolutions.webp",
     link: "https://www.dsmsolutions.cl/bi/",
   },
   {
-    id: 1002,
+    id: 2,
     title: "Soporte Evolutivo de Sistemas",
     desc: "Soporte evolutivo y mantenimiento de sistemas, brindamos soporte TI para el mantenimiento de tus sistemas.",
     image: "https://www.dsmsolutions.cl/wp-content/uploads/2023/08/plataforma-mycrosoft-dynamics.webp",
     link: "https://www.dsmsolutions.cl/mantenimiento-de-sistemas/",
   },
   {
-    id: 868,
+    id: 3,
     title: "Desarrollo de Sistemas a Medida",
     desc: "Desarrollo de sistemas a medida, creamos software y sitios web personalizados para tu negocio.",
     image: "https://www.dsmsolutions.cl/wp-content/uploads/2023/08/desarrollo-software_dsmsolutions.webp",
@@ -40,15 +42,15 @@ const features = [
 
 // Animación de aparición desde la derecha con efecto de cascada
 const cardAnimation = {
-  hidden: { opacity: 0, x: 150 }, // Inicia fuera de la pantalla, a la derecha
+  hidden: { opacity: 0, x: 150 },
   visible: (index) => ({
     opacity: 1,
     x: 0,
-    transition: { duration: 0.8, delay: index * 0.3, ease: "easeOut" }, // Cascada
+    transition: { duration: 0.8, delay: index * 0.3, ease: "easeOut" },
   }),
 };
 
-// StyledCardActionArea: al hacer hover, el overlay se despliega y el icono de la imagen se hace zoom
+// StyledCardActionArea: al hacer hover, el overlay se despliega y la imagen hace zoom
 const StyledCardActionArea = styled(CardActionArea)({
   position: "relative",
   "&:hover .overlay": {
@@ -88,17 +90,32 @@ const AdditionalContent = styled(Box)({
 });
 
 function Features() {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   return (
-    <Container sx={{ py: 4, maxWidth: "1500px !important" }}>
+    <Container
+      sx={{
+        py: 4,
+        maxWidth: "1500px !important",
+        // Fondo ajustado para desktop y mobile
+        backgroundImage: {
+          xs: "url(https://blz-contentstack-images.akamaized.net/v3/assets/blta8f9a8e092360c6c/blt5469c93bcb8be6fc/Mobile_Blizz_Footer.jpg)",
+          md: "url(https://blz-contentstack-images.akamaized.net/v3/assets/blta8f9a8e092360c6c/blt367ca4b27c88c078/Desktop_Blizz_Footer.jpg)",
+        },
+        backgroundPosition: "bottom center",
+        backgroundRepeat: "no-repeat",
+        // filter: "blur(20px)", // Descomenta si deseas aplicar el desenfoque
+      }}
+    >
       <Grid container spacing={2}>
         {features.map((feature, index) => (
           <Grid item xs={12} md={4} key={feature.id}>
-            {/* Aplicamos animación a cada Card con delay en cascada */}
             <motion.div
               initial="hidden"
               animate="visible"
               variants={cardAnimation}
-              custom={index} // Se usa para el delay progresivo
+              custom={index}
             >
               <Card sx={{ position: "relative", overflow: "hidden" }}>
                 <StyledCardActionArea href={feature.link} target="_self">
@@ -108,7 +125,7 @@ function Features() {
                     image={feature.image}
                     alt={feature.title}
                     sx={{
-                      height: 250,
+                      height: isMobile ? 200 : 250,
                       transition: "transform 1s",
                     }}
                   />
@@ -164,18 +181,19 @@ function Features() {
             letterSpacing: "3.1px",
             fontFamily: "albert sans, sans-serif",
             border: "1px solid #007de0",
-            fontSize: "1.1rem",
+            fontSize: { xs: "10px", sm: "1.1rem" },
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             position: "relative",
             overflow: "hidden",
-            width: "460px",
+            width: { xs: "93%", sm: "460px" },
+            maxWidth: "460px",
             height: "50px",
             backgroundColor: "#007de0",
             transition: "width 0.3s ease",
             "&:hover": {
-              width: "470px",
+              width: { xs: "95%", sm: "470px" },
               backgroundColor: "#007de0",
             },
             "&:hover .icon": {

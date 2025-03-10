@@ -15,7 +15,6 @@ import {
 import { Menu as MenuIcon } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import "@fontsource/poppins";
-import { useNavigate } from "react-router-dom";
 
 const menuItems = ["Inicio", "Servicios", "Contacto"];
 
@@ -67,21 +66,33 @@ function Navbar({ contactoRef }) {
           zIndex: 1100,
           borderRadius: "50px",
           overflow: "hidden",
+          marginTop : "15px"
         }}
       >
-        <AppBar
-          position="static"
-          sx={{
-            backgroundColor: isScrolled
-              ? "rgba(0, 0, 0, 0.8)"
-              : "rgba(0, 0, 0, 0)",
-            boxShadow: "none",
-            transition: "background-color 0.3s ease-in-out",
-            borderRadius: "inherit",
-          }}
-        >
-          <Container>
-            <Toolbar>
+            <AppBar
+              position="static"
+              sx={{
+                backgroundColor: isScrolled ? "black" : "rgba(0, 0, 0, 0)",
+                boxShadow: "none",
+                transition: "background-color 0.3s ease-in-out",
+                borderRadius: "inherit",
+                overflow: "hidden", // Esto asegura que cualquier contenido fuera de la AppBar se oculte
+              }}
+            >
+
+                      <Container>
+                        <Toolbar>
+                        <Box
+              sx={{
+                position: "fixed",
+                left: { xs: "50%", md: "calc(50% + 15%)" }, // Centrado en móvil y 20% a la derecha en escritorio
+                transform: "translateX(-50%)", // Mantener el centrado en móvil
+                width: "96%",
+                borderRadius: "0px",    
+                display: "flex", // Asegura que el contenido esté alineado
+                justifyContent: { xs: "center", md: "flex-start" }, // Ajuste con marginTop para mayor distancia
+              }}
+            >
               <motion.div
                 initial={{ x: -200, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
@@ -94,12 +105,12 @@ function Navbar({ contactoRef }) {
                   style={{
                     height: "75px",
                     marginTop: "10px",
-                    marginLeft: "100px",
-                    cursor: "pointer", // Hacer que el logo sea clickeable
+                    cursor: "pointer"
                   }}
                   onClick={scrollToTop} // Agregar función de scroll al hacer clic
                 />
               </motion.div>
+            </Box>
 
               <Box sx={{ flexGrow: 1 }} />
 

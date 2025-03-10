@@ -122,7 +122,7 @@ const Footer = () => {
               alt="Logo"
               style={{
                 height: "75px",
-                marginLeft: "25px",
+                marginLeft: "10px",
                 animation: logoInView ? `${growElement} 1s forwards` : 'none',
               }}
             />

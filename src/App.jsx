@@ -47,9 +47,9 @@ function App() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setOpenBubble(true); // Hacer visible el diálogo después de 2 segundos
+      setOpenBubble(true);
     }, 2000);
-    return () => clearTimeout(timer); // Limpiar el temporizador si el componente se desmonta
+    return () => clearTimeout(timer); 
   }, []);
 
   useEffect(() => {
@@ -62,14 +62,14 @@ function App() {
   useEffect(() => {
     if (openBubble) {
       const timer = setTimeout(() => {
-        setOpenBubble(false); // Desaparecer el diálogo después de 3 segundos
+        setOpenBubble(false); 
       }, 3000);
-      return () => clearTimeout(timer); // Limpiar el timeout si el componente se desmonta
+      return () => clearTimeout(timer); 
     }
   }, [openBubble]);
 
   const scrollToTop = () => {
-    // Desplazarse a la parte superior
+
     window.scrollTo({
       top: 0,
       behavior: "smooth",
@@ -102,7 +102,7 @@ function App() {
 
           <Box sx={{
             position: "fixed", bottom: "40px", right: "40px", zIndex: 100,
-            transition: "bottom 0.3s ease", // Agregar transiciones suaves
+            transition: "bottom 0.3s ease", 
           }}>
             <IconButton onClick={() => {
               window.open("https://api.whatsapp.com/send?phone=56992914526", "_blank");
