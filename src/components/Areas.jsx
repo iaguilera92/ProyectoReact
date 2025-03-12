@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 const data = [
   {
     count: 20,
-    text: "Proyectos terminados en distintos rubros y empresas",
+    text: "Proyectos terminados en distintas empresas",
     image:
       "https://www.aycelaborytax.com/wp-content/uploads/2020/12/fusion-empresas.jpeg",
   },
@@ -92,86 +92,110 @@ const Areas = () => {
             {data.map((item, index) => (
               <Grid item xs={6} sm={6} md={6} key={index}>
                 <Box
-                  sx={{
-                    textAlign: "center",
-                    color: "white",
-                    borderRadius: 2,
-                    width: "100%",
-                    height: 150,
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    fontFamily: "'Poppins', sans-serif",
-                    perspective: "1000px", // Añadido para el efecto 3D
-                    cursor: "pointer",
-                    position: "relative", // Asegura que el contenido se posicione dentro del Box
-                  }}
-                  ref={ref} // El ref está aquí para controlar la visibilidad
-                >
-                  {/* Caja para rotación 3D */}
-                  <Box
-                    sx={{
-                      width: "100%",
-                      height: "100%",
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      transformStyle: "preserve-3d",
-                      transition: "transform 0.6s",
-                      transitionDelay: inView ? "0.8s" : "0s", // Retraso de 0.8 segundos cuando entra en vista
-                      transform: inView ? "rotateY(180deg)" : "rotateY(0deg)", // Rota el contenido cuando está en vista
-                      position: "relative",
-                    }}
-                  >
-                    {/* Cara trasera: Información */}
-                    <Box
-                      sx={{
-                        position: "absolute",
-                        backfaceVisibility: "hidden",
-                        width: "100%",
-                        height: "100%",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        flexDirection: "column",
-                        backgroundColor: "rgba(24, 26, 27, 0.9)",
-                        borderRadius: 2,
-                        boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
-                        zIndex: 2, // Asegura que el contenido esté por encima de la imagen
-                        transform: "rotateY(180deg)", // La información está en la parte trasera inicialmente
-                      }}
-                    >
-                      {/* Contador con retraso de 0.8 segundos */}
-                      <Typography variant="h3" gutterBottom>
-                        +{delayed ? (
-                          <CountUp start={0} end={item.count} duration={3} />
-                        ) : (
-                          "0"
-                        )}
-                      </Typography>
+  sx={{
+    textAlign: "center",
+    color: "white",
+    borderRadius: 2,
+    width: "100%",
+    height: 150,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    fontFamily: "'Poppins', sans-serif",
+    perspective: "1000px",
+    cursor: "pointer",
+    position: "relative",
+  }}
+  ref={ref}
+>
+  {/* Caja para rotación 3D */}
+  <Box
+    sx={{
+      width: "100%",
+      height: "100%",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      transformStyle: "preserve-3d",
+      transition: "transform 0.6s",
+      transitionDelay: inView ? "0.8s" : "0s",
+      transform: inView ? "rotateY(180deg)" : "rotateY(0deg)",
+      position: "relative",
+    }}
+  >
+    {/* Cara trasera: Información */}
+    <Box
+      sx={{
+        position: "absolute",
+        backfaceVisibility: "hidden",
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column",
+        backgroundColor: "rgba(24, 26, 27, 0.9)",
+        borderRadius: 2,
+        boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
+        zIndex: 2,
+        transform: "rotateY(180deg)",
+      }}
+    >
+      {/* Contenedor fijo para evitar que se mueva el contador */}
+      <Box
+        sx={{
+          minWidth: "100px", // Asegura que el ancho no cambie
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        {/* Contador con retraso de 0.8 segundos */}
+        <Typography
+  variant="h3"
+  gutterBottom
+  sx={{
+    minWidth: "80px",
+    textAlign: "center",
+    marginBottom: "0.15em",
+    fontSize: { xs: "2.2rem", md: "3.2rem" }, // Aumentado el tamaño
+  }}
+>
+  +{delayed ? <CountUp start={0} end={item.count} duration={3} /> : "0"}
+</Typography>
 
-                      {/* Texto con retraso de 0.8 segundos y animación palabra por palabra */}
-                      <div style={{ display: "inline-block", paddingRight: "10px", paddingLeft:"10px" }}>
-                        {splitTextIntoWords(item.text)}
-                      </div>
-                    </Box>
 
-                    {/* Cara delantera: Imagen */}
-                    <Box
-                      sx={{
-                        position: "absolute",
-                        backfaceVisibility: "hidden",
-                        width: "100%",
-                        height: "100%",
-                        backgroundImage: `url(${item.image})`, // Usamos la imagen del item
-                        backgroundSize: "cover", // Hace que la imagen ocupe todo el espacio
-                        backgroundPosition: "center",
-                        borderRadius: 2,
-                        boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
-                      }}
-                    />
-                  </Box>
-                </Box>
+        {/* Contenedor del texto para mantener alineación */}
+        <Box
+          sx={{
+            textAlign: "center",
+            maxWidth: "90%",
+            fontSize: { xs: "0.9rem", md: "1.2rem" }, // Reducir tamaño del texto en móviles
+            fontFamily: "'Oswald', sans-serif", // Fuente agregada
+          }}
+        >
+          {splitTextIntoWords(item.text)}
+        </Box>
+      </Box>
+    </Box>
+
+    {/* Cara delantera: Imagen */}
+    <Box
+      sx={{
+        position: "absolute",
+        backfaceVisibility: "hidden",
+        width: "100%",
+        height: "100%",
+        backgroundImage: `url(${item.image})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        borderRadius: 2,
+        boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
+      }}
+    />
+  </Box>
+</Box>
+
               </Grid>
             ))}
           </Grid>

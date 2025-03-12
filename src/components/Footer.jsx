@@ -97,149 +97,177 @@ const Footer = () => {
 
   return (
     <Box
-      sx={{
-        backgroundColor: "rgba(23, 24, 25, 0.97)",
-        backgroundImage:
-          "url(https://www.connectic.cl/wp-content/uploads/2024/07/lucas-giordano-de-sousa-UWupz6Lxz3A-unsplash-1-1.jpg)",
-        backgroundSize: "cover",
-        padding: "20px 0",
-        color: "white",
-        backgroundPosition: "center -150px",
-      }}
-    >
-      <Container maxWidth="lg">
-        <Box display="flex" justifyContent="space-between" flexWrap="wrap">
-          <Box
-            ref={logoRef}
-            className="MuiBox-root css-0"
-            sx={{
-              marginTop: "2%",
-              animation: logoInView ? `${growElement} 1s forwards` : 'none', 
+    sx={{
+      backgroundColor: "rgba(23, 24, 25, 0.97)",
+      backgroundImage:
+        "url(https://www.connectic.cl/wp-content/uploads/2024/07/lucas-giordano-de-sousa-UWupz6Lxz3A-unsplash-1-1.jpg)",
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
+      padding: "20px 0",
+      color: "white",
+      backgroundPosition: "center -150px",
+      "@media (max-width: 600px)": {
+        backgroundPosition: "center center",
+        padding: "10px 0",
+      },
+    }}
+  >
+    <Container maxWidth="lg">
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        flexWrap="wrap"
+        sx={{
+          "@media (max-width: 600px)": {
+            flexDirection: "row", // Disposición en fila en móvil
+            alignItems: "flex-start",
+          },
+          "@media (min-width: 601px)": {
+            flexDirection: "row", // Disposición en fila en escritorio
+            justifyContent: "space-between",
+          },
+        }}
+      >
+        {/* Columna izquierda: Logo y Redes Sociales */}
+        <Box
+          ref={logoRef}
+          sx={{
+            flex: "1 1 33%", // Toma el 33% en pantallas grandes
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            animation: logoInView ? `${growElement} 1s forwards` : 'none',
+            "@media (max-width: 600px)": {
+              alignSelf: "flex-start", // Alinea el logo a la izquierda en móvil
+              marginBottom: "20px",
+            },
+          }}
+        >
+          <img
+            src="/logo-react.png"
+            alt="Logo"
+            style={{
+              height: "75px",
+              marginLeft: "10px",
+              animation: logoInView ? `${growElement} 1s forwards` : 'none',
             }}
-          >
-            <img
-              src="/logo-react.png"
-              alt="Logo"
-              style={{
-                height: "75px",
-                marginLeft: "10px",
-                animation: logoInView ? `${growElement} 1s forwards` : 'none',
-              }}
-            />
-            {/* Redes Sociales */}
-            <Box
-              ref={socialRef}
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                gap: 2,
-                mt: 1,
-                animation: socialInView ? `${growElement} 1s forwards` : 'none',
-              }}
-            >
-              {/* Instagram */}
-              <SocialButton
-                href="https://www.instagram.com/mittarentacar/?hl=es-la"
-                Icon={InstagramIcon}
-                bgColor="linear-gradient(45deg, #cf198c, #f41242)"
-                hoverStyles={{
-                  color: "#cf198c",
-                  background: "-webkit-linear-gradient(45deg, #cf198c, #f41242)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                }}
-              />
-
-              {/* Facebook */}
-              <SocialButton
-                href="https://www.facebook.com/Mittarentacar"
-                Icon={FacebookIcon}
-                bgColor="linear-gradient(45deg, #00B5F5, #002A8F)"
-                hoverStyles={{
-                  color: "white",
-                  background: "-webkit-linear-gradient(45deg, #00B5F5, #002A8F)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                }}
-              />
-
-              {/* LinkedIn */}
-              <SocialButton
-                href="https://www.linkedin.com/company/mittarentacar/?viewAsMember=true"
-                Icon={LinkedInIcon}
-                bgColor="linear-gradient(45deg, #00B5F5, #0077b7)"
-                hoverStyles={{
-                  color: "#0077b7",
-                  background: "-webkit-linear-gradient(45deg, #00B5F5, #0077b7)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                }}
-              />
-            </Box>
-          </Box>
-{/* Contacto */}
-<Box
-            ref={contactRef}
+          />
+          {/* Redes Sociales */}
+          <Box
+            ref={socialRef}
             sx={{
               display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 1,
-              marginTop: "20px",
-              animation: contactInView ? `${growElement} 1s forwards` : 'none',
+              justifyContent: "flex-start", // Alinea los iconos a la izquierda en móvil
+              gap: 2,
+              mt: 1,
+              animation: socialInView ? `${growElement} 1s forwards` : 'none',
             }}
           >
-            <Typography variant="h6" sx={{ color: "var(--darkreader-text-00b4ff, #1abcff)" }}>
-              Contacto
-            </Typography>
-            <Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <img src="https://www.connectic.cl/wp-content/uploads/2021/04/telephone.png" alt="Teléfono" width={16} />
-              <Link href="tel:+56999999999" color="inherit">+56 987654321</Link>
-            </Typography>
-            <Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <img src="https://www.connectic.cl/wp-content/uploads/2021/04/correo-1.png" alt="Correo" width={16} />
-              <Link href="mailto:aguileraignacio1992@gmail.com" color="inherit">aguileraignacio1992@gmail.com</Link>
-            </Typography>
-            <Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <img src="https://www.connectic.cl/wp-content/uploads/2021/04/location.png" alt="Ubicación" width={16} />
-              Dirección #321, Santiago.
-            </Typography>
-          </Box>
-          {/* Proveedores Para */}
-          <Box
-            ref={providersRef}
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 1,
-              marginTop: "20px",
-              animation: providersInView ? `${growElement} 1s forwards` : 'none',
-            }}
-          >
-            <Typography variant="h6" sx={{ color: "var(--darkreader-text-00b4ff, #1abcff)" }}>
-              Proveedores Para
-            </Typography>
-            <img
-              src="https://www.connectic.cl/wp-content/uploads/2021/04/mercadoublico-300x66.png"
-              alt="Mercado Público"
-              width={180}
+            <SocialButton
+              href="https://www.instagram.com/plataformas.web/?hl=es-la"
+              Icon={InstagramIcon}
+              bgColor="linear-gradient(45deg, #cf198c, #f41242)"
+              hoverStyles={{
+                color: "#cf198c",
+                background: "-webkit-linear-gradient(45deg, #cf198c, #f41242)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
             />
-            <img
-              src="https://www.connectic.cl/wp-content/uploads/2021/04/logo-convenio-300x66.png"
-              alt="Convenio Marco"
-              width={180}
+            <SocialButton
+              href="https://www.facebook.com/Mittarentacar"
+              Icon={FacebookIcon}
+              bgColor="linear-gradient(45deg, #00B5F5, #002A8F)"
+              hoverStyles={{
+                color: "white",
+                background: "-webkit-linear-gradient(45deg, #00B5F5, #002A8F)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            />
+            <SocialButton
+              href="https://www.linkedin.com/company/mittarentacar/?viewAsMember=true"
+              Icon={LinkedInIcon}
+              bgColor="linear-gradient(45deg, #00B5F5, #0077b7)"
+              hoverStyles={{
+                color: "#0077b7",
+                background: "-webkit-linear-gradient(45deg, #00B5F5, #0077b7)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
             />
           </Box>
-
-          
         </Box>
+  
+        {/* Columna central: Contacto */}
+        <Box
+          sx={{
+            flex: "1 1 33%", // Toma el 33% en pantallas grandes
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            animation: contactInView ? `${growElement} 1s forwards` : 'none',
+            "@media (max-width: 600px)": {
+              alignItems: "flex-start", // Alinea el contenido de contacto a la izquierda en móvil
+              marginLeft: "20px",
+            },
+          }}
+        >
+          <Typography variant="h6" sx={{ color: "var(--darkreader-text-00b4ff, #1abcff)", fontSize: "16px" }}>
+            Contacto
+          </Typography>
+          <Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <img src="https://www.connectic.cl/wp-content/uploads/2021/04/telephone.png" alt="Teléfono" width={16} />
+            <Link href="tel:+56999999999" color="inherit">+56 987654321</Link>
+          </Typography>
+          <Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <img src="https://www.connectic.cl/wp-content/uploads/2021/04/correo-1.png" alt="Correo" width={16} />
+            <Link href="mailto:aguileraignacio1992@gmail.com" color="inherit">aguileraignacio1992@gmail.com</Link>
+          </Typography>
+          <Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <img src="https://www.connectic.cl/wp-content/uploads/2021/04/location.png" alt="Ubicación" width={16} />
+            Dirección #321, Santiago.
+          </Typography>
+        </Box>
+  
+        {/* Columna derecha: Proveedores */}
+        <Box
+          sx={{
+            flex: "1 1 33%", // Toma el 33% en pantallas grandes
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            animation: providersInView ? `${growElement} 1s forwards` : 'none',
+            "@media (max-width: 600px)": {
+              alignItems: "flex-start", // Alinea el contenido de proveedores a la izquierda en móvil
+              marginLeft: "20px",
+            },
+          }}
+        >
+          <Typography variant="h6" sx={{ color: "var(--darkreader-text-00b4ff, #1abcff)", fontSize: "16px" }}>
+            Proveedores Para
+          </Typography>
+          <img
+            src="https://www.connectic.cl/wp-content/uploads/2021/04/mercadoublico-300x66.png"
+            alt="Mercado Público"
+            width={180}
+          />
+          <img
+            src="https://www.connectic.cl/wp-content/uploads/2021/04/logo-convenio-300x66.png"
+            alt="Convenio Marco"
+            width={180}
+          />
+        </Box>
+      </Box>
+  
+      <Typography variant="body2" align="center" mt={2} sx={{ marginTop: "3vh" }}>
+        @Proyecto React 2025
+      </Typography>
+    </Container>
+  </Box>
+  
 
-        <Typography variant="body2" align="center" mt={2} sx={{ marginTop: "3vh" }}>
-          @Proyecto React 2025
-        </Typography>
-      </Container>
-    </Box>
   );
 };
 

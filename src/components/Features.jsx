@@ -14,6 +14,8 @@ import {
 import { styled } from "@mui/system";
 import { motion } from "framer-motion";
 import { FaHubspot } from "react-icons/fa";
+import { useInView } from "react-intersection-observer";
+import "./Features.css"; // Importamos el CSS
 
 // Datos de ejemplo
 const features = [
@@ -93,6 +95,11 @@ function Features() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+
+  const { ref, inView } = useInView({
+    triggerOnce: true,  // Esto asegura que se dispare solo una vez cuando el botón entre en vista
+    threshold: 0.8,     // Ajusta este valor si quieres que se active antes o después
+  });
   return (
     <Container
       sx={{
@@ -171,62 +178,72 @@ function Features() {
       </Grid>
       <br />
       <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
-        <Button
-          variant="contained"
-          href="https://www.dsmsolutions.cl/soluciones-para-empresas/"
-          target="_self"
+      <Button
+      variant="contained"
+      href="https://www.dsmsolutions.cl/soluciones-para-empresas/"
+      target="_self"
+      sx={{
+        textTransform: "none",
+        fontWeight: "bold",
+        letterSpacing: "3.1px",
+        fontFamily: "albert sans, sans-serif",
+        border: "1px solid #007de0",
+        fontSize: { xs: "10px", sm: "1.1rem" },
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        position: "relative",
+        overflow: "hidden",
+        width: { xs: "93%", sm: "460px" },
+        maxWidth: "460px",
+        height: "50px",
+        backgroundColor: "#007de0",
+        transition: "width 0.3s ease",
+        "&:hover": {
+          width: { xs: "95%", sm: "470px" },
+          backgroundColor: "#007de0",
+        },
+        "&:hover .icon": {
+          opacity: 1,
+          transform: "translateX(-10px)",
+        },
+        "&:hover .letter": {
+          transform: "translateX(15px)",
+        },
+      }}
+      ref={ref} // Se activa el observador para el botón
+    >
+      <Box sx={{ position: "relative", display: "flex", alignItems: "center" }}>
+        <Box
+          component="span"
+          className={`icon ${inView ? "animate" : ""}`} // Activar animación al estar en vista
           sx={{
-            textTransform: "none",
-            fontWeight: "bold",
-            letterSpacing: "3.1px",
-            fontFamily: "albert sans, sans-serif",
-            border: "1px solid #007de0",
-            fontSize: { xs: "10px", sm: "1.1rem" },
+            position: "absolute",
+            left: 0,
             display: "flex",
             alignItems: "center",
-            justifyContent: "center",
-            position: "relative",
-            overflow: "hidden",
-            width: { xs: "93%", sm: "460px" },
-            maxWidth: "460px",
-            height: "50px",
-            backgroundColor: "#007de0",
-            transition: "width 0.3s ease",
-            "&:hover": {
-              width: { xs: "95%", sm: "470px" },
-              backgroundColor: "#007de0",
-            },
-            "&:hover .icon": {
-              opacity: 1,
-              transform: "translateX(-10px)",
-            },
-            "&:hover .letter": {
-              transform: "translateX(15px)",
-            },
+            opacity: inView ? 0 : 1,  // Al hacer scroll, se oculta el icono
+            transform: inView ? "translateX(10px)" : "translateX(0)", // Mover el icono a la derecha
+            transition: "all 1s ease", // Transición suave
+            zIndex: 2,
           }}
         >
-          <Box sx={{ position: "relative", display: "flex", alignItems: "center" }}>
-            <Box
-              component="span"
-              className="icon"
-              sx={{
-                position: "absolute",
-                left: 0,
-                display: "flex",
-                alignItems: "center",
-                opacity: 0,
-                transform: "translateX(0)",
-                transition: "all 0.3s ease",
-                zIndex: 2,
-              }}
-            >
-              <FaHubspot style={{ color: "#fff", fontSize: "1.5rem" }} />
-            </Box>
-          </Box>
-          <Box component="span" className="letter" sx={{ ml: 1, transition: "all 0.3s ease" }}>
-            + SOLUCIONES PARA TU EMPRESA
-          </Box>
-        </Button>
+          <FaHubspot style={{ color: "#fff", fontSize: "1.5rem" }} />
+        </Box>
+      </Box>
+      <Box
+        component="span"
+        className={`letter ${inView ? "animate" : ""}`} // Activar animación al estar en vista
+        sx={{
+          ml: 1,
+          transition: "all 1s ease", // Transición suave
+          transform: inView ? "translateX(0)" : "translateX(15px)", // Inicialmente a la derecha (15px)
+        }}
+      >
+        + SOLUCIONES PARA TU EMPRESA
+      </Box>
+    </Button>
+
       </Box>
     </Container>
   );
