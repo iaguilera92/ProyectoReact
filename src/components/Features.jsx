@@ -15,7 +15,7 @@ import { styled } from "@mui/system";
 import { motion } from "framer-motion";
 import { FaHubspot } from "react-icons/fa";
 import { useInView } from "react-intersection-observer";
-import "./Features.css"; // Importamos el CSS
+import "./css/Features.css"; // Importamos el CSS
 
 // Datos de ejemplo
 const features = [
@@ -24,21 +24,21 @@ const features = [
     title: "BI",
     desc: "Servicios Business Intelligence: desarrollamos plataformas BI para agilizar y recopilar información.",
     image: "https://www.dsmsolutions.cl/wp-content/uploads/2023/08/bi_dsmsolutions.webp",
-    link: "https://www.dsmsolutions.cl/bi/",
+    //link: "https://www.plataformas.web.cl/",
   },
   {
     id: 2,
     title: "Soporte Evolutivo de Sistemas",
     desc: "Soporte evolutivo y mantenimiento de sistemas, brindamos soporte TI para el mantenimiento de tus sistemas.",
     image: "https://www.dsmsolutions.cl/wp-content/uploads/2023/08/plataforma-mycrosoft-dynamics.webp",
-    link: "https://www.dsmsolutions.cl/mantenimiento-de-sistemas/",
+    //link: "https://www.plataformas.web.cl/",
   },
   {
     id: 3,
     title: "Desarrollo de Sistemas a Medida",
     desc: "Desarrollo de sistemas a medida, creamos software y sitios web personalizados para tu negocio.",
     image: "https://www.dsmsolutions.cl/wp-content/uploads/2023/08/desarrollo-software_dsmsolutions.webp",
-    link: "https://www.dsmsolutions.cl/desarrollo-de-sistemas-a-medida/",
+    //link: "https://www.plataformas.web.cl/",
   },
 ];
 
@@ -101,15 +101,21 @@ function Features() {
     threshold: 0.8,     // Ajusta este valor si quieres que se active antes o después
   });
   return (
+    <Box
+    sx={{
+      backgroundImage: 'url("https://blz-contentstack-images.akamaized.net/v3/assets/blta8f9a8e092360c6c/blt367ca4b27c88c078/Desktop_Blizz_Footer.jpg")',
+      backgroundSize: 'cover',  // Asegura que la imagen cubra todo el contenedor
+      backgroundPosition: 'center',  // Centra la imagen en el fondo
+      backgroundAttachment: 'fixed',  // Asegura que la imagen de fondo no se mueva al hacer scroll
+      py: 4,
+      paddingBottom: "15px",
+      color: "white",  // Ajusta el color del texto para que sea visible sobre el fondo
+    }}
+  >
     <Container
       sx={{
-        py: 4,
+        py: 0,
         maxWidth: "1500px !important",
-        // Fondo ajustado para desktop y mobile
-        backgroundImage: {
-          xs: "url(https://blz-contentstack-images.akamaized.net/v3/assets/blta8f9a8e092360c6c/blt5469c93bcb8be6fc/Mobile_Blizz_Footer.jpg)",
-          md: "url(https://blz-contentstack-images.akamaized.net/v3/assets/blta8f9a8e092360c6c/blt367ca4b27c88c078/Desktop_Blizz_Footer.jpg)",
-        },
         backgroundPosition: "bottom center",
         backgroundRepeat: "no-repeat",
         // filter: "blur(20px)", // Descomenta si deseas aplicar el desenfoque
@@ -162,7 +168,7 @@ function Features() {
                             color: "black",
                             textTransform: "none",
                           }}
-                          href={feature.link}
+                          //href={feature.link}
                           target="_self"
                         >
                           Leer más
@@ -246,6 +252,7 @@ function Features() {
 
       </Box>
     </Container>
+    </Box>
   );
 }
 

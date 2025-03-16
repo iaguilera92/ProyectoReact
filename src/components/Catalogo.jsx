@@ -1,239 +1,173 @@
-import React, { useState, useEffect } from "react";
-import { Container, Typography, Box, TextField, Button, Snackbar, Alert, Grid, useMediaQuery } from "@mui/material";
-import PhoneIcon from "@mui/icons-material/Phone";
-import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import { useInView } from "react-intersection-observer";
-import { motion } from "framer-motion";
-import "./Contacto.css"; // Importamos el CSS
-import LocationOnIcon from "@mui/icons-material/LocationOn";
+import React, { useState, useEffect } from 'react';
+import { Container, Snackbar, Box, Alert } from '@mui/material';
+import { motion } from 'framer-motion'; // Usaremos framer-motion para las animaciones
+import { useInView } from 'react-intersection-observer'; // Para manejar el scroll
+import './css/Catalogo.css';
 
-const letterVariants = {
-  hidden: { opacity: 0, x: -20 },
-  visible: (i) => ({
-    opacity: 1,
-    x: 0,
-    transition: { delay: 1.45 + i * 0.1 },
-  }),
-};
-
-function Contacto() {
-  const [phone, setPhone] = useState("");
-  const [message, setMessage] = useState("");
-  const [formSubmitted, setFormSubmitted] = useState(false);
+const Catalogo = () => {
   const [openAlert, setOpenAlert] = useState(false);
-  const [startAnimation, setStartAnimation] = useState(false);
-  const [bgPosition, setBgPosition] = useState("center 0px");
-  const [containerHeight, setContainerHeight] = useState("50vh"); // Inicia con 50vh
+  const [productos, setProductos] = useState([]);
+  const [isMobile, setIsMobile] = useState(false); // Estado para detectar si es mobile
 
-  // Detectar si estamos en una pantalla pequeña
-  const isMobile = useMediaQuery("(max-width:600px)");
-
-  const { ref, inView } = useInView({
-    triggerOnce: true,
-    threshold: 0.3,
-  });
-
-  useEffect(() => {
-    if (inView) {
-      const timer = setTimeout(() => {
-        setStartAnimation(true);
-        // Después de la animación, restauramos la altura
-        setContainerHeight("auto");
-      }, 1000); // Ajusta el tiempo de animación según lo necesites
-      return () => clearTimeout(timer);
-    }
-  }, [inView]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      // Modificar la posición del fondo para que se mueva suavemente
-      setBgPosition(`center ${window.scrollY * 0}px`);
+  const GetProducto = (idProducto, precio, imgUrl, stock = 1, conDescuento = false) => {
+    const url = ImgUrlAleatorio(imgUrl);
+    const producto = {
+      IdProducto: idProducto,
+      NombreProducto: `Producto ${idProducto}`,
+      Descripcion: 'Esta es una descripción del producto en stock, click para agregar al carrito.',
+      Valor: precio,
+      Stock: stock,
+      ImageUrl: url,
+      ConDescuento: conDescuento
     };
-  
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-  
+    return producto;
+  };
+  //https://enteldigital.cl/hubfs/raw_assets/public/HandyApps/Site_pages/Home/images/network-bg.svg APLICAR IMG
+  const ImgUrlAleatorio = (imgUrl) => {
+    let url = "https://emprendepyme.net/wp-content/uploads/2023/03/comercializar-productos.jpg";
+    if (imgUrl === 2) {
+      url = "https://www.hostingplus.cl/wp-content/uploads/2023/08/Importancia-del-carrito-de-compra.jpg";
+    } else if (imgUrl === 3) {
+      url = "https://logistica360.pe/wp-content/uploads/2023/11/compras-inte.jpg";
+    } else if (imgUrl === 4) {
+      url = "https://www.ticobuycr.com/wp-content/uploads/2021/04/venta-por-internet_1.jpg";
+    } else if (imgUrl === 5) {
+      url = "https://emprendepyme.net/wp-content/uploads/2023/03/cualidades-producto.jpg";
+    } else if (imgUrl === 6) {
+      url = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpK3luyjdef0_KFW3p1I7upURnq3Rf31eVyQ&s";
+    }
+    return url;
+  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Número de Teléfono:", phone);
-    console.log("Solicitud:", message);
-    setFormSubmitted(true);
-    setOpenAlert(true);
-    setPhone("");
-    setMessage("");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  useEffect(() => {
+    const productosData = [
+      GetProducto(1, 20000, 1, 2, true),
+      GetProducto(2, 15000, 2, 10, false),
+      GetProducto(3, 35000, 3, 3, false),
+      GetProducto(4, 23990, 4, 4, true),
+      GetProducto(5, 17990, 5, 12, true),
+      GetProducto(6, 7000, 6, 1, false)
+    ];
+    setProductos(productosData);
+
+    window.scrollTo(0, 0);
+
+    // Detectamos si es móvil o escritorio
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768); // Si el ancho es menor o igual a 768px, es móvil
+    };
+
+    // Agregamos el event listener para el resize
+    window.addEventListener('resize', handleResize);
+    handleResize(); // Llamamos una vez al cargar la página
+
+    return () => window.removeEventListener('resize', handleResize); // Limpiamos el event listener
+  }, []);
+
+  const FormatearPesos = (valor) => {
+    return `$${valor.toLocaleString('es-CL')}`;
+  };
+
+  const CalcularValorOld = (valor) => {
+    const valorOld = valor + 10000;
+    return FormatearPesos(valorOld);
   };
 
   return (
-    <Container
-      sx={{
-        py: 11,
-        maxWidth: "1500px !important",
-        position: "relative",
-        overflow: "hidden",
-        paddingTop: "0px",
-        paddingBottom: "20px",
-        height: isMobile ? containerHeight : "70vh", // Asegúrate de que el contenedor ocupe toda la pantalla
-        backgroundImage: 'url(/fondo-blanco.jpg)',
-        backgroundSize: 'cover', // Asegura que la imagen de fondo cubra toda el área
-        backgroundPosition: bgPosition,
-        backgroundRepeat: "no-repeat", // Evita que la imagen se repita
-        backgroundAttachment: "fixed", // Mantiene el fondo fijo mientras el contenido se desplaza
-      }}
-      ref={ref}
-    >
-
-      {/* Divs con imágenes */}
-      <div
-        className={`image image-left ${startAnimation ? "animate-left" : ""}`}
-        style={{
-          height: isMobile ? "50vh" : "70vh",
-          backgroundImage: isMobile ? "url('/fono-left.jpg')" : "url('/mapa.jpg')",
+    <Box>
+      <Container
+        sx={{
+          py: 11,
+          minHeight: "calc(100vh - 64px)", // Asegurando que se ajuste a la pantalla
+          maxWidth: '1500px !important',
+          position: 'relative',
+          overflow: 'hidden',
+          paddingTop: '90px',  // Espacio en la parte superior
+          paddingBottom: '80px',  // Espacio en la parte inferior
+          backgroundImage: 'url(/fondo-blanco.jpg)',
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat',
+          backgroundAttachment: 'fixed',
         }}
-      ></div>
+      >
+        <ul className="producto-cards">
+          {productos.map((producto) => (
+            <motion.li
+              key={producto.IdProducto}
+              
+              style={{ backgroundImage: `url(${producto.ImageUrl})` }}
+              initial={isMobile ? { x: '100vw', opacity: 0 } : { opacity: 0 }} // En mobile, comienza invisible y desde la derecha
+              animate={isMobile ? { x: 0, opacity: 1 } : { opacity: 1 }} // En escritorio, usa solo opacidad
+              transition={{ type: "spring", stiffness: 50, damping: 25 }} // Transición suave
+            >
+              <div className="producto-info">
+                <span className="title">{producto.NombreProducto}</span>
+                <p>{producto.Descripcion}</p>
+                {producto.ConDescuento && (
+                  <span className="price-old">
+                    <s>{CalcularValorOld(producto.Valor)}</s>
+                  </span>
+                )}
+                <span className="price">{FormatearPesos(producto.Valor)}</span>
 
-      <div
-        className={`image image-right ${startAnimation ? "animate-right" : ""}`}
-        style={{
-          height: isMobile ? "50vh" : "70vh",
-          backgroundImage: isMobile ? "url('/fono-right.jpg')" : "url('/contactar.jpg')",
-        }}
-      ></div>
+                {/* Valoración */}
+                <div className="rating" title="Valoración del producto">
+                  {[1, 2, 3, 4, 5].map((rating) => (
+                    <React.Fragment key={rating}>
+                      <input type="radio" name={`rating-${producto.IdProducto}`} id={`rating-${rating}`} />
+                      <label htmlFor={`rating-${rating}`}></label>
+                    </React.Fragment>
+                  ))}
+                </div>
+              </div>
 
-      {/* Loader */}
-      {!startAnimation && (
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            zIndex: 1001,
-          }}
-        >
-          <div id="loader"></div>
-        </Box>
-      )}
+              {/* Stock */}
+              <div className="producto-stock">
+                <div className="stocks">
+                  {producto.Stock >= 10 ? (
+                    <span className="stock-verde">{producto.Stock}</span>
+                  ) : producto.Stock > 0 && producto.Stock < 10 ? (
+                    <span className="stock-naranjo">{producto.Stock}</span>
+                  ) : (
+                    <span className="stock-rojo">{producto.Stock}</span>
+                  )}
+                </div>
+              </div>
 
-      {/* Contenido de contacto */}
-      <Box sx={{ position: "relative", zIndex: 2, paddingTop: "20px", display: "flex", flexDirection: "column", height: "100%" }}>
-        {/* Título animado */}
-        {!formSubmitted && (
-          <Typography variant="h3" align="left" gutterBottom sx={{ color: "white", display: "flex" }}>
-            {"Contáctanos".split("").map((char, index) => (
-              <motion.span key={index} custom={index} variants={letterVariants} initial="hidden" animate={inView ? "visible" : "hidden"}>
-                {char}
-              </motion.span>
-            ))}
-          </Typography>
-        )}
-
-        {!formSubmitted ? (
-          <Grid container spacing={4} sx={{ height: "auto" }}>
-            {/* Mapa */}
-            <Grid item xs={12} md={6}>
-            <Box sx={{ display: "flex", flexDirection: "column", height: "100%", backgroundColor: "#fff", boxShadow: 3, borderRadius: 2, padding: "20px", overflow: "hidden" }}>
-    {/* Título con ícono de GPS */}
-    <Box sx={{ display: "flex", alignItems: "center", mb: 2,marginBottom:"0" }}>
-      <LocationOnIcon sx={{ mr: 1, color: "#1976d2" }} />
-      <Typography variant={isMobile ? "body2" : "h6"} sx={{ color: "#1976d2" }}>
-        Ubicación
-      </Typography>
-    </Box>
-    {/* Mapa ajustado para ocupar más espacio */}
-    <Box sx={{ flexGrow: 1, my: 4, marginTop: "0",marginBottom:"0", height: "100%" }}>
-      <Box sx={{ width: "100%", height: "100%", borderRadius: 2, overflow: "hidden"}}>
-        <iframe
-          title="Mapa de Santiago de Chile"
-          width="100%"
-          height="100%"
-          frameBorder="0"
-          style={{ border: 0 }}
-          src="https://www.google.com/maps?q=-33.435054,-70.688067&hl=es&z=15&output=embed"
-          allowFullScreen=""
-          aria-hidden="false"
-        ></iframe>
-      </Box>
-    </Box>
-  </Box>
-            </Grid>
-
-            {/* Formulario */}
-            <Grid item xs={12} md={6} sx={{ height: { xs: "auto", md: "100%" } }}>
-              <Box
-                component="form"
-                onSubmit={handleSubmit}
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 4,
-                  mt: 0,
-                  backgroundColor: "#fff",
-                  padding: "20px",
-                  borderRadius: 2,
-                  boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
-                  height: "auto",
-                  maxHeight: "100vh", // Aseguramos que el formulario no se desborde
+              {/* Botón Agregar */}
+              <button
+                style={{ marginTop: '226px', cursor: 'pointer' }}
+                className="custom-boton btn-12"
+                onClick={() => {
+                  setOpenAlert(true);
+                  const nombreProducto = producto.NombreProducto;
+                  const mensaje = `¡Hola!%20Me%20intereso%20el%20${encodeURIComponent(nombreProducto)}, sigue a la venta?`;
+                  window.open(`https://api.whatsapp.com/send?phone=56992914526&text=${mensaje}`, "_blank");
                 }}
               >
-                <Box>
-                  <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                    <PhoneIcon sx={{ mr: 1, color: "#1976d2" }} />
-                    <Typography variant={isMobile ? "body2" : "h6"} sx={{ color: "#1976d2" }}>
-                      Infórmanos tu N° de teléfono para contactarte:
-                    </Typography>
-                  </Box>
-                  <TextField
-                    label="Ejemplo: +56 9999 9999"
-                    variant="outlined"
-                    fullWidth
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                  />
-                </Box>
-                <Box>
-                  <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                    <ChatBubbleOutlineIcon sx={{ mr: 1, color: "#1976d2" }} />
-                    <Typography variant={isMobile ? "body2" : "h6"} sx={{ color: "#1976d2" }}>
-                      Explícanos que necesitas:
-                    </Typography>
-                  </Box>
-                  <TextField
-                    label="Escríbenos, esperamos tu mensaje..."
-                    variant="outlined"
-                    fullWidth
-                    multiline
-                    rows={4}
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                  />
-                </Box>
-                <Button type="submit" variant="contained" color="primary">
+                <span style={{ color: '#25D366' }}> {/* Color WhatsApp para "Contactar" */}
                   Contactar
-                </Button>
-              </Box>
-            </Grid>
-          </Grid>
-        ) : (
-          <Box sx={{ p: 8, mt: 4, minHeight: "300px", backgroundColor: "#e0f7e9", borderRadius: 2, textAlign: "center", boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)" }}>
-            <CheckCircleIcon sx={{ fontSize: 180, color: "green", mb: 2 }} />
-            <Typography variant="h4" sx={{ color: "black" }}>
-              Se ha enviado su mensaje correctamente! Le hablaremos por WhatsApp y correo a la brevedad.
-            </Typography>
-          </Box>
-        )}
+                  <i className="fab fa-whatsapp" style={{ marginLeft: '4px', marginBottom: '3px', fontSize: '20px', color: '#25D366', verticalAlign: 'middle' }}></i>
+                </span>
+                <span>Solicitar Producto <i className="fas fa-shopping-cart" /></span>
+              </button>
+            </motion.li>
+          ))}
+        </ul>
+      </Container>
 
-        <Snackbar open={openAlert} autoHideDuration={4000} onClose={() => setOpenAlert(false)} anchorOrigin={{ vertical: "top", horizontal: "right" }}>
-          <Alert onClose={() => setOpenAlert(false)} severity="success" sx={{ width: "100%" }}>
-            ¡Gracias por contactarnos!
-          </Alert>
-        </Snackbar>
-      </Box>
-    </Container>
+      <Snackbar
+        open={openAlert}
+        autoHideDuration={4000}
+        onClose={() => setOpenAlert(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert onClose={() => setOpenAlert(false)} severity="success" sx={{ width: "100%" }}>
+          Se contactará con la Empresa para solicitar el producto.
+        </Alert>
+      </Snackbar>
+    </Box>
   );
-}
+};
 
-export default Contacto;
+export default Catalogo;

@@ -1,15 +1,17 @@
 import React, { useEffect, useState, useRef } from "react";
-import { ThemeProvider } from "@mui/material/styles";
 import { CssBaseline, Box, IconButton } from "@mui/material";
+import theme from "./theme";
+import { ThemeProvider } from "@mui/material/styles";
 import { Routes, Route } from "react-router-dom";
 import "@fontsource/poppins";
-import theme from "./theme";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Features from "./components/Features";
-import Footer from "./components/Footer";
 import Areas from "./components/Areas";
+import Informations from "./components/Informations";
 import Contacto from "./components/Contacto";
+import Footer from "./components/Footer";
+import Catalogo from "./components/Catalogo";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 
@@ -89,14 +91,23 @@ function App() {
           <Box sx={{ minHeight: "100vh" }}>
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/contacto" element={<Contacto />} />
+              <Route path="/catalogo" element={<Catalogo />} /> 
+              <Route path="/contacto" element={<Contacto />} />              
             </Routes>
-            <Box id="areas-section">
-              <Areas />
-            </Box>
-            <Box ref={contactoRef}> {/* La sección de contacto ahora tiene el ref */}
-              <Contacto />
-            </Box>
+            {/* Solo muestra estas secciones si NO estamos en /catalogo */}
+            {location.pathname !== "/catalogo" && (
+              <>
+                <Box id="areas-section">
+                  <Areas />
+                </Box>
+                <Box>
+                  <Informations />
+                </Box>
+                <Box ref={contactoRef}>
+                  <Contacto />
+                </Box>
+              </>
+            )}            
           </Box>
           <Footer />
 

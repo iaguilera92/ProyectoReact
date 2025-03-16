@@ -86,3 +86,29 @@
     transform: rotate(360deg);
   }
 }
+/* Contenedor para el mapa e imagen */
+.image-container {
+  perspective: 1500px; /* Establece la distancia de perspectiva para el efecto 3D */
+}
+
+.rotate-3d {
+  transform-style: preserve-3d;
+  transform: rotateY(180deg);
+  transition: transform 1s ease-in-out;
+}
+
+.rotate-3d.active {
+  transform: rotateY(0deg);
+}
+
+/* Estilo para la imagen de fondo */
+.image-content {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  overflow: hidden;
+  background-image: url('https://cdn-jeogh.nitrocdn.com/svPVqNThfGfQjwyBRxWYUktDoEOCGAjs/assets/images/optimized/rev-91227c4/www.tichile.cl/wp-content/uploads/2024/07/foto_nosotros_2.png');
+  background-size: cover;
+  background-position: center;
+}

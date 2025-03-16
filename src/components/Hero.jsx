@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Container, Typography, Box, Snackbar, Alert } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
-import "./Hero.css"; // Asegúrate de importar el CSS
+import "./css/Hero.css"; // Asegúrate de importar el CSS
 
 function Hero() {
   const [currentText, setCurrentText] = useState(0);

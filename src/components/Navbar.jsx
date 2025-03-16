@@ -20,6 +20,7 @@ import { motion } from "framer-motion";
 import { keyframes } from "@emotion/react"; 
 import ViewListIcon from '@mui/icons-material/ViewList';
 import "@fontsource/poppins";
+import { useNavigate } from "react-router-dom";
 
 const shrinkCircle = keyframes`
   0% { transform: scale(1); opacity: 1; }
@@ -88,11 +89,12 @@ const rotate360 = keyframes`
 `;
 const menuItems = [
   { name: "Inicio", icon: <Home /> },
-  { name: "Catalogo", icon: <ViewListIcon  /> },
+  { name: "Catálogo", icon: <ViewListIcon  /> },
   { name: "Contacto", icon: <Mail /> },
 ];
 
 function Navbar({ contactoRef }) {
+  const navigate = useNavigate(); 
   const [open, setOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -112,8 +114,17 @@ function Navbar({ contactoRef }) {
       contactoRef.current.scrollIntoView({ behavior: "smooth" });
     }
     if (item.name === "Inicio") {
+      navigate("/");
       scrollToTop();
     }
+    if (item.name === "Catálogo") {
+      navigate("/catalogo"); // Redirige a /catalogo
+    }
+  };
+
+  const LogoInicio = () => {
+    navigate("/");
+    scrollToTop();
   };
 
   const scrollToTop = () => {
@@ -122,7 +133,7 @@ function Navbar({ contactoRef }) {
       behavior: "smooth",
     });
   };
-
+  
   return (
     <>
       <Box
@@ -168,7 +179,7 @@ function Navbar({ contactoRef }) {
                     src="/logo-react.png"
                     alt="Logo"
                     style={{ height: "75px", marginTop: "10px", cursor: "pointer" }}
-                    onClick={scrollToTop}
+                    onClick={LogoInicio}
                   />
                 </motion.div>
               </Box>
