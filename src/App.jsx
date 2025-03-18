@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { CssBaseline, Box, IconButton } from "@mui/material";
+import { CssBaseline, Box, IconButton, useMediaQuery } from "@mui/material";
 import theme from "./theme";
 import { ThemeProvider } from "@mui/material/styles";
 import { Routes, Route } from "react-router-dom";
@@ -32,6 +32,7 @@ function App() {
   const [openBubble, setOpenBubble] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
   const contactoRef = useRef(null); // Crear ref para la sección de contacto
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     const handleScroll = () => {
@@ -85,7 +86,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Box sx={{ m: 2, border: "4px solid white", borderRadius: "20px", overflow: "hidden" }}>
+      <Box sx={{ m: isMobile ? 0 : 2, border: isMobile ? "none" : "4px solid white", borderRadius: isMobile ? "none" : "20px", overflow: "hidden" }}>
         <Box sx={{ minHeight: "100vh", background: "radial-gradient(circle, #111111 20%, #000000 80%)", color: "white", position: "relative" }}>
           <Navbar contactoRef={contactoRef} /> {/* Pasamos el ref al Navbar */}
           <Box sx={{ minHeight: "100vh" }}>
