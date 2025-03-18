@@ -233,8 +233,8 @@ const Areas = () => {
         onAnimationComplete={() => setTimeout(() => { setCurrentImage((prev) => (prev + 1) % images.length); }, 5000)} // Cambia la imagen después de 5 segundos
         style={{
           position: "relative",
-          width: 450,
-          height: 336,
+          width: isMobile ? 400 : 450,
+          height: isMobile ? 250 : 336,
           perspective: 1200, // Mantiene el efecto 3D
           transformStyle: 'preserve-3d', // Necesario para que las imágenes se giren correctamente
         }}
@@ -244,8 +244,8 @@ const Areas = () => {
           key={`front-${currentImage}`}
           src={images[currentImage]}
           alt="Rotating Image"
-          width={450}
-          height={336}
+          width={isMobile ? 400 : 450}
+          height={isMobile ? 250 : 336}
           animate={{
             opacity: delayed ? 1 : 0,
             y: delayed ? [0, -10, 0] : -50,
@@ -263,8 +263,8 @@ const Areas = () => {
           key={`back-${(currentImage + 1) % images.length}`}
           src={images[(currentImage + 1) % images.length]}
           alt="Next Rotating Image"
-          width={450}
-          height={336}
+          width={isMobile ? 400 : 450}
+          height={isMobile ? 250 : 336}
           initial={{ rotateY: 180, opacity: 1 }}
           animate={{
             opacity: delayed ? 1 : 0,
@@ -279,8 +279,6 @@ const Areas = () => {
         />
       </motion.div>
     </Grid>
-
-
 
 
     
