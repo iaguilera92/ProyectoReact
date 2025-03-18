@@ -88,7 +88,7 @@ const rotate360 = keyframes`
   100% { transform: rotate(360deg); }
 `;
 const menuItems = [
-  { name: "Inicio 2025", icon: <Home /> },
+  { name: "Inicio", icon: <Home /> },
   { name: "Catálogo", icon: <ViewListIcon  /> },
   { name: "Contacto", icon: <Mail /> },
 ];

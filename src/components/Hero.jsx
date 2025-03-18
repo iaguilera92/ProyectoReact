@@ -53,25 +53,27 @@ function Hero() {
     overflow: "hidden",
   }}
 >
-  <video
-    autoPlay
-    muted
-    loop
-    id="background-video"
-    style={{
-      width: "100%",
-      height: "100%",
-      objectFit: "cover",
-      pointerEvents: "none", // Evita interacción del usuario
-    }}
-    disablePictureInPicture
-    controlsList="nodownload nofullscreen noremoteplayback" // Bloquea fullscreen
-  >
-    <source
-      src="https://www.connectic.cl/wp-content/uploads/2024/07/136268-764387688_small.mp4"
-      type="video/mp4"
-    />
-  </video>
+<video
+  autoPlay
+  muted
+  loop
+  playsInline  // 🔹 Asegura que el video se reproduzca en móviles sin abrir en pantalla completa
+  id="background-video"
+  style={{
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    pointerEvents: "none", // Evita interacción del usuario
+  }}
+  disablePictureInPicture
+  controlsList="nodownload nofullscreen noremoteplayback"
+>
+  <source
+    src="https://www.connectic.cl/wp-content/uploads/2024/07/136268-764387688_small.mp4"
+    type="video/mp4"
+  />
+</video>
+
 </Box>
 
 
