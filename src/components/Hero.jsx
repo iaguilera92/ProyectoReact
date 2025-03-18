@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
-import { Container, Typography, Box, Snackbar, Alert } from "@mui/material";
+import { Container, Typography, Box, Snackbar, Alert, useMediaQuery } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
 import "./css/Hero.css"; // Asegúrate de importar el CSS
 
 function Hero() {
   const [currentText, setCurrentText] = useState(0);
   const [openAlert, setOpenAlert] = useState(false);
+  const [showButton, setShowButton] = useState(false); // Estado para mostrar el botón después del delay
+  const isMobile = useMediaQuery("(max-width:600px)"); // Detectar si la pantalla es menor a 600px
 
   const texts = [
     { title: "SOLUCIONES TECNOLÓGICAS", description: "Soluciones digitales a medida." },
@@ -18,6 +20,14 @@ function Hero() {
       setCurrentText((prev) => (prev + 1) % texts.length);
     }, 6000);
     return () => clearInterval(interval);
+  }, []);
+
+  // Activa el botón con un delay de 1s después de cargar la página
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowButton(true);
+    }, 1000);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -34,32 +44,38 @@ function Hero() {
     >
       {/* Video de fondo */}
       <Box
-        sx={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          overflow: "hidden",
-        }}
-      >
-        <video
-          autoPlay
-          muted
-          loop
-          id="background-video"
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-          }}
-        >
-          <source
-            src="https://www.connectic.cl/wp-content/uploads/2024/07/136268-764387688_small.mp4"
-            type="video/mp4"
-          />
-        </video>
-      </Box>
+  sx={{
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    overflow: "hidden",
+  }}
+>
+<video
+  autoPlay
+  muted
+  loop
+  playsInline  // 🔹 Asegura que el video se reproduzca en móviles sin abrir en pantalla completa
+  id="background-video"
+  style={{
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    pointerEvents: "none", // Evita interacción del usuario
+  }}
+  disablePictureInPicture
+  controlsList="nodownload nofullscreen noremoteplayback"
+>
+  <source
+    src="https://www.connectic.cl/wp-content/uploads/2024/07/136268-764387688_small.mp4"
+    type="video/mp4"
+  />
+</video>
+
+</Box>
+
 
       {/* Contenido sobre el video */}
       <Container
@@ -91,16 +107,32 @@ function Hero() {
                 textAlign: "center",
               }}
             >
-              <Typography variant="h3" gutterBottom className="text">
+              <Typography
+                variant="h3"
+                gutterBottom
+                className="text"
+                sx={{ fontSize: isMobile ? "1.64rem" : "2.5rem" }} // Cambia tamaño en móvil
+              >
                 {texts[currentText].title}
               </Typography>
               <Typography variant="h6" paragraph>
                 {texts[currentText].description}
               </Typography>
-              {/* Botón con alerta animada */}
-              <button className="btn-3" onClick={() => setOpenAlert(true)}>
-                <span>Contactar</span>
-              </button>
+
+              {/* Botón con animación después de 1s */}
+              {showButton && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
+                >
+                  <Box sx={{ mt: isMobile ? 4 : 1 }}>
+                    <button className="btn-3" onClick={() => setOpenAlert(true)}>
+                      <span>Contactar</span>
+                    </button>
+                  </Box>
+                </motion.div>
+              )}
             </motion.div>
           </AnimatePresence>
         </Box>

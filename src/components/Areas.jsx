@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Typography, Box } from "@mui/material";
+import { Grid, Typography, Box,useMediaQuery,useTheme } from "@mui/material";
 import "@fontsource/poppins";
 import CountUp from "react-countup";
 import { useInView } from "react-intersection-observer";
@@ -38,7 +38,8 @@ const Areas = () => {
   const { ref: imgRef, inView: imgInView } = useInView({ triggerOnce: true });
   const [isVisible, setIsVisible] = useState(false); // Controla la visibilidad de la imagen
   const [currentImage, setCurrentImage] = useState(0); // Controla qué imagen se muestra
-
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   // Estado para manejar el retraso en la aparición del contador y el texto
   const [delayed, setDelayed] = useState(false);
 
@@ -47,8 +48,9 @@ const Areas = () => {
     if (inView) {
       const timer = setTimeout(() => {
         setDelayed(true);
-      }, 100); // 0.8 segundos de retraso
-      return () => clearTimeout(timer); // Limpiamos el timer cuando el componente se desmonta o cambia el estado
+      }, 1100); // ⏳ Ahora el contador se activa después de 1.2 segundos
+  
+      return () => clearTimeout(timer); // Limpia el temporizador al desmontarse
     }
   }, [inView]);
 
@@ -99,7 +101,7 @@ const Areas = () => {
       backgroundSize: "cover",
       paddingTop: "30px !important",
       padding: { xs: 4, md: 16 },
-      paddingBottom: { xs: 8, md: 16 }, // Más paddingBottom en dispositivos móviles (xs)
+      paddingBottom: { xs: 18, md: 16 }, // Más paddingBottom en dispositivos móviles (xs)
       color: "white",
     }}
   >
@@ -177,7 +179,7 @@ const Areas = () => {
           minWidth: "80px",
           textAlign: "center",
           marginBottom: "0.15em",
-          fontSize: { xs: "2.2rem", md: "3.2rem" }, // Aumentado el tamaño
+          fontSize: isMobile ? "2.5rem" : "2.2rem", // Aumentado el tamaño
         }}
         >
       +{delayed ? <CountUp start={0} end={item.count} duration={3} /> : "0"}
@@ -186,7 +188,7 @@ const Areas = () => {
           sx={{
             textAlign: "center",
             maxWidth: "90%",
-            fontSize: { xs: "0.9rem", md: "1.2rem" }, // Reducir tamaño del texto en móviles
+            fontSize: isMobile ? "1rem" : "1.1rem", // Reducir tamaño del texto en móviles
             fontFamily: "'Oswald', sans-serif", // Fuente agregada
           }}
         >
@@ -231,8 +233,8 @@ const Areas = () => {
         onAnimationComplete={() => setTimeout(() => { setCurrentImage((prev) => (prev + 1) % images.length); }, 5000)} // Cambia la imagen después de 5 segundos
         style={{
           position: "relative",
-          width: 450,
-          height: 336,
+          width: isMobile ? 400 : 450,
+          height: isMobile ? 250 : 336,
           perspective: 1200, // Mantiene el efecto 3D
           transformStyle: 'preserve-3d', // Necesario para que las imágenes se giren correctamente
         }}
@@ -242,8 +244,8 @@ const Areas = () => {
           key={`front-${currentImage}`}
           src={images[currentImage]}
           alt="Rotating Image"
-          width={450}
-          height={336}
+          width={isMobile ? 400 : 450}
+          height={isMobile ? 250 : 336}
           animate={{
             opacity: delayed ? 1 : 0,
             y: delayed ? [0, -10, 0] : -50,
@@ -261,8 +263,8 @@ const Areas = () => {
           key={`back-${(currentImage + 1) % images.length}`}
           src={images[(currentImage + 1) % images.length]}
           alt="Next Rotating Image"
-          width={450}
-          height={336}
+          width={isMobile ? 400 : 450}
+          height={isMobile ? 250 : 336}
           initial={{ rotateY: 180, opacity: 1 }}
           animate={{
             opacity: delayed ? 1 : 0,
@@ -277,8 +279,6 @@ const Areas = () => {
         />
       </motion.div>
     </Grid>
-
-
 
 
     
