@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef   } from "react";
 import { Container, Typography, Box, TextField, Button, Snackbar, Alert, Grid, useMediaQuery } from "@mui/material";
 import PhoneIcon from "@mui/icons-material/Phone";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
@@ -7,8 +7,9 @@ import { useInView } from "react-intersection-observer";
 import { motion } from "framer-motion";
 import "./css/Contacto.css"; // Importamos el CSS
 import "leaflet/dist/leaflet.css"; // Estilo básico de Leaflet
-import { MapContainer, TileLayer, Marker, Popup, useMap  } from "react-leaflet";
+import { MapContainer, TileLayer, Marker,  useMap, useMapEvent   } from "react-leaflet";
 import L from "leaflet";
+const finalPosition = [-33.435054, -70.688067];
 
 const letterVariants = {
   hidden: { opacity: 0, x: -20 },
@@ -26,6 +27,7 @@ const customIcon = new L.Icon({
   popupAnchor: [0, -35], // Popup ligeramente por encima del marcador
 });
 
+
 function Contacto() {
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
@@ -37,19 +39,8 @@ function Contacto() {
   const [rotate, setRotate] = useState(0);
   const [isHovered, setIsHovered] = useState(false); // Estado para detectar si el mouse está encima
   const [intervalActive, setIntervalActive] = useState(true); 
-  const position = [-33.435054, -70.688067];
-  const [zoom, setZoom] = useState(15); // Estado inicial del zoom
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setZoom(17); // Aumenta el zoom después de 3 segundos
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  const rotateValue = isHovered ? 0 : 180;
-  // Detectar si estamos en una pantalla pequeña
+  const initialZoom = 3; // Zoom inicial lejano
+  const finalZoom = 17; // Zoom final al que queremos llegar
   const isMobile = useMediaQuery("(max-width:600px)");
 
   const { ref, inView } = useInView({
@@ -90,24 +81,31 @@ function Contacto() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (!isHovered) {
-        setRotate((prevRotate) => (prevRotate + 180) % 360); // Cambia la rotación cada 5 segundos solo si no hay hover
-      }
-    }, 555000); // Cambia cada 5 segundos
+// Componente que maneja los clics en el mapa
+const MapClickHandler = () => {
+  useMapEvent("click", () => {
+    const googleMapsUrl = `https://www.google.com/maps?q=${finalPosition[0]},${finalPosition[1]}`;
+    window.open(googleMapsUrl, "_blank"); // Abre Google Maps en una nueva pestaña
+  });
 
-    return () => clearInterval(interval); // Limpia el intervalo cuando el componente se desmonta
-  }, [isHovered]);
+  return null; // No renderiza nada, solo maneja el evento
+};
 
+useEffect(() => {
+  let interval;
   
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setZoom(17); // Nuevo nivel de zoom
-    }, 3000); // 3 segundos de delay
+  if (inView) { // Solo inicia la rotación si el componente es visible en pantalla
+    interval = setInterval(() => {
+      if (!isHovered) {
+        setRotate((prevRotate) => (prevRotate + 180) % 360); // Cambia la rotación cada 7 segundos si no hay hover
+      }
+    }, 5000);
+  } else {
+    clearInterval(interval); // Detiene la rotación si el usuario scrollea fuera del componente
+  }
 
-    return () => clearTimeout(timer);
-  }, []);
+  return () => clearInterval(interval); // Limpia el intervalo al desmontar o cambiar la visibilidad
+}, [isHovered, inView]);
 
   return (
     <Container
@@ -179,6 +177,7 @@ function Contacto() {
       {/* Mapa */}
       <Grid item xs={12} md={6} sx={{ height: "auto" }}>
       <motion.div
+       ref={ref}
       initial={{ rotateY: 0 }}
       animate={{ rotateY: rotate }}
       transition={{
@@ -222,58 +221,59 @@ function Contacto() {
 
 
 
-             <MapContainer
-      center={position}
-      zoom={zoom}
-      style={{ width: "100%", height: "100%" }}
-      dragging={false}
-      scrollWheelZoom={false}
-      touchZoom={false}
-      doubleClickZoom={false}
-    >
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      />
-
-      <Marker position={position} icon={customIcon} />
-
-      <ZoomEffect zoom={zoom} />
-
-      {/* Mensaje "Encuéntranos!" */}
-      <div
-        style={{
-          position: "absolute",
-          top: "26%",
-          left: "50%",
-          transform: "translateX(-50%)",
-          backgroundColor: "black",
-          color: "white",
-          padding: "10px 20px",
-          borderRadius: "5px",
-          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.5)",
-          fontSize: "16px",
-          fontWeight: "bold",
-          zIndex: 1000,
-          pointerEvents: "none",
-        }}
+      <MapContainer
+        center={finalPosition}
+        zoom={initialZoom}
+        style={{ width: "100%", height: "100%" }}
+        dragging={false}
+        scrollWheelZoom={false}
+        touchZoom={false}
+        doubleClickZoom={false}
       >
-        ¡Encuéntranos!
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        />
+
+        <Marker position={finalPosition} icon={customIcon}/>
+
+        <ZoomEffect zoom={finalZoom} />
+
+        {/* Mensaje "Encuéntranos!" */}
         <div
           style={{
             position: "absolute",
-            bottom: "-8px",
+            top: "26%",
             left: "50%",
             transform: "translateX(-50%)",
-            width: 0,
-            height: 0,
-            borderLeft: "10px solid transparent",
-            borderRight: "10px solid transparent",
-            borderTop: "10px solid black",
+            backgroundColor: "black",
+            color: "white",
+            padding: "10px 20px",
+            borderRadius: "5px",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.5)",
+            fontSize: "16px",
+            fontWeight: "bold",
+            zIndex: 1000,
+            pointerEvents: "none",
           }}
-        />
-      </div>
-    </MapContainer>
+        >
+          ¡Encuéntranos!
+          <div
+            style={{
+              position: "absolute",
+              bottom: "-8px",
+              left: "50%",
+              transform: "translateX(-50%)",
+              width: 0,
+              height: 0,
+              borderLeft: "10px solid transparent",
+              borderRight: "10px solid transparent",
+              borderTop: "10px solid black",
+            }}
+          />
+        </div>
+        <MapClickHandler />
+      </MapContainer>
 
 
               </Box>
@@ -302,61 +302,146 @@ function Contacto() {
         </motion.div>
       </Grid>
     
-      {/* Formulario */}
-      <Grid item xs={12} md={6} sx={{ height: "auto" }}>
-        <Box
-          component="form"
-          onSubmit={handleSubmit}
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 4,
-            mt: 0,
-            backgroundColor: "#fff",
-            padding: "20px",
-            borderRadius: 2,
-            boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
-            height: "auto",
-            maxHeight: "100vh", // Aseguramos que el formulario no se desborde
-          }}
-        >
+
+{/* Formulario estilo GitHub Mejorado */}
+<Grid item xs={12} md={6} sx={{ height: "auto" }}>
+  <Box
+    component="form"
+    onSubmit={handleSubmit}
+    sx={{
+      display: "flex",
+      flexDirection: "column",
+      gap: 3,
+      mt: 0,
+      backgroundColor: "#0D1117", // Fondo oscuro de GitHub
+      padding: "30px",
+      borderRadius: 5, // Bordes redondeados
+      boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.2)", // Sombra sutil
+      border: "1px solid #30363D", // Borde sutil
+      maxHeight: "100vh",
+      transition: "all 0.3s ease-in-out",
+      "&:hover": {
+        boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.3)", // Sombra más intensa al pasar el mouse
+      },
+    }}
+  >
+    {/* Detección de Scroll */}
+    {(() => {
+      const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.3 });
+      const [startAnimation, setStartAnimation] = useState(false);
+
+      useEffect(() => {
+        if (inView) {
+          setTimeout(() => {
+            setStartAnimation(true);
+          }, 1700); // Delay de 2 segundos
+        }
+      }, [inView]);
+
+      return (
+        <div ref={ref}>
+          {/* Campo de Teléfono con Animación */}
           <Box>
-            <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-              <PhoneIcon sx={{ mr: 1, color: "#1976d2" }} />
-              <Typography variant={isMobile ? "body2" : "h6"} sx={{ color: "#1976d2" }}>
-                Infórmanos tu N° de teléfono para contactarte:
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={startAnimation ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.8 }}
+              style={{ display: "flex", alignItems: "center", marginBottom: "4px" }} // Más cerca del TextField
+            >
+             <PhoneIcon sx={{ mr: 1, color: "#F0F6FC", fontSize: "1.5rem" }} />
+              <Typography variant="body1" sx={{ color: "#C9D1D9" }}> {/* Fuente más pequeña */}
+                Teléfono de contacto:
               </Typography>
-            </Box>
+            </motion.div>
+
             <TextField
-              label="Ejemplo: +56 9999 9999"
+              placeholder="Ejemplo: +56 9999 9999"
               variant="outlined"
               fullWidth
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (/^\+?\d*$/.test(value) && value.length <= 12) {
+                  setPhone(value);
+                }
+              }}
+              inputProps={{ maxLength: 12 }}
+              sx={{
+                backgroundColor: "#161B22",
+                borderRadius: 2,
+                input: { color: "#E6EDF3", fontSize: "0.9rem" }, // Texto un poco más pequeño
+                fieldset: { borderColor: "#30363D" },
+                "&:hover fieldset": { borderColor: "#58A6FF" },
+                "&.Mui-focused fieldset": { borderColor: "#58A6FF" },
+              }}
             />
           </Box>
-          <Box>
-            <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-              <ChatBubbleOutlineIcon sx={{ mr: 1, color: "#1976d2" }} />
-              <Typography variant={isMobile ? "body2" : "h6"} sx={{ color: "#1976d2" }}>
-                Explícanos que necesitas:
+
+          {/* Campo de Mensaje con Animación */}
+          <Box marginTop="20px">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={startAnimation ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              style={{ display: "flex", alignItems: "center", marginBottom: "4px" }} // Más cerca del TextField
+            >
+              <ChatBubbleOutlineIcon sx={{ mr: 1, color: "#F0F6FC", fontSize: "1.5rem" }} />
+              <Typography variant="body1" sx={{ color: "#C9D1D9" }}>
+                Comentanos que necesitas:
               </Typography>
-            </Box>
+            </motion.div>
+
             <TextField
-              label="Escríbenos, esperamos tu mensaje..."
+              placeholder="Escríbenos, esperamos tu mensaje..."
               variant="outlined"
               fullWidth
               multiline
               rows={4}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
+              sx={{
+                backgroundColor: "#161B22",
+                borderRadius: 2,
+                input: { color: "#E6EDF3", fontSize: "0.9rem" }, // Texto más pequeño
+                textarea: { color: "#E6EDF3", fontSize: "0.9rem" }, // Para multiline
+                fieldset: { borderColor: "#30363D" },
+                "&:hover fieldset": { borderColor: "#58A6FF" },
+                "&.Mui-focused fieldset": { borderColor: "#58A6FF" },
+              }}
             />
           </Box>
-          <Button type="submit" variant="contained" color="primary">
+
+          {/* Botón de Enviar con Tamaño Ancho */}
+          <Button
+            type="submit"
+            variant="contained"
+            sx={{
+              marginTop: "15px",
+              fontSize: "1rem",
+              fontWeight: "bold",
+              padding: "10px",
+              width: "100%", // Botón más ancho
+              borderRadius: 3,
+              textTransform: "none",
+              backgroundColor: "#238636", // Verde GitHub
+              color: "#fff",
+              boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
+              "&:hover": {
+                backgroundColor: "#2EA043",
+                boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.4)",
+              },
+            }}
+          >
             Contactar
           </Button>
-        </Box>
-      </Grid>
+        </div>
+      );
+    })()}
+  </Box>
+</Grid>
+
+
+
     </Grid>
     
           
@@ -378,17 +463,48 @@ function Contacto() {
     </Container>
   );
 }
-// Componente para manejar el zoom con animación
 const ZoomEffect = ({ zoom }) => {
-  const map = useMap();
+  const map = useMapEvent("load", () => {}); // Obtener la instancia del mapa
+  const zoomApplied = useRef(false);
+  const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.3 }); // Detectar si el mapa entra en pantalla
 
   useEffect(() => {
-    if (map) {
-      map.setView(map.getCenter(), zoom, { animate: true, duration: 1 });
+    if (map && inView && !zoomApplied.current) {
+      zoomApplied.current = true; // Evita que el zoom se aplique varias veces
+
+      let zoomLevel = 5; // Nivel de zoom inicial
+      const zoomSpeed = 0.02; // Velocidad de acercamiento
+
+      const animateZoom = () => {
+        if (zoomLevel < zoom) {
+          zoomLevel += zoomSpeed;
+          if (zoomLevel >= zoom) {
+            zoomLevel = zoom;
+          }
+          map.flyTo(map.getCenter(), zoomLevel, {
+            animate: true,
+            duration: 0.3,
+            easeLinearity: 1,
+          });
+
+          requestAnimationFrame(animateZoom);
+        }
+      };
+
+      requestAnimationFrame(animateZoom);
     }
-  }, [zoom, map]);
+  }, [inView, map, zoom]);
+
+  return <div ref={ref} style={{ width: "100%", height: "100%" }} />; // Elemento para detectar el scroll
+};
+
+// Componente que redirige a Google Maps al hacer clic en el mapa
+const MapClickHandler = () => {
+  useMapEvent("click", () => {
+    const googleMapsUrl = `https://www.google.com/maps?q=${finalPosition[0]},${finalPosition[1]}`;
+    window.open(googleMapsUrl, "_blank");
+  });
 
   return null;
 };
-
 export default Contacto;

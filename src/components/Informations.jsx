@@ -226,75 +226,13 @@ const Informations = () => {
   </Grid>
 
   {/* Columna de los descriptores */}
- {/* Columna de los descriptores con fondo */}
  <Grid item xs={12} md={6} sx={{
     backgroundImage: `url('https://enteldigital.cl/hubfs/raw_assets/public/HandyApps/Site_pages/Home/images/network-bg.svg')`,
     backgroundSize: "cover", // Asegura que el fondo se ajuste al tamaño del contenedor
     backgroundPosition: "center", // Centra la imagen
     backgroundRepeat: "no-repeat", // Evita que el fondo se repita
   }}>
-    <List sx={{ textAlign: "left" }}>
-      <ListItem>
-        <ListItemText
-          sx={{
-            fontFamily: "'Montserrat', Helvetica, Arial, sans-serif !important",
-            "& .MuiListItemText-primary": {
-              fontSize: "1.2rem",
-            },
-            "& .MuiListItemText-secondary": {
-              color: "white",
-            },
-          }}
-          primary="Chatbots Multicanal"
-          secondary="Automatiza respuestas en WhatsApp, Messenger y sitios web para mejorar la experiencia del usuario."
-        />
-      </ListItem>
-      <ListItem>
-        <ListItemText
-          sx={{
-            fontFamily: "'Montserrat', Helvetica, Arial, sans-serif !important",
-            "& .MuiListItemText-primary": {
-              fontSize: "1.2rem",
-            },
-            "& .MuiListItemText-secondary": {
-              color: "white",
-            },
-          }}
-          primary="Bots para E-commerce"
-          secondary="Optimiza la atención al cliente y gestión de pedidos con bots inteligentes."
-        />
-      </ListItem>
-      <ListItem>
-        <ListItemText
-          sx={{
-            fontFamily: "'Montserrat', Helvetica, Arial, sans-serif !important",
-            "& .MuiListItemText-primary": {
-              fontSize: "1.2rem",
-            },
-            "& .MuiListItemText-secondary": {
-              color: "white",
-            },
-          }}
-          primary="Automatización del Soporte Técnico"
-          secondary="Resuelve problemas comunes sin intervención humana y reduce tiempos de espera."
-        />
-      </ListItem>
-      <ListItem>
-        <ListItemText
-          sx={{
-            fontFamily: "'Montserrat', Helvetica, Arial, sans-serif !important",
-            "& .MuiListItemText-primary": {
-              fontSize: "1.2rem",
-            },
-            "& .MuiListItemText-secondary": {
-              color: "white",
-            },
-          }}
-          primary="Asistentes Virtuales con IA"
-          secondary="Aprenden con cada interacción y mejoran la eficiencia operativa."
-        />
-      </ListItem>
-    </List>
+    
   </Grid>
 </Grid>
   

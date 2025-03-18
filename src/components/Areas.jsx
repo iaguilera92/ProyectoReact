@@ -47,7 +47,7 @@ const Areas = () => {
     if (inView) {
       const timer = setTimeout(() => {
         setDelayed(true);
-      }, 800); // 0.8 segundos de retraso
+      }, 100); // 0.8 segundos de retraso
       return () => clearTimeout(timer); // Limpiamos el timer cuando el componente se desmonta o cambia el estado
     }
   }, [inView]);
