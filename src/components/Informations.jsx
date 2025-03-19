@@ -1,5 +1,6 @@
-import { Box, Typography, Container, Grid, List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
+import { Box, Typography, Container, Grid, List, ListItem, ListItemIcon, ListItemText,useMediaQuery,useTheme } from "@mui/material";
 import { Chat, Insights, SmartToy, Visibility } from "@mui/icons-material";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { FaCode } from "react-icons/fa";
 import { useInView } from 'react-intersection-observer';  // Importa el hook
@@ -8,9 +9,20 @@ import "./css/Informations.css"; // Importamos el CSS
 const Informations = () => {
  // Controla la vista del componente
  const { ref, inView } = useInView({
-  threshold: 0.2, // Se activa cuando el 20% del componente es visible
+  threshold: 0.1, // Se activa cuando el 20% del componente es visible
   triggerOnce: true, // La animación ocurre solo una vez
 });
+const [shouldAnimate, setShouldAnimate] = useState(false);
+const theme = useTheme();
+const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+
+  useEffect(() => {
+    if (inView) {
+      setShouldAnimate(true); // 🔹 Activa la animación cuando el componente es visible
+    }
+  }, [inView]);
+
 
   return (
     <Box
@@ -31,39 +43,40 @@ const Informations = () => {
         <Box sx={{ position: "relative", textAlign: "center", mb: 2 }}>
           
           <Box
-          sx={{
-            width: 25,
-            height: 25,
-            borderRadius: "50%",
-            backgroundColor: "white",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            border: "2px solid white",
-            mx: "auto",
-            mb: 0.5,
-          }}
-        >
-          <motion.div
-            initial={{ rotate: 0 }}
-            animate={{ rotate: 360 }}
-            transition={{
-              duration: 0.8,
-              delay:0.7,
-              repeat: 1, // Se repite una vez más (en total, dos veces)
-              ease: "linear", // Movimiento fluido
-            }}
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "100%",
-              height: "100%",
-            }}
-          >
-            <FaCode size={17} color="black" />
-          </motion.div>
-        </Box>
+      ref={ref} // 🔹 Conecta el detector de scroll
+      sx={{
+        width: 25,
+        height: 25,
+        borderRadius: "50%",
+        backgroundColor: "white",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        border: "2px solid white",
+        mx: "auto",
+        mb: 0.5,
+      }}
+    >
+      <motion.div
+        initial={{ rotate: 0 }}
+        animate={shouldAnimate ? { rotate: 360 } : {}} // 🔹 Solo se activa cuando `shouldAnimate` es `true`
+        transition={{
+          duration: 0.8,
+          delay: 0.3,
+          repeat: 1, // Se repite una vez más (total: dos veces)
+          ease: "linear", // Movimiento fluido
+        }}
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "100%",
+          height: "100%",
+        }}
+      >
+        <FaCode size={17} color="black" />
+      </motion.div>
+    </Box>
 
         <Typography
         variant="h4"
@@ -98,11 +111,11 @@ const Informations = () => {
           {/* Línea debajo del título con animación (con retraso de 2 segundos) */}
           <motion.hr
           initial={{ opacity: 0 }} // Comienza invisible
-          animate={{ opacity: 1 }} // Aparece completamente
-          transition={{ duration: 1, delay: 1 }} // Aparece después de 1s y dura 1s
+          animate={shouldAnimate ? { opacity: 1 } : {}} // Aparece completamente
+          transition={{ duration: 0.8, delay: 1 }} // Aparece después de 1s y dura 1s
           style={{
             position: "absolute",
-            top: "calc(100% - 30px)", // Ajusta la posición
+            top: isMobile ? "calc(80% - 30px)" : "calc(100% - 30px)", // Ajusta la posición
             left: "5%",
             width: "90%", // Mantiene su tamaño desde el inicio
             border: "1px solid white",      
@@ -145,7 +158,7 @@ const Informations = () => {
       <motion.div
         key={index}
         initial={{ opacity: 0, y: 0 }}
-        animate={{ opacity: 1, y: 0 }}
+        animate={shouldAnimate ? { opacity: 1, y: 0 } : {}}
         transition={{
           delay: 0.5 * index,
           duration: 1,

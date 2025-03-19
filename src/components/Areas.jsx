@@ -40,7 +40,8 @@ const Areas = () => {
   const { ref, inView } = useInView({ triggerOnce: true });
   const [rotationActive, setRotationActive] = useState(false);
   const [currentRotation, setCurrentRotation] = useState(0);
-  
+  const [scrollY, setScrollY] = useState(0);
+
   useEffect(() => {
     // Solo se activa el retraso cuando el item está en vista
     if (inView) {
@@ -96,19 +97,34 @@ useEffect(() => {
 
   return () => clearInterval(interval); // Limpia el intervalo cuando el componente se desmonta
 }, []);
+
+useEffect(() => {
+  if (isMobile) {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }
+}, [isMobile]);
+
   return (
     <Box
     sx={{
       backgroundImage:
         "url(https://www.nextibs.com/wp-content/uploads/2021/12/seguridad-informatica-scaled.jpeg)",
       backgroundRepeat: "no-repeat",
-      backgroundPosition: "center",
-      backgroundAttachment: "fixed",
-      backgroundSize: "cover",
+      backgroundSize: isMobile ? "cover" : "100% auto",
+      backgroundPosition: isMobile
+        ? `center ${-250 + scrollY * 0.18}px` // 🔹 Ajuste fino para mejorar la fluidez
+        : "center",
+      backgroundAttachment: isMobile ? "scroll" : "fixed",
+      minHeight: isMobile ? "100vh" : "70vh",
       paddingTop: "30px !important",
       padding: { xs: 4, md: 16 },
-      paddingBottom: { xs: 18, md: 16 }, // Más paddingBottom en dispositivos móviles (xs)
+      paddingBottom: { xs: 15, md: 16 },
       color: "white",
+      transition: "background-position 0s ease-out", // 🔹 Hace que el movimiento sea instantáneo pero más suave
     }}
   >
       <Grid container spacing={4} alignItems="center">

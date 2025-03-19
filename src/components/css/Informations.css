@@ -32,11 +32,12 @@
   }
   @keyframes line-border {
     0% {
+      opacity: 0;
       height: 0%; /* Empieza sin altura */
     }
     100% {
       opacity: 1;
-      height: 80%; /* La línea se extiende hasta el 50% del contenedor */
+      height: 90%; /* La línea se extiende hasta el 50% del contenedor */
     }
   }  
   
