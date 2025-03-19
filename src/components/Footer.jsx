@@ -262,7 +262,7 @@ const Footer = () => {
       </Box>
   
       <Typography variant="body2" align="center" mt={2} sx={{ marginTop: "3vh" }}>
-        @Proyecto React 2025
+        @Plataformas web React v1.0.0 - 2025
       </Typography>
     </Container>
   </Box>

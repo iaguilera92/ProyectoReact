@@ -219,26 +219,70 @@ useEffect(() => {
               <Box sx={{ width: "100%", height: isMobile ? "40vh":"100%", borderRadius: 2, overflow: "hidden" }}>
 
 
-
-              <MapContainer
+<MapContainer
   center={finalPosition}
   zoom={initialZoom}
-  style={{ width: "100%", height: "100%" }}
-  dragging={!isMobile} // Bloquear el arrastre en móvil si lo deseas
-  scrollWheelZoom={!isMobile} // Desactivar el zoom con el scroll en móviles
-  touchZoom={true} // Permitir el zoom táctil en móviles
+  style={{
+    width: "100%",
+    height: isMobile ? "40vh" : "100%", // Ajustamos la altura en móviles
+  }}
+  dragging={!isMobile} // Bloquea el arrastre en móvil si lo deseas
+  scrollWheelZoom={!isMobile} // Desactiva el zoom con scroll en móviles
+  touchZoom={true} // Permite el zoom táctil en móviles
   doubleClickZoom={false}
   zoomSnap={isMobile ? 0.25 : 1} // Mayor precisión en móviles
-  zoomDelta={isMobile ? 0.5 : 1} // Ajustar velocidad de zoom en móviles
+  zoomDelta={isMobile ? 0.5 : 1} // Ajusta velocidad de zoom en móviles
 >
   <TileLayer
     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   />
-  <Marker position={finalPosition} icon={customIcon} />
+  <Marker
+    position={finalPosition}
+    icon={new L.Icon({
+      iconUrl: "/gps-mobile.png",
+      iconSize: [70, 70],
+      iconAnchor: [35, 70], // 🔹 Corregimos el anclaje del icono
+      popupAnchor: [0, -35],
+    })}
+  />
   <ZoomEffect zoom={finalZoom} />
+   {/* Mensaje "Encuéntranos!" */}
+   <div
+          style={{
+            position: "absolute",
+            top: "26%",
+            left: "50%",
+            transform: "translateX(-50%)",
+            backgroundColor: "black",
+            color: "white",
+            padding: "10px 20px",
+            borderRadius: "5px",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.5)",
+            fontSize: "16px",
+            fontWeight: "bold",
+            zIndex: 1000,
+            pointerEvents: "none",
+          }}
+        >
+          ¡Encuéntranos!
+          <div
+            style={{
+              position: "absolute",
+              bottom: "-8px",
+              left: "50%",
+              transform: "translateX(-50%)",
+              width: 0,
+              height: 0,
+              borderLeft: "10px solid transparent",
+              borderRight: "10px solid transparent",
+              borderTop: "10px solid black",
+            }}
+          />
+        </div>
   <MapClickHandler />
 </MapContainer>
+
 
               </Box>
             </Box>
@@ -432,6 +476,7 @@ const ZoomEffect = ({ zoom }) => {
   const zoomApplied = useRef(false);
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.3 }); // Detectar si el mapa entra en pantalla
   const isMobile = useMediaQuery("(max-width:600px)"); // Detectar si es móvil
+
   useEffect(() => {
     if (map && inView && !zoomApplied.current) {
       zoomApplied.current = true; // Evita múltiples ejecuciones
@@ -439,15 +484,24 @@ const ZoomEffect = ({ zoom }) => {
       let zoomLevel = isMobile ? 7 : 5; // En móvil, empieza más cerca
       const zoomSpeed = isMobile ? 0.04 : 0.02; // En móvil, el zoom es más rápido
 
+      // Centra correctamente el mapa antes de aplicar el zoom
+      const centerCorrection = isMobile ? [finalPosition[0] - 0.0005, finalPosition[1]] : finalPosition;
+
+      map.setView(centerCorrection, zoomLevel, {
+        animate: true,
+        duration: isMobile ? 0.4 : 0.3,
+        easeLinearity: 1,
+      });
+
       const animateZoom = () => {
         if (zoomLevel < zoom) {
           zoomLevel += zoomSpeed;
           if (zoomLevel >= zoom) {
             zoomLevel = zoom;
           }
-          map.flyTo(map.getCenter(), zoomLevel, {
+          map.flyTo(centerCorrection, zoomLevel, {
             animate: true,
-            duration: isMobile ? 0.4 : 0.3, // En móviles, el zoom es un poco más rápido
+            duration: isMobile ? 0.4 : 0.3,
             easeLinearity: 1,
           });
 
@@ -461,6 +515,7 @@ const ZoomEffect = ({ zoom }) => {
 
   return <div ref={ref} style={{ width: "100%", height: "100%" }} />; // Detecta scroll
 };
+
 
 // Componente que redirige a Google Maps al hacer clic en el mapa
 const MapClickHandler = () => {
