@@ -280,6 +280,8 @@ useEffect(() => {
             </div>
             <MapClickHandler />
           </MapContainer>
+
+
         </Box>
       </Box>
     </motion.div>
@@ -485,10 +487,12 @@ const ZoomEffect = ({ zoom }) => {
       let zoomLevel = isMobile ? 7 : 5; // En móvil, empieza más cerca
       const zoomSpeed = isMobile ? 0.04 : 0.02; // En móvil, el zoom es más rápido
 
-      // Centra correctamente el mapa antes de aplicar el zoom
-      const centerCorrection = isMobile ? [finalPosition[0] - 0.0005, finalPosition[1]] : finalPosition;
+      // 🔹 Corrección del centro en móviles: desplazamos ligeramente hacia abajo
+      const offsetY = isMobile ? -0.0008 : 0; // Pequeño ajuste para que el marcador quede bien centrado
 
-      map.setView(centerCorrection, zoomLevel, {
+      const correctedPosition = [finalPosition[0] + offsetY, finalPosition[1]];
+
+      map.setView(correctedPosition, zoomLevel, {
         animate: true,
         duration: isMobile ? 0.4 : 0.3,
         easeLinearity: 1,
@@ -500,7 +504,7 @@ const ZoomEffect = ({ zoom }) => {
           if (zoomLevel >= zoom) {
             zoomLevel = zoom;
           }
-          map.flyTo(centerCorrection, zoomLevel, {
+          map.flyTo(correctedPosition, zoomLevel, {
             animate: true,
             duration: isMobile ? 0.4 : 0.3,
             easeLinearity: 1,
@@ -514,8 +518,9 @@ const ZoomEffect = ({ zoom }) => {
     }
   }, [inView, map, zoom, isMobile]);
 
-  return <div ref={ref} style={{ width: "100%", height: "100%" }} />; // Detecta scroll
+  return <div ref={ref} style={{ width: "100%", height: "100%" }} />;
 };
+
 
 
 // Componente que redirige a Google Maps al hacer clic en el mapa
