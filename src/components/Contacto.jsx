@@ -41,8 +41,7 @@ function Contacto() {
   const [intervalActive, setIntervalActive] = useState(true); 
   const initialZoom = 3; // Zoom inicial lejano
   const finalZoom = 17; // Zoom final al que queremos llegar
-  const isMobile = useMediaQuery("(max-width:600px)");
-
+  const isMobile = useMediaQuery("(max-width:600px)"); // Detectar si es móvil
   const { ref, inView } = useInView({
     triggerOnce: true,
     threshold: 0.3,
@@ -221,60 +220,25 @@ useEffect(() => {
 
 
 
-      <MapContainer
-        center={finalPosition}
-        zoom={initialZoom}
-        style={{ width: "100%", height: "100%" }}
-        dragging={false}
-        scrollWheelZoom={false}
-        touchZoom={false}
-        doubleClickZoom={false}
-      >
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        />
-
-        <Marker position={finalPosition} icon={customIcon}/>
-
-        <ZoomEffect zoom={finalZoom} />
-
-        {/* Mensaje "Encuéntranos!" */}
-        <div
-          style={{
-            position: "absolute",
-            top: "26%",
-            left: "50%",
-            transform: "translateX(-50%)",
-            backgroundColor: "black",
-            color: "white",
-            padding: "10px 20px",
-            borderRadius: "5px",
-            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.5)",
-            fontSize: "16px",
-            fontWeight: "bold",
-            zIndex: 1000,
-            pointerEvents: "none",
-          }}
-        >
-          ¡Encuéntranos!
-          <div
-            style={{
-              position: "absolute",
-              bottom: "-8px",
-              left: "50%",
-              transform: "translateX(-50%)",
-              width: 0,
-              height: 0,
-              borderLeft: "10px solid transparent",
-              borderRight: "10px solid transparent",
-              borderTop: "10px solid black",
-            }}
-          />
-        </div>
-        <MapClickHandler />
-      </MapContainer>
-
+              <MapContainer
+  center={finalPosition}
+  zoom={initialZoom}
+  style={{ width: "100%", height: "100%" }}
+  dragging={!isMobile} // Bloquear el arrastre en móvil si lo deseas
+  scrollWheelZoom={!isMobile} // Desactivar el zoom con el scroll en móviles
+  touchZoom={true} // Permitir el zoom táctil en móviles
+  doubleClickZoom={false}
+  zoomSnap={isMobile ? 0.25 : 1} // Mayor precisión en móviles
+  zoomDelta={isMobile ? 0.5 : 1} // Ajustar velocidad de zoom en móviles
+>
+  <TileLayer
+    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  />
+  <Marker position={finalPosition} icon={customIcon} />
+  <ZoomEffect zoom={finalZoom} />
+  <MapClickHandler />
+</MapContainer>
 
               </Box>
             </Box>
@@ -467,13 +431,13 @@ const ZoomEffect = ({ zoom }) => {
   const map = useMapEvent("load", () => {}); // Obtener la instancia del mapa
   const zoomApplied = useRef(false);
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.3 }); // Detectar si el mapa entra en pantalla
-
+  const isMobile = useMediaQuery("(max-width:600px)"); // Detectar si es móvil
   useEffect(() => {
     if (map && inView && !zoomApplied.current) {
-      zoomApplied.current = true; // Evita que el zoom se aplique varias veces
+      zoomApplied.current = true; // Evita múltiples ejecuciones
 
-      let zoomLevel = 5; // Nivel de zoom inicial
-      const zoomSpeed = 0.02; // Velocidad de acercamiento
+      let zoomLevel = isMobile ? 7 : 5; // En móvil, empieza más cerca
+      const zoomSpeed = isMobile ? 0.04 : 0.02; // En móvil, el zoom es más rápido
 
       const animateZoom = () => {
         if (zoomLevel < zoom) {
@@ -483,7 +447,7 @@ const ZoomEffect = ({ zoom }) => {
           }
           map.flyTo(map.getCenter(), zoomLevel, {
             animate: true,
-            duration: 0.3,
+            duration: isMobile ? 0.4 : 0.3, // En móviles, el zoom es un poco más rápido
             easeLinearity: 1,
           });
 
@@ -493,9 +457,9 @@ const ZoomEffect = ({ zoom }) => {
 
       requestAnimationFrame(animateZoom);
     }
-  }, [inView, map, zoom]);
+  }, [inView, map, zoom, isMobile]);
 
-  return <div ref={ref} style={{ width: "100%", height: "100%" }} />; // Elemento para detectar el scroll
+  return <div ref={ref} style={{ width: "100%", height: "100%" }} />; // Detecta scroll
 };
 
 // Componente que redirige a Google Maps al hacer clic en el mapa
@@ -507,4 +471,5 @@ const MapClickHandler = () => {
 
   return null;
 };
+
 export default Contacto;
