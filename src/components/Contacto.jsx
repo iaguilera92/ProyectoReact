@@ -175,140 +175,141 @@ useEffect(() => {
       <Grid container spacing={4} sx={{ height: "auto" }}>
       {/* Mapa */}
       <Grid item xs={12} md={6} sx={{ height: "auto" }}>
-      <motion.div
-       ref={ref}
-      initial={{ rotateY: 0 }}
-      animate={{ rotateY: rotate }}
-      transition={{
-        rotateY: { duration: 1.5, ease: "easeInOut" },
-      }}
+  <motion.div
+    ref={ref}
+    initial={{ rotateY: 0 }}
+    animate={{ rotateY: rotate }}
+    transition={{
+      rotateY: { duration: 1.5, ease: "easeInOut" },
+    }}
+    style={{
+      position: "relative",
+      width: "100%",
+      minHeight: "40vh", // 🔹 Asegura que en móviles no desaparezca
+      height: isMobile ? "40vh" : "100%",
+      perspective: 1200, // 🔹 Mantiene el efecto 3D
+      transformStyle: "preserve-3d", // Necesario para la rotación 3D
+    }}
+    onMouseEnter={() => {
+      setIsHovered(true);
+      setIntervalActive(false);
+    }}
+    onMouseLeave={() => {
+      setIsHovered(false);
+      setIntervalActive(true);
+    }}
+  >
+    {/* ✅ Cara frontal: Mapa */}
+    <motion.div
       style={{
-        position: "relative",
-        width: "100%", // Asegura que el mapa ocupe el 100% del contenedor
-        height: "100%", // El mapa debe ocupar todo el alto disponible
-        perspective: 1200, // Mantiene el efecto 3D
-        transformStyle: "preserve-3d", // Necesario para que las imágenes se giren correctamente
-      }}
-      onMouseEnter={() => {
-        setIsHovered(true); // Cuando el ratón entra
-        setIntervalActive(false); // Desactiva el intervalo cuando el ratón está encima
-      }}
-      onMouseLeave={() => {
-        setIsHovered(false); // Cuando el ratón sale
-        setIntervalActive(true); // Reactiva el intervalo cuando el ratón sale
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        backgroundColor: "#fff",
+        boxShadow: 3,
+        borderRadius: 2,
+        overflow: "hidden",
+        transform: "rotateY(0deg)",
+        backfaceVisibility: "hidden",
       }}
     >
-          {/* Cara frontal: Mapa */}
-          <Box
-            sx={{
-              position: isMobile ? "relative" : "absolute", // Detecta si estamos en móvil
-              top: 0,
-              left: 0,
+      <Box sx={{ flexGrow: 1, height: "100%" }}>
+        <Box sx={{ width: "100%", height: isMobile ? "40vh" : "100%", borderRadius: 2, overflow: "hidden" }}>
+          <MapContainer
+            center={finalPosition}
+            zoom={initialZoom}
+            style={{
               width: "100%",
-              height: "100%",
-              backgroundColor: "#fff",
-              boxShadow: 3,
-              borderRadius: 2,
-              padding: "0px",
-              overflow: "hidden",
-              backfaceVisibility: "hidden", // Oculta el lado opuesto cuando gira
+              height: isMobile ? "40vh" : "100%",
             }}
+            dragging={false}
+            scrollWheelZoom={false}
+            touchZoom={false}
+            doubleClickZoom={false}
+            zoomSnap={isMobile ? 0.25 : 1}
+            zoomDelta={isMobile ? 0.5 : 1}
           >
-            {/* Mapa ajustado para ocupar más espacio */}
-            <Box sx={{ flexGrow: 1, my: 4, marginTop: "0", marginBottom: "0", height: "100%" }}>
-              <Box sx={{ width: "100%", height: isMobile ? "40vh":"100%", borderRadius: 2, overflow: "hidden" }}>
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            />
+            <Marker
+              position={finalPosition}
+              icon={new L.Icon({
+                iconUrl: "/gps-mobile.png",
+                iconSize: [70, 70],
+                iconAnchor: [35, 70],
+                popupAnchor: [0, -35],
+              })}
+            />
+            <ZoomEffect zoom={finalZoom} />
+            {/* ✅ Mensaje "Encuéntranos!" */}
+            <div
+              style={{
+                position: "absolute",
+                top: "16%",
+                left: "50%",
+                transform: "translateX(-50%)",
+                backgroundColor: "black",
+                color: "white",
+                padding: "10px 20px",
+                borderRadius: "5px",
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.5)",
+                fontSize: "16px",
+                fontWeight: "bold",
+                zIndex: 1000,
+                pointerEvents: "none",
+              }}
+            >
+              ¡Encuéntranos!
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: "-8px",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  width: 0,
+                  height: 0,
+                  borderLeft: "10px solid transparent",
+                  borderRight: "10px solid transparent",
+                  borderTop: "10px solid black",
+                }}
+              />
+            </div>
+            <MapClickHandler />
+          </MapContainer>
+        </Box>
+      </Box>
+    </motion.div>
+
+    {/* ✅ Cara trasera: Imagen */}
+    <motion.div
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        transform: "rotateY(180deg)",
+        backfaceVisibility: "hidden",
+      }}
+    >
+      <img
+        src="/contacto.webp"
+        alt="Imagen de contacto"
+        style={{
+          width: "100%",
+          height: "100%",
+          borderRadius: 2,
+        }}
+      />
+    </motion.div>
+  </motion.div>
+</Grid>
 
 
-<MapContainer
-  center={finalPosition}
-  zoom={initialZoom}
-  style={{
-    width: "100%",
-    height: isMobile ? "40vh" : "100%", // Ajustamos la altura en móviles
-  }}
-  dragging={!isMobile} // Bloquea el arrastre en móvil si lo deseas
-  scrollWheelZoom={!isMobile} // Desactiva el zoom con scroll en móviles
-  touchZoom={true} // Permite el zoom táctil en móviles
-  doubleClickZoom={false}
-  zoomSnap={isMobile ? 0.25 : 1} // Mayor precisión en móviles
-  zoomDelta={isMobile ? 0.5 : 1} // Ajusta velocidad de zoom en móviles
->
-  <TileLayer
-    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-  />
-  <Marker
-    position={finalPosition}
-    icon={new L.Icon({
-      iconUrl: "/gps-mobile.png",
-      iconSize: [70, 70],
-      iconAnchor: [35, 70], // 🔹 Corregimos el anclaje del icono
-      popupAnchor: [0, -35],
-    })}
-  />
-  <ZoomEffect zoom={finalZoom} />
-   {/* Mensaje "Encuéntranos!" */}
-   <div
-          style={{
-            position: "absolute",
-            top: "26%",
-            left: "50%",
-            transform: "translateX(-50%)",
-            backgroundColor: "black",
-            color: "white",
-            padding: "10px 20px",
-            borderRadius: "5px",
-            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.5)",
-            fontSize: "16px",
-            fontWeight: "bold",
-            zIndex: 1000,
-            pointerEvents: "none",
-          }}
-        >
-          ¡Encuéntranos!
-          <div
-            style={{
-              position: "absolute",
-              bottom: "-8px",
-              left: "50%",
-              transform: "translateX(-50%)",
-              width: 0,
-              height: 0,
-              borderLeft: "10px solid transparent",
-              borderRight: "10px solid transparent",
-              borderTop: "10px solid black",
-            }}
-          />
-        </div>
-  <MapClickHandler />
-</MapContainer>
-
-
-              </Box>
-            </Box>
-          </Box>
-    
-          {/* Cara trasera: Imagen */}
-          <motion.img
-            src="/contacto.webp" // Asegúrate de que la imagen esté disponible en esta ruta
-            alt="Next Rotating Image"
-            width="80%" // Imagen ocupará todo el contenedor
-            height="100%" // Imagen ocupará todo el contenedor
-            initial={{ rotateY: 180, opacity: 1 }}
-            transition={{ duration: 1.5, ease: "easeInOut" }}
-            style={{
-              position: "absolute",
-              top: 0,
-              left: isMobile ? "50px" : "90px",
-              transform: "rotateY(180deg)", // Imagen trasera en la posición de 180 grados
-              backfaceVisibility: "hidden", // Esconde la cara trasera cuando no está visible
-              width: "80%", // Imagen ocupa el 100% del contenedor
-              height: "100%", // Imagen ocupa el 100% del contenedor
-              backgroundColor: "transparent", // Fondo transparente
-            }}
-          />
-        </motion.div>
-      </Grid>
     
 
 {/* Formulario estilo GitHub Mejorado */}
