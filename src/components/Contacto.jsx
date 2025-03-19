@@ -98,7 +98,7 @@ useEffect(() => {
       if (!isHovered) {
         setRotate((prevRotate) => (prevRotate + 180) % 360); // Cambia la rotación cada 7 segundos si no hay hover
       }
-    }, 5000);
+    }, 6000);
   } else {
     clearInterval(interval); // Detiene la rotación si el usuario scrollea fuera del componente
   }
@@ -126,22 +126,29 @@ useEffect(() => {
       ref={ref}
     >
 
-      {/* Divs con imágenes */}
-      <div
-        className={`image image-left ${startAnimation ? "animate-left" : ""}`}
-        style={{
-          height: isMobile ? "50vh" : "70vh",
-          backgroundImage: isMobile ? "url('/fono-left.jpg')" : "url('/mapa.jpg')",
-        }}
-      ></div>
+  {/* Divs con imágenes */}
+<div
+  className={`image image-left ${startAnimation ? "animate-left" : ""}`}
+  style={{
+    height: isMobile ? "55vh" : "70vh", // ✅ Mantiene altura adaptable en móviles
+    backgroundImage: isMobile ? "url('/fono-left.jpg')" : "url('/mapa.jpg')",
+    backgroundSize: "cover", // ✅ Evita cortes extraños en la imagen
+    backgroundPosition: "center", // ✅ Centra la imagen correctamente
+    backgroundRepeat: "no-repeat", // ✅ Evita que la imagen se repita
+  }}
+></div>
 
-      <div
-        className={`image image-right ${startAnimation ? "animate-right" : ""}`}
-        style={{
-          height: isMobile ? "50vh" : "70vh",
-          backgroundImage: isMobile ? "url('/fono-right.jpg')" : "url('/contactar.jpg')",
-        }}
-      ></div>
+<div
+  className={`image image-right ${startAnimation ? "animate-right" : ""}`}
+  style={{
+    height: isMobile ? "55vh" : "70vh", // ✅ Mantiene altura adaptable en móviles
+    backgroundImage: isMobile ? "url('/fono-right.jpg')" : "url('/contactar.jpg')",
+    backgroundSize: "cover", // ✅ Se ajusta sin cortes ni estiramientos
+    backgroundPosition: "center", // ✅ Centra la imagen correctamente en cualquier pantalla
+    backgroundRepeat: "no-repeat",
+  }}
+></div>
+
 
       {/* Loader */}
       {!startAnimation && (
@@ -487,8 +494,8 @@ const ZoomEffect = ({ zoom }) => {
       let zoomLevel = isMobile ? 7 : 5; // En móvil, empieza más cerca
       const zoomSpeed = isMobile ? 0.04 : 0.02; // En móvil, el zoom es más rápido
 
-      // 🔹 Corrección del centro en móviles: desplazamos ligeramente hacia abajo
-      const offsetY = isMobile ? -0.0008 : 0; // Pequeño ajuste para que el marcador quede bien centrado
+      // 🔹 Ajustamos más el desplazamiento en móviles para que el marcador quede centrado
+      const offsetY = isMobile ? -0.0000 : 0; // 🔹 Valor más alto para corregir centrado
 
       const correctedPosition = [finalPosition[0] + offsetY, finalPosition[1]];
 
@@ -520,6 +527,7 @@ const ZoomEffect = ({ zoom }) => {
 
   return <div ref={ref} style={{ width: "100%", height: "100%" }} />;
 };
+
 
 
 
