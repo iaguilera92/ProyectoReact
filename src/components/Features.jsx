@@ -186,7 +186,6 @@ function Features() {
       <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
       <Button
       variant="contained"
-      href="https://www.dsmsolutions.cl/soluciones-para-empresas/"
       target="_self"
       sx={{
         textTransform: "none",

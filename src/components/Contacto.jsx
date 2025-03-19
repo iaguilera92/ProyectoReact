@@ -256,7 +256,7 @@ useEffect(() => {
             <div
               style={{
                 position: "absolute",
-                top: "16%",
+                top: isMobile ? "14%" : "16%",
                 left: "50%",
                 transform: "translateX(-50%)",
                 backgroundColor: "black",
@@ -364,9 +364,9 @@ useEffect(() => {
               initial={{ opacity: 0, x: -20 }}
               animate={startAnimation ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.8 }}
-              style={{ display: "flex", alignItems: "center", marginBottom: "4px" }} // Más cerca del TextField
+              style={{ display: "flex", alignItems: "center", marginBottom: "6px" }} // Más cerca del TextField
             >
-             <PhoneIcon sx={{ mr: 1, color: "#F0F6FC", fontSize: "1.5rem" }} />
+             <PhoneIcon sx={{ mr: 0.5, color: "#F0F6FC", fontSize: "1.5rem" }} />
               <Typography variant="body1" sx={{ color: "#C9D1D9" }}> {/* Fuente más pequeña */}
                 Teléfono de contacto:
               </Typography>
@@ -401,9 +401,9 @@ useEffect(() => {
               initial={{ opacity: 0, x: -20 }}
               animate={startAnimation ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.8, delay: 0.2 }}
-              style={{ display: "flex", alignItems: "center", marginBottom: "4px" }} // Más cerca del TextField
+              style={{ display: "flex", alignItems: "center", marginBottom: "6px" }} // Más cerca del TextField
             >
-              <ChatBubbleOutlineIcon sx={{ mr: 1, color: "#F0F6FC", fontSize: "1.5rem" }} />
+              <ChatBubbleOutlineIcon sx={{ mr: 0.5, color: "#F0F6FC", fontSize: "1.5rem" }} />
               <Typography variant="body1" sx={{ color: "#C9D1D9" }}>
                 Comentanos que necesitas:
               </Typography>
@@ -434,7 +434,7 @@ useEffect(() => {
             type="submit"
             variant="contained"
             sx={{
-              marginTop: "15px",
+              marginTop: "25px",
               fontSize: "1rem",
               fontWeight: "bold",
               padding: "10px",

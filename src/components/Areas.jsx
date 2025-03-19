@@ -116,7 +116,7 @@ useEffect(() => {
       backgroundRepeat: "no-repeat",
       backgroundSize: isMobile ? "cover" : "100% auto",
       backgroundPosition: isMobile
-        ? `center ${-250 + scrollY * 0.18}px` // 🔹 Ajuste fino para mejorar la fluidez
+        ? `center ${-250 + scrollY * 0.3}px` // 🔹 Ajuste fino para mejorar la fluidez
         : "center",
       backgroundAttachment: isMobile ? "scroll" : "fixed",
       minHeight: isMobile ? "100vh" : "70vh",

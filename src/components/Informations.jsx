@@ -34,7 +34,7 @@ const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
       py: 4,
       marginTop: "-100px",
       color: "white", 
-      borderRadius: '120px 120px 0 0', // Valor general para otros navegadores
+      borderRadius: isMobile ? '90px 90px 0 0' : '120px 120px 0 0', // Valor general para otros navegadores
       overflow: 'hidden',  // Asegura que no se desborde el contenido
     }}
   >
@@ -126,7 +126,7 @@ const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
         />
 
         </Box>
-        <Grid container spacing={4} sx={{ mt: 2 }}>
+        <Grid container spacing={3} sx={{ mt: 2 }}>
   {/* Columna de los íconos */}
   <Grid item xs={12} md={6} ref={ref}>
     {[  
