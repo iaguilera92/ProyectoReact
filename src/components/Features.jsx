@@ -239,7 +239,7 @@ function Features() {
       </Box>
       <Box
         component="span"
-        fontSize={isMobile ? "12px" : "15px"}
+        fontSize={isMobile ? "11px" : "15px"}
         className={`letter ${inView ? "animate" : ""}`} // Activar animación al estar en vista
         sx={{
           ml: 1,

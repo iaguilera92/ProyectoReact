@@ -492,7 +492,7 @@ const ZoomEffect = ({ zoom }) => {
       zoomApplied.current = true; // Evita múltiples ejecuciones
 
       let zoomLevel = isMobile ? 7 : 5; // En móvil, empieza más cerca
-      const zoomSpeed = isMobile ? 0.04 : 0.02; // En móvil, el zoom es más rápido
+      const zoomSpeed = isMobile ? 0.04 : 0.05; // En móvil, el zoom es más rápido
 
       // 🔹 Ajustamos más el desplazamiento en móviles para que el marcador quede centrado
       const offsetY = isMobile ? -0.0000 : 0; // 🔹 Valor más alto para corregir centrado

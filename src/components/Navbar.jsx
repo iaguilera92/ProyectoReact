@@ -238,7 +238,7 @@ function Navbar({ contactoRef }) {
     "& .MuiDrawer-paper": {
       width: "50vw", // Ocupar el 50% de la pantalla
       maxWidth: "700px", // Asegurar que no sea demasiado grande en pantallas grandes
-      minWidth: "350px", // Evitar que se haga demasiado pequeño
+      minWidth: "300px", // Evitar que se haga demasiado pequeño
       backgroundImage: 'url(/fondo-fono.png)',
       backgroundSize: "cover",
       backgroundPosition: "center",
