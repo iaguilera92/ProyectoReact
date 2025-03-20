@@ -118,7 +118,7 @@ useEffect(() => {
         paddingBottom: "20px",
         height: isMobile ? containerHeight : "70vh", // Asegúrate de que el contenedor ocupe toda la pantalla
         backgroundImage: 'url(/fondo-mundo.png)',
-        backgroundSize: 'cover', // Asegura que la imagen de fondo cubra toda el área
+        backgroundSize: isMobile ? "cover" : "100% auto",
         backgroundPosition: bgPosition,
         backgroundRepeat: "no-repeat", // Evita que la imagen se repita
         backgroundAttachment: "fixed", // Mantiene el fondo fijo mientras el contenido se desplaza
@@ -169,7 +169,7 @@ useEffect(() => {
       <Box sx={{ position: "relative", zIndex: 2, paddingTop: "20px", display: "flex", flexDirection: "column", height: "100%" }}>
         {/* Título animado */}
         {!formSubmitted && (
-          <Typography variant="h3" align="left" gutterBottom sx={{ color: "white", display: "flex" }}>
+          <Typography variant={isMobile ? "h4" : "h3"} align="left" gutterBottom sx={{ color: "white", display: "flex" }}>
             {"Contáctanos".split("").map((char, index) => (
               <motion.span key={index} custom={index} variants={letterVariants} initial="hidden" animate={inView ? "visible" : "hidden"}>
                 {char}
@@ -297,8 +297,9 @@ useEffect(() => {
     <motion.div
       style={{
         position: "absolute",
-        top: 0,
-        left: 0,
+        top: isMobile ? 25 : 0,
+        left: isMobile ? 0 : 0,
+        right: isMobile ? 0 : 30,
         width: "100%",
         height: "100%",
         transform: "rotateY(180deg)",
@@ -309,8 +310,8 @@ useEffect(() => {
         src="/contacto.webp"
         alt="Imagen de contacto"
         style={{
-          width: "100%",
-          height: "100%",
+          width: isMobile ? "100%" : "80%",
+          height: isMobile ? "85%" : "100%",
           borderRadius: 2,
         }}
       />

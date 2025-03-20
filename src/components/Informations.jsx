@@ -1,10 +1,41 @@
-import { Box, Typography, Container, Grid, List, ListItem, ListItemIcon, ListItemText,useMediaQuery,useTheme } from "@mui/material";
+import { Box, Typography, Container, Grid, Button, ListItem, ListItemIcon, ListItemText,useMediaQuery,useTheme,IconButton  } from "@mui/material";
 import { Chat, Insights, SmartToy, Visibility } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { FaCode } from "react-icons/fa";
+import { Swiper, SwiperSlide } from "swiper/react";
 import { useInView } from 'react-intersection-observer';  // Importa el hook
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import "./css/Informations.css"; // Importamos el CSS
+import "swiper/css";
+
+const promotions = [
+  {
+    title: "Sitios web",
+    description: "Diseño y desarrollo de sitios web modernos Y rápidos para todos los dispositivos.",
+    image: "/Informations-1.jpg",
+    bgColor: "linear-gradient(180deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3))",
+    link: "https://www.tiendacopec.cl/",
+    textColor: "white",
+  },
+  {
+    title: "Carrito de compras",
+    description: "Tienda online, pagos seguros y seguimiento de pedidos. Compra rápido y sin complicaciones.",
+    image: "/Informations-2.jpg",
+    bgColor: "linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.2))",
+    link: "https://www.tiendacopec.cl/",
+    textColor: "white",
+  },
+  {
+    title: "Sistemas a la medida",
+    description: "Desarrollo de sistemas a la medida, eficientes, escalables y adaptados a tus necesidades.",
+    image: "/Informations-3.jpg",
+    bgColor: "linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.2))",
+    link: "https://www.tiendacopec.cl/",
+    textColor: "white",
+  }
+];
+
 
 const Informations = () => {
  // Controla la vista del componente
@@ -15,7 +46,7 @@ const Informations = () => {
 const [shouldAnimate, setShouldAnimate] = useState(false);
 const theme = useTheme();
 const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
+const [showArrow, setShowArrow] = useState(true);
 
   useEffect(() => {
     if (inView) {
@@ -127,6 +158,7 @@ const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
         </Box>
         <Grid container spacing={3} sx={{ mt: 2 }}>
+          
   {/* Columna de los íconos */}
   <Grid item xs={12} md={6} ref={ref}>
     {[  
@@ -238,15 +270,84 @@ const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     ))}
   </Grid>
 
-  {/* Columna de los descriptores */}
- <Grid item xs={12} md={6} sx={{
-    backgroundImage: `url('https://enteldigital.cl/hubfs/raw_assets/public/HandyApps/Site_pages/Home/images/network-bg.svg')`,
-    backgroundSize: "cover", // Asegura que el fondo se ajuste al tamaño del contenedor
-    backgroundPosition: "center", // Centra la imagen
-    backgroundRepeat: "no-repeat", // Evita que el fondo se repita
-  }}>
-    
+ {/* Columna de los descriptores */}
+ <Grid item xs={12} md={6}>
+ <Box sx={{ display: isMobile ? "block" : "none", position: "relative", px: 1, pt: 3, pb: 1.5  }}>
+ <Swiper
+        spaceBetween={20}
+        slidesPerView={1.2}
+        centeredSlides={false}
+        initialSlide={0}
+        pagination={{ clickable: true }}
+        onSlideChange={(swiper) => setShowArrow(swiper.activeIndex === 0)}
+      >
+        {promotions.map((promo, index) => (
+          <SwiperSlide key={index}>
+            <Box
+              sx={{
+                width: "100%%",
+                height: "360px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "flex-start",
+                backgroundImage: `url(${promo.image})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                borderRadius: "16px",
+                position: "relative",
+                overflow: "hidden",
+                color: "white",
+                p: 0.5,
+              }}
+            >
+              {/* Capa de degradado */}
+              <Box
+                sx={{
+                  position: "absolute",
+                  width: "100%",
+                  height: "100%",
+                  background: "linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0))",
+                  top: 0,
+                  left: 0,
+                }}
+              />
+
+              {/* Contenido */}
+              <Box sx={{ zIndex: 2, textAlign: "center" }}>
+                <Typography variant="h6" sx={{ mt: 4,fontWeight: "bold", fontSize: "20px", fontFamily: "inherit" }}>
+                  {promo.title}
+                </Typography>
+                <Typography variant="body2" sx={{ mt: 2, fontSize: "14px" }}>
+                  {promo.description}
+                </Typography>
+              </Box>              
+            </Box>
+          </SwiperSlide>
+        ))}
+      </Swiper>
+
+      {/* 🔹 Flecha sin fondo en la esquina superior derecha */}
+      {showArrow && (
+        <IconButton
+          sx={{            
+            position: "absolute",
+            top: -12, 
+            right: 0, 
+            color: "white", 
+            zIndex: 10,
+            transition: "opacity 0.3s ease-in-out",
+          }}
+        >
+          <ArrowForwardIcon fontSize="large" sx={{ fontSize: "23px" }} />
+        </IconButton>
+      )}
+    </Box>
   </Grid>
+
+
+
+
 </Grid>
   
 

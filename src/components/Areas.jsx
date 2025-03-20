@@ -116,13 +116,13 @@ useEffect(() => {
       backgroundRepeat: "no-repeat",
       backgroundSize: isMobile ? "cover" : "100% auto",
       backgroundPosition: isMobile
-        ? `center ${-250 + scrollY * 0.3}px` // 🔹 Ajuste fino para mejorar la fluidez
+        ? `center ${-350 + scrollY * 0.3}px` // 🔹 Ajuste fino para mejorar la fluidez
         : "center",
       backgroundAttachment: isMobile ? "scroll" : "fixed",
-      minHeight: isMobile ? "100vh" : "70vh",
+      minHeight: isMobile ? "85vh" : "70vh",
       paddingTop: "30px !important",
       padding: { xs: 4, md: 16 },
-      paddingBottom: { xs: 15, md: 16 },
+      paddingBottom: { xs: 14, md: 16 },
       color: "white",
       transition: "background-position 0s ease-out", // 🔹 Hace que el movimiento sea instantáneo pero más suave
     }}

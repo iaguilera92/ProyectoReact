@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --open",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -27,6 +27,7 @@
     "react-leaflet": "^5.0.0",
     "react-router-dom": "^6.29.0",
     "react-tsparticles": "^2.12.2",
+    "swiper": "^11.2.6",
     "three": "^0.174.0",
     "tsparticles": "^3.8.1",
     "tsparticles-engine": "^2.12.0",

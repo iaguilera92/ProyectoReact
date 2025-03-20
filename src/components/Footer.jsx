@@ -1,97 +1,85 @@
-import { Box, Container, Typography, Link, keyframes } from "@mui/material";
+import { Box, Container, Typography, Link, keyframes, useMediaQuery } from "@mui/material";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import { useInView } from "react-intersection-observer";
 
-// Animación del círculo desapareciendo (se achica y desaparece)
-const shrinkCircle = keyframes`
-  0% { transform: scale(1); opacity: 1; }
-  100% { transform: scale(0); opacity: 0; }
-`;
-
-// Animación del icono creciendo y cambiando color
-const expandIcon = keyframes`
-  0% { transform: scale(1); opacity: 1; }
-  100% { transform: scale(1.5); opacity: 1; }
-`;
-
-// Animación para el logo y los elementos al entrar en vista
+// Animación al entrar en vista
 const growElement = keyframes`
   0% { transform: scale(0.5); opacity: 0.5; }
   100% { transform: scale(1); opacity: 1; }
 `;
+// Animación del círculo desapareciendo
+const shrinkCircle = keyframes`
+0% { transform: scale(1); opacity: 1; }
+100% { transform: scale(0); opacity: 0; }
+`;
+
+// Animación del icono creciendo
+const expandIcon = keyframes`
+0% { transform: scale(1); }
+100% { transform: scale(1.5); }
+`;
 
 // Botón social con animaciones
-const SocialButton = ({ href, Icon, bgColor }) => (
+const SocialButton = ({ href, Icon, bgColor, hoverStyles }) => (
   <Box
-    component="a"
-    href={href}
-    target="_blank"
-    rel="noopener"
-    sx={{
-      width: 70,
-      height: 70,
-      borderRadius: "50%",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      background: bgColor,
-      overflow: "hidden",
-      position: "relative",
-      transition: "transform 300ms ease-out",
-      "&:hover .circle": {
-        animation: `${shrinkCircle} 300ms forwards`,
-      },
-      "&:hover .icon": {
-        animation: `${expandIcon} 300ms forwards`,
-      },
-    }}
-  >
-    {/* Círculo de fondo */}
-    <Box
-      className="circle"
-      sx={{
-        position: "absolute",
-        width: "100%",
-        height: "100%",
-        borderRadius: "50%",
-        background: bgColor,
-      }}
-    />
-    {/* Icono de la red social */}
-    <Icon
-      className="icon"
-      sx={{
-        color: "white",
-        fontSize: 40,
-        position: "relative",
-      }}
-    />
-  </Box>
+     component="a"
+     href={href}
+     target="_blank"
+     rel="noopener"
+     sx={{
+       width: 40,
+       height: 40,
+       borderRadius: "50%",
+       position: "relative",
+       display: "flex",
+       alignItems: "center",
+       justifyContent: "center",
+       overflow: "hidden",
+       "&:hover .circle": {
+         animation: `${shrinkCircle} 900ms forwards`,
+       },
+       "&:hover .icon": {
+         animation: `${expandIcon} 150ms 150ms ease-in forwards`,
+         ...hoverStyles, // Se aplican los estilos únicos de cada red
+       },
+     }}
+   >
+   {/* Círculo de fondo */}
+   <Box
+       className="circle"
+       sx={{
+         position: "absolute",
+         width: "100%",
+         height: "100%",
+         borderRadius: "50%",
+         background: bgColor,
+         transition: "transform 300ms ease-out",
+       }}
+     />
+ 
+     {/* Icono con color inicial en blanco */}
+     <Icon
+       className="icon"
+       sx={{
+         color: "white",
+         fontSize: 24,
+         position: "absolute",
+         transition: "color 300ms ease-in, transform 300ms ease-in",
+       }}
+     />
+   </Box>
 );
 
 const Footer = () => {
+  const isMobile = useMediaQuery("(max-width:600px)");
+
   // Animaciones al hacer scroll
-  const { ref: logoRef, inView: logoInView } = useInView({
-    triggerOnce: true,
-    threshold: 0.1,
-  });
-
-  const { ref: socialRef, inView: socialInView } = useInView({
-    triggerOnce: true,
-    threshold: 0.1,
-  });
-
-  const { ref: contactRef, inView: contactInView } = useInView({
-    triggerOnce: true,
-    threshold: 0.1,
-  });
-
-  const { ref: providersRef, inView: providersInView } = useInView({
-    triggerOnce: true,
-    threshold: 0.1,
-  });
+  const { ref: logoRef, inView: logoInView } = useInView({ triggerOnce: true, threshold: 0.1 });
+  const { ref: socialRef, inView: socialInView } = useInView({ triggerOnce: true, threshold: 0.1 });
+  const { ref: contactRef, inView: contactInView } = useInView({ triggerOnce: true, threshold: 0.1 });
+  const { ref: providersRef, inView: providersInView } = useInView({ triggerOnce: true, threshold: 0.1 });
 
   return (
     <Box
@@ -99,8 +87,7 @@ const Footer = () => {
         backgroundColor: "rgba(23, 24, 25, 0.97)",
         padding: "20px 0",
         color: "white",
-        backgroundImage:
-          "url(https://www.connectic.cl/wp-content/uploads/2024/07/lucas-giordano-de-sousa-UWupz6Lxz3A-unsplash-1-1.jpg)",
+        backgroundImage: "url(https://www.connectic.cl/wp-content/uploads/2024/07/lucas-giordano-de-sousa-UWupz6Lxz3A-unsplash-1-1.jpg)",
         backgroundSize: "cover",
         backgroundPosition: "center -150px",
         "@media (max-width: 600px)": {
@@ -110,109 +97,147 @@ const Footer = () => {
       }}
     >
       <Container maxWidth="lg">
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          flexWrap="wrap"
-          sx={{
-            "@media (max-width: 600px)": {
-              flexDirection: "column", // En móvil, solo el logo y redes sociales centradas
-              alignItems: "center",
-            },
-            "@media (min-width: 601px)": {
-              flexDirection: "row", // En escritorio, en fila con 3 columnas
-              justifyContent: "space-between",
-            },
-          }}
-        >
-          {/* Sección: Logo + Redes Sociales */}
+        {/* 🔹 Diseño para Escritorio con 3 Columnas */}
+        {!isMobile && (
           <Box
-            ref={logoRef}
             sx={{
-              flex: "1",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: { xs: "center", sm: "flex-start" }, // Centrado en móvil, a la izquierda en escritorio
-              textAlign: { xs: "center", sm: "left" },
-              animation: logoInView ? `${growElement} 1s forwards` : "none",
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 1fr)", // 🔹 3 columnas iguales
+              gap: 4, // 🔹 Espacio entre columnas
+              alignItems: "center",
+              textAlign: "center",
             }}
           >
-            <img
-              src="/logo-react.png"
-              alt="Logo"
-              style={{ height: "85px", marginBottom: "0" }}
-            />
+            {/* 🔹 Columna 1: Contacto */}
+            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
+   <Typography variant="h6" sx={{ color: "var(--darkreader-text-00b4ff, #1abcff)" }}>
+     Contacto
+   </Typography>
+ 
+   <Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+     <img src="https://www.connectic.cl/wp-content/uploads/2021/04/telephone.png" alt="Teléfono" width={16} />
+     <Link href="tel:+56999999999" color="inherit">+56 987654321</Link>
+   </Typography>
+ 
+   <Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+     <img src="https://www.connectic.cl/wp-content/uploads/2021/04/correo-1.png" alt="Correo" width={16} />
+     <Link href="mailto:aguileraignacio1992@gmail.com" color="inherit">aguileraignacio1992@gmail.com</Link>
+   </Typography>
+ 
+   <Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+     <img src="https://www.connectic.cl/wp-content/uploads/2021/04/location.png" alt="Ubicación" width={16} />
+     Dirección #321, Santiago.
+   </Typography>
+ </Box>
+
+            {/* 🔹 Columna 2: Logo + Redes Sociales */}
+            <Box
+              ref={logoRef}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                animation: logoInView ? `${growElement} 1s forwards` : "none",
+              }}
+            >
+              <img src="/logo-react.png" alt="Logo" style={{ height: "85px", marginBottom: "10px" }} />
+              <Box
+                ref={socialRef}
+                sx={{
+                  display: "flex",
+                  gap: 4,
+                  mt: 1,
+                  animation: socialInView ? `${growElement} 1s forwards` : "none",
+                }}
+              >
+                 <SocialButton
+                 href="https://www.instagram.com/mittarentacar/?hl=es-la"
+                 Icon={InstagramIcon}
+                 bgColor="linear-gradient(45deg, #cf198c, #f41242)"
+                 hoverStyles={{
+                   color: "#cf198c",
+                   background: "-webkit-linear-gradient(45deg, #cf198c, #f41242)",
+                   WebkitBackgroundClip: "text",
+                   WebkitTextFillColor: "transparent",
+                 }}
+               />
+ 
+               {/* Facebook con su hover personalizado */}
+               <SocialButton
+                 href="https://www.facebook.com/Mittarentacar"
+                 Icon={FacebookIcon}
+                 bgColor="linear-gradient(45deg, #00B5F5, #002A8F)"
+                 hoverStyles={{
+                   color: "white",
+                   background: "-webkit-linear-gradient(45deg, #00B5F5, #002A8F)",
+                   WebkitBackgroundClip: "text",
+                   WebkitTextFillColor: "transparent",
+                 }}
+               />
+ 
+               {/* LinkedIn */}
+               <SocialButton
+                 href="https://www.linkedin.com/company/mittarentacar/?viewAsMember=true"
+                 Icon={LinkedInIcon}
+                 bgColor="linear-gradient(45deg, #00B5F5, #0077b7)"
+                 hoverStyles={{
+                   color: "#0077b7",
+                   background: "-webkit-linear-gradient(45deg, #00B5F5, #0077b7)",
+                   WebkitBackgroundClip: "text",
+                   WebkitTextFillColor: "transparent",
+                 }}
+               />
+              </Box>
+            </Box>
+
+            {/* 🔹 Columna 3: Proveedores */}
+            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
+             <Typography variant="h6" sx={{ color: "var(--darkreader-text-00b4ff, #1abcff)" }}>
+               Proveedores Para
+             </Typography>
+             <img
+               src="https://www.connectic.cl/wp-content/uploads/2021/04/mercadoublico-300x66.png"
+               alt="Mercado Público"
+               width={180}
+             />
+             <img
+               src="https://www.connectic.cl/wp-content/uploads/2021/04/logo-convenio-300x66.png"
+               alt="Convenio Marco"
+               width={180}
+             />
+           </Box> 
+          </Box>
+        )}
+
+        {/* 🔹 Diseño para Móviles */}
+        {isMobile && (
+          <Box display="flex" flexDirection="column" alignItems="center">
+            <Box ref={logoRef} sx={{ animation: logoInView ? `${growElement} 1s forwards` : "none" }}>
+              <img src="/logo-react.png" alt="Logo" style={{ height: "85px", marginBottom: "10px" }} />
+            </Box>
+
+            {/* Redes Sociales */}
             <Box
               ref={socialRef}
               sx={{
                 display: "flex",
-                gap: 6,
-                mt: 1,
+                gap: 4,
+                mb: 3,
                 animation: socialInView ? `${growElement} 1s forwards` : "none",
               }}
             >
-              <SocialButton
-                href="https://www.instagram.com/plataformas.web/?hl=es-la"
-                Icon={InstagramIcon}
-                bgColor="linear-gradient(45deg, #cf198c, #f41242)"
-              />
-              <SocialButton
-                href="https://www.facebook.com/Mittarentacar"
-                Icon={FacebookIcon}
-                bgColor="linear-gradient(45deg, #00B5F5, #002A8F)"
-              />
-              <SocialButton
-                href="https://www.linkedin.com/company/mittarentacar/?viewAsMember=true"
-                Icon={LinkedInIcon}
-                bgColor="linear-gradient(45deg, #00B5F5, #0077b7)"
-              />
-            </Box>
+              <SocialButton href="https://www.instagram.com/plataformas.web/?hl=es-la" Icon={InstagramIcon} bgColor="linear-gradient(45deg, #cf198c, #f41242)" />
+              <SocialButton href="https://www.facebook.com/Mittarentacar" Icon={FacebookIcon} bgColor="linear-gradient(45deg, #00B5F5, #002A8F)" />
+              <SocialButton href="https://www.linkedin.com/company/mittarentacar/?viewAsMember=true" Icon={LinkedInIcon} bgColor="linear-gradient(45deg, #00B5F5, #0077b7)" />
+            </Box>     
+            <Typography variant="body2" align="center" mt={2} sx={{ marginTop: "3vh" }}>
+          @Plataformas web React 2025 - v1.0.3
+        </Typography>       
           </Box>
+        )}
 
-          {/* Sección: Contacto (Oculta en móvil) */}
-          <Box
-            ref={contactRef}
-            sx={{
-              flex: "1",
-              display: { xs: "none", sm: "flex" },
-              flexDirection: "column",
-              alignItems: "center",
-              textAlign: "center",
-              animation: contactInView ? `${growElement} 1s forwards` : "none",
-            }}
-          >
-            <Typography variant="h6" sx={{ color: "#1abcff", fontSize: "16px" }}>
-              Contacto
-            </Typography>
-            <Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <img src="https://www.connectic.cl/wp-content/uploads/2021/04/telephone.png" alt="Teléfono" width={16} />
-              <Link href="tel:+56999999999" color="inherit">
-                +56 987654321
-              </Link>
-            </Typography>
-          </Box>
-
-          {/* Sección: Proveedores (Oculta en móvil) */}
-          <Box
-            ref={providersRef}
-            sx={{
-              flex: "1",
-              display: { xs: "none", sm: "flex" },
-              flexDirection: "column",
-              alignItems: "center",
-              textAlign: "center",
-              animation: providersInView ? `${growElement} 1s forwards` : "none",
-            }}
-          >
-            <Typography variant="h6" sx={{ color: "#1abcff", fontSize: "16px" }}>
-              Proveedores
-            </Typography>
-            <img src="https://www.connectic.cl/wp-content/uploads/2021/04/mercadoublico-300x66.png" alt="Mercado Público" width={180} />
-          </Box>
-        </Box>
-
-        <Typography variant="body2" align="center" mt={2} sx={{ marginTop: "3vh" }}>
-          @Plataformas web React v1.0.2 - 2025
+        <Typography variant="body2" align="center" mt={2} sx={{ marginTop: "4vh" }}>
+        @Plataformas web React 2025 - v1.0.3
         </Typography>
       </Container>
     </Box>
