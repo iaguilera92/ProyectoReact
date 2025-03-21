@@ -130,7 +130,8 @@ useEffect(() => {
 <div
   className={`image image-left ${startAnimation ? "animate-left" : ""}`}
   style={{
-    height: isMobile ? "55vh" : "70vh", // ✅ Mantiene altura adaptable en móviles
+    width: isMobile ? "45vw" : "70vh", // ✅ Mantiene altura adaptable en móviles
+    height: isMobile ? "50vh" : "70vh", // ✅ Mantiene altura adaptable en móviles
     backgroundImage: isMobile ? "url('/fono-left.jpg')" : "url('/mapa.jpg')",
     backgroundSize: "cover", // ✅ Evita cortes extraños en la imagen
     backgroundPosition: "center", // ✅ Centra la imagen correctamente
@@ -141,7 +142,8 @@ useEffect(() => {
 <div
   className={`image image-right ${startAnimation ? "animate-right" : ""}`}
   style={{
-    height: isMobile ? "55vh" : "70vh", // ✅ Mantiene altura adaptable en móviles
+    width: isMobile ? "45vw" : "70vh", // ✅ Mantiene altura adaptable en móviles
+    height: isMobile ? "50vh" : "70vh", // ✅ Mantiene altura adaptable en móviles
     backgroundImage: isMobile ? "url('/fono-right.jpg')" : "url('/contactar.jpg')",
     backgroundSize: "cover", // ✅ Se ajusta sin cortes ni estiramientos
     backgroundPosition: "center", // ✅ Centra la imagen correctamente en cualquier pantalla
@@ -495,7 +497,7 @@ const ZoomEffect = ({ zoom }) => {
       const zoomSpeed = isMobile ? 0.04 : 0.02; // En móvil, el zoom es más rápido
 
       // 🔹 Ajustamos más el desplazamiento en móviles para que el marcador quede centrado
-      const offsetY = isMobile ? -0.0000 : 0; // 🔹 Valor más alto para corregir centrado
+      const offsetY = isMobile ? 0.0001 : 0; // 🔹 Valor más alto para corregir centrado
 
       const correctedPosition = [finalPosition[0] + offsetY, finalPosition[1]];
 
