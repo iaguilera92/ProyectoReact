@@ -109,13 +109,14 @@ useEffect(() => {
 }, [isMobile]);
 
   return (
+    
     <Box
     sx={{
       backgroundImage: isMobile ? 'url(/fondo-areas2.jpg)' : 'url(/fondo-areas1.jpg)',
       backgroundRepeat: "no-repeat",
       backgroundSize: isMobile ? "100% 100%" : "100% auto", 
       backgroundPosition: isMobile ? "center" :"",    
-      backgroundAttachment: isMobile ? "fixed" : "fixed",
+      backgroundAttachment: isMobile ? "initial" : "fixed",
       minHeight: isMobile ? "85vh" : "70vh",
       paddingTop: "30px !important",
       padding: { xs: 4, md: 16 },

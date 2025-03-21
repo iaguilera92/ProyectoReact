@@ -99,6 +99,7 @@ function Features({ scrollToInformations }) {
     scrollToInformations?.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+
   const { ref, inView } = useInView({
     triggerOnce: true,  // Esto asegura que se dispare solo una vez cuando el botón entre en vista
     threshold: 0.8,     // Ajusta este valor si quieres que se active antes o después
@@ -182,7 +183,9 @@ function Features({ scrollToInformations }) {
       <br />
       <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
       <Button
-      onClick={handleScroll}
+      onClick={() => {
+        scrollToInformations.current?.scrollIntoView({ behavior: "smooth" });
+      }}
       variant="contained"
       target="_self"
       sx={{

@@ -14,26 +14,27 @@ import Footer from "./components/Footer";
 import Catalogo from "./components/Catalogo";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
-
-function Home() {
+function Home({ informationsRef }) {
   return (
     <Box>
       <Hero />
       <Box>
-        <Features />
+        <Features scrollToInformations={informationsRef} />
       </Box>
     </Box>
   );
 }
 
 function App() {
-  const informationsRef = useRef(null);
+  
   const [showContacto, setShowContacto] = useState(false);
   const [showArrow, setShowArrow] = useState(false);
   const [openBubble, setOpenBubble] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
   const contactoRef = useRef(null); // Crear ref para la sección de contacto
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const informationsRef = useRef(null); // ✅ AÑADE AQUÍ EL REF PARA SCROLL
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -92,19 +93,19 @@ function App() {
           <Navbar contactoRef={contactoRef} /> {/* Pasamos el ref al Navbar */}
           <Box sx={{ minHeight: "100vh" }}>
             <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/catalogo" element={<Catalogo />} /> 
-              <Route path="/contacto" element={<Contacto />} />              
-            </Routes>
+              <Route path="/" element={<Home informationsRef={informationsRef} />} />
+              <Route path="/catalogo" element={<Catalogo />} />
+              <Route path="/contacto" element={<Contacto />} />
+            </Routes> 
             {/* Solo muestra estas secciones si NO estamos en /catalogo */}
             {location.pathname !== "/catalogo" && (
               <>
                 <Box id="areas-section">
                   <Areas />
-                </Box>
-                <Box ref={informationsRef}>
+                </Box>                        
+                <div ref={informationsRef}>
                   <Informations />
-                </Box>
+                </div>
                 <Box ref={contactoRef}>
                   <Contacto />
                 </Box>

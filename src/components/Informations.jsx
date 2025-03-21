@@ -161,25 +161,25 @@ const [showArrow, setShowArrow] = useState(true);
   <Grid item xs={12} md={6} ref={ref}>
     {[  
       {
-        icon: <SmartToy sx={{ color: "white" }} />,
+        icon: <SmartToy sx={{ color: "white", fontSize: "2.2rem" }} />,
         text: "Automatización Inteligente",
         desc: "Optimiza procesos rutinarios con IA para liberar recursos valiosos.",
         hideLine: false,
       },
       {
-        icon: <Insights sx={{ color: "white" }} />,
+        icon: <Insights sx={{ color: "white", fontSize: "2.2rem" }} />,
         text: "Análisis Predictivo",
         desc: "Anticipa el comportamiento de clientes y mejora tu oferta.",
         hideLine: false,
       },
       {
-        icon: <Chat sx={{ color: "white" }} />,
+        icon: <Chat sx={{ color: "white", fontSize: "2.2rem" }} />,
         text: "Chatbots y Asistentes Virtuales",
         desc: "Responde 24/7 con chatbots inteligentes potenciados por Hey Now.",
         hideLine: false,
       },
       {
-        icon: <Visibility sx={{ color: "white" }} />,
+        icon: <Visibility sx={{ color: "white", fontSize: "2.2rem" }} />,
         text: "Visión por Computador",
         desc: "Utiliza reconocimiento de imágenes para mejorar seguridad y eficiencia.",
         hideLine: true,
@@ -208,8 +208,8 @@ const [showArrow, setShowArrow] = useState(true);
             >
               <Box
                 sx={{
-                  width: isMobile ? 60 : 70,
-                  height: isMobile ? 60 : 70,
+                  width: isMobile ? 70 : 70,
+                  height: isMobile ? 70 : 70,
                   borderRadius: "50%",
                   border: "2px solid white",
                   display: "flex",
@@ -218,6 +218,7 @@ const [showArrow, setShowArrow] = useState(true);
                   backgroundColor: "#072138",
                   position: "relative",
                   zIndex: 2,
+                  fontSize: "1.5rem"
                 }}
               >
                 {item.icon}
@@ -240,7 +241,7 @@ const [showArrow, setShowArrow] = useState(true);
                 <motion.div
                   className="vertical-line"
                   initial={{ height: "0%" }}
-                  animate={{ height: "50%" }}
+                  animate={{ height: "40%" }}
                   transition={{
                     delay: 0.5 * (index + 1),
                     duration: 1,
@@ -280,7 +281,7 @@ const [showArrow, setShowArrow] = useState(true);
         onSlideChange={(swiper) => setShowArrow(swiper.activeIndex === 0)}
       >
         {promotions.map((promo, index) => (
-          <SwiperSlide key={index}>
+          <SwiperSlide key={index}>       
             <Box
               sx={{
                 width: "100%%",
@@ -300,19 +301,19 @@ const [showArrow, setShowArrow] = useState(true);
               }}
             >
            <Box
-  sx={{
-    cursor: isGrabbing ? "grabbing" : "grab",
-    position: "absolute",
-    width: "100%",
-    height: "100%",
-    background: "linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0))",
-    top: 0,
-    left: 0,
-  }}
-  onPointerDown={() => setIsGrabbing(true)}
-  onPointerUp={() => setIsGrabbing(false)}
-  onPointerLeave={() => setIsGrabbing(false)}
->
+          sx={{
+            cursor: isGrabbing ? "grabbing" : "grab",
+            position: "absolute",
+            width: "100%",
+            height: "100%",
+            background: "linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0))",
+            top: 0,
+            left: 0,
+          }}
+          onPointerDown={() => setIsGrabbing(true)}
+          onPointerUp={() => setIsGrabbing(false)}
+          onPointerLeave={() => setIsGrabbing(false)}
+        >
       {/* Contenido */}
       <Box sx={{ zIndex: 2, textAlign: "center" }}>
         <Typography variant="h6" sx={{ mt: 4, fontWeight: "bold", fontSize: "20px", fontFamily: "inherit" }}>

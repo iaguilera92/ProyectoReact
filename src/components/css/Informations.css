@@ -18,7 +18,7 @@
   
 .vertical-line {
     position: absolute;
-    top: 90%; /* Centrado en el medio del contenedor */
+    top: 95%; /* Centrado en el medio del contenedor */
     left: 50%; /* Centrado horizontalmente */
     transform: translateX(-50%); /* Ajuste para centrar correctamente */
     width: 1px;
@@ -37,7 +37,7 @@
     }
     100% {
       opacity: 1;
-      height: 42%; /* La línea se extiende hasta el 50% del contenedor */
+      height: 45%; /* La línea se extiende hasta el 50% del contenedor */
     }
   }  
   
