@@ -238,7 +238,7 @@ function Navbar({ contactoRef }) {
     "& .MuiDrawer-paper": {
       width: "50vw", // Ocupar el 50% de la pantalla
       maxWidth: "700px", // Asegurar que no sea demasiado grande en pantallas grandes
-      minWidth: "350px", // Evitar que se haga demasiado pequeño
+      minWidth: "300px", // Evitar que se haga demasiado pequeño
       backgroundImage: 'url(/fondo-fono.png)',
       backgroundSize: "cover",
       backgroundPosition: "center",
@@ -313,7 +313,7 @@ function Navbar({ contactoRef }) {
     sx={{
       display: "flex",
       justifyContent: "center",
-      gap: 6, // Espacio entre iconos
+      gap: 4, // Espacio entre iconos
       mt: "auto",
       padding: "20px 0", // Más espacio
     }}
@@ -326,12 +326,12 @@ function Navbar({ contactoRef }) {
           bgColor: "linear-gradient(45deg, #cf198c, #f41242)",
         },
         Facebook: {
-          href: "https://www.facebook.com/Mittarentacar",
+          href: "https://www.instagram.com/plataformas.web/?hl=es-la",
           Icon: FacebookIcon,
           bgColor: "linear-gradient(45deg, #00B5F5, #002A8F)",
         },
         LinkedIn: {
-          href: "https://www.linkedin.com/company/mittarentacar/?viewAsMember=true",
+          href: "https://www.instagram.com/plataformas.web/?hl=es-la",
           Icon: LinkedInIcon,
           bgColor: "linear-gradient(45deg, #00B5F5, #0077b7)",
         },

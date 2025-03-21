@@ -5,7 +5,6 @@ import CountUp from "react-countup";
 import { useInView } from "react-intersection-observer";
 import { motion } from "framer-motion";
 
-// Añadimos la propiedad 'image' a cada item
 const data = [
   {
     count: 20,
@@ -27,21 +26,21 @@ const data = [
   },
   {
     count: 8,
-    text: "Tazas de café en el día",
+    text: "Tazas de café en el día ☕",
     image:
       "https://www.viadurini.es/data/prod/img/servizio-18-tazze-da-caffe-the-con-zuccheriera-e-vassoio-in-porcellana-lucerna-1.jpg",
   },
 ];
 
 const Areas = () => {
-  const { ref, inView } = useInView({ triggerOnce: true });
-  const { ref: imgRef, inView: imgInView } = useInView({ triggerOnce: true });
-  const [isVisible, setIsVisible] = useState(false); // Controla la visibilidad de la imagen
-  const [currentImage, setCurrentImage] = useState(0); // Controla qué imagen se muestra
+  const [currentImage, setCurrentImage] = useState(0);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  // Estado para manejar el retraso en la aparición del contador y el texto
   const [delayed, setDelayed] = useState(false);
+  const { ref, inView } = useInView({ triggerOnce: true });
+  const [rotationActive, setRotationActive] = useState(false);
+  const [currentRotation, setCurrentRotation] = useState(0);
+  const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
     // Solo se activa el retraso cuando el item está en vista
@@ -76,38 +75,56 @@ const Areas = () => {
     ));
   };
 
-  // Lista de imágenes
+  // IMAGEN Y EFECTOS
   const images = [
-    "https://www.connectic.cl/wp-content/uploads/2024/07/Daco_5762223-400x316.png",
-    "https://www.hpr.cl/images/servicios/servicios.png"
+    "https://www.hpr.cl/images/servicios/servicios.png",
+    "https://www.connectic.cl/wp-content/uploads/2024/07/Daco_5762223-400x316.png"
   ];
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImage((prevImage) => (prevImage + 1) % images.length); // Cambia la imagen cada vez
-    }, 5000); // Cambia cada 5 segundos
+// Cuando la imagen aparece en pantalla, espera 5s y activa la rotación
+useEffect(() => {
+  if (inView) {
+    setTimeout(() => {
+      setRotationActive(true);
+    }, 5000);
+  }
+}, [inView]);
 
-    return () => clearInterval(interval); // Limpia el intervalo cuando el componente se desmonta
-  }, []);
+useEffect(() => {
+  const interval = setInterval(() => {
+    setCurrentImage((prevImage) => (prevImage + 1) % images.length); // Cambia la imagen cada vez
+  }, 5000); // Cambia cada 5 segundos
+
+  return () => clearInterval(interval); // Limpia el intervalo cuando el componente se desmonta
+}, []);
+
+useEffect(() => {
+  if (isMobile) {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }
+}, [isMobile]);
 
   return (
     <Box
     sx={{
-      backgroundImage:
-        "url(https://www.nextibs.com/wp-content/uploads/2021/12/seguridad-informatica-scaled.jpeg)",
+      backgroundImage: isMobile ? 'url(/fondo-areas2.jpg)' : 'url(/fondo-areas1.jpg)',
       backgroundRepeat: "no-repeat",
-      backgroundPosition: "center",
-      backgroundAttachment: "fixed",
-      backgroundSize: "cover",
+      backgroundSize: isMobile ? "100% 100%" : "100% auto", 
+      backgroundPosition: isMobile ? "center" :"",    
+      backgroundAttachment: isMobile ? "fixed" : "fixed",
+      minHeight: isMobile ? "85vh" : "70vh",
       paddingTop: "30px !important",
       padding: { xs: 4, md: 16 },
-      paddingBottom: { xs: 18, md: 16 }, // Más paddingBottom en dispositivos móviles (xs)
-      color: "white",
+      paddingBottom: { xs: 14, md: 16 },
     }}
   >
       <Grid container spacing={4} alignItems="center">
         <Grid item xs={12} md={6}>
-          <Grid container spacing={3}>
+          <Grid container spacing={4}>
             {data.map((item, index) => (
               <Grid item xs={6} sm={6} md={6} key={index}>
                 <Box
@@ -147,7 +164,7 @@ const Areas = () => {
       sx={{
         position: "absolute",
         backfaceVisibility: "hidden",
-        width: "100%",
+        width: isMobile ? "115%" : "100%",
         height: "100%",
         display: "flex",
         justifyContent: "center",
@@ -157,7 +174,7 @@ const Areas = () => {
         borderRadius: 2,
         boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
         zIndex: 2,
-        transform: "rotateY(180deg)",
+        transform: "rotateY(180deg)",        
       }}
     >
       {/* Contenedor fijo para evitar que se mueva el contador */}
@@ -166,7 +183,7 @@ const Areas = () => {
           minWidth: "100px", // Asegura que el ancho no cambie
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
+          alignItems: "center",          
         }}
       >
         {/* Contador con retraso de 0.8 segundos */}
@@ -179,7 +196,7 @@ const Areas = () => {
           minWidth: "80px",
           textAlign: "center",
           marginBottom: "0.15em",
-          fontSize: isMobile ? "2.5rem" : "2.2rem", // Aumentado el tamaño
+          fontSize: isMobile ? "2.6rem" : "2.2rem", // Aumentado el tamaño
         }}
         >
       +{delayed ? <CountUp start={0} end={item.count} duration={3} /> : "0"}
@@ -187,8 +204,8 @@ const Areas = () => {
         <Box
           sx={{
             textAlign: "center",
-            maxWidth: "90%",
-            fontSize: isMobile ? "1rem" : "1.1rem", // Reducir tamaño del texto en móviles
+            maxWidth: isMobile ? "100%" : "90%",
+            fontSize: isMobile ? "0.93rem" : "1.1rem", // Reducir tamaño del texto en móviles
             fontFamily: "'Oswald', sans-serif", // Fuente agregada
           }}
         >
@@ -202,7 +219,7 @@ const Areas = () => {
         sx={{
           position: "absolute",
           backfaceVisibility: "hidden",
-          width: "100%",
+          width: isMobile ? "115%" : "100%",
           height: "100%",
           backgroundImage: `url(${item.image})`,
           backgroundSize: "cover",
@@ -233,8 +250,8 @@ const Areas = () => {
         onAnimationComplete={() => setTimeout(() => { setCurrentImage((prev) => (prev + 1) % images.length); }, 5000)} // Cambia la imagen después de 5 segundos
         style={{
           position: "relative",
-          width: isMobile ? 400 : 450,
-          height: isMobile ? 250 : 336,
+          width: isMobile ? 420 : 450,
+          height: isMobile ? 280 : 336,
           perspective: 1200, // Mantiene el efecto 3D
           transformStyle: 'preserve-3d', // Necesario para que las imágenes se giren correctamente
         }}
@@ -244,8 +261,8 @@ const Areas = () => {
           key={`front-${currentImage}`}
           src={images[currentImage]}
           alt="Rotating Image"
-          width={isMobile ? 400 : 450}
-          height={isMobile ? 250 : 336}
+          width={isMobile ? "100%" : "100%"}
+          height={isMobile ? "100%" : "100%"}
           animate={{
             opacity: delayed ? 1 : 0,
             y: delayed ? [0, -10, 0] : -50,
@@ -263,8 +280,8 @@ const Areas = () => {
           key={`back-${(currentImage + 1) % images.length}`}
           src={images[(currentImage + 1) % images.length]}
           alt="Next Rotating Image"
-          width={isMobile ? 400 : 450}
-          height={isMobile ? 250 : 336}
+          width={isMobile ? "100%" : "100%"}
+          height={isMobile ? "100%" : "100%"}
           initial={{ rotateY: 180, opacity: 1 }}
           animate={{
             opacity: delayed ? 1 : 0,
@@ -279,7 +296,6 @@ const Areas = () => {
         />
       </motion.div>
     </Grid>
-
 
     
       </Grid>

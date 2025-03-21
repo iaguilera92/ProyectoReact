@@ -1,16 +1,56 @@
-import { Box, Typography, Container, Grid, List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
+import { Box, Typography, Container, Grid, Button, ListItem, ListItemIcon, ListItemText,useMediaQuery,useTheme,IconButton  } from "@mui/material";
 import { Chat, Insights, SmartToy, Visibility } from "@mui/icons-material";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { FaCode } from "react-icons/fa";
+import { Swiper, SwiperSlide } from "swiper/react";
 import { useInView } from 'react-intersection-observer';  // Importa el hook
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import "./css/Informations.css"; // Importamos el CSS
+import "swiper/css";
+
+const promotions = [
+  {
+    title: "Sitios web",
+    description: "Diseño y desarrollo de sitios web modernos Y rápidos para todos los dispositivos.",
+    image: "/Informations-1.jpg",
+    bgColor: "linear-gradient(180deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3))",
+    textColor: "white",
+  },
+  {
+    title: "Tienda online",
+    description: "Tienda online, pagos seguros y seguimiento de pedidos. Compra rápido y sin complicaciones.",
+    image: "/Informations-2.jpg",
+    bgColor: "linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.2))",
+    textColor: "white",
+  },
+  {
+    title: "Sistemas a la medida",
+    description: "Desarrollo de sistemas a la medida, eficientes, escalables y adaptados a tus necesidades.",
+    image: "/Informations-3.jpg",
+    bgColor: "linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.2))",
+    textColor: "white",
+  }
+];
+
 
 const Informations = () => {
  // Controla la vista del componente
  const { ref, inView } = useInView({
-  threshold: 0.2, // Se activa cuando el 20% del componente es visible
+  threshold: 0.1, // Se activa cuando el 20% del componente es visible
   triggerOnce: true, // La animación ocurre solo una vez
 });
+const [shouldAnimate, setShouldAnimate] = useState(false);
+const theme = useTheme();
+const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+const [showArrow, setShowArrow] = useState(true);
+
+  useEffect(() => {
+    if (inView) {
+      setShouldAnimate(true); // 🔹 Activa la animación cuando el componente es visible
+    }
+  }, [inView]);
+
 
   return (
     <Box
@@ -22,7 +62,7 @@ const Informations = () => {
       py: 4,
       marginTop: "-100px",
       color: "white", 
-      borderRadius: '120px 120px 0 0', // Valor general para otros navegadores
+      borderRadius: isMobile ? '90px 90px 0 0' : '120px 120px 0 0', // Valor general para otros navegadores
       overflow: 'hidden',  // Asegura que no se desborde el contenido
     }}
   >
@@ -31,39 +71,40 @@ const Informations = () => {
         <Box sx={{ position: "relative", textAlign: "center", mb: 2 }}>
           
           <Box
-          sx={{
-            width: 25,
-            height: 25,
-            borderRadius: "50%",
-            backgroundColor: "white",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            border: "2px solid white",
-            mx: "auto",
-            mb: 0.5,
-          }}
-        >
-          <motion.div
-            initial={{ rotate: 0 }}
-            animate={{ rotate: 360 }}
-            transition={{
-              duration: 0.8,
-              delay:0.7,
-              repeat: 1, // Se repite una vez más (en total, dos veces)
-              ease: "linear", // Movimiento fluido
-            }}
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "100%",
-              height: "100%",
-            }}
-          >
-            <FaCode size={17} color="black" />
-          </motion.div>
-        </Box>
+      ref={ref} // 🔹 Conecta el detector de scroll
+      sx={{
+        width: 25,
+        height: 25,
+        borderRadius: "50%",
+        backgroundColor: "white",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        border: "2px solid white",
+        mx: "auto",
+        mb: 0.5,
+      }}
+    >
+      <motion.div
+        initial={{ rotate: 0 }}
+        animate={shouldAnimate ? { rotate: 360 } : {}} // 🔹 Solo se activa cuando `shouldAnimate` es `true`
+        transition={{
+          duration: 0.8,
+          delay: 0.3,
+          repeat: 1, // Se repite una vez más (total: dos veces)
+          ease: "linear", // Movimiento fluido
+        }}
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "100%",
+          height: "100%",
+        }}
+      >
+        <FaCode size={17} color="black" />
+      </motion.div>
+    </Box>
 
         <Typography
         variant="h4"
@@ -98,11 +139,11 @@ const Informations = () => {
           {/* Línea debajo del título con animación (con retraso de 2 segundos) */}
           <motion.hr
           initial={{ opacity: 0 }} // Comienza invisible
-          animate={{ opacity: 1 }} // Aparece completamente
-          transition={{ duration: 1, delay: 1 }} // Aparece después de 1s y dura 1s
+          animate={shouldAnimate ? { opacity: 1 } : {}} // Aparece completamente
+          transition={{ duration: 0.8, delay: 1 }} // Aparece después de 1s y dura 1s
           style={{
             position: "absolute",
-            top: "calc(100% - 30px)", // Ajusta la posición
+            top: isMobile ? "calc(80% - 30px)" : "calc(100% - 30px)", // Ajusta la posición
             left: "5%",
             width: "90%", // Mantiene su tamaño desde el inicio
             border: "1px solid white",      
@@ -113,7 +154,8 @@ const Informations = () => {
         />
 
         </Box>
-        <Grid container spacing={4} sx={{ mt: 2 }}>
+        <Grid container spacing={3} sx={{ mt: 2 }}>
+          
   {/* Columna de los íconos */}
   <Grid item xs={12} md={6} ref={ref}>
     {[  
@@ -145,7 +187,7 @@ const Informations = () => {
       <motion.div
         key={index}
         initial={{ opacity: 0, y: 0 }}
-        animate={{ opacity: 1, y: 0 }}
+        animate={shouldAnimate ? { opacity: 1, y: 0 } : {}}
         transition={{
           delay: 0.5 * index,
           duration: 1,
@@ -156,8 +198,8 @@ const Informations = () => {
             <Box
               sx={{
                 position: "relative",
-                width: 50,
-                height: 50,
+                width: isMobile ? 100 : 100,
+                height: isMobile ? 80 : 90,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -165,8 +207,8 @@ const Informations = () => {
             >
               <Box
                 sx={{
-                  width: 50,
-                  height: 50,
+                  width: isMobile ? 60 : 70,
+                  height: isMobile ? 60 : 70,
                   borderRadius: "50%",
                   border: "2px solid white",
                   display: "flex",
@@ -225,15 +267,84 @@ const Informations = () => {
     ))}
   </Grid>
 
-  {/* Columna de los descriptores */}
- <Grid item xs={12} md={6} sx={{
-    backgroundImage: `url('https://enteldigital.cl/hubfs/raw_assets/public/HandyApps/Site_pages/Home/images/network-bg.svg')`,
-    backgroundSize: "cover", // Asegura que el fondo se ajuste al tamaño del contenedor
-    backgroundPosition: "center", // Centra la imagen
-    backgroundRepeat: "no-repeat", // Evita que el fondo se repita
-  }}>
-    
+ {/* Columna de los descriptores */}
+ <Grid item xs={12} md={6}>
+ <Box sx={{ display: isMobile ? "block" : "block", position: "relative", px: 1, pt: 3, pb: 1.5  }}>
+ <Swiper
+        spaceBetween={20}
+        slidesPerView={1.2}
+        centeredSlides={false}
+        initialSlide={0}
+        pagination={{ clickable: true }}
+        onSlideChange={(swiper) => setShowArrow(swiper.activeIndex === 0)}
+      >
+        {promotions.map((promo, index) => (
+          <SwiperSlide key={index}>
+            <Box
+              sx={{
+                width: "100%%",
+                height: "360px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "flex-start",
+                backgroundImage: `url(${promo.image})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                borderRadius: "16px",
+                position: "relative",
+                overflow: "hidden",
+                color: "white",
+                p: 0.5,
+              }}
+            >
+              {/* Capa de degradado */}
+              <Box
+                sx={{
+                  position: "absolute",
+                  width: "100%",
+                  height: "100%",
+                  background: "linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0))",
+                  top: 0,
+                  left: 0,
+                }}
+              />
+
+              {/* Contenido */}
+              <Box sx={{ zIndex: 2, textAlign: "center" }}>
+                <Typography variant="h6" sx={{ mt: 4,fontWeight: "bold", fontSize: "20px", fontFamily: "inherit" }}>
+                  {promo.title}
+                </Typography>
+                <Typography variant="body2" sx={{ mt: 2, fontSize: "14px" }}>
+                  {promo.description}
+                </Typography>
+              </Box>              
+            </Box>
+          </SwiperSlide>
+        ))}
+      </Swiper>
+
+      {/* 🔹 Flecha sin fondo en la esquina superior derecha */}
+      {showArrow && (
+        <IconButton
+          sx={{            
+            position: "absolute",
+            top: -12, 
+            right: 0, 
+            color: "white", 
+            zIndex: 10,
+            transition: "opacity 0.3s ease-in-out",
+          }}
+        >
+          <ArrowForwardIcon fontSize="large" sx={{ fontSize: "23px" }} />
+        </IconButton>
+      )}
+    </Box>
   </Grid>
+
+
+
+
 </Grid>
   
 

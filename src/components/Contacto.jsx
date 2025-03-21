@@ -58,16 +58,7 @@ function Contacto() {
     }
   }, [inView]);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      // Modificar la posición del fondo para que se mueva suavemente
-      setBgPosition(`center ${window.scrollY * 0}px`);
-    };
-  
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-  
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -117,9 +108,9 @@ useEffect(() => {
         paddingTop: "0px",
         paddingBottom: "20px",
         height: isMobile ? containerHeight : "70vh", // Asegúrate de que el contenedor ocupe toda la pantalla
-        backgroundImage: 'url(/fondo-mundo.png)',
-        backgroundSize: 'cover', // Asegura que la imagen de fondo cubra toda el área
-        backgroundPosition: bgPosition,
+        backgroundImage: isMobile ? 'url(/fondo-mundo-mobile.png)': 'url(/fondo-mundo.png)',
+        backgroundSize: isMobile ? "cover" : "100% auto",
+        backgroundPosition: isMobile ? "center" :"center",
         backgroundRepeat: "no-repeat", // Evita que la imagen se repita
         backgroundAttachment: "fixed", // Mantiene el fondo fijo mientras el contenido se desplaza
       }}
@@ -171,7 +162,7 @@ useEffect(() => {
       <Box sx={{ position: "relative", zIndex: 2, paddingTop: "20px", display: "flex", flexDirection: "column", height: "100%" }}>
         {/* Título animado */}
         {!formSubmitted && (
-          <Typography variant="h3" align="left" gutterBottom sx={{ color: "white", display: "flex" }}>
+          <Typography variant={isMobile ? "h4" : "h3"} align="left" gutterBottom sx={{ color: "white", display: "flex" }}>
             {"Contáctanos".split("").map((char, index) => (
               <motion.span key={index} custom={index} variants={letterVariants} initial="hidden" animate={inView ? "visible" : "hidden"}>
                 {char}
@@ -218,14 +209,16 @@ useEffect(() => {
         height: "100%",
         backgroundColor: "#fff",
         boxShadow: 3,
-        borderRadius: 2,
+        borderRadius: 5,
+        border: "1px solid #30363D", 
+        boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.2)", // Sombra sutil
         overflow: "hidden",
         transform: "rotateY(0deg)",
         backfaceVisibility: "hidden",
       }}
     >
       <Box sx={{ flexGrow: 1, height: "100%" }}>
-        <Box sx={{ width: "100%", height: isMobile ? "40vh" : "100%", borderRadius: 2, overflow: "hidden" }}>
+        <Box sx={{ width: "100%", height: isMobile ? "40vh" : "100%", overflow: "hidden" }}>
           <MapContainer
             center={finalPosition}
             zoom={initialZoom}
@@ -258,7 +251,7 @@ useEffect(() => {
             <div
               style={{
                 position: "absolute",
-                top: "16%",
+                top: isMobile ? "14%" : "16%",
                 left: "50%",
                 transform: "translateX(-50%)",
                 backgroundColor: "black",
@@ -299,8 +292,9 @@ useEffect(() => {
     <motion.div
       style={{
         position: "absolute",
-        top: 0,
-        left: 0,
+        top: isMobile ? 25 : 0,
+        left: isMobile ? 0 : 0,
+        right: isMobile ? 0 : 30,
         width: "100%",
         height: "100%",
         transform: "rotateY(180deg)",
@@ -311,8 +305,8 @@ useEffect(() => {
         src="/contacto.webp"
         alt="Imagen de contacto"
         style={{
-          width: "100%",
-          height: "100%",
+          width: isMobile ? "100%" : "80%",
+          height: isMobile ? "85%" : "100%",
           borderRadius: 2,
         }}
       />
@@ -366,9 +360,9 @@ useEffect(() => {
               initial={{ opacity: 0, x: -20 }}
               animate={startAnimation ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.8 }}
-              style={{ display: "flex", alignItems: "center", marginBottom: "4px" }} // Más cerca del TextField
+              style={{ display: "flex", alignItems: "center", marginBottom: "6px" }} // Más cerca del TextField
             >
-             <PhoneIcon sx={{ mr: 1, color: "#F0F6FC", fontSize: "1.5rem" }} />
+             <PhoneIcon sx={{ mr: 0.5, color: "#F0F6FC", fontSize: "1.5rem" }} />
               <Typography variant="body1" sx={{ color: "#C9D1D9" }}> {/* Fuente más pequeña */}
                 Teléfono de contacto:
               </Typography>
@@ -403,9 +397,9 @@ useEffect(() => {
               initial={{ opacity: 0, x: -20 }}
               animate={startAnimation ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.8, delay: 0.2 }}
-              style={{ display: "flex", alignItems: "center", marginBottom: "4px" }} // Más cerca del TextField
+              style={{ display: "flex", alignItems: "center", marginBottom: "6px" }} // Más cerca del TextField
             >
-              <ChatBubbleOutlineIcon sx={{ mr: 1, color: "#F0F6FC", fontSize: "1.5rem" }} />
+              <ChatBubbleOutlineIcon sx={{ mr: 0.5, color: "#F0F6FC", fontSize: "1.5rem" }} />
               <Typography variant="body1" sx={{ color: "#C9D1D9" }}>
                 Comentanos que necesitas:
               </Typography>
@@ -436,7 +430,7 @@ useEffect(() => {
             type="submit"
             variant="contained"
             sx={{
-              marginTop: "15px",
+              marginTop: "25px",
               fontSize: "1rem",
               fontWeight: "bold",
               padding: "10px",
@@ -494,7 +488,7 @@ const ZoomEffect = ({ zoom }) => {
       zoomApplied.current = true; // Evita múltiples ejecuciones
 
       let zoomLevel = isMobile ? 7 : 5; // En móvil, empieza más cerca
-      const zoomSpeed = isMobile ? 0.04 : 0.02; // En móvil, el zoom es más rápido
+      const zoomSpeed = isMobile ? 0.06 : 0.05; // En móvil, el zoom es más rápido
 
       // 🔹 Ajustamos más el desplazamiento en móviles para que el marcador quede centrado
       const offsetY = isMobile ? 0.0001 : 0; // 🔹 Valor más alto para corregir centrado
