@@ -36,6 +36,7 @@ const promotions = [
 
 const Informations = () => {
  // Controla la vista del componente
+ const [isGrabbing, setIsGrabbing] = useState(false);
  const { ref, inView } = useInView({
   threshold: 0.1, // Se activa cuando el 20% del componente es visible
   triggerOnce: true, // La animación ocurre solo una vez
@@ -298,27 +299,30 @@ const [showArrow, setShowArrow] = useState(true);
                 p: 0.5,
               }}
             >
-              {/* Capa de degradado */}
-              <Box
-                sx={{
-                  position: "absolute",
-                  width: "100%",
-                  height: "100%",
-                  background: "linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0))",
-                  top: 0,
-                  left: 0,
-                }}
-              />
-
-              {/* Contenido */}
-              <Box sx={{ zIndex: 2, textAlign: "center" }}>
-                <Typography variant="h6" sx={{ mt: 4,fontWeight: "bold", fontSize: "20px", fontFamily: "inherit" }}>
-                  {promo.title}
-                </Typography>
-                <Typography variant="body2" sx={{ mt: 2, fontSize: "14px" }}>
-                  {promo.description}
-                </Typography>
-              </Box>              
+           <Box
+  sx={{
+    cursor: isGrabbing ? "grabbing" : "grab",
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    background: "linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0))",
+    top: 0,
+    left: 0,
+  }}
+  onPointerDown={() => setIsGrabbing(true)}
+  onPointerUp={() => setIsGrabbing(false)}
+  onPointerLeave={() => setIsGrabbing(false)}
+>
+      {/* Contenido */}
+      <Box sx={{ zIndex: 2, textAlign: "center" }}>
+        <Typography variant="h6" sx={{ mt: 4, fontWeight: "bold", fontSize: "20px", fontFamily: "inherit" }}>
+          {promo.title}
+        </Typography>
+        <Typography variant="body2" sx={{ mt: 2, fontSize: "14px" }}>
+          {promo.description}
+        </Typography>
+      </Box>
+    </Box>          
             </Box>
           </SwiperSlide>
         ))}

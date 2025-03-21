@@ -12,6 +12,16 @@
   z-index: 2;
   transition: all 1.1s ease-in-out;
 }
+.image::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45); /* Cambia el 0.45 según la intensidad */
+  z-index: 1;
+}
 
 .image-left {
   left: 0%; /* 20% fuera de la pantalla */
@@ -36,56 +46,65 @@
   right: -115%; /* Mueve la imagen hacia la derecha, cubriendo el contenido */
   z-index: 4;
 }
-
-
-/* Estilo del Loader */
 #loader {
-  display: block;
-  position: relative;
-  left: 50%;
+  position: fixed;
   top: 50%;
-  width: 150px;
-  height: 150px;
-  margin: -75px 0 0 -75px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
-  border: 3px solid transparent;
-  border-top-color: white;
-  animation: spin 1.1s linear infinite;
+  border: 6px solid transparent;
+  border-top-color: #00d2ff;
+  border-left-color: #00d2ff;
+  background: radial-gradient(circle, rgba(255,255,255,0.04), rgba(0,0,0,0.04));
+  animation: spin 1s linear infinite;
+  box-shadow: 0 0 20px rgba(0, 210, 255, 0.2), 0 0 40px rgba(58, 123, 213, 0.2);
   z-index: 1001;
 }
 
-#loader:before,
-#loader:after {
+#loader::before {
   content: "";
   position: absolute;
+  top: -16px;
+  left: -16px;
+  right: -16px;
+  bottom: -16px;
+  border-radius: 50%;
+  border: 4px solid transparent;
+  border-top-color: #00d2ff;
+  border-left-color: #00d2ff;
+  animation: spin 2s linear infinite;
+  z-index: 2;
+}
+
+#loader::after {
+  content: "";
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
   border-radius: 50%;
   border: 3px solid transparent;
-  border-top-color: white;
+  border-top-color: #00d2ff;
+  border-left-color: #00d2ff;
   animation: spin 3s linear infinite;
-}
-
-#loader:before {
-  top: 5px;
-  left: 5px;
-  right: 5px;
-  bottom: 5px;
-}
-
-#loader:after {
-  top: 15px;
-  left: 15px;
-  right: 15px;
-  bottom: 15px;
+  z-index: 0;
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
+
+#loader,
+#loader::before,
+#loader::after {
+  animation-timing-function: linear !important;
+  will-change: transform;
+}
+
 /* Contenedor para el mapa e imagen */
 .image-container {
   perspective: 1500px; /* Establece la distancia de perspectiva para el efecto 3D */

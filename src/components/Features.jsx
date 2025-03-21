@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useRef }from "react";
+
 import {
   Container,
   Grid,
@@ -21,8 +22,8 @@ import "./css/Features.css"; // Importamos el CSS
 const features = [
   {
     id: 1,
-    title: "BI",
-    desc: "Servicios Business Intelligence: desarrollamos plataformas BI para agilizar y recopilar información.",
+    title: "Plataformas web",
+    desc: "Diseñamos sitios web modernos, rápidos y adaptables para impulsar tus emprendimientos.",
     image: "https://www.dsmsolutions.cl/wp-content/uploads/2023/08/bi_dsmsolutions.webp",
     //link: "https://www.plataformas.web.cl/",
   },
@@ -91,10 +92,12 @@ const AdditionalContent = styled(Box)({
   transition: "opacity 0.3s ease",
 });
 
-function Features() {
+function Features({ scrollToInformations }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
+  const handleScroll = () => {
+    scrollToInformations?.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   const { ref, inView } = useInView({
     triggerOnce: true,  // Esto asegura que se dispare solo una vez cuando el botón entre en vista
@@ -179,6 +182,7 @@ function Features() {
       <br />
       <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
       <Button
+      onClick={handleScroll}
       variant="contained"
       target="_self"
       sx={{

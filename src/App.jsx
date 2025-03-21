@@ -27,6 +27,7 @@ function Home() {
 }
 
 function App() {
+  const informationsRef = useRef(null);
   const [showContacto, setShowContacto] = useState(false);
   const [showArrow, setShowArrow] = useState(false);
   const [openBubble, setOpenBubble] = useState(false);
@@ -101,7 +102,7 @@ function App() {
                 <Box id="areas-section">
                   <Areas />
                 </Box>
-                <Box>
+                <Box ref={informationsRef}>
                   <Informations />
                 </Box>
                 <Box ref={contactoRef}>

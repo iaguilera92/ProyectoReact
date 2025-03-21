@@ -120,8 +120,9 @@ useEffect(() => {
   {/* Divs con imágenes */}
 <div
   className={`image image-left ${startAnimation ? "animate-left" : ""}`}
+  
   style={{
-    width: isMobile ? "45vw" : "70vh", // ✅ Mantiene altura adaptable en móviles
+    width: isMobile ? "50vw" : "50vw", // ✅ Mantiene altura adaptable en móviles
     height: isMobile ? "50vh" : "70vh", // ✅ Mantiene altura adaptable en móviles
     backgroundImage: isMobile ? "url('/fono-left.jpg')" : "url('/mapa.jpg')",
     backgroundSize: "cover", // ✅ Evita cortes extraños en la imagen
@@ -133,7 +134,7 @@ useEffect(() => {
 <div
   className={`image image-right ${startAnimation ? "animate-right" : ""}`}
   style={{
-    width: isMobile ? "45vw" : "70vh", // ✅ Mantiene altura adaptable en móviles
+    width: isMobile ? "50vw" : "50vw", // ✅ Mantiene altura adaptable en móviles
     height: isMobile ? "50vh" : "70vh", // ✅ Mantiene altura adaptable en móviles
     backgroundImage: isMobile ? "url('/fono-right.jpg')" : "url('/contactar.jpg')",
     backgroundSize: "cover", // ✅ Se ajusta sin cortes ni estiramientos
@@ -143,20 +144,21 @@ useEffect(() => {
 ></div>
 
 
-      {/* Loader */}
-      {!startAnimation && (
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            zIndex: 1001,
-          }}
-        >
-          <div id="loader"></div>
-        </Box>
-      )}
+{!startAnimation && (
+  <Box
+    sx={{
+      position: "absolute", // ✅ Se posiciona respecto al Container (que tiene position: relative)
+      top: isMobile ? "40%" : "40%",
+      left: isMobile ? "35%" : "44%",
+      transform: "translate(-50%, -50%)",
+      zIndex: 1001,
+      width: "auto",
+      height: "auto",
+    }}
+  >
+    <div id="loader" />
+  </Box>
+)}
 
       {/* Contenido de contacto */}
       <Box sx={{ position: "relative", zIndex: 2, paddingTop: "20px", display: "flex", flexDirection: "column", height: "100%" }}>
@@ -487,42 +489,45 @@ const ZoomEffect = ({ zoom }) => {
     if (map && inView && !zoomApplied.current) {
       zoomApplied.current = true; // Evita múltiples ejecuciones
 
-      let zoomLevel = isMobile ? 7 : 5; // En móvil, empieza más cerca
-      const zoomSpeed = isMobile ? 0.06 : 0.05; // En móvil, el zoom es más rápido
+      // ⏱️ Delay de 2 segundos antes de iniciar la animación
+      const delayTimer = setTimeout(() => {
+        let zoomLevel = isMobile ? 7 : 5;
+        const zoomSpeed = isMobile ? 0.06 : 0.05;
 
-      // 🔹 Ajustamos más el desplazamiento en móviles para que el marcador quede centrado
-      const offsetY = isMobile ? 0.0001 : 0; // 🔹 Valor más alto para corregir centrado
+        const offsetY = isMobile ? 0.0001 : 0;
+        const correctedPosition = [finalPosition[0] + offsetY, finalPosition[1]];
 
-      const correctedPosition = [finalPosition[0] + offsetY, finalPosition[1]];
+        map.setView(correctedPosition, zoomLevel, {
+          animate: true,
+          duration: isMobile ? 0.4 : 0.3,
+          easeLinearity: 1,
+        });
 
-      map.setView(correctedPosition, zoomLevel, {
-        animate: true,
-        duration: isMobile ? 0.4 : 0.3,
-        easeLinearity: 1,
-      });
+        const animateZoom = () => {
+          if (zoomLevel < zoom) {
+            zoomLevel += zoomSpeed;
+            if (zoomLevel >= zoom) zoomLevel = zoom;
 
-      const animateZoom = () => {
-        if (zoomLevel < zoom) {
-          zoomLevel += zoomSpeed;
-          if (zoomLevel >= zoom) {
-            zoomLevel = zoom;
+            map.flyTo(correctedPosition, zoomLevel, {
+              animate: true,
+              duration: isMobile ? 0.4 : 0.3,
+              easeLinearity: 1,
+            });
+
+            requestAnimationFrame(animateZoom);
           }
-          map.flyTo(correctedPosition, zoomLevel, {
-            animate: true,
-            duration: isMobile ? 0.4 : 0.3,
-            easeLinearity: 1,
-          });
+        };
 
-          requestAnimationFrame(animateZoom);
-        }
-      };
+        requestAnimationFrame(animateZoom);
+      }, 1500); // ⏱️ Delay de 2 segundos
 
-      requestAnimationFrame(animateZoom);
+      return () => clearTimeout(delayTimer);
     }
   }, [inView, map, zoom, isMobile]);
 
   return <div ref={ref} style={{ width: "100%", height: "100%" }} />;
 };
+
 
 
 
