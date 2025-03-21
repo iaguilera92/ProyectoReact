@@ -15,15 +15,13 @@ const promotions = [
     description: "Diseño y desarrollo de sitios web modernos Y rápidos para todos los dispositivos.",
     image: "/Informations-1.jpg",
     bgColor: "linear-gradient(180deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3))",
-    link: "https://www.tiendacopec.cl/",
     textColor: "white",
   },
   {
-    title: "Carrito de compras",
+    title: "Tienda online",
     description: "Tienda online, pagos seguros y seguimiento de pedidos. Compra rápido y sin complicaciones.",
     image: "/Informations-2.jpg",
     bgColor: "linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.2))",
-    link: "https://www.tiendacopec.cl/",
     textColor: "white",
   },
   {
@@ -31,7 +29,6 @@ const promotions = [
     description: "Desarrollo de sistemas a la medida, eficientes, escalables y adaptados a tus necesidades.",
     image: "/Informations-3.jpg",
     bgColor: "linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.2))",
-    link: "https://www.tiendacopec.cl/",
     textColor: "white",
   }
 ];
@@ -201,8 +198,8 @@ const [showArrow, setShowArrow] = useState(true);
             <Box
               sx={{
                 position: "relative",
-                width: 50,
-                height: 50,
+                width: isMobile ? 100 : 100,
+                height: isMobile ? 80 : 90,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -210,8 +207,8 @@ const [showArrow, setShowArrow] = useState(true);
             >
               <Box
                 sx={{
-                  width: 50,
-                  height: 50,
+                  width: isMobile ? 60 : 70,
+                  height: isMobile ? 60 : 70,
                   borderRadius: "50%",
                   border: "2px solid white",
                   display: "flex",
@@ -272,7 +269,7 @@ const [showArrow, setShowArrow] = useState(true);
 
  {/* Columna de los descriptores */}
  <Grid item xs={12} md={6}>
- <Box sx={{ display: isMobile ? "block" : "none", position: "relative", px: 1, pt: 3, pb: 1.5  }}>
+ <Box sx={{ display: isMobile ? "block" : "block", position: "relative", px: 1, pt: 3, pb: 1.5  }}>
  <Swiper
         spaceBetween={20}
         slidesPerView={1.2}

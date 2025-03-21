@@ -111,20 +111,15 @@ useEffect(() => {
   return (
     <Box
     sx={{
-      backgroundImage:
-        "url(https://www.nextibs.com/wp-content/uploads/2021/12/seguridad-informatica-scaled.jpeg)",
+      backgroundImage: isMobile ? 'url(/fondo-areas2.jpg)' : 'url(/fondo-areas1.jpg)',
       backgroundRepeat: "no-repeat",
-      backgroundSize: isMobile ? "cover" : "100% auto",
-      backgroundPosition: isMobile
-        ? `center ${-350 + scrollY * 0.3}px` // 🔹 Ajuste fino para mejorar la fluidez
-        : "center",
-      backgroundAttachment: isMobile ? "scroll" : "fixed",
+      backgroundSize: isMobile ? "100% 100%" : "100% auto", 
+      backgroundPosition: isMobile ? "center" :"",    
+      backgroundAttachment: isMobile ? "fixed" : "fixed",
       minHeight: isMobile ? "85vh" : "70vh",
       paddingTop: "30px !important",
       padding: { xs: 4, md: 16 },
       paddingBottom: { xs: 14, md: 16 },
-      color: "white",
-      transition: "background-position 0s ease-out", // 🔹 Hace que el movimiento sea instantáneo pero más suave
     }}
   >
       <Grid container spacing={4} alignItems="center">

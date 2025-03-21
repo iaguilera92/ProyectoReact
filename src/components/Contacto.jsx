@@ -58,16 +58,7 @@ function Contacto() {
     }
   }, [inView]);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      // Modificar la posición del fondo para que se mueva suavemente
-      setBgPosition(`center ${window.scrollY * 0}px`);
-    };
-  
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-  
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -117,9 +108,9 @@ useEffect(() => {
         paddingTop: "0px",
         paddingBottom: "20px",
         height: isMobile ? containerHeight : "70vh", // Asegúrate de que el contenedor ocupe toda la pantalla
-        backgroundImage: 'url(/fondo-mundo.png)',
+        backgroundImage: isMobile ? 'url(/fondo-mundo-mobile.png)': 'url(/fondo-mundo.png)',
         backgroundSize: isMobile ? "cover" : "100% auto",
-        backgroundPosition: bgPosition,
+        backgroundPosition: isMobile ? "center" :"center",
         backgroundRepeat: "no-repeat", // Evita que la imagen se repita
         backgroundAttachment: "fixed", // Mantiene el fondo fijo mientras el contenido se desplaza
       }}
@@ -216,14 +207,16 @@ useEffect(() => {
         height: "100%",
         backgroundColor: "#fff",
         boxShadow: 3,
-        borderRadius: 2,
+        borderRadius: 5,
+        border: "1px solid #30363D", 
+        boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.2)", // Sombra sutil
         overflow: "hidden",
         transform: "rotateY(0deg)",
         backfaceVisibility: "hidden",
       }}
     >
       <Box sx={{ flexGrow: 1, height: "100%" }}>
-        <Box sx={{ width: "100%", height: isMobile ? "40vh" : "100%", borderRadius: 2, overflow: "hidden" }}>
+        <Box sx={{ width: "100%", height: isMobile ? "40vh" : "100%", overflow: "hidden" }}>
           <MapContainer
             center={finalPosition}
             zoom={initialZoom}

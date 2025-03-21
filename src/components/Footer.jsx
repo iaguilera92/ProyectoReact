@@ -22,15 +22,15 @@ const expandIcon = keyframes`
 `;
 
 // Botón social con animaciones
-const SocialButton = ({ href, Icon, bgColor, hoverStyles }) => (
+const SocialButton = ({ href, Icon, bgColor, hoverStyles, isMobile }) => (
   <Box
      component="a"
      href={href}
      target="_blank"
      rel="noopener"
      sx={{
-       width: 40,
-       height: 40,
+       width:  isMobile ? 60 : 40,
+       height: isMobile ? 60 : 40,
        borderRadius: "50%",
        position: "relative",
        display: "flex",
@@ -64,7 +64,7 @@ const SocialButton = ({ href, Icon, bgColor, hoverStyles }) => (
        className="icon"
        sx={{
          color: "white",
-         fontSize: 24,
+         fontSize: isMobile ? 35 : 24,
          position: "absolute",
          transition: "color 300ms ease-in, transform 300ms ease-in",
        }}
@@ -87,7 +87,7 @@ const Footer = () => {
         backgroundColor: "rgba(23, 24, 25, 0.97)",
         padding: "20px 0",
         color: "white",
-        backgroundImage: "url(https://www.connectic.cl/wp-content/uploads/2024/07/lucas-giordano-de-sousa-UWupz6Lxz3A-unsplash-1-1.jpg)",
+        backgroundImage: "url(/fondo-footer.jpg)",
         backgroundSize: "cover",
         backgroundPosition: "center -150px",
         "@media (max-width: 600px)": {
@@ -140,7 +140,7 @@ const Footer = () => {
                 animation: logoInView ? `${growElement} 1s forwards` : "none",
               }}
             >
-              <img src="/logo-react.png" alt="Logo" style={{ height: "85px", marginBottom: "10px" }} />
+              <img src="/logo-react.png" alt="Logo" style={{ height: "95px", marginBottom: "10px" }} />
               <Box
                 ref={socialRef}
                 sx={{
@@ -221,23 +221,20 @@ const Footer = () => {
               ref={socialRef}
               sx={{
                 display: "flex",
-                gap: 4,
-                mb: 3,
+                gap: isMobile ? 7 : 4,
+                mb:2,
                 animation: socialInView ? `${growElement} 1s forwards` : "none",
               }}
             >
-              <SocialButton href="https://www.instagram.com/plataformas.web/?hl=es-la" Icon={InstagramIcon} bgColor="linear-gradient(45deg, #cf198c, #f41242)" />
-              <SocialButton href="https://www.facebook.com/Mittarentacar" Icon={FacebookIcon} bgColor="linear-gradient(45deg, #00B5F5, #002A8F)" />
-              <SocialButton href="https://www.linkedin.com/company/mittarentacar/?viewAsMember=true" Icon={LinkedInIcon} bgColor="linear-gradient(45deg, #00B5F5, #0077b7)" />
-            </Box>     
-            <Typography variant="body2" align="center" mt={2} sx={{ marginTop: "3vh" }}>
-          @Plataformas web React 2025 - v1.0.3
-        </Typography>       
+              <SocialButton href="https://www.instagram.com/plataformas.web/?hl=es-la" Icon={InstagramIcon} bgColor="linear-gradient(45deg, #cf198c, #f41242)" isMobile={isMobile}/>
+              <SocialButton href="https://www.facebook.com/Mittarentacar" Icon={FacebookIcon} bgColor="linear-gradient(45deg, #00B5F5, #002A8F)" isMobile={isMobile}/>
+              <SocialButton href="https://www.linkedin.com/company/mittarentacar/?viewAsMember=true" Icon={LinkedInIcon} bgColor="linear-gradient(45deg, #00B5F5, #0077b7)" isMobile={isMobile} />
+            </Box>                 
           </Box>
         )}
 
-        <Typography variant="body2" align="center" mt={2} sx={{ marginTop: "4vh" }}>
-        @Plataformas web React 2025 - v1.0.3
+        <Typography variant="body2" align="center" mt={2} sx={{ marginTop: "5vh" }}>
+        @Plataformas web React 2025 - v1.0.4
         </Typography>
       </Container>
     </Box>

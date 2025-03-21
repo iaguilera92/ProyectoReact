@@ -138,7 +138,7 @@ function Features() {
                     image={feature.image}
                     alt={feature.title}
                     sx={{
-                      height: isMobile ? 200 : 250,
+                      height: isMobile ? 205 : 250,
                       transition: "transform 1s",
                     }}
                   />
@@ -147,7 +147,8 @@ function Features() {
                       variant="h6"
                       sx={{
                         fontWeight: "bold",
-                        mb: 1,
+                        marginTop: isMobile ? "20px" : "30px",
+                        mb: isMobile ? 1 : 1,
                         textAlign: "left",
                         width: "100%",
                         marginLeft: "9px",
@@ -157,22 +158,15 @@ function Features() {
                       {feature.title}
                     </Typography>
                     <AdditionalContent className="additional">
-                      <Typography variant="body2" sx={{ mb: 2, px: 1, fontSize: "1rem" }}>
+                      <Typography variant="body2" sx={{ mb: 1, px: 1, fontSize: "1rem" }}>
                         {feature.desc}
                       </Typography>
-                      <Box sx={{ textAlign: "center", width: "100%" }}>
-                        <Button
-                          variant="contained"
-                          sx={{
-                            backgroundColor: "white",
-                            color: "black",
-                            textTransform: "none",
-                          }}
-                          //href={feature.link}
-                          target="_self"
-                        >
-                          Leer más
-                        </Button>
+                      <Box variant="contained" sx={{ textAlign: "center",mt: 2, width: "100%" }} target="_self">
+                        <Box sx={{ mt: isMobile ? 0 : 1 }}>
+                           <button className="btn-3-features" onClick={() => setOpenAlert(true)}>
+                                 <span>Contratar</span>
+                            </button>
+                        </Box>                        
                       </Box>
                     </AdditionalContent>
                   </Overlay>
