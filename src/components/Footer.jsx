@@ -1,9 +1,11 @@
-import { Box, Container, Typography, Link, keyframes, useMediaQuery } from "@mui/material";
+import { Box, Container, Typography, Link, keyframes, useMediaQuery,Snackbar, Alert } from "@mui/material";
+import { useState } from "react";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import { useInView } from "react-intersection-observer";
-
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'; // Ícono de administración
+import { useNavigate } from "react-router-dom";
 // Animación al entrar en vista
 const growElement = keyframes`
   0% { transform: scale(0.5); opacity: 0.5; }
@@ -74,7 +76,13 @@ const SocialButton = ({ href, Icon, bgColor, hoverStyles, isMobile }) => (
 
 const Footer = () => {
   const isMobile = useMediaQuery("(max-width:600px)");
+  const [openAlert, setOpenAlert] = useState(false);
+  const navigate = useNavigate(); 
 
+  const handleClick = (event) => {
+    setOpenAlert(true);
+    navigate("/administracion"); // Redirige a /administracion
+  };
   // Animaciones al hacer scroll
   const { ref: logoRef, inView: logoInView } = useInView({ triggerOnce: true, threshold: 0.1 });
   const { ref: socialRef, inView: socialInView } = useInView({ triggerOnce: true, threshold: 0.1 });
@@ -146,7 +154,7 @@ const Footer = () => {
                 sx={{
                   display: "flex",
                   gap: 4,
-                  mt: 1,
+                  mt: 0,
                   animation: socialInView ? `${growElement} 1s forwards` : "none",
                 }}
               >
@@ -191,29 +199,43 @@ const Footer = () => {
             </Box>
 
             {/* 🔹 Columna 3: Proveedores */}
-            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
-             <Typography variant="h6" sx={{ color: "var(--darkreader-text-00b4ff, #1abcff)" }}>
-               Proveedores Para
-             </Typography>
-             <img
-               src="https://www.connectic.cl/wp-content/uploads/2021/04/mercadoublico-300x66.png"
-               alt="Mercado Público"
-               width={180}
-             />
-             <img
-               src="https://www.connectic.cl/wp-content/uploads/2021/04/logo-convenio-300x66.png"
-               alt="Convenio Marco"
-               width={180}
-             />
-           </Box> 
+            <Box
+  sx={{
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: 0.5, // menor separación entre imagen y texto
+  }}
+>
+  <img
+    src="area-clientes.png"
+    width={120}
+    alt="Área Clientes"
+    style={{ marginTop: -35, marginBottom: "10px" }} // Ajusta el valor según necesites
+  />
+
+  <Typography
+    sx={{
+      display: "flex",
+      alignItems: "center",
+      gap: 0.5,
+    }}
+  >
+    <AdminPanelSettingsIcon fontSize="small" />
+    <Link href="administracion" color="inherit" onClick={handleClick}>
+      Administración
+    </Link>
+  </Typography>
+</Box>
+
           </Box>
         )}
 
         {/* 🔹 Diseño para Móviles */}
         {isMobile && (
-          <Box display="flex" flexDirection="column" alignItems="center">
+          <Box display="flex" flexDirection="column" alignItems="center" mb={7}>
             <Box ref={logoRef} sx={{ animation: logoInView ? `${growElement} 1s forwards` : "none" }}>
-              <img src="/logo-react.png" alt="Logo" style={{ height: "85px", marginBottom: "10px" }} />
+              <img src="/logo-react.png" alt="Logo" style={{ height: "85px", marginBottom: "0" }} />
             </Box>
 
             {/* Redes Sociales */}
@@ -221,7 +243,7 @@ const Footer = () => {
               ref={socialRef}
               sx={{
                 display: "flex",
-                gap: isMobile ? 7 : 4,
+                gap: 6,
                 mb:2,
                 animation: socialInView ? `${growElement} 1s forwards` : "none",
               }}
@@ -229,14 +251,59 @@ const Footer = () => {
               <SocialButton href="https://www.instagram.com/plataformas.web/?hl=es-la" Icon={InstagramIcon} bgColor="linear-gradient(45deg, #cf198c, #f41242)" isMobile={isMobile}/>
               <SocialButton href="https://www.facebook.com/profile.php?id=100063452866880" Icon={FacebookIcon} bgColor="linear-gradient(45deg, #00B5F5, #002A8F)" isMobile={isMobile}/>
               <SocialButton href="https://www.linkedin.com/company/mittarentacar/?viewAsMember=true" Icon={LinkedInIcon} bgColor="linear-gradient(45deg, #00B5F5, #0077b7)" isMobile={isMobile} />
-            </Box>                 
+            </Box>   
+
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "left",
+                gap: 0.5, // menor separación entre imagen y texto
+              }}
+            >
+              <img
+                src="area-clientes.png"
+                width={120}
+                alt="Área Clientes"
+                style={{ marginTop: 30, marginBottom: "20px" }} // Ajusta el valor según necesites
+              />
+
+              <Typography
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 0,
+                }}
+              >
+                <AdminPanelSettingsIcon fontSize="small" />
+                <Link href="administracion" color="inherit" onClick={handleClick}>
+                  Administración
+                </Link>
+              </Typography>
+            </Box>              
           </Box>
+          
         )}
 
         <Typography variant="body2" align="center" mt={2} sx={{ marginTop: "5vh" }}>
         @Plataformas web React 2025 - v1.0.6
         </Typography>
       </Container>
+      {/* Snackbar con alerta animada */}
+      <Snackbar
+        open={openAlert}
+        autoHideDuration={4000}
+        onClose={() => setOpenAlert(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert
+          onClose={() => setOpenAlert(false)}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          Ingresar Credenciales para acceder a la Administración.
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

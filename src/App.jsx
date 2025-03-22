@@ -12,6 +12,7 @@ import Informations from "./components/Informations";
 import Contacto from "./components/Contacto";
 import Footer from "./components/Footer";
 import Catalogo from "./components/Catalogo";
+import Administracion from "./components/Administracion";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 function Home({ informationsRef, contactoRef }) {
@@ -90,15 +91,20 @@ function App() {
       <CssBaseline />
       <Box sx={{ m: isMobile ? 0 : 2, border: isMobile ? "none" : "4px solid white", borderRadius: isMobile ? "none" : "20px", overflow: "hidden" }}>
         <Box sx={{ minHeight: "100vh", background: "radial-gradient(circle, #111111 20%, #000000 80%)", color: "white", position: "relative" }}>
+        {(location.pathname !== "/administracion") && (
+          <>
           <Navbar contactoRef={contactoRef} /> {/* Pasamos el ref al Navbar */}
+          </>
+        )}    
           <Box sx={{ minHeight: "100vh" }}>
             <Routes>
               <Route path="/" element={<Home informationsRef={informationsRef} contactoRef= {contactoRef}/>} />
+              <Route path="/administracion" element={<Administracion />} />
               <Route path="/catalogo" element={<Catalogo />} />
               <Route path="/contacto" element={<Contacto />} />
             </Routes> 
             {/* Solo muestra estas secciones si NO estamos en /catalogo */}
-            {location.pathname !== "/catalogo" && (
+            {(location.pathname !== "/catalogo" && location.pathname !== "/administracion") && (
               <>
                 <Box id="areas-section">
                   <Areas />
@@ -109,10 +115,11 @@ function App() {
                 <Box ref={contactoRef}>
                   <Contacto />
                 </Box>
+                <Footer />
               </>
             )}            
           </Box>
-          <Footer />
+          
 
           <Box sx={{
             position: "fixed", bottom: "40px", right: "40px", zIndex: 100,
