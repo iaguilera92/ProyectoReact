@@ -1,15 +1,13 @@
 import * as XLSX from "xlsx";
+import bcrypt from "bcryptjs";
 
-// Función para leer el archivo Excel desde /public/database
 export const cargarUsuariosDesdeExcel = async () => {
   try {
-    const response = await fetch("/database/Usuarios.xlsx"); // ✅ nueva ruta
+    const response = await fetch("/database/Usuarios.xlsx");
     const arrayBuffer = await response.arrayBuffer();
-
     const workbook = XLSX.read(arrayBuffer, { type: "array" });
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const data = XLSX.utils.sheet_to_json(sheet);
-
     return data;
   } catch (error) {
     console.error("Error al cargar el archivo Excel:", error);
@@ -17,13 +15,18 @@ export const cargarUsuariosDesdeExcel = async () => {
   }
 };
 
-// Validación de credenciales
+// 🔐 Validar con comparación de hash
 export const validarCredenciales = async (usuarioIngresado, claveIngresada) => {
   const usuarios = await cargarUsuariosDesdeExcel();
 
-  return usuarios.find(
-    (u) =>
-      u.usuario?.toString().trim().toLowerCase() === usuarioIngresado.trim().toLowerCase() &&
-      u.password?.toString().trim() === claveIngresada.trim()
-  );
+  for (const u of usuarios) {
+    if (
+      u.usuario?.toString().trim().toLowerCase() === usuarioIngresado.trim().toLowerCase()
+    ) {
+      const esValido = await bcrypt.compare(claveIngresada, u.password?.toString().trim());
+      if (esValido) return u; // autenticación exitosa
+    }
+  }
+
+  return null; // usuario no encontrado o contraseña incorrecta
 };

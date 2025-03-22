@@ -11,7 +11,11 @@ import { MapContainer, TileLayer, Marker,  useMap, useMapEvent   } from "react-l
 import L from "leaflet";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+import emailjs  from "@emailjs/browser";
+const MotionBox = motion(Box);
 const finalPosition = [-33.435054, -70.688067];
+
+
 
 const letterVariants = {
   hidden: { opacity: 0, x: -20 },
@@ -31,8 +35,6 @@ const customIcon = new L.Icon({
 
 
 function Contacto() {
-  const [phone, setPhone] = useState("");
-  const [message, setMessage] = useState("");
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
   const [startAnimation, setStartAnimation] = useState(false);
@@ -44,9 +46,17 @@ function Contacto() {
   const initialZoom = 3; // Zoom inicial lejano
   const finalZoom = 17; // Zoom final al que queremos llegar
   const isMobile = useMediaQuery("(max-width:600px)"); // Detectar si es móvil
-  const { ref, inView } = useInView({
-    triggerOnce: true,
-    threshold: 0.3,
+  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.3 });
+  const [animar, setAnimar] = useState(false);
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [message, setMessage] = useState("");
+  const [errors, setErrors] = useState({});
+
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    type: "error", // "error", "success", etc.
   });
 
   useEffect(() => {
@@ -61,17 +71,62 @@ function Contacto() {
   }, [inView]);
 
 
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Número de Teléfono:", phone);
-    console.log("Solicitud:", message);
-    setFormSubmitted(true);
-    setOpenAlert(true);
-    setPhone("");
-    setMessage("");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  
+    const newErrors = {};
+  
+    if (!name.trim()) newErrors.name = true;
+    if (!phone.trim()) newErrors.phone = true;
+    if (!message.trim()) newErrors.message = true;
+  
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      setSnackbar({
+        open: true,
+        message: "Por favor, completa todos los campos.",
+        type: "error",
+      });
+      return;
+    }
+  
+    // Si todo está bien
+    setErrors({});
+  
+    // Enviar correo con EmailJS
+    emailjs.send(
+      'service_29hsjvu',          // ✅ Tu Service ID
+      'template_j4i5shl',         // ✅ Tu Template ID
+      {
+        nombre: name,
+        telefono: phone,
+        mensaje: message,
+        email: 'aguileraignacio1992@gmail.com' // 👈 Aquí va tu email como destinatario
+      },
+      'Oa-0XdMQ4lgneSOXx'          // ✅ Tu Public Key correcta
+    )
+    .then(() => {
+      setSnackbar({
+        open: true,
+        message: "¡Mensaje enviado con éxito! 📬",
+        type: "success",
+      });
+  
+      // Limpiar campos
+      setName("");
+      setPhone("");
+      setMessage("");
+    })
+    .catch((error) => {
+      console.error("Error al enviar el correo:", error);
+      setSnackbar({
+        open: true,
+        message: "Ocurrió un error al enviar el mensaje 😥",
+        type: "error",
+      });
+    });
   };
+  
 
 // Componente que maneja los clics en el mapa
 const MapClickHandler = () => {
@@ -98,6 +153,19 @@ useEffect(() => {
 
   return () => clearInterval(interval); // Limpia el intervalo al desmontar o cambiar la visibilidad
 }, [isHovered, inView]);
+
+useEffect(() => {
+  if (inView) {
+    const timeout = setTimeout(() => {
+      setAnimar(true);
+    }, 1400); // ⏱ 2 segundos de delay
+
+    return () => clearTimeout(timeout); // Limpieza por si el componente se desmonta
+  }
+}, [inView]);
+
+
+
 
   return (
 <Container
@@ -334,7 +402,7 @@ useEffect(() => {
       gap: 3,
       mt: 0,
       backgroundColor: "#0D1117", // Fondo oscuro de GitHub
-      padding: "30px",
+      padding: "20px",
       borderRadius: 5, // Bordes redondeados
       boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.2)", // Sombra sutil
       border: "1px solid #30363D", // Borde sutil
@@ -363,91 +431,123 @@ useEffect(() => {
 <Grid container spacing={2}>
   {/* Fila 1: Nombre y Teléfono */}
   <Grid item xs={12} sm={6}>
-    <TextField
-      placeholder="Nombre/Apellido"
-      variant="outlined"
-      fullWidth
-      value={name}
-      onChange={(e) => setName(e.target.value)}
-      sx={{
-        backgroundColor: "#161B22",
-        borderRadius: 2,
-        input: { color: "#E6EDF3", fontSize: "0.9rem" },
-        fieldset: { borderColor: "#30363D" },
-        "&:hover fieldset": { borderColor: "#58A6FF" },
-        "&.Mui-focused fieldset": { borderColor: "#58A6FF" },
-      }}
-    />
+  <TextField
+  label="Nombre/Apellido"
+  variant="outlined"
+  fullWidth
+  value={name}
+  onChange={(e) => {
+    const input = e.target.value;
+    const soloTexto = input.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
+    setName(soloTexto);
+  }}
+  error={Boolean(errors.name)}
+  sx={{
+    backgroundColor: "#161B22",
+    borderRadius: 2,
+    input: { color: "#E6EDF3", fontSize: "0.9rem" },
+    label: { color: errors.name ? "#ff4d4f" : "#E6EDF3" },
+    fieldset: {
+      borderColor: errors.name ? "#ff4d4f" : "#30363D",
+    },
+    "&:hover fieldset": {
+      borderColor: errors.name ? "#ff4d4f" : "#58A6FF",
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: errors.name ? "#ff4d4f" : "#58A6FF",
+    },
+  }}
+/>
+
+
   </Grid>
 
   <Grid item xs={12} sm={6}>
-    <TextField
-      placeholder="Ejemplo: +56 9999 9999"
-      variant="outlined"
-      fullWidth
-      value={phone}
-      onChange={(e) => {
-        const value = e.target.value;
-        if (/^\+?\d*$/.test(value) && value.length <= 12) {
-          setPhone(value);
-        }
-      }}
-      inputProps={{ maxLength: 12 }}
-      sx={{
-        backgroundColor: "#161B22",
-        borderRadius: 2,
-        input: { color: "#E6EDF3", fontSize: "0.9rem" },
-        fieldset: { borderColor: "#30363D" },
-        "&:hover fieldset": { borderColor: "#58A6FF" },
-        "&.Mui-focused fieldset": { borderColor: "#58A6FF" },
-      }}
-    />
+  <TextField
+  label="Teléfono"
+  variant="outlined"
+  fullWidth
+  value={phone}
+  onChange={(e) => {
+    const value = e.target.value;
+    if (/^\+?\d*$/.test(value) && value.length <= 12) {
+      setPhone(value);
+    }
+  }}
+  inputProps={{ maxLength: 12 }}
+  error={Boolean(errors.phone)}
+  sx={{
+    backgroundColor: "#161B22",
+    borderRadius: 2,
+    input: { color: "#E6EDF3", fontSize: "0.9rem" },
+    label: { color: errors.phone ? "#ff4d4f" : "#E6EDF3" },
+    fieldset: {
+      borderColor: errors.phone ? "#ff4d4f" : "#30363D",
+    },
+    "&:hover fieldset": {
+      borderColor: errors.phone ? "#ff4d4f" : "#58A6FF",
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: errors.phone ? "#ff4d4f" : "#58A6FF",
+    },
+  }}
+/>
+
   </Grid>
 
   {/* Fila 2: Mensaje */}
   <Grid item xs={12}>
-    <TextField
-      placeholder="Escríbenos, esperamos tu mensaje..."
-      variant="outlined"
-      fullWidth
-      multiline
-      rows={3}
-      value={message}
-      onChange={(e) => setMessage(e.target.value)}
-      sx={{
-        backgroundColor: "#161B22",
-        borderRadius: 2,
-        textarea: { color: "#E6EDF3", fontSize: "0.9rem" },
-        fieldset: { borderColor: "#30363D" },
-        "&:hover fieldset": { borderColor: "#58A6FF" },
-        "&.Mui-focused fieldset": { borderColor: "#58A6FF" },
-      }}
-    />
+  <TextField
+  label="Mensaje"
+  variant="outlined"
+  fullWidth
+  multiline
+  rows={3}
+  value={message}
+  onChange={(e) => setMessage(e.target.value)}
+  error={Boolean(errors.message)}
+  sx={{
+    backgroundColor: "#161B22",
+    borderRadius: 2,
+    textarea: { color: "#E6EDF3", fontSize: "0.9rem" },
+    label: { color: errors.message ? "#ff4d4f" : "#E6EDF3" },
+    fieldset: {
+      borderColor: errors.message ? "#ff4d4f" : "#30363D",
+    },
+    "&:hover fieldset": {
+      borderColor: errors.message ? "#ff4d4f" : "#58A6FF",
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: errors.message ? "#ff4d4f" : "#58A6FF",
+    },
+  }}
+/>
   </Grid>
 
   {/* Botón */}
   <Grid item xs={12}>
-    <Button
-      type="submit"
-      variant="contained"
-      fullWidth
-      sx={{
-        fontSize: "1rem",
-        fontWeight: "bold",
-        padding: "10px",
-        borderRadius: 3,
-        textTransform: "none",
-        backgroundColor: "var(--darkreader-background-c4211a, #9d1a15)",
-        color: "#fff",
-        boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
-        "&:hover": {
-          backgroundColor: "var(--darkreader-background-b62821, #92201a)",
-          boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.4)",
-        },
-      }}
-    >
-      Contactar
-    </Button>
+  <Button
+  type="submit"
+  onClick={handleSubmit}
+  variant="contained"
+  fullWidth
+  sx={{
+    fontSize: "1rem",
+    fontWeight: "bold",
+    padding: "10px",
+    borderRadius: 3,
+    textTransform: "none",
+    backgroundColor: "var(--darkreader-background-c4211a, #9d1a15)",
+    color: "#fff",
+    boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
+    "&:hover": {
+      backgroundColor: "var(--darkreader-background-b62821, #92201a)",
+      boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.4)",
+    },
+  }}
+>
+  Contactar
+</Button>
   </Grid>
 </Grid>
 
@@ -458,16 +558,26 @@ useEffect(() => {
   </Box>
 
 
-
-  <Box sx={{ mt: 2, px: 1 }}>
-  <Grid container spacing={2}>
-    {/* Columna 1: Servicio al cliente */}
-    <Grid item xs={12} md={6}>
-      <Box
+ {/* DESPUES DEL FORMULARIO CONTACTO */}
+ <Box sx={{ mt: 2, px: 1 }}>
+  <MotionBox
+    ref={ref}
+    initial={{ opacity: 0, y: 50 }}
+    animate={animar ? { opacity: 1, y: 0 } : {}}
+    transition={{ duration: 0.6, ease: "easeOut" }}
+    sx={{
+      width: "100%",
+      display: "flex",
+      flexDirection: "column", // mantiene el grid en columna
+    }}
+  >
+      <Grid container spacing={2}>
+       <Grid item xs={12} md={6}>
+        <Box
         sx={{
           background: "linear-gradient(135deg, #0048d5 0%, #0b82ff 100%)",
           borderRadius: "16px",
-          p: 2.1, // ⬅️ Padding interior del contenido
+          p: 1.1, // ⬅️ Padding interior del contenido
           display: "flex",
           alignItems: "center",
           gap: 2,
@@ -510,16 +620,16 @@ useEffect(() => {
             <ArrowForwardIcon sx={{ fontSize: 16, ml: 0.5 }} />
           </Button>
         </Box>
-      </Box>
-    </Grid>
+          </Box>
+        </Grid>
 
-    {/* Columna 2: WhatsApp */}
-    <Grid item xs={12} md={6}>
-      <Box
+        {/* Tarjeta 2 */}
+        <Grid item xs={12} md={6}>
+        <Box
         sx={{
           background: "linear-gradient(135deg, #128C7E 0%, #25D366 100%)",
           borderRadius: "16px",
-          p: 2.1,
+          p: 1.1,
           display: "flex",
           alignItems: "center",
           gap: 2,
@@ -563,10 +673,13 @@ useEffect(() => {
             <ArrowForwardIcon sx={{ fontSize: 16, ml: 0.5 }} />
           </Button>
         </Box>
-      </Box>
-    </Grid>
-  </Grid>
-</Box>
+
+          </Box>
+        </Grid>
+      </Grid>
+    </MotionBox>
+  </Box>
+
 
 
 
@@ -587,11 +700,26 @@ useEffect(() => {
           </Box>
         )}
 
-        <Snackbar open={openAlert} autoHideDuration={4000} onClose={() => setOpenAlert(false)} anchorOrigin={{ vertical: "top", horizontal: "right" }}>
-          <Alert onClose={() => setOpenAlert(false)} severity="success" sx={{ width: "100%" }}>
-            ¡Gracias por contactarnos!
-          </Alert>
-        </Snackbar>
+<Snackbar
+  open={snackbar.open}
+  autoHideDuration={4000}
+  sx={{ zIndex: 1400 }} // 🛡️ Material UI usa 1300 para modales por defecto
+  onClose={() => setSnackbar({ ...snackbar, open: false })}
+  anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+>
+    <Alert
+    onClose={() => setSnackbar({ ...snackbar, open: false })}
+    severity={snackbar.type}
+    sx={{
+      width: "100%",
+      maxWidth: 360,
+      fontSize: "0.9rem",
+      boxShadow: 3,
+    }}
+  >
+    {snackbar.message}
+  </Alert>
+</Snackbar>
       </Box>
     </Container>
   );

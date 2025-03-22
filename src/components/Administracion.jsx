@@ -16,7 +16,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useNavigate } from "react-router-dom";
 import { validarCredenciales } from "../helpers/HelperUsuarios";
-
+import { Checkbox, FormControlLabel } from "@mui/material";
 
 
 const Administracion = () => {
@@ -30,7 +30,7 @@ const Administracion = () => {
   const [openAlert, setOpenAlert] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const [recordarme, setRecordarme] = useState(false);
 
 //VALIDAR INICIO DE SESIÓN
 const [snackbar, setSnackbar] = useState({
@@ -50,7 +50,7 @@ const handleSubmit = async (e) => {
     setSnackbar({
       open: true,
       type: "success",
-      message: "Bienvenido 😎",
+      message: `Bienvenido ${usuarioValido.nombre} 😎`,
     });
   } else {
     setSnackbar({
@@ -83,7 +83,21 @@ const handleSubmit = async (e) => {
 
     return () => clearInterval(typingInterval);
   }, []);
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "auto"; // restaurar al salir
+    };
+  }, []);
 
+  useEffect(() => {
+    const credencialesGuardadas = JSON.parse(localStorage.getItem("credenciales"));
+    if (credencialesGuardadas) {
+      setEmail(credencialesGuardadas.email);
+      setPassword(credencialesGuardadas.password);
+      setRecordarme(true);
+    }
+  }, []);
   return (
     <Box
       sx={{
@@ -190,13 +204,27 @@ const handleSubmit = async (e) => {
     style: { color: "white" },
   }}
 />
-
+<FormControlLabel
+  control={
+    <Checkbox
+      checked={recordarme}
+      onChange={(e) => setRecordarme(e.target.checked)}
+      sx={{ color: "white" }}
+    />
+  }
+  label="Recordarme"
+  sx={{
+    color: "#bbb",
+    mt: 0,
+    fontSize: "0.8rem"
+  }}
+/>
           <Button
             type="submit"
             fullWidth
             variant="outlined"
             sx={{
-              mt: 3,
+              mt: 2,
               color: "white",
               borderColor: "white",
               "&:hover": {
@@ -231,7 +259,7 @@ const handleSubmit = async (e) => {
   open={snackbar.open}
   autoHideDuration={4000}
   onClose={() => setSnackbar({ ...snackbar, open: false })}
-  anchorOrigin={{ vertical: "top", horizontal: "center" }} // ✅ centrado
+  anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
 >
   <Alert
     onClose={() => setSnackbar({ ...snackbar, open: false })}

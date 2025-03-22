@@ -10,9 +10,9 @@ function Hero({ scrollToContacto }) {
   const isMobile = useMediaQuery("(max-width:600px)"); // Detectar si la pantalla es menor a 600px
 
   const texts = [
-    { title: "SOLUCIONES TECNOLÓGICAS", description: "Soluciones digitales a medida." },
+    { title: "SOLUCIONES TECNOLÓGICAS", description: "Soluciones digitales a la medida." },
+    { title: "SOPORTE EVOLUTIVO", description: "Últimas tecnologías para generar sistemas y sitios web." },
     { title: "PLATAFORMAS TI", description: "Impulsamos tu negocio al siguiente nivel." },
-    { title: "DESARROLLO DE SOFTWARE", description: "Últimas tecnologías para generar sistemas y sitios web." },
   ];
 
   useEffect(() => {
@@ -147,7 +147,7 @@ function Hero({ scrollToContacto }) {
         open={openAlert}
         autoHideDuration={4000}
         onClose={() => setOpenAlert(false)}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
         <Alert onClose={() => setOpenAlert(false)} severity="success" sx={{ width: "100%" }}>
           Ahora podrás ingresar tu información para contactarnos. Te agradecemos!
