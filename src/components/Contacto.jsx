@@ -1,7 +1,5 @@
 import React, { useState, useEffect,useRef   } from "react";
 import { Container, Typography, Box, TextField, Button, Snackbar, Alert, Grid, useMediaQuery } from "@mui/material";
-import PhoneIcon from "@mui/icons-material/Phone";
-import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { useInView } from "react-intersection-observer";
 import { motion } from "framer-motion";
@@ -10,6 +8,7 @@ import "leaflet/dist/leaflet.css"; // Estilo básico de Leaflet
 import { MapContainer, TileLayer, Marker,  useMap, useMapEvent   } from "react-leaflet";
 import L from "leaflet";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import SupportAgentIcon from "@mui/icons-material/SupportAgent"; // Opcional si no usas imagen
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import emailjs  from "@emailjs/browser";
 const MotionBox = motion(Box);
@@ -573,108 +572,144 @@ useEffect(() => {
   >
       <Grid container spacing={2}>
        <Grid item xs={12} md={6}>
-        <Box
-        sx={{
-          background: "linear-gradient(135deg, #0048d5 0%, #0b82ff 100%)",
-          borderRadius: "16px",
-          p: 1.1, // ⬅️ Padding interior del contenido
-          display: "flex",
-          alignItems: "center",
-          gap: 2,
-          border: "1px solid rgba(255, 255, 255, 0.15)", // ⬅️ Borde elegante
-          boxShadow: "0 0 20px rgba(0, 72, 213, 0.25)",
-          color: "#fff",
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <img src="/audifonos.png" alt="Servicio al cliente" width={44} height={34} />
-        </Box>
+       <Box
+    sx={{
+      backgroundImage: `
+        linear-gradient(180deg, #ffe9e9 22.77%, #f6c9c9),
+        linear-gradient(180deg, hsla(0, 100%, 96%, 0) 30%, #f5c8c8 87.1%)      
+      `,
+      backgroundBlendMode: "normal",
+      backgroundSize: "cover",
+      borderRadius: "16px",
+      overflow: "hidden",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "flex-start", // 👈 ya lo tienes correcto
+      gap: 0,
+      p: 2,
+      textAlign: "left", // 👈 asegura el texto alineado
+  }}
+>
+  {/* Imagen alineada a la izquierda */}
+  <Box sx={{ display: "flex", alignItems: "flex-start" }}>
+    <img
+      src="soporte-tecnico.png"
+      alt="Servicio al cliente"
+      loading="lazy"
+      style={{
+        marginLeft: 4,
+        width: "130px",
+        marginBottom: "5px",
+        objectFit: "contain",
+        borderRadius: 0,
+      }}
+    />
+  </Box>
 
-        <Box>
-          <Typography variant="subtitle1" sx={{ fontWeight: "bold", fontSize: "0.85rem" }}>
-            Servicio al cliente
-          </Typography>
-          <Typography variant="body2" sx={{ color: "#d1e4ff", fontSize: "0.8rem" }}>
-            Ponte en contacto con uno de nuestros ejecutivos
-          </Typography>
-          <Button
-            href="tel:6002000202"
-            variant="text"
-            size="small"
-            sx={{
-              mt: 1,
-              px: 0,
-              color: "#ffffff",
-              fontWeight: "bold",
-              textTransform: "none",
-              display: "inline-flex",
-              alignItems: "center",
-              fontSize: "0.8rem",
-              "&:hover": {
-                textDecoration: "underline",
-                backgroundColor: "transparent",
-              },
-            }}
-          >
-            Contactar ahora
-            <ArrowForwardIcon sx={{ fontSize: 16, ml: 0.5 }} />
-          </Button>
-        </Box>
-          </Box>
+  {/* Texto + botón alineados a la izquierda */}
+  <Box sx={{ textAlign: "left", alignItems: "flex-start" }}>
+    <Typography
+      variant="body1"
+      sx={{ fontSize: "0.9rem", mb: 1, color: "#000",marginLeft: 1 }}
+    >
+      Ponte en contacto con uno de nuestros ejecutivos para ayudarte con lo que necesites.
+    </Typography>
+    <Button
+      href="tel:6002000202"
+      size="small"
+      variant="text"
+      sx={{
+        fontSize: "0.85rem",
+        fontWeight: "bold",
+        color: "#e1251b",
+        textTransform: "none",
+        "&:hover": {
+          textDecoration: "underline",
+          background: "transparent",
+        },
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 0.5,
+      }}
+    >
+      <SupportAgentIcon sx={{ fontSize: 18 }} />
+          Contactar ahora
+          <ArrowForwardIcon sx={{ fontSize: 16 }} />
+    </Button>
+  </Box>
+</Box>
+
         </Grid>
 
         {/* Tarjeta 2 */}
         <Grid item xs={12} md={6}>
+          
         <Box
+    sx={{
+      backgroundImage: `
+        linear-gradient(180deg, hsla(155, 100%, 96%, 0) 30%, #d1f5e4 87.1%),
+        linear-gradient(180deg, #b2f5dc 22.77%, #25d366)
+      `,
+      backgroundBlendMode: "normal",
+      backgroundSize: "cover",
+      borderRadius: "16px",
+      overflow: "hidden",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "flex-start",
+      gap: 0,
+      p: 2,
+      textAlign: "left",
+    }}
+  >
+   <Box sx={{ width: "auto", display: "flex", justifyContent: "flex-start" }}>
+  <img
+    src="whatsapp-logo.png"
+    alt="WhatsApp"
+    loading="lazy"
+    style={{
+      marginLeft: 4,
+      width: "130px", // ✅ más pequeño
+      marginBottom: "8px",
+      objectFit: "contain",
+      borderRadius: "0",
+    }}
+  />
+</Box>
+
+
+
+    <Box>
+      <Typography variant="body1" sx={{ fontSize: "0.9rem", mb: 1, marginLeft: 1 }}>
+        Escríbenos directamente por WhatsApp para resolver tus dudas al instante.
+      </Typography>
+      <Button
+        href="https://api.whatsapp.com/send?phone=56992914526"
+        target="_blank"
+        size="small"
+        variant="text"
         sx={{
-          background: "linear-gradient(135deg, #128C7E 0%, #25D366 100%)",
-          borderRadius: "16px",
-          p: 1.1,
-          display: "flex",
+          fontSize: "0.85rem",
+          fontWeight: "bold",
+          color: "#128C7E", // color WhatsApp
+          textTransform: "none",
+          "&:hover": {
+            textDecoration: "underline",
+            background: "transparent",
+          },
+          display: "inline-flex",
           alignItems: "center",
-          gap: 2,
-          border: "1px solid rgba(255, 255, 255, 0.15)",
-          boxShadow: "0 0 20px rgba(37, 211, 102, 0.25)",
-          color: "#fff",
+          gap: 0.5,
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <WhatsAppIcon sx={{ fontSize: 34, color: "#fff" }} />
-        </Box>
+        <WhatsAppIcon sx={{ fontSize: 18 }} />
+        Chatear ahora
+        <ArrowForwardIcon sx={{ fontSize: 16 }} />
+      </Button>
+    </Box>
+  </Box>
 
-        <Box>
-          <Typography variant="subtitle1" sx={{ fontWeight: "bold", fontSize: "0.85rem" }}>
-            Escríbenos por WhatsApp
-          </Typography>
-          <Typography variant="body2" sx={{ color: "#eafff4", fontSize: "0.8rem" }}>
-            Resolvemos tus dudas al instante por WhatsApp.
-          </Typography>
-          <Button
-            href="https://api.whatsapp.com/send?phone=56992914526"
-            target="_blank"
-            variant="text"
-            size="small"
-            sx={{
-              mt: 1,
-              px: 0,
-              color: "#ffffff",
-              fontWeight: "bold",
-              textTransform: "none",
-              display: "inline-flex",
-              alignItems: "center",
-              fontSize: "0.8rem",
-              "&:hover": {
-                textDecoration: "underline",
-                backgroundColor: "transparent",
-              },
-            }}
-          >
-            Chatear ahora
-            <ArrowForwardIcon sx={{ fontSize: 16, ml: 0.5 }} />
-          </Button>
-        </Box>
 
-          </Box>
         </Grid>
       </Grid>
     </MotionBox>

@@ -46,11 +46,15 @@ const handleSubmit = async (e) => {
   const usuarioValido = await validarCredenciales(email, password);
   console.log("Resultado de validación:", usuarioValido);
 
-  if (usuarioValido) {
-    setSnackbar({
-      open: true,
-      type: "success",
-      message: `Bienvenido ${usuarioValido.nombre} 😎`,
+  if (usuarioValido) {    
+    navigate("/catalogo", {
+      state: {
+        snackbar: {
+          open: true,
+          type: "success",
+          message: `Bienvenido ${usuarioValido.nombre} 😎`,
+        },
+      },
     });
   } else {
     setSnackbar({

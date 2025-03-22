@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Snackbar, Box, Alert } from '@mui/material';
-import { motion } from 'framer-motion'; // Usaremos framer-motion para las animaciones
-import { useInView } from 'react-intersection-observer'; // Para manejar el scroll
+import { useLocation } from 'react-router-dom';
+import { Container, Snackbar, Box, Alert, Grid } from '@mui/material';
+import { motion } from 'framer-motion';
 import './css/Catalogo.css';
 
 const Catalogo = () => {
   const [openAlert, setOpenAlert] = useState(false);
   const [productos, setProductos] = useState([]);
-  const [isMobile, setIsMobile] = useState(false); // Estado para detectar si es mobile
+  const [isMobile, setIsMobile] = useState(false);
+  const location = useLocation();
+  const [snackbar, setSnackbar] = useState({ open: false, type: 'success', message: '' });
 
   const GetProducto = (idProducto, precio, imgUrl, stock = 1, conDescuento = false) => {
     const url = ImgUrlAleatorio(imgUrl);
-    const producto = {
+    return {
       IdProducto: idProducto,
       NombreProducto: `Producto ${idProducto}`,
       Descripcion: 'Esta es una descripción del producto en stock, click para agregar al carrito.',
@@ -20,23 +22,18 @@ const Catalogo = () => {
       ImageUrl: url,
       ConDescuento: conDescuento
     };
-    return producto;
   };
-  //https://enteldigital.cl/hubfs/raw_assets/public/HandyApps/Site_pages/Home/images/network-bg.svg APLICAR IMG
+
   const ImgUrlAleatorio = (imgUrl) => {
-    let url = "https://emprendepyme.net/wp-content/uploads/2023/03/comercializar-productos.jpg";
-    if (imgUrl === 2) {
-      url = "https://www.hostingplus.cl/wp-content/uploads/2023/08/Importancia-del-carrito-de-compra.jpg";
-    } else if (imgUrl === 3) {
-      url = "https://logistica360.pe/wp-content/uploads/2023/11/compras-inte.jpg";
-    } else if (imgUrl === 4) {
-      url = "https://www.ticobuycr.com/wp-content/uploads/2021/04/venta-por-internet_1.jpg";
-    } else if (imgUrl === 5) {
-      url = "https://emprendepyme.net/wp-content/uploads/2023/03/cualidades-producto.jpg";
-    } else if (imgUrl === 6) {
-      url = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpK3luyjdef0_KFW3p1I7upURnq3Rf31eVyQ&s";
-    }
-    return url;
+    const urls = [
+      'https://emprendepyme.net/wp-content/uploads/2023/03/comercializar-productos.jpg',
+      'https://www.hostingplus.cl/wp-content/uploads/2023/08/Importancia-del-carrito-de-compra.jpg',
+      'https://logistica360.pe/wp-content/uploads/2023/11/compras-inte.jpg',
+      'https://www.ticobuycr.com/wp-content/uploads/2021/04/venta-por-internet_1.jpg',
+      'https://emprendepyme.net/wp-content/uploads/2023/03/cualidades-producto.jpg',
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpK3luyjdef0_KFW3p1I7upURnq3Rf31eVyQ&s'
+    ];
+    return urls[imgUrl - 1] || urls[0];
   };
 
   useEffect(() => {
@@ -51,119 +48,189 @@ const Catalogo = () => {
     setProductos(productosData);
 
     window.scrollTo(0, 0);
-
-    // Detectamos si es móvil o escritorio
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768); // Si el ancho es menor o igual a 768px, es móvil
-    };
-
-    // Agregamos el event listener para el resize
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener('resize', handleResize);
-    handleResize(); // Llamamos una vez al cargar la página
-
-    return () => window.removeEventListener('resize', handleResize); // Limpiamos el event listener
+    handleResize();
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const FormatearPesos = (valor) => {
-    return `$${valor.toLocaleString('es-CL')}`;
-  };
+  useEffect(() => {
+    if (location.state?.snackbar) {
+      setSnackbar(location.state.snackbar);
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
-  const CalcularValorOld = (valor) => {
-    const valorOld = valor + 10000;
-    return FormatearPesos(valorOld);
-  };
+  const FormatearPesos = (valor) => `$${valor.toLocaleString('es-CL')}`;
+  const CalcularValorOld = (valor) => FormatearPesos(valor + 10000);
 
   return (
     <Box>
-      <Container
-        sx={{
-          py: 11,
-          minHeight: "calc(100vh - 64px)", // Asegurando que se ajuste a la pantalla
-          maxWidth: '1500px !important',
-          position: 'relative',
-          overflow: 'hidden',
-          paddingTop: '90px',  // Espacio en la parte superior
-          paddingBottom: '80px',  // Espacio en la parte inferior
-          backgroundImage: 'url(/fondo-blanco.jpg)',
-          backgroundSize: 'cover',
-          backgroundRepeat: 'no-repeat',
-          backgroundAttachment: 'fixed',
-        }}
-      >
-        <ul className="producto-cards">
-          {productos.map((producto) => (
-            <motion.li
-              key={producto.IdProducto}
-              
-              style={{ backgroundImage: `url(${producto.ImageUrl})` }}
-              initial={isMobile ? { x: '100vw', opacity: 0 } : { opacity: 0 }} // En mobile, comienza invisible y desde la derecha
-              animate={isMobile ? { x: 0, opacity: 1 } : { opacity: 1 }} // En escritorio, usa solo opacidad
-              transition={{ type: "spring", stiffness: 50, damping: 25 }} // Transición suave
-            >
-              <div className="producto-info">
-                <span className="title">{producto.NombreProducto}</span>
-                <p>{producto.Descripcion}</p>
-                {producto.ConDescuento && (
-                  <span className="price-old">
-                    <s>{CalcularValorOld(producto.Valor)}</s>
-                  </span>
-                )}
-                <span className="price">{FormatearPesos(producto.Valor)}</span>
-
-                {/* Valoración */}
-                <div className="rating" title="Valoración del producto">
-                  {[1, 2, 3, 4, 5].map((rating) => (
-                    <React.Fragment key={rating}>
-                      <input type="radio" name={`rating-${producto.IdProducto}`} id={`rating-${rating}`} />
-                      <label htmlFor={`rating-${rating}`}></label>
-                    </React.Fragment>
-                  ))}
-                </div>
-              </div>
-
-              {/* Stock */}
-              <div className="producto-stock">
-                <div className="stocks">
-                  {producto.Stock >= 10 ? (
-                    <span className="stock-verde">{producto.Stock}</span>
-                  ) : producto.Stock > 0 && producto.Stock < 10 ? (
-                    <span className="stock-naranjo">{producto.Stock}</span>
-                  ) : (
-                    <span className="stock-rojo">{producto.Stock}</span>
-                  )}
-                </div>
-              </div>
-
-              {/* Botón Agregar */}
-              <button
-                style={{ marginTop: '226px', cursor: 'pointer' }}
-                className="custom-boton btn-12"
-                onClick={() => {
-                  setOpenAlert(true);
-                  const nombreProducto = producto.NombreProducto;
-                  const mensaje = `¡Hola!%20Me%20intereso%20el%20${encodeURIComponent(nombreProducto)}, sigue a la venta?`;
-                  window.open(`https://api.whatsapp.com/send?phone=56992914526&text=${mensaje}`, "_blank");
-                }}
+      <Container maxWidth={false} disableGutters sx={{
+        minHeight: '100vh',
+        width: '100vw',
+        py: 11,
+        px: 2,
+        position: 'relative',
+        overflow: 'hidden',
+        backgroundImage: 'url(/fondo-blanco.jpg)',
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed',
+        backgroundPosition: 'center'
+      }}>
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={4}>
+            <ul className="producto-cards">
+              {productos.filter((_, i) => i % 2 === 0).map(producto => (
+                <motion.li
+                key={producto.IdProducto}
+                style={{ backgroundImage: `url(${producto.ImageUrl})` }}
+                initial={isMobile ? { x: '100vw', opacity: 0 } : { opacity: 0 }}
+                animate={isMobile ? { x: 0, opacity: 1 } : { opacity: 1 }}
+                transition={{ type: "spring", stiffness: 50, damping: 25 }}
               >
-                <span style={{ color: '#25D366' }}> {/* Color WhatsApp para "Contactar" */}
-                  Contactar
-                  <i className="fab fa-whatsapp" style={{ marginLeft: '4px', marginBottom: '3px', fontSize: '20px', color: '#25D366', verticalAlign: 'middle' }}></i>
-                </span>
-                <span>Solicitar Producto <i className="fas fa-shopping-cart" /></span>
-              </button>
-            </motion.li>
-          ))}
-        </ul>
+                <div className="producto-info">
+                  <span className="title">{producto.NombreProducto}</span>
+                  <p>{producto.Descripcion}</p>
+                  {producto.ConDescuento && (
+                    <span className="price-old">
+                      <s>{CalcularValorOld(producto.Valor)}</s>
+                    </span>
+                  )}
+                  <span className="price">{FormatearPesos(producto.Valor)}</span>
+
+                  {/* Valoración */}
+                  <div className="rating" title="Valoración del producto">
+                    {[1, 2, 3, 4, 5].map((rating) => (
+                      <React.Fragment key={rating}>
+                        <input type="radio" name={`rating-${producto.IdProducto}`} id={`rating-${rating}`} />
+                        <label htmlFor={`rating-${rating}`}></label>
+                      </React.Fragment>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Stock */}
+                <div className="producto-stock">
+                  <div className="stocks">
+                    {producto.Stock >= 10 ? (
+                      <span className="stock-verde">{producto.Stock}</span>
+                    ) : producto.Stock > 0 && producto.Stock < 10 ? (
+                      <span className="stock-naranjo">{producto.Stock}</span>
+                    ) : (
+                      <span className="stock-rojo">{producto.Stock}</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Botón Agregar */}
+                <button
+                  style={{ marginTop: '226px', cursor: 'pointer' }}
+                  className="custom-boton btn-12"
+                  onClick={() => {
+                    setOpenAlert(true);
+                    const nombreProducto = producto.NombreProducto;
+                    const mensaje = `¡Hola!%20Me%20intereso%20el%20${encodeURIComponent(nombreProducto)}, sigue a la venta?`;
+                    window.open(`https://api.whatsapp.com/send?phone=56992914526&text=${mensaje}`, "_blank");
+                  }}
+                >
+                  <span style={{ color: '#25D366' }}>
+                    Contactar
+                    <i className="fab fa-whatsapp" style={{ marginLeft: '4px', marginBottom: '3px', fontSize: '20px', color: '#25D366', verticalAlign: 'middle' }}></i>
+                  </span>
+                  <span>Solicitar Producto <i className="fas fa-shopping-cart" /></span>
+                </button>
+              </motion.li>
+              ))}
+            </ul>
+          </Grid>
+
+          <Grid item xs={12} md={4}>
+            <ul className="producto-cards">
+              {productos.filter((_, i) => i % 2 !== 0).map(producto => (
+                <motion.li
+                key={producto.IdProducto}
+                style={{ backgroundImage: `url(${producto.ImageUrl})` }}
+                initial={isMobile ? { x: '100vw', opacity: 0 } : { opacity: 0 }}
+                animate={isMobile ? { x: 0, opacity: 1 } : { opacity: 1 }}
+                transition={{ type: "spring", stiffness: 50, damping: 25 }}
+              >
+                <div className="producto-info">
+                  <span className="title">{producto.NombreProducto}</span>
+                  <p>{producto.Descripcion}</p>
+                  {producto.ConDescuento && (
+                    <span className="price-old">
+                      <s>{CalcularValorOld(producto.Valor)}</s>
+                    </span>
+                  )}
+                  <span className="price">{FormatearPesos(producto.Valor)}</span>
+
+                  {/* Valoración */}
+                  <div className="rating" title="Valoración del producto">
+                    {[1, 2, 3, 4, 5].map((rating) => (
+                      <React.Fragment key={rating}>
+                        <input type="radio" name={`rating-${producto.IdProducto}`} id={`rating-${rating}`} />
+                        <label htmlFor={`rating-${rating}`}></label>
+                      </React.Fragment>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Stock */}
+                <div className="producto-stock">
+                  <div className="stocks">
+                    {producto.Stock >= 10 ? (
+                      <span className="stock-verde">{producto.Stock}</span>
+                    ) : producto.Stock > 0 && producto.Stock < 10 ? (
+                      <span className="stock-naranjo">{producto.Stock}</span>
+                    ) : (
+                      <span className="stock-rojo">{producto.Stock}</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Botón Agregar */}
+                <button
+                  style={{ marginTop: '226px', cursor: 'pointer' }}
+                  className="custom-boton btn-12"
+                  onClick={() => {
+                    setOpenAlert(true);
+                    const nombreProducto = producto.NombreProducto;
+                    const mensaje = `¡Hola!%20Me%20intereso%20el%20${encodeURIComponent(nombreProducto)}, sigue a la venta?`;
+                    window.open(`https://api.whatsapp.com/send?phone=56992914526&text=${mensaje}`, "_blank");
+                  }}
+                >
+                  <span style={{ color: '#25D366' }}>
+                    Contactar
+                    <i className="fab fa-whatsapp" style={{ marginLeft: '4px', marginBottom: '3px', fontSize: '20px', color: '#25D366', verticalAlign: 'middle' }}></i>
+                  </span>
+                  <span>Solicitar Producto <i className="fas fa-shopping-cart" /></span>
+                </button>
+              </motion.li>
+              ))}
+            </ul>
+          </Grid>
+
+          <Grid item xs={12} md={4}>
+            <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <img
+                src="catalogo-img.png"
+                alt="Shopping"
+                style={{ maxHeight: '80vh', width: 'auto', objectFit: 'contain' }}
+              />
+            </Box>
+          </Grid>
+        </Grid>
       </Container>
 
       <Snackbar
-        open={openAlert}
+        open={snackbar.open}
         autoHideDuration={4000}
-        onClose={() => setOpenAlert(false)}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      >
-        <Alert onClose={() => setOpenAlert(false)} severity="success" sx={{ width: "100%" }}>
-          Se contactará con la Empresa para solicitar el producto.
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
+        <Alert severity={snackbar.type} onClose={() => setSnackbar({ ...snackbar, open: false })} sx={{ width: '100%', maxWidth: 360 }}>
+          {snackbar.message}
         </Alert>
       </Snackbar>
     </Box>
