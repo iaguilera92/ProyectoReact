@@ -257,7 +257,7 @@ const Footer = () => {
               sx={{
                 display: "flex",
                 flexDirection: "column",
-                alignItems: "left",
+                alignItems: "left",                
                 gap: 0.5, // menor separación entre imagen y texto
               }}
             >
@@ -265,17 +265,18 @@ const Footer = () => {
                 src="area-clientes.png"
                 width={120}
                 alt="Área Clientes"
-                style={{ marginTop: 30, marginBottom: "20px" }} // Ajusta el valor según necesites
+                style={{ marginTop: 30,marginRight: 30, marginBottom: "20px" }} // Ajusta el valor según necesites
               />
 
               <Typography
+                ml = {"10px"}
                 sx={{
                   display: "flex",
                   alignItems: "center",
                   gap: 0,
                 }}
               >
-                <AdminPanelSettingsIcon fontSize="small" />
+                <AdminPanelSettingsIcon fontSize="small"/>
                 <Link href="administracion" color="inherit" onClick={handleClick}>
                   Administración
                 </Link>
@@ -288,22 +289,7 @@ const Footer = () => {
         <Typography variant="body2" align="center" mt={2} sx={{ marginTop: "5vh" }}>
         @Plataformas web React 2025 - v1.0.6
         </Typography>
-      </Container>
-      {/* Snackbar con alerta animada */}
-      <Snackbar
-        open={openAlert}
-        autoHideDuration={4000}
-        onClose={() => setOpenAlert(false)}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      >
-        <Alert
-          onClose={() => setOpenAlert(false)}
-          severity="success"
-          sx={{ width: "100%" }}
-        >
-          Ingresar Credenciales para acceder a la Administración.
-        </Alert>
-      </Snackbar>
+      </Container>      
     </Box>
   );
 };

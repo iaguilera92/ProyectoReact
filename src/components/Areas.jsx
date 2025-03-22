@@ -109,7 +109,7 @@ useEffect(() => {
       backgroundSize: isMobile ? "100% 100%" : "100% auto", 
       backgroundPosition: isMobile ? "center" :"",    
       backgroundAttachment: isMobile ? "initial" : "fixed",
-      minHeight: isMobile ? "85vh" : "70vh",
+      minHeight: isMobile ? "85vh" : "auto",
       paddingTop: "30px !important",
       padding: { xs: 4, md: 16 },
       paddingBottom: { xs: 14, md: 16 },

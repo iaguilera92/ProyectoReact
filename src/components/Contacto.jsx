@@ -151,7 +151,7 @@ useEffect(() => {
   <Box
     sx={{
       position: "absolute", // ✅ Se posiciona respecto al Container (que tiene position: relative)
-      top: isMobile ? "40%" : "40%",
+      top: isMobile ? "15%" : "40%",
       left: isMobile ? "35%" : "44%",
       transform: "translate(-50%, -50%)",
       zIndex: 1001,

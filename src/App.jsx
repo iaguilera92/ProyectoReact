@@ -15,6 +15,9 @@ import Catalogo from "./components/Catalogo";
 import Administracion from "./components/Administracion";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import { useLocation } from "react-router-dom";
+
+
 function Home({ informationsRef, contactoRef }) {
   return (
     <Box>
@@ -35,7 +38,7 @@ function App() {
   const contactoRef = useRef(null); // Crear ref para la sección de contacto
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const informationsRef = useRef(null); // ✅ AÑADE AQUÍ EL REF PARA SCROLL
-
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -86,6 +89,15 @@ function App() {
     setHasInteracted(true);
   };
 
+  //location.pathname
+  useEffect(() => {
+    if (location.pathname === "/") {
+      // Ejecutar lógica cuando se vuelva a la ruta de inicio
+    }
+  }, [location.pathname]);
+
+
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -97,7 +109,7 @@ function App() {
           </>
         )}    
           <Box sx={{ minHeight: "100vh" }}>
-            <Routes>
+            <Routes location={location} key={location.pathname}>
               <Route path="/" element={<Home informationsRef={informationsRef} contactoRef= {contactoRef}/>} />
               <Route path="/administracion" element={<Administracion />} />
               <Route path="/catalogo" element={<Catalogo />} />

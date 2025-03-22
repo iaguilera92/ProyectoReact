@@ -8,11 +8,15 @@ import {
   Paper,
   InputAdornment,
   IconButton,
-  useMediaQuery
+  useMediaQuery,
+  Snackbar,
+  Alert
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useNavigate } from "react-router-dom";
+import { validarCredenciales } from "../helpers/HelperUsuarios";
+
 
 
 const Administracion = () => {
@@ -23,14 +27,45 @@ const Administracion = () => {
   const textToType = useRef("Iniciar sesión"); // ✅ text fijo y confiable
   const currentIndex = useRef(0); // ✅ índice persistente entre renders
   const navigate = useNavigate();
+  const [openAlert, setOpenAlert] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
 
+//VALIDAR INICIO DE SESIÓN
+const [snackbar, setSnackbar] = useState({
+  open: false,
+  type: "success", // "success", "error", "warning", "info"
+  message: "",
+});
+
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  const usuarioValido = await validarCredenciales(email, password);
+  console.log("Resultado de validación:", usuarioValido);
+
+  if (usuarioValido) {
+    setSnackbar({
+      open: true,
+      type: "success",
+      message: "Bienvenido 😎",
+    });
+  } else {
+    setSnackbar({
+      open: true,
+      type: "error",
+      message: "Usuario o contraseña incorrectos",
+    });
+  }
+};
+
+
+  useEffect(() => {
+    setOpenAlert(true);
+  }, []);
   const handleTogglePassword = () => setShowPassword(!showPassword);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert("Bienvenido");
-  };
 
   // Animación de tipeo
   useEffect(() => {
@@ -118,39 +153,43 @@ const Administracion = () => {
     </Typography>
 
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
-          <TextField
-            fullWidth
-            variant="filled"
-            label="Usuario o correo"
-            margin="dense"
-            InputProps={{
-              style: { backgroundColor: "#ffffff10", color: "white" },
-            }}
-            InputLabelProps={{
-              style: { color: "#bbb" },
-            }}
-          />
+        <TextField
+  fullWidth
+  variant="filled"
+  label="Usuario o correo"
+  margin="dense"
+  value={email} // ← este es el estado que almacena lo escrito
+  onChange={(e) => setEmail(e.target.value)} // ← actualiza el estado al escribir
+  InputProps={{
+    style: { backgroundColor: "#ffffff10", color: "white" },
+  }}
+  InputLabelProps={{
+    style: { color: "#bbb" },
+  }}
+/>
 
-          <TextField
-            fullWidth
-            type={showPassword ? "text" : "password"}
-            variant="filled"
-            label="Contraseña"
-            margin="dense"
-            InputProps={{
-              style: { backgroundColor: "#ffffff10", color: "white" },
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton onClick={handleTogglePassword} edge="end" sx={{ color: "#fff" }}>
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-            InputLabelProps={{
-              style: { color: "white" },
-            }}
-          />
+<TextField
+  fullWidth
+  type={showPassword ? "text" : "password"}
+  variant="filled"
+  label="Contraseña"
+  margin="dense"
+  value={password}
+  onChange={(e) => setPassword(e.target.value)}
+  InputProps={{
+    style: { backgroundColor: "#ffffff10", color: "white" },
+    endAdornment: (
+      <InputAdornment position="end">
+        <IconButton onClick={handleTogglePassword} edge="end" sx={{ color: "#fff" }}>
+          {showPassword ? <VisibilityOff /> : <Visibility />}
+        </IconButton>
+      </InputAdornment>
+    ),
+  }}
+  InputLabelProps={{
+    style: { color: "white" },
+  }}
+/>
 
           <Button
             type="submit"
@@ -165,29 +204,51 @@ const Administracion = () => {
                 backgroundColor: "#E95420",
               },
             }}
-          >
+          >       
             Entrar
           </Button>
           <Box sx={{ mt: 2 }}>
-  <Link
-    component="button"
-    onClick={() => navigate("/")}
-    underline="hover"
-    sx={{
-      color: "#bbb",
-      fontSize: "0.9rem",
-      "&:hover": {
-        color: "#E95420",
-      },
-    }}
-  >
-    ← Volver al inicio
-  </Link>
-</Box>
+          <Link
+            component="button"
+            onClick={() => navigate("/")}
+            underline="hover"
+            sx={{
+              color: "#bbb",
+              fontSize: "0.9rem",
+              "&:hover": {
+                color: "#E95420",
+              },
+            }}
+          >
+            ← Volver al inicio
+          </Link>
+        </Box>
 
         </Box>
-      </Paper>
+        
+      </Paper>    
+      <Snackbar
+  open={snackbar.open}
+  autoHideDuration={4000}
+  onClose={() => setSnackbar({ ...snackbar, open: false })}
+  anchorOrigin={{ vertical: "top", horizontal: "center" }} // ✅ centrado
+>
+  <Alert
+    onClose={() => setSnackbar({ ...snackbar, open: false })}
+    severity={snackbar.type}
+    sx={{
+      width: "100%",
+      maxWidth: 360,
+      fontSize: "0.9rem",
+      boxShadow: 3,
+    }}
+  >
+    {snackbar.message}
+  </Alert>
+</Snackbar>
+
     </Box>
+    
   );
 };
 
