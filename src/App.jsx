@@ -135,7 +135,7 @@ function App() {
                 fontFamily: "Poppins, sans-serif", zIndex: 102, opacity: openBubble ? 1 : 0,
                 transform: openBubble ? "translateX(0)" : "translateX(100%)", transition: "transform 0.5s ease, opacity 0.5s ease",
               }} onClick={() => setOpenBubble(false)}>
-                Puedes escribirnos directamente al wsp!
+                Puedes escribirnos al wsp!
               </Box>
             )}
           </Box>

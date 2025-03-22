@@ -326,7 +326,7 @@ function Navbar({ contactoRef }) {
           bgColor: "linear-gradient(45deg, #cf198c, #f41242)",
         },
         Facebook: {
-          href: "https://www.instagram.com/plataformas.web/?hl=es-la",
+          href: "https://www.facebook.com/profile.php?id=100063452866880",
           Icon: FacebookIcon,
           bgColor: "linear-gradient(45deg, #00B5F5, #002A8F)",
         },

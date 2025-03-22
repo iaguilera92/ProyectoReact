@@ -95,9 +95,6 @@ const AdditionalContent = styled(Box)({
 function Features({ scrollToInformations }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const handleScroll = () => {
-    scrollToInformations?.current?.scrollIntoView({ behavior: "smooth" });
-  };
 
 
   const { ref, inView } = useInView({

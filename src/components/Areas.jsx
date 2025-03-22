@@ -10,25 +10,25 @@ const data = [
     count: 20,
     text: "Proyectos terminados en distintas empresas",
     image:
-      "https://www.aycelaborytax.com/wp-content/uploads/2020/12/fusion-empresas.jpeg",
+      "good-job.gif",
   },
   {
     count: 45,
     text: "Proyectos a Pymes e Independientes",
     image:
-      "https://www.portafolio.co/files/article_new_multimedia/uploads/2017/06/12/593f19f4bdbc5.jpeg",
+      "developer-gif.gif",
   },
   {
     count: 6,
     text: "Años de Experiencia como desarrolladores",
     image:
-      "https://itahora.com/wp-content/uploads/2024/02/UX.jpg",
+      "experience-gif.gif",
   },
   {
     count: 8,
     text: "Tazas de café en el día ☕",
     image:
-      "https://www.viadurini.es/data/prod/img/servizio-18-tazze-da-caffe-the-con-zuccheriera-e-vassoio-in-porcellana-lucerna-1.jpg",
+      "cafe-gif.gif",
   },
 ];
 
@@ -154,7 +154,7 @@ useEffect(() => {
       justifyContent: "center",
       alignItems: "center",
       transformStyle: "preserve-3d",
-      transition: "transform 0.6s",
+      transition: "transform 2.6s",
       transitionDelay: inView ? "0.8s" : "0s",
       transform: inView ? "rotateY(180deg)" : "rotateY(0deg)",
       position: "relative",
