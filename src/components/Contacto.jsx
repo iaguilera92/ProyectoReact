@@ -9,6 +9,8 @@ import "./css/Contacto.css"; // Importamos el CSS
 import "leaflet/dist/leaflet.css"; // Estilo básico de Leaflet
 import { MapContainer, TileLayer, Marker,  useMap, useMapEvent   } from "react-leaflet";
 import L from "leaflet";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 const finalPosition = [-33.435054, -70.688067];
 
 const letterVariants = {
@@ -98,24 +100,25 @@ useEffect(() => {
 }, [isHovered, inView]);
 
   return (
-    <Container
-      sx={{
-        maxWidth: "none !important",
-        marginLeft: "0",
-        py: 11,
-        position: "relative",
-        overflow: "hidden",
-        paddingTop: "0px",
-        paddingBottom: "20px",
-        height: isMobile ? containerHeight : "70vh", // Asegúrate de que el contenedor ocupe toda la pantalla
-        backgroundImage: isMobile ? 'url(/fondo-mundo-mobile.png)': 'url(/fondo-mundo.png)',
-        backgroundSize: isMobile ? "cover" : "100% auto",
-        backgroundPosition: isMobile ? "center" :"center",
-        backgroundRepeat: "no-repeat", // Evita que la imagen se repita
-        backgroundAttachment: "fixed", // Mantiene el fondo fijo mientras el contenido se desplaza
-      }}
-      ref={ref}
-    >
+<Container
+  sx={{
+    maxWidth: "none !important",
+    marginLeft: 0,
+    py: 11,
+    position: "relative",
+    overflow: "hidden",
+    paddingTop: 0,
+    paddingBottom: "20px",
+    minHeight: isMobile ? containerHeight : "auto", // 👈 Cambia esto
+    backgroundImage: isMobile ? 'url(/fondo-mundo-mobile.png)' : 'url(/fondo-mundo.png)',
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    backgroundAttachment: "fixed",
+  }}
+  ref={ref}
+>
+
 
   {/* Divs con imágenes */}
 <div
@@ -123,7 +126,7 @@ useEffect(() => {
   
   style={{
     width: isMobile ? "50vw" : "50vw", // ✅ Mantiene altura adaptable en móviles
-    height: isMobile ? "50vh" : "70vh", // ✅ Mantiene altura adaptable en móviles
+    height: isMobile ? "50vh" : "76vh", // ✅ Mantiene altura adaptable en móviles
     backgroundImage: isMobile ? "url('/fono-left.jpg')" : "url('/mapa.jpg')",
     backgroundSize: "cover", // ✅ Evita cortes extraños en la imagen
     backgroundPosition: "center", // ✅ Centra la imagen correctamente
@@ -135,7 +138,7 @@ useEffect(() => {
   className={`image image-right ${startAnimation ? "animate-right" : ""}`}
   style={{
     width: isMobile ? "50vw" : "50vw", // ✅ Mantiene altura adaptable en móviles
-    height: isMobile ? "50vh" : "70vh", // ✅ Mantiene altura adaptable en móviles
+    height: isMobile ? "50vh" : "76vh", // ✅ Mantiene altura adaptable en móviles
     backgroundImage: isMobile ? "url('/fono-right.jpg')" : "url('/contactar.jpg')",
     backgroundSize: "cover", // ✅ Se ajusta sin cortes ni estiramientos
     backgroundPosition: "center", // ✅ Centra la imagen correctamente en cualquier pantalla
@@ -321,6 +324,7 @@ useEffect(() => {
 
 {/* Formulario estilo GitHub Mejorado */}
 <Grid item xs={12} md={6} sx={{ height: "auto" }}>
+  
   <Box
     component="form"
     onSubmit={handleSubmit}
@@ -356,111 +360,224 @@ useEffect(() => {
 
       return (
         <div ref={ref}>
-          {/* Campo de Teléfono con Animación */}
-          <Box>
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={startAnimation ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.8 }}
-              style={{ display: "flex", alignItems: "center", marginBottom: "6px" }} // Más cerca del TextField
-            >
-             <PhoneIcon sx={{ mr: 0.5, color: "#F0F6FC", fontSize: "1.5rem" }} />
-              <Typography variant="body1" sx={{ color: "#C9D1D9" }}> {/* Fuente más pequeña */}
-                Teléfono de contacto:
-              </Typography>
-            </motion.div>
+<Grid container spacing={2}>
+  {/* Fila 1: Nombre y Teléfono */}
+  <Grid item xs={12} sm={6}>
+    <TextField
+      placeholder="Nombre/Apellido"
+      variant="outlined"
+      fullWidth
+      value={name}
+      onChange={(e) => setName(e.target.value)}
+      sx={{
+        backgroundColor: "#161B22",
+        borderRadius: 2,
+        input: { color: "#E6EDF3", fontSize: "0.9rem" },
+        fieldset: { borderColor: "#30363D" },
+        "&:hover fieldset": { borderColor: "#58A6FF" },
+        "&.Mui-focused fieldset": { borderColor: "#58A6FF" },
+      }}
+    />
+  </Grid>
 
-            <TextField
-              placeholder="Ejemplo: +56 9999 9999"
-              variant="outlined"
-              fullWidth
-              value={phone}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (/^\+?\d*$/.test(value) && value.length <= 12) {
-                  setPhone(value);
-                }
-              }}
-              inputProps={{ maxLength: 12 }}
-              sx={{
-                backgroundColor: "#161B22",
-                borderRadius: 2,
-                input: { color: "#E6EDF3", fontSize: "0.9rem" }, // Texto un poco más pequeño
-                fieldset: { borderColor: "#30363D" },
-                "&:hover fieldset": { borderColor: "#58A6FF" },
-                "&.Mui-focused fieldset": { borderColor: "#58A6FF" },
-              }}
-            />
-          </Box>
+  <Grid item xs={12} sm={6}>
+    <TextField
+      placeholder="Ejemplo: +56 9999 9999"
+      variant="outlined"
+      fullWidth
+      value={phone}
+      onChange={(e) => {
+        const value = e.target.value;
+        if (/^\+?\d*$/.test(value) && value.length <= 12) {
+          setPhone(value);
+        }
+      }}
+      inputProps={{ maxLength: 12 }}
+      sx={{
+        backgroundColor: "#161B22",
+        borderRadius: 2,
+        input: { color: "#E6EDF3", fontSize: "0.9rem" },
+        fieldset: { borderColor: "#30363D" },
+        "&:hover fieldset": { borderColor: "#58A6FF" },
+        "&.Mui-focused fieldset": { borderColor: "#58A6FF" },
+      }}
+    />
+  </Grid>
 
-          {/* Campo de Mensaje con Animación */}
-          <Box marginTop="20px">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={startAnimation ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              style={{ display: "flex", alignItems: "center", marginBottom: "6px" }} // Más cerca del TextField
-            >
-              <ChatBubbleOutlineIcon sx={{ mr: 0.5, color: "#F0F6FC", fontSize: "1.5rem" }} />
-              <Typography variant="body1" sx={{ color: "#C9D1D9" }}>
-                Comentanos que necesitas:
-              </Typography>
-            </motion.div>
+  {/* Fila 2: Mensaje */}
+  <Grid item xs={12}>
+    <TextField
+      placeholder="Escríbenos, esperamos tu mensaje..."
+      variant="outlined"
+      fullWidth
+      multiline
+      rows={3}
+      value={message}
+      onChange={(e) => setMessage(e.target.value)}
+      sx={{
+        backgroundColor: "#161B22",
+        borderRadius: 2,
+        textarea: { color: "#E6EDF3", fontSize: "0.9rem" },
+        fieldset: { borderColor: "#30363D" },
+        "&:hover fieldset": { borderColor: "#58A6FF" },
+        "&.Mui-focused fieldset": { borderColor: "#58A6FF" },
+      }}
+    />
+  </Grid>
 
-            <TextField
-              placeholder="Escríbenos, esperamos tu mensaje..."
-              variant="outlined"
-              fullWidth
-              multiline
-              rows={4}
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              sx={{
-                backgroundColor: "#161B22",
-                borderRadius: 2,
-                input: { color: "#E6EDF3", fontSize: "0.9rem" }, // Texto más pequeño
-                textarea: { color: "#E6EDF3", fontSize: "0.9rem" }, // Para multiline
-                fieldset: { borderColor: "#30363D" },
-                "&:hover fieldset": { borderColor: "#58A6FF" },
-                "&.Mui-focused fieldset": { borderColor: "#58A6FF" },
-              }}
-            />
-          </Box>
+  {/* Botón */}
+  <Grid item xs={12}>
+    <Button
+      type="submit"
+      variant="contained"
+      fullWidth
+      sx={{
+        fontSize: "1rem",
+        fontWeight: "bold",
+        padding: "10px",
+        borderRadius: 3,
+        textTransform: "none",
+        backgroundColor: "var(--darkreader-background-c4211a, #9d1a15)",
+        color: "#fff",
+        boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
+        "&:hover": {
+          backgroundColor: "var(--darkreader-background-b62821, #92201a)",
+          boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.4)",
+        },
+      }}
+    >
+      Contactar
+    </Button>
+  </Grid>
+</Grid>
 
-          {/* Botón de Enviar con Tamaño Ancho */}
-          <Button
-            type="submit"
-            variant="contained"
-            sx={{
-              marginTop: "25px",
-              fontSize: "1rem",
-              fontWeight: "bold",
-              padding: "10px",
-              width: "100%", // Botón más ancho
-              borderRadius: 3,
-              textTransform: "none",
-              backgroundColor: "#238636", // Verde GitHub
-              color: "#fff",
-              boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
-              "&:hover": {
-                backgroundColor: "#2EA043",
-                boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.4)",
-              },
-            }}
-          >
-            Contactar
-          </Button>
+
         </div>
       );
     })()}
   </Box>
+
+
+
+  <Box sx={{ mt: 2, px: 1 }}>
+  <Grid container spacing={2}>
+    {/* Columna 1: Servicio al cliente */}
+    <Grid item xs={12} md={6}>
+      <Box
+        sx={{
+          background: "linear-gradient(135deg, #0048d5 0%, #0b82ff 100%)",
+          borderRadius: "16px",
+          p: 2.1, // ⬅️ Padding interior del contenido
+          display: "flex",
+          alignItems: "center",
+          gap: 2,
+          border: "1px solid rgba(255, 255, 255, 0.15)", // ⬅️ Borde elegante
+          boxShadow: "0 0 20px rgba(0, 72, 213, 0.25)",
+          color: "#fff",
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <img src="/audifonos.png" alt="Servicio al cliente" width={44} height={34} />
+        </Box>
+
+        <Box>
+          <Typography variant="subtitle1" sx={{ fontWeight: "bold", fontSize: "0.85rem" }}>
+            Servicio al cliente
+          </Typography>
+          <Typography variant="body2" sx={{ color: "#d1e4ff", fontSize: "0.8rem" }}>
+            Ponte en contacto con uno de nuestros ejecutivos
+          </Typography>
+          <Button
+            href="tel:6002000202"
+            variant="text"
+            size="small"
+            sx={{
+              mt: 1,
+              px: 0,
+              color: "#ffffff",
+              fontWeight: "bold",
+              textTransform: "none",
+              display: "inline-flex",
+              alignItems: "center",
+              fontSize: "0.8rem",
+              "&:hover": {
+                textDecoration: "underline",
+                backgroundColor: "transparent",
+              },
+            }}
+          >
+            Contactar ahora
+            <ArrowForwardIcon sx={{ fontSize: 16, ml: 0.5 }} />
+          </Button>
+        </Box>
+      </Box>
+    </Grid>
+
+    {/* Columna 2: WhatsApp */}
+    <Grid item xs={12} md={6}>
+      <Box
+        sx={{
+          background: "linear-gradient(135deg, #128C7E 0%, #25D366 100%)",
+          borderRadius: "16px",
+          p: 2.1,
+          display: "flex",
+          alignItems: "center",
+          gap: 2,
+          border: "1px solid rgba(255, 255, 255, 0.15)",
+          boxShadow: "0 0 20px rgba(37, 211, 102, 0.25)",
+          color: "#fff",
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <WhatsAppIcon sx={{ fontSize: 34, color: "#fff" }} />
+        </Box>
+
+        <Box>
+          <Typography variant="subtitle1" sx={{ fontWeight: "bold", fontSize: "0.85rem" }}>
+            Escríbenos por WhatsApp
+          </Typography>
+          <Typography variant="body2" sx={{ color: "#eafff4", fontSize: "0.8rem" }}>
+            Resolvemos tus dudas al instante por WhatsApp.
+          </Typography>
+          <Button
+            href="https://api.whatsapp.com/send?phone=56992914526"
+            target="_blank"
+            variant="text"
+            size="small"
+            sx={{
+              mt: 1,
+              px: 0,
+              color: "#ffffff",
+              fontWeight: "bold",
+              textTransform: "none",
+              display: "inline-flex",
+              alignItems: "center",
+              fontSize: "0.8rem",
+              "&:hover": {
+                textDecoration: "underline",
+                backgroundColor: "transparent",
+              },
+            }}
+          >
+            Chatear ahora
+            <ArrowForwardIcon sx={{ fontSize: 16, ml: 0.5 }} />
+          </Button>
+        </Box>
+      </Box>
+    </Grid>
+  </Grid>
+</Box>
+
+
+
 </Grid>
 
 
 
-    </Grid>
-    
-          
+
+
+
+    </Grid> 
         ) : (
           <Box sx={{ p: 8, mt: 4, minHeight: "300px", backgroundColor: "#e0f7e9", borderRadius: 2, textAlign: "center", boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)" }}>
             <CheckCircleIcon sx={{ fontSize: 180, color: "green", mb: 2 }} />

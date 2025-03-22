@@ -101,6 +101,8 @@ function Features({ scrollToInformations }) {
     triggerOnce: true,  // Esto asegura que se dispare solo una vez cuando el botón entre en vista
     threshold: 0.8,     // Ajusta este valor si quieres que se active antes o después
   });
+
+
   return (
     <Box
     sx={{
@@ -163,11 +165,20 @@ function Features({ scrollToInformations }) {
                         {feature.desc}
                       </Typography>
                       <Box variant="contained" sx={{ textAlign: "center",mt: 2, width: "100%" }} target="_self">
-                        <Box sx={{ mt: isMobile ? 0 : 1 }}>
-                           <button className="btn-3-features" onClick={() => setOpenAlert(true)}>
-                                 <span>Contratar</span>
-                            </button>
-                        </Box>                        
+                      <Box sx={{ mt: isMobile ? 0 : 1, textAlign: "center" }}>
+                      <button
+                        className="btn-3-features" zIndex="5"
+                        style={{ cursor: "arrow" }}
+                        onClick={(e) => {
+                          e.stopPropagation(); // ✅ Evita que se propague el click al área del Card
+                          const nombreFeature = feature.title;
+                          const mensaje = `¡Hola!%20Me%20interesó%20${encodeURIComponent(nombreFeature)}%20¿Me%20comentas?`;
+                          window.open(`https://api.whatsapp.com/send?phone=56992914526&text=${mensaje}`, "_blank");
+                        }}
+                      >
+                        <span>Contratar</span>
+                      </button>
+                    </Box>                   
                       </Box>
                     </AdditionalContent>
                   </Overlay>

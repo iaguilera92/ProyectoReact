@@ -14,10 +14,10 @@ import Footer from "./components/Footer";
 import Catalogo from "./components/Catalogo";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
-function Home({ informationsRef }) {
+function Home({ informationsRef, contactoRef }) {
   return (
     <Box>
-      <Hero />
+      <Hero scrollToContacto={contactoRef} />
       <Box>
         <Features scrollToInformations={informationsRef} />
       </Box>
@@ -93,7 +93,7 @@ function App() {
           <Navbar contactoRef={contactoRef} /> {/* Pasamos el ref al Navbar */}
           <Box sx={{ minHeight: "100vh" }}>
             <Routes>
-              <Route path="/" element={<Home informationsRef={informationsRef} />} />
+              <Route path="/" element={<Home informationsRef={informationsRef} contactoRef= {contactoRef}/>} />
               <Route path="/catalogo" element={<Catalogo />} />
               <Route path="/contacto" element={<Contacto />} />
             </Routes> 

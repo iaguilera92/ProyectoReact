@@ -47,7 +47,7 @@ const Areas = () => {
     if (inView) {
       const timer = setTimeout(() => {
         setDelayed(true);
-      }, 1100); // ⏳ Ahora el contador se activa después de 1.2 segundos
+      }, 1700); // ⏳ Ahora el contador se activa después de 1.2 segundos
   
       return () => clearTimeout(timer); // Limpia el temporizador al desmontarse
     }
@@ -81,14 +81,6 @@ const Areas = () => {
     "https://www.connectic.cl/wp-content/uploads/2024/07/Daco_5762223-400x316.png"
   ];
 
-// Cuando la imagen aparece en pantalla, espera 5s y activa la rotación
-useEffect(() => {
-  if (inView) {
-    setTimeout(() => {
-      setRotationActive(true);
-    }, 5000);
-  }
-}, [inView]);
 
 useEffect(() => {
   const interval = setInterval(() => {
@@ -264,11 +256,6 @@ useEffect(() => {
           alt="Rotating Image"
           width={isMobile ? "100%" : "100%"}
           height={isMobile ? "100%" : "100%"}
-          animate={{
-            opacity: delayed ? 1 : 0,
-            y: delayed ? [0, -10, 0] : -50,
-          }}
-          transition={{ duration: 1.5, ease: "easeInOut" }}
           style={{
             position: "absolute",
             backfaceVisibility: "hidden", // Oculta la cara trasera de la imagen
@@ -283,12 +270,7 @@ useEffect(() => {
           alt="Next Rotating Image"
           width={isMobile ? "100%" : "100%"}
           height={isMobile ? "100%" : "100%"}
-          initial={{ rotateY: 180, opacity: 1 }}
-          animate={{
-            opacity: delayed ? 1 : 0,
-            y: delayed ? [0, -10, 0] : -50,
-          }}
-          transition={{ duration: 1.5, ease: "easeInOut" }}
+          initial={{ rotateY: 180, opacity: 1 }}          
           style={{
             position: "absolute",
             transform: 'rotateY(180deg)', // Imagen trasera en la posición de 180 grados

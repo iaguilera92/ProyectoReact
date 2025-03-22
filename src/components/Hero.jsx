@@ -3,7 +3,7 @@ import { Container, Typography, Box, Snackbar, Alert, useMediaQuery } from "@mui
 import { motion, AnimatePresence } from "framer-motion";
 import "./css/Hero.css"; // Asegúrate de importar el CSS
 
-function Hero() {
+function Hero({ scrollToContacto }) {
   const [currentText, setCurrentText] = useState(0);
   const [openAlert, setOpenAlert] = useState(false);
   const [showButton, setShowButton] = useState(false); // Estado para mostrar el botón después del delay
@@ -127,7 +127,11 @@ function Hero() {
                   transition={{ duration: 0.5, ease: "easeOut" }}
                 >
                   <Box sx={{ mt: isMobile ? 4 : 1 }}>
-                    <button className="btn-3" onClick={() => setOpenAlert(true)}>
+                    <button className="btn-3" onClick={() => 
+                    {
+                      setOpenAlert(true);
+                      scrollToContacto.current?.scrollIntoView({ behavior: "smooth"}); 
+                    }}>
                       <span>Contactar</span>
                     </button>
                   </Box>
@@ -146,7 +150,7 @@ function Hero() {
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
         <Alert onClose={() => setOpenAlert(false)} severity="success" sx={{ width: "100%" }}>
-          ¡Gracias por contactarnos! Te responderemos pronto.
+          Ahora podrás ingresar tu información para contactarnos. Te agradecemos!
         </Alert>
       </Snackbar>
     </Box>

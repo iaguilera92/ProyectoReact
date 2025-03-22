@@ -151,7 +151,7 @@ const Footer = () => {
                 }}
               >
                  <SocialButton
-                 href="https://www.instagram.com/mittarentacar/?hl=es-la"
+                 href="https://www.instagram.com/plataformas.web/?hl=es-la"
                  Icon={InstagramIcon}
                  bgColor="linear-gradient(45deg, #cf198c, #f41242)"
                  hoverStyles={{
@@ -164,7 +164,7 @@ const Footer = () => {
  
                {/* Facebook con su hover personalizado */}
                <SocialButton
-                 href="https://www.facebook.com/Mittarentacar"
+                 href="https://www.facebook.com/profile.php?id=100063452866880"
                  Icon={FacebookIcon}
                  bgColor="linear-gradient(45deg, #00B5F5, #002A8F)"
                  hoverStyles={{
@@ -234,7 +234,7 @@ const Footer = () => {
         )}
 
         <Typography variant="body2" align="center" mt={2} sx={{ marginTop: "5vh" }}>
-        @Plataformas web React 2025 - v1.0.5
+        @Plataformas web React 2025 - v1.0.6
         </Typography>
       </Container>
     </Box>

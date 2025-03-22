@@ -278,7 +278,10 @@ const [showArrow, setShowArrow] = useState(true);
         centeredSlides={false}
         initialSlide={0}
         pagination={{ clickable: true }}
-        onSlideChange={(swiper) => setShowArrow(swiper.activeIndex === 0)}
+        onSlideChange={(swiper) => {
+          const index = swiper.activeIndex;
+          setShowArrow(index !== 2); // Oculta en la tercera tarjeta
+        }}
       >
         {promotions.map((promo, index) => (
           <SwiperSlide key={index}>       
@@ -329,21 +332,39 @@ const [showArrow, setShowArrow] = useState(true);
         ))}
       </Swiper>
 
-      {/* 🔹 Flecha sin fondo en la esquina superior derecha */}
       {showArrow && (
-        <IconButton
-          sx={{            
-            position: "absolute",
-            top: -12, 
-            right: 0, 
-            color: "white", 
-            zIndex: 10,
-            transition: "opacity 0.3s ease-in-out",
-          }}
-        >
-          <ArrowForwardIcon fontSize="large" sx={{ fontSize: "23px" }} />
-        </IconButton>
-      )}
+  <motion.div
+    animate={{
+      x: [0, 5, 0], // Flota hacia la derecha y vuelve
+    }}
+    transition={{
+      duration: 1.5,
+      repeat: Infinity,
+      ease: "easeInOut",
+    }}
+    style={{
+      position: "absolute",
+      top: -12,
+      right: 10,
+      zIndex: 10,
+    }}
+  >
+    <IconButton
+      sx={{
+        color: "white",
+        transition: "opacity 0.3s ease-in-out",
+        backgroundColor: "transparent",
+        boxShadow: "none",
+        padding: 0,
+        "&:hover": {
+          backgroundColor: "transparent",
+        },
+      }}
+    >
+      <ArrowForwardIcon fontSize="large" sx={{ fontSize: "23px" }} />
+    </IconButton>
+  </motion.div>
+)}
     </Box>
   </Grid>
 
