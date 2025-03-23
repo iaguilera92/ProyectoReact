@@ -7,16 +7,16 @@ import {
   Alert,
   Grid,
   Card,
-  Button,
+  useMediaQuery,
   Typography
 } from '@mui/material';
 import './css/Catalogo.css';
-
+import { motion } from 'framer-motion';
 const Catalogo = () => {
   const [productos, setProductos] = useState([]);
   const location = useLocation();
   const [snackbar, setSnackbar] = useState({ open: false, type: 'success', message: '' });
-
+  const isMobile = useMediaQuery("(max-width:600px)"); // Detectar si la pantalla es menor a 600px
   const FormatearPesos = (valor) => `$${valor.toLocaleString('es-CL')}`;
   const CalcularValorOld = (valor) => FormatearPesos(valor + 10000);
 
@@ -68,17 +68,17 @@ const Catalogo = () => {
   <Box
     sx={{
       position: 'absolute',
-      top: -18,
+      top: -12,
       right: -11,
       zIndex: 10,
-      width: 32,
-      height: 32,
+      width: 28,
+      height: 28,
       borderRadius: '50%',
       bgcolor:
         producto.Stock >= 10 ? '#4CAF50' : producto.Stock > 0 ? '#FFA000' : '#F44336',
       color: 'white',
       fontWeight: 'bold',
-      fontSize: 14,
+      fontSize: 12,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -91,9 +91,10 @@ const Catalogo = () => {
 
   <Card
   sx={{
+    border: '2px solid white',
     position: 'relative',
     width: '100%',
-    height: { xs: 260, sm: 280, md: 300 }, // ⬅️ aquí el ajuste clave
+    height: { xs: 290, sm: 280, md: 300 }, // ⬅️ aquí el ajuste clave
     overflow: 'hidden',
     borderRadius: 3,
     boxShadow: 4
@@ -142,7 +143,7 @@ const Catalogo = () => {
   {producto.NombreProducto}
 </Typography>
 
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.3, mb: 1 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.2, mb: 1 }}>
   {['Primer descriptor producto.', 'Segundo descriptor producto.', 'Tercer descriptor producto.'].map((text, index) => (
     <Box key={index} sx={{ display: 'flex', alignItems: 'center' }}>
       <Box
@@ -157,7 +158,7 @@ const Catalogo = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          mr: 0.8
+          mr: 0.2
         }}
       >
         {index + 1}
@@ -266,7 +267,7 @@ const Catalogo = () => {
           px: 2,
           position: 'relative',
           overflow: 'hidden',
-          backgroundImage: 'url(/fondo-blanco.jpg)',
+          backgroundImage: isMobile ? 'url(/fondo-azul2.jpg)' : 'url(/fondo-blanco.jpg)',
           backgroundSize: 'cover',
           backgroundRepeat: 'no-repeat',
           backgroundAttachment: 'fixed',
@@ -274,15 +275,25 @@ const Catalogo = () => {
         }}
       >
         <Grid container spacing={2}>
-          {[0, 1].map((groupIndex) => (
-            <Grid item xs={6} md={4} key={groupIndex}>
-              <ul className="producto-cards">
-                {productos
-                  .filter((_, i) => i % 2 === groupIndex)
-                  .map(renderCard)}
-              </ul>
-            </Grid>
-          ))}
+        {productos.map((producto, index) => (
+  <Grid
+    item
+    xs={6}
+    md={4}
+    key={producto.IdProducto}
+    component={motion.div}
+    initial={{ opacity: 0, x: 100 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{
+      duration: 0.5,
+      delay: index * 0.5,
+      ease: 'easeOut'
+    }}
+  >
+    {renderCard(producto)}
+  </Grid>
+))}
+
 
           <Grid item xs={12} md={4} sx={{ display: { xs: 'none', md: 'flex' } }}>
             <Box

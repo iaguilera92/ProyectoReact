@@ -42,11 +42,13 @@
 
 .producto-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fill, 12.5rem) !important;
-    grid-gap: 3.2rem;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 1.5rem;
     justify-content: center;
     padding-left: 0;
-}
+    list-style: none;
+  }
+  
 /*@media (max-width: 768px) {
     .producto-cards {
         grid-template-columns: 1fr;

@@ -132,7 +132,8 @@ function App() {
             )}            
           </Box>
           
-
+          {(location.pathname !== "/catalogo") && (
+            <>
           <Box sx={{
             position: "fixed", bottom: "40px", right: "40px", zIndex: 100,
             transition: "bottom 0.3s ease", 
@@ -158,7 +159,8 @@ function App() {
               </Box>
             )}
           </Box>
-
+          </>
+        )}    
           {showArrow && (
             <IconButton onClick={scrollToTop} sx={{
               position: "fixed", bottom: "120px", right: "40px", backgroundColor: "#fff", color: "#000",
