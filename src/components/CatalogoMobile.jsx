@@ -63,195 +63,129 @@ const Catalogo = () => {
   }, [location.state]);
 
   const renderCard = (producto) => (
-    <Box key={producto.IdProducto} sx={{ position: 'relative' }}>
-  {/* Stock Badge */}
-  <Box
-    sx={{
-      position: 'absolute',
-      top: -18,
-      right: -11,
-      zIndex: 10,
-      width: 32,
-      height: 32,
-      borderRadius: '50%',
-      bgcolor:
-        producto.Stock >= 10 ? '#4CAF50' : producto.Stock > 0 ? '#FFA000' : '#F44336',
-      color: 'white',
-      fontWeight: 'bold',
-      fontSize: 14,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.4)',
-      border: '2px solid white'
-    }}
-  >
-    {producto.Stock}
-  </Box>
-
-  <Card
-  sx={{
-    position: 'relative',
-    width: '100%',
-    height: { xs: 260, sm: 280, md: 300 }, // ⬅️ aquí el ajuste clave
-    overflow: 'hidden',
-    borderRadius: 3,
-    boxShadow: 4
-  }}
->
-
-    <Box
-      component="img"
-      src={producto.ImageUrl}
-      alt={producto.NombreProducto}
-      sx={{
-        position: 'absolute',
-        width: '100%',
-        height: '100%',
-        objectFit: 'cover',
-        top: 0,
-        left: 0,
-        zIndex: 1,
-        filter: 'brightness(0.6)'
-      }}
-    />
-
-<Box
-  sx={{
-    position: 'relative',
-    zIndex: 2,
-    height: '100%',
-    color: 'white',
-    p: 1.2,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between'
-  }}
->
-  <Box>
-  <Typography
-  variant="subtitle1"
-  fontWeight="bold"
-  noWrap
-  sx={{
-    color: 'white',
-    fontFamily: '"RC Type Cond", Arial, sans-serif',
-    fontWeight: 700
-  }}
->
-  {producto.NombreProducto}
-</Typography>
-
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.3, mb: 1 }}>
-  {['Primer descriptor producto.', 'Segundo descriptor producto.', 'Tercer descriptor producto.'].map((text, index) => (
-    <Box key={index} sx={{ display: 'flex', alignItems: 'center' }}>
+    <Box key={producto.IdProducto} sx={{ position: 'relative', mb: 6 }}>
+      {/* Stock badge */}
       <Box
         sx={{
-          width: 16,
-          height: 16,
+          position: 'absolute',
+          top: -20,
+          right: -20,
+          zIndex: 10,
+          width: 48,
+          height: 48,
           borderRadius: '50%',
-          bgcolor: 'black',
+          bgcolor:
+            producto.Stock >= 10 ? '#4CAF50' : producto.Stock > 0 ? '#FFA000' : '#F44336',
           color: 'white',
-          fontSize: 10,
           fontWeight: 'bold',
+          fontSize: 16,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          mr: 0.8
+          boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.4)',
+          border: '3px solid white'
         }}
       >
-        {index + 1}
+        {producto.Stock}
       </Box>
-      <Typography variant="caption" sx={{ fontSize: '0.7rem', color: 'white' }}>
-        {text}
-      </Typography>
-    </Box>
-  ))}
-</Box>
 
-  </Box>
-
-  <Box>
-    {/* Precios */}
-    <Box
-  sx={{
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    mb: 1
-  }}
->
-  {producto.ConDescuento && (
-    <Box
-      sx={{
-        bgcolor: 'black',
-        color: 'grey.400',
-        px: 1,
-        py: 0.2,
-        borderRadius: 1,
-        mb: 0.3
-      }}
-    >
-      <Typography
-        variant="caption"
+      {/* Card */}
+      <Card
         sx={{
-          textDecoration: 'line-through',
-          fontSize: '0.75rem'
+          position: 'relative',
+          width: '100%',
+          height: 350,
+          overflow: 'hidden',
+          borderRadius: 3,
+          boxShadow: 4
         }}
       >
-        {CalcularValorOld(producto.Valor)}
-      </Typography>
+        <Box
+          component="img"
+          src={producto.ImageUrl}
+          alt={producto.NombreProducto}
+          sx={{
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            top: 0,
+            left: 0,
+            zIndex: 1,
+            filter: 'brightness(0.6)'
+          }}
+        />
+
+        <Box
+          sx={{
+            position: 'relative',
+            zIndex: 2,
+            height: '100%',
+            color: 'white',
+            p: 3,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between'
+          }}
+        >
+          <Box>
+            <Typography variant="h6" fontWeight="bold" gutterBottom>
+              {producto.NombreProducto}
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 2 }}>
+              {producto.Descripcion}
+            </Typography>
+          </Box>
+
+          <Box display="flex" justifyContent="space-between" alignItems="center">
+            {producto.ConDescuento ? (
+              <Box>
+                <Typography
+                  variant="body2"
+                  sx={{ textDecoration: 'line-through', color: 'grey.300' }}
+                >
+                  {CalcularValorOld(producto.Valor)}
+                </Typography>
+                <Box
+                  sx={{
+                    display: 'inline-block',
+                    bgcolor: 'success.main',
+                    color: 'white',
+                    px: 1.5,
+                    py: 0.5,
+                    borderRadius: 1,
+                    mt: 0.5
+                  }}
+                >
+                  <Typography variant="body1" fontWeight="bold">
+                    {FormatearPesos(producto.Valor)}
+                  </Typography>
+                </Box>
+              </Box>
+            ) : (
+              <Typography variant="h6" fontWeight="bold">
+                {FormatearPesos(producto.Valor)}
+              </Typography>
+            )}
+
+            <Button
+              variant="contained"
+              color="secondary"
+              sx={{ color: 'white' }}
+              onClick={() =>
+                setSnackbar({
+                  open: true,
+                  type: 'success',
+                  message: `Compraste ${producto.NombreProducto}`
+                })
+              }
+            >
+              Comprar
+            </Button>
+          </Box>
+        </Box>
+      </Card>
     </Box>
-  )}
-
-  <Box
-    sx={{
-      bgcolor: 'success.main',
-      color: 'white',
-      px: 1,
-      py: 0.3,
-      borderRadius: 1
-    }}
-  >
-    <Typography variant="body2" fontWeight="bold">
-      {FormatearPesos(producto.Valor)}
-    </Typography>
-  </Box>
-</Box>
-
-
-<button
-  type="button"
-  title="Solicita este producto"
-  className="knLqRt"
-  onClick={(e) => {
-    e.preventDefault();
-    const nombreProducto = producto.NombreProducto;
-    const mensaje = `¡Hola!%20Me%20intereso%20el%20${encodeURIComponent(nombreProducto)},%20¿sigue%20a%20la%20venta?`;
-    window.open(`https://api.whatsapp.com/send?phone=56992914526&text=${mensaje}`, "_blank");
-  }}
->
-  Solicitar producto
-  <span style={{ marginLeft: 8, display: 'inline-flex' }}>
-    <svg
-      viewBox="0 0 32 32"
-      width="16"
-      height="16"
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      <path d="M12.59 27a1 1 0 01-.66-.25 1 1 0 01-.1-1.41l7.49-8.58a1.23 1.23 0 000-1.52l-7.49-8.58a1 1 0 011.51-1.32l7.49 8.59a3.21 3.21 0 010 4.14l-7.49 8.59a1 1 0 01-.75.34z" />
-    </svg>
-  </span>
-</button>
-
-  </Box>
-</Box>
-
-  </Card>
-</Box>
-
-  
   );
 
   return (
@@ -273,9 +207,9 @@ const Catalogo = () => {
           backgroundPosition: 'center'
         }}
       >
-        <Grid container spacing={2}>
+        <Grid container spacing={4}>
           {[0, 1].map((groupIndex) => (
-            <Grid item xs={6} md={4} key={groupIndex}>
+            <Grid item xs={12} md={4} key={groupIndex}>
               <ul className="producto-cards">
                 {productos
                   .filter((_, i) => i % 2 === groupIndex)
@@ -284,11 +218,10 @@ const Catalogo = () => {
             </Grid>
           ))}
 
-          <Grid item xs={12} md={4} sx={{ display: { xs: 'none', md: 'flex' } }}>
+          <Grid item xs={12} md={4}>
             <Box
               sx={{
                 height: '100%',
-                width: '100%',
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center'
