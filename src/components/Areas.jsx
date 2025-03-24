@@ -10,7 +10,7 @@ const data = [
     count: 20,
     text: "Proyectos terminados en distintas empresas",
     image:
-      "good-job.gif",
+      "developer2-gif.gif",
   },
   {
     count: 45,

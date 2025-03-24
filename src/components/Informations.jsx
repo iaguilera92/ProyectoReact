@@ -325,6 +325,37 @@ const [showArrow, setShowArrow] = useState(true);
         <Typography variant="body2" sx={{ mt: 2, fontSize: "14px" }}>
           {promo.description}
         </Typography>
+
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.2, mb: 1, ml:2 }}>
+          {[
+            'Primer descriptor producto.',
+            'Segundo descriptor producto.',
+            'Tercer descriptor producto.'
+          ].map((text, index) => (
+            <Box key={index} sx={{ display: 'flex', alignItems: 'center' }}>
+              <Box
+                sx={{
+                  width: 16,
+                  height: 16,
+                  borderRadius: '50%',
+                  bgcolor: 'black',
+                  color: 'white',
+                  fontSize: 10,
+                  fontWeight: 'bold',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  mr: 0.5
+                }}
+              >
+                {index + 1}
+              </Box>
+              <Typography variant="caption" sx={{ fontSize: '0.82rem', color: 'white' }}>
+                {text}
+              </Typography>
+            </Box>
+          ))}
+        </Box>
       </Box>
     </Box>          
             </Box>

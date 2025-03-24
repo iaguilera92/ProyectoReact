@@ -612,7 +612,7 @@ useEffect(() => {
       variant="body1"
       sx={{ fontSize: "0.9rem", mb: 1, color: "#000",marginLeft: 1 }}
     >
-      Ponte en contacto con uno de nuestros ejecutivos para ayudarte con lo que necesites.
+      Ponte en contacto con uno de nuestros ejecutivos para asistirte.
     </Typography>
     <Button
       href="tel:6002000202"

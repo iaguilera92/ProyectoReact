@@ -63,7 +63,16 @@ const Catalogo = () => {
   }, [location.state]);
 
   const renderCard = (producto) => (
-    <Box key={producto.IdProducto} sx={{ position: 'relative' }}>
+    <Box
+  key={producto.IdProducto}
+  sx={{
+    width: '100%',
+    maxWidth: 260, // 🔧 Fija un ancho máximo para alinear tarjeta y su contenido
+    mx: 'auto',
+    position: 'relative'
+  }}
+>
+
   {/* Stock Badge */}
   <Box
     sx={{
@@ -89,18 +98,18 @@ const Catalogo = () => {
     {producto.Stock}
   </Box>
 
+  {/* CARD */}
   <Card
-  sx={{
-    border: '2px solid white',
-    position: 'relative',
-    width: '100%',
-    height: { xs: 290, sm: 280, md: 300 }, // ⬅️ aquí el ajuste clave
-    overflow: 'hidden',
-    borderRadius: 3,
-    boxShadow: 4
-  }}
->
-
+    sx={{
+      border: '2px solid white',
+      position: 'relative',
+      width: '100%',
+      height: { xs: 260, sm: 280, md: 300 },
+      overflow: 'hidden',
+      borderRadius: 3,
+      boxShadow: 4
+    }}
+  >
     <Box
       component="img"
       src={producto.ImageUrl}
@@ -117,140 +126,132 @@ const Catalogo = () => {
       }}
     />
 
-<Box
-  sx={{
-    position: 'relative',
-    zIndex: 2,
-    height: '100%',
-    color: 'white',
-    p: 1.2,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between'
-  }}
->
-  <Box>
-  <Typography
-  variant="subtitle1"
-  fontWeight="bold"
-  noWrap
-  sx={{
-    color: 'white',
-    fontFamily: '"RC Type Cond", Arial, sans-serif',
-    fontWeight: 700
-  }}
->
-  {producto.NombreProducto}
-</Typography>
-
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.2, mb: 1 }}>
-  {['Primer descriptor producto.', 'Segundo descriptor producto.', 'Tercer descriptor producto.'].map((text, index) => (
-    <Box key={index} sx={{ display: 'flex', alignItems: 'center' }}>
-      <Box
-        sx={{
-          width: 16,
-          height: 16,
-          borderRadius: '50%',
-          bgcolor: 'black',
-          color: 'white',
-          fontSize: 10,
-          fontWeight: 'bold',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          mr: 0.2
-        }}
-      >
-        {index + 1}
-      </Box>
-      <Typography variant="caption" sx={{ fontSize: '0.7rem', color: 'white' }}>
-        {text}
-      </Typography>
-    </Box>
-  ))}
-</Box>
-
-  </Box>
-
-  <Box>
-    {/* Precios */}
-    <Box
-  sx={{
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    mb: 1
-  }}
->
-  {producto.ConDescuento && (
     <Box
       sx={{
-        bgcolor: 'black',
-        color: 'grey.400',
-        px: 1,
-        py: 0.2,
-        borderRadius: 1,
-        mb: 0.3
+        position: 'relative',
+        zIndex: 2,
+        height: '100%',
+        color: 'white',
+        p: 1.2,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between'
       }}
     >
+      <Box>
+        <Typography
+          variant="subtitle1"
+          fontWeight="bold"
+          noWrap
+          sx={{
+            color: 'white',
+            fontFamily: '"RC Type Cond", Arial, sans-serif',
+            fontWeight: 700
+          }}
+        >
+          {producto.NombreProducto}
+        </Typography>
+        
+      </Box>
+    </Box>
+  </Card>
+
+ {/* Bloque de precios y botón FUERA del card */}
+<Box
+  sx={{
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    gap: 1,
+    mt: 1
+  }}
+>
+  {/* Precio */}
+  <Box sx={{ position: 'relative', display: 'inline-block' }}>
+    {/* Descuento como etiqueta en esquina */}
+    {producto.ConDescuento && (
       <Typography
         variant="caption"
         sx={{
-          textDecoration: 'line-through',
-          fontSize: '0.75rem'
+          position: 'absolute',
+          zIndex:2,
+          top: -11,
+          right: -16,
+          bgcolor: 'black',
+          color: 'grey.300',
+          fontSize: '0.65rem',
+          px: 0.5,
+          borderRadius: 1,
+          textDecoration: 'line-through'
         }}
       >
         {CalcularValorOld(producto.Valor)}
       </Typography>
-    </Box>
-  )}
+    )}
 
-  <Box
-    sx={{
-      bgcolor: 'success.main',
-      color: 'white',
-      px: 1,
-      py: 0.3,
-      borderRadius: 1
-    }}
-  >
-    <Typography variant="body2" fontWeight="bold">
+    {/* Precio actual */}
+    <Typography
+      variant="body1"
+      fontWeight="bold"
+      sx={{
+        bgcolor: 'success.main',
+        color: 'white',
+        px: 0.3,
+        py: 0.2,
+        borderRadius: 1,
+        display: 'inline-block',
+        position: 'relative'
+      }}
+    >
       {FormatearPesos(producto.Valor)}
     </Typography>
   </Box>
-</Box>
 
-
-<button
-  type="button"
-  title="Solicita este producto"
-  className="knLqRt"
-  onClick={(e) => {
-    e.preventDefault();
-    const nombreProducto = producto.NombreProducto;
-    const mensaje = `¡Hola!%20Me%20intereso%20el%20${encodeURIComponent(nombreProducto)},%20¿sigue%20a%20la%20venta?`;
-    window.open(`https://api.whatsapp.com/send?phone=56992914526&text=${mensaje}`, "_blank");
-  }}
->
-  Solicitar producto
-  <span style={{ marginLeft: 8, display: 'inline-flex' }}>
-    <svg
-      viewBox="0 0 32 32"
-      width="16"
-      height="16"
-      fill="currentColor"
-      aria-hidden="true"
+  {/* Botón */}
+  <Box sx={{ flexShrink: 0, maxWidth: '60%' }}>
+    <button
+      type="button"
+      className="knLqRt"
+      style={{
+        fontSize: '0.65rem',
+        padding: '0.3rem 0.8rem',
+        width: '100%',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'
+      }}
+      onClick={(e) => {
+        e.preventDefault();
+        const nombreProducto = producto.NombreProducto;
+        const mensaje = `¡Hola!%20Me%20intereso%20el%20${encodeURIComponent(
+          nombreProducto
+        )},%20¿sigue%20a%20la%20venta?`;
+        window.open(
+          `https://api.whatsapp.com/send?phone=56992914526&text=${mensaje}`,
+          '_blank'
+        );
+      }}
     >
-      <path d="M12.59 27a1 1 0 01-.66-.25 1 1 0 01-.1-1.41l7.49-8.58a1.23 1.23 0 000-1.52l-7.49-8.58a1 1 0 011.51-1.32l7.49 8.59a3.21 3.21 0 010 4.14l-7.49 8.59a1 1 0 01-.75.34z" />
-    </svg>
-  </span>
-</button>
-
+      Solicitar producto
+      <span style={{ marginLeft: 0, display: 'inline-flex' }}>
+        <svg
+          viewBox="0 0 32 32"
+          width="14"
+          height="14"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path d="M12.59 27a1 1 0 01-.66-.25 1 1 0 01-.1-1.41l7.49-8.58a1.23 1.23 0 000-1.52l-7.49-8.58a1 1 0 011.51-1.32l7.49 8.59a3.21 3.21 0 010 4.14l-7.49 8.59a1 1 0 01-.75.34z" />
+        </svg>
+      </span>
+    </button>
   </Box>
 </Box>
-
-  </Card>
 </Box>
+
+
+
+
 
   
   );
@@ -263,11 +264,11 @@ const Catalogo = () => {
         sx={{
           minHeight: '100vh',
           width: '100vw',
-          py: 11,
-          px: 2,
+          py: 14,
+          px: 1.2,
           position: 'relative',
           overflow: 'hidden',
-          backgroundImage: isMobile ? 'url(/fondo-azul2.jpg)' : 'url(/fondo-blanco.jpg)',
+          backgroundImage: isMobile ? 'url("https://blz-contentstack-images.akamaized.net/v3/assets/blta8f9a8e092360c6c/blt367ca4b27c88c078/Desktop_Blizz_Footer.jpg")' : 'url(/fondo-blanco.jpg)',
           backgroundSize: 'cover',
           backgroundRepeat: 'no-repeat',
           backgroundAttachment: 'fixed',
