@@ -273,7 +273,7 @@
             appearance: none;
             background: rgb(226, 0, 26);
             border: 2px solid rgb(226, 0, 26);
-            border-radius: 2em;
+            border-radius: 5px;
             color: #fff;
             cursor: pointer;
             font-family: "RC Type", Arial, sans-serif;

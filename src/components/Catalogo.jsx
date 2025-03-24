@@ -167,55 +167,70 @@ const Catalogo = () => {
   }}
 >
   {/* Precio */}
-  <Box sx={{ position: 'relative', display: 'inline-block' }}>
-    {/* Descuento como etiqueta en esquina */}
-    {producto.ConDescuento && (
-      <Typography
-        variant="caption"
-        sx={{
-          position: 'absolute',
-          zIndex:2,
-          top: -11,
-          right: -16,
-          bgcolor: 'black',
-          color: 'grey.300',
-          fontSize: '0.65rem',
-          px: 0.5,
-          borderRadius: 1,
-          textDecoration: 'line-through'
-        }}
-      >
-        {CalcularValorOld(producto.Valor)}
-      </Typography>
-    )}
-
-    {/* Precio actual */}
+<Box sx={{ position: 'relative', display: 'inline-block' }}>
+  {/* Descuento ladeado */}
+  {producto.ConDescuento && (
     <Typography
-      variant="body1"
-      fontWeight="bold"
+      variant="caption"
       sx={{
-        bgcolor: 'success.main',
-        color: 'white',
-        px: 0.3,
-        py: 0.2,
+        position: 'absolute',
+        top: -5,
+        right: -15,
+        transform: 'rotate(30deg)',
+        bgcolor: 'black',
+        color: 'grey.300',
+        fontSize: '0.5rem',
+        px: 0.5,
+        py: 0.1,
         borderRadius: 1,
-        display: 'inline-block',
-        position: 'relative'
+        textDecoration: 'line-through',
+        zIndex: 5,
+        boxShadow: '0px 2px 6px rgba(0,0,0,0.4)'
       }}
     >
-      {FormatearPesos(producto.Valor)}
+      {CalcularValorOld(producto.Valor)}
     </Typography>
-  </Box>
+  )}
+
+  {/* Precio actual */}
+  <Typography
+    variant="body1"
+    fontWeight="bold"
+    sx={{
+      bgcolor: 'success.main',
+      color: 'white',
+      px: 0.6,
+      py: 0.1,
+      borderRadius: 1,
+      fontSize: '0.95rem',
+      display: 'inline-block',
+      position: 'relative'
+    }}
+  >
+    {FormatearPesos(producto.Valor)}
+  </Typography>
+</Box>
 
   {/* Botón */}
-  <Box sx={{ flexShrink: 0, maxWidth: '60%' }}>
+  {/* Botón rojo a la derecha */}
+  <Box sx={{ flexShrink: 0, maxWidth: '50%' }}>
     <button
       type="button"
       className="knLqRt"
       style={{
-        fontSize: '0.65rem',
-        padding: '0.3rem 0.8rem',
+        backgroundColor: '#E2001A',
+        borderColor: '#E2001A',
+        color: 'white',
+        fontSize: '0.9rem',
+        fontFamily: '"RC Type", Arial, sans-serif',
+        fontWeight: 500,
+        padding: '0.22rem 1rem',
+        borderRadius: '2em',
+        borderStyle: 'solid',
+        borderWidth: '2px',
+        lineHeight: 1.15,
         width: '100%',
+        cursor: 'pointer',
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis'
@@ -232,8 +247,8 @@ const Catalogo = () => {
         );
       }}
     >
-      Solicitar producto
-      <span style={{ marginLeft: 0, display: 'inline-flex' }}>
+      Solicitar
+      <span style={{ marginLeft: 3, display: 'inline-flex' }}>
         <svg
           viewBox="0 0 32 32"
           width="14"
