@@ -1,5 +1,5 @@
 import React, { useState, useEffect,useRef   } from "react";
-import { Container, Typography, Box, TextField, Button, Snackbar, Alert, Grid, useMediaQuery } from "@mui/material";
+import { Container, Typography, Box, TextField, Button, Snackbar, Alert, Grid, useMediaQuery,useTheme } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { useInView } from "react-intersection-observer";
 import { motion } from "framer-motion";
@@ -44,7 +44,8 @@ function Contacto() {
   const [intervalActive, setIntervalActive] = useState(true); 
   const initialZoom = 3; // Zoom inicial lejano
   const finalZoom = 17; // Zoom final al que queremos llegar
-  const isMobile = useMediaQuery("(max-width:600px)"); // Detectar si es móvil
+  const theme = useTheme();
+   const isMobile = useMediaQuery(theme.breakpoints.down('sm')); 
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.3 });
   const [animar, setAnimar] = useState(false);
   const [name, setName] = useState("");

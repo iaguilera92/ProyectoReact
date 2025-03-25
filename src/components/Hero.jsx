@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Container, Typography, Box, Snackbar, Alert, useMediaQuery } from "@mui/material";
+import { Container, Typography, Box, Snackbar, Alert, useMediaQuery, useTheme } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
 import "./css/Hero.css"; // Asegúrate de importar el CSS
 
@@ -7,7 +7,8 @@ function Hero({ scrollToContacto }) {
   const [currentText, setCurrentText] = useState(0);
   const [openAlert, setOpenAlert] = useState(false);
   const [showButton, setShowButton] = useState(false); // Estado para mostrar el botón después del delay
-  const isMobile = useMediaQuery("(max-width:600px)"); // Detectar si la pantalla es menor a 600px
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm')); 
 
   const texts = [
     { title: "SOLUCIONES TECNOLÓGICAS", description: "Soluciones digitales a la medida." },

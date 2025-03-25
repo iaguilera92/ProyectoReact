@@ -7,16 +7,21 @@ import {
   Alert,
   Grid,
   Card,
+  useTheme,
   useMediaQuery,
   Typography
 } from '@mui/material';
 import './css/Catalogo.css';
 import { motion } from 'framer-motion';
+import Productos from './Productos';
+
+
 const Catalogo = () => {
   const [productos, setProductos] = useState([]);
   const location = useLocation();
   const [snackbar, setSnackbar] = useState({ open: false, type: 'success', message: '' });
-  const isMobile = useMediaQuery("(max-width:600px)"); // Detectar si la pantalla es menor a 600px
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));  
   const FormatearPesos = (valor) => `$${valor.toLocaleString('es-CL')}`;
   const CalcularValorOld = (valor) => FormatearPesos(valor + 10000);
 
@@ -62,215 +67,6 @@ const Catalogo = () => {
     }
   }, [location.state]);
 
-  const renderCard = (producto) => (
-    <Box
-  key={producto.IdProducto}
-  sx={{
-    width: '100%',
-    maxWidth: 260, // 🔧 Fija un ancho máximo para alinear tarjeta y su contenido
-    mx: 'auto',
-    position: 'relative'
-  }}
->
-
-  {/* Stock Badge */}
-  <Box
-    sx={{
-      position: 'absolute',
-      top: -12,
-      right: -11,
-      zIndex: 10,
-      width: 28,
-      height: 28,
-      borderRadius: '50%',
-      bgcolor:
-        producto.Stock >= 10 ? '#4CAF50' : producto.Stock > 0 ? '#FFA000' : '#F44336',
-      color: 'white',
-      fontWeight: 'bold',
-      fontSize: 12,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.4)',
-      border: '2px solid white'
-    }}
-  >
-    {producto.Stock}
-  </Box>
-
-  {/* CARD */}
-  <Card
-    sx={{
-      border: '2px solid white',
-      position: 'relative',
-      width: '100%',
-      height: { xs: 260, sm: 280, md: 300 },
-      overflow: 'hidden',
-      borderRadius: 3,
-      boxShadow: 4
-    }}
-  >
-    <Box
-      component="img"
-      src={producto.ImageUrl}
-      alt={producto.NombreProducto}
-      sx={{
-        position: 'absolute',
-        width: '100%',
-        height: '100%',
-        objectFit: 'cover',
-        top: 0,
-        left: 0,
-        zIndex: 1,
-        filter: 'brightness(0.6)'
-      }}
-    />
-
-    <Box
-      sx={{
-        position: 'relative',
-        zIndex: 2,
-        height: '100%',
-        color: 'white',
-        p: 1.2,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between'
-      }}
-    >
-      <Box>
-        <Typography
-          variant="subtitle1"
-          fontWeight="bold"
-          noWrap
-          sx={{
-            color: 'white',
-            fontFamily: '"RC Type Cond", Arial, sans-serif',
-            fontWeight: 700
-          }}
-        >
-          {producto.NombreProducto}
-        </Typography>
-        
-      </Box>
-    </Box>
-  </Card>
-
- {/* Bloque de precios y botón FUERA del card */}
-<Box
-  sx={{
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
-    gap: 1,
-    mt: 1
-  }}
->
-  {/* Precio */}
-<Box sx={{ position: 'relative', display: 'inline-block' }}>
-  {/* Descuento ladeado */}
-  {producto.ConDescuento && (
-    <Typography
-      variant="caption"
-      sx={{
-        position: 'absolute',
-        top: -5,
-        right: -15,
-        transform: 'rotate(30deg)',
-        bgcolor: 'black',
-        color: 'grey.300',
-        fontSize: '0.5rem',
-        px: 0.5,
-        py: 0.1,
-        borderRadius: 1,
-        textDecoration: 'line-through',
-        zIndex: 5,
-        boxShadow: '0px 2px 6px rgba(0,0,0,0.4)'
-      }}
-    >
-      {CalcularValorOld(producto.Valor)}
-    </Typography>
-  )}
-
-  {/* Precio actual */}
-  <Typography
-    variant="body1"
-    fontWeight="bold"
-    sx={{
-      bgcolor: 'success.main',
-      color: 'white',
-      px: 0.6,
-      py: 0.1,
-      borderRadius: 1,
-      fontSize: '0.95rem',
-      display: 'inline-block',
-      position: 'relative'
-    }}
-  >
-    {FormatearPesos(producto.Valor)}
-  </Typography>
-</Box>
-
-  {/* Botón */}
-  {/* Botón rojo a la derecha */}
-  <Box sx={{ flexShrink: 0, maxWidth: '50%' }}>
-    <button
-      type="button"
-      className="knLqRt"
-      style={{
-        backgroundColor: '#E2001A',
-        borderColor: '#E2001A',
-        color: 'white',
-        fontSize: '0.9rem',
-        fontFamily: '"RC Type", Arial, sans-serif',
-        fontWeight: 500,
-        padding: '0.22rem 1rem',
-        borderRadius: '2em',
-        borderStyle: 'solid',
-        borderWidth: '2px',
-        lineHeight: 1.15,
-        width: '100%',
-        cursor: 'pointer',
-        whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis'
-      }}
-      onClick={(e) => {
-        e.preventDefault();
-        const nombreProducto = producto.NombreProducto;
-        const mensaje = `¡Hola!%20Me%20intereso%20el%20${encodeURIComponent(
-          nombreProducto
-        )},%20¿sigue%20a%20la%20venta?`;
-        window.open(
-          `https://api.whatsapp.com/send?phone=56992914526&text=${mensaje}`,
-          '_blank'
-        );
-      }}
-    >
-      Solicitar
-      <span style={{ marginLeft: 3, display: 'inline-flex' }}>
-        <svg
-          viewBox="0 0 32 32"
-          width="14"
-          height="14"
-          fill="currentColor"
-          aria-hidden="true"
-        >
-          <path d="M12.59 27a1 1 0 01-.66-.25 1 1 0 01-.1-1.41l7.49-8.58a1.23 1.23 0 000-1.52l-7.49-8.58a1 1 0 011.51-1.32l7.49 8.59a3.21 3.21 0 010 4.14l-7.49 8.59a1 1 0 01-.75.34z" />
-        </svg>
-      </span>
-    </button>
-  </Box>
-</Box>
-</Box>
-
-
-
-
-
-  
-  );
-
   return (
     <Box>
       <Container
@@ -290,45 +86,56 @@ const Catalogo = () => {
           backgroundPosition: 'center'
         }}
       >
-        <Grid container spacing={2}>
-        {productos.map((producto, index) => (
-  <Grid
-    item
-    xs={6}
-    md={4}
-    key={producto.IdProducto}
-    component={motion.div}
-    initial={{ opacity: 0, x: 100 }}
-    animate={{ opacity: 1, x: 0 }}
-    transition={{
-      duration: 0.5,
-      delay: index * 0.5,
-      ease: 'easeOut'
-    }}
-  >
-    {renderCard(producto)}
-  </Grid>
-))}
-
-
-          <Grid item xs={12} md={4} sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <Box
-              sx={{
-                height: '100%',
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center'
-              }}
-            >
-              <img
-                src="catalogo-img.png"
-                alt="Shopping"
-                style={{ maxHeight: '80vh', width: 'auto', objectFit: 'contain' }}
-              />
-            </Box>
-          </Grid>
+    <Grid container columnSpacing={{ xs: 2, md: 4 }} rowSpacing={{ xs: 5, md: 7 }}>
+  {/* CONTENEDOR PRODUCTOS */}
+  <Grid item xs={12} md={9}>
+    <Grid container spacing={{ xs: 2, md: 3 }}>
+      {productos.map((producto, index) => (
+        <Grid
+          item
+          xs={6}
+          sm={6}
+          md={4}
+          key={producto.IdProducto}
+          component={motion.div}
+          initial={{ opacity: 0, x: 100 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{
+            duration: 0.5,
+            delay: index * 0.5,
+            ease: 'easeOut'
+          }}
+        >
+          <Productos
+            producto={producto}
+            FormatearPesos={FormatearPesos}
+            CalcularValorOld={CalcularValorOld}
+          />
         </Grid>
+      ))}
+    </Grid>
+  </Grid>
+
+  {/* IMAGEN SOLO ESCRITORIO */}
+  <Grid item xs={0} md={3} sx={{ display: { xs: 'none', md: 'flex' } }}>
+    <Box
+      sx={{
+        height: '100%',
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}
+    >
+      <img
+        src="catalogo-img.png"
+        alt="Shopping"
+        style={{ maxHeight: '80vh', width: 'auto', objectFit: 'contain' }}
+      />
+    </Box>
+  </Grid>
+</Grid>
+
       </Container>
 
       <Snackbar

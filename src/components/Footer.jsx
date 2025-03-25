@@ -1,4 +1,4 @@
-import { Box, Container, Typography, Link, keyframes, useMediaQuery,Snackbar, Alert } from "@mui/material";
+import { Box, Container, Typography, Link, keyframes, useMediaQuery,Snackbar, Alert, useTheme } from "@mui/material";
 import { useState } from "react";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import FacebookIcon from "@mui/icons-material/Facebook";
@@ -75,7 +75,8 @@ const SocialButton = ({ href, Icon, bgColor, hoverStyles, isMobile }) => (
 );
 
 const Footer = () => {
-  const isMobile = useMediaQuery("(max-width:600px)");
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));  
   const [openAlert, setOpenAlert] = useState(false);
   const navigate = useNavigate(); 
 

@@ -318,11 +318,11 @@ const [showArrow, setShowArrow] = useState(true);
           onPointerLeave={() => setIsGrabbing(false)}
         >
       {/* Contenido */}
-      <Box sx={{ zIndex: 2, textAlign: "center" }}>
+      <Box sx={{ zIndex: 2, textAlign: "center", padding:0 }}>
         <Typography variant="h6" sx={{ mt: 4, fontWeight: "bold", fontSize: "20px", fontFamily: "inherit" }}>
           {promo.title}
         </Typography>
-        <Typography variant="body2" sx={{ mt: 2, fontSize: "14px" }}>
+        <Typography variant="body2" sx={{ mt: 2, fontSize: "14px", textAlign:"left" }}>
           {promo.description}
         </Typography>
 

@@ -10,7 +10,8 @@ import {
   IconButton,
   useMediaQuery,
   Snackbar,
-  Alert
+  Alert,
+  useTheme
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
@@ -20,7 +21,8 @@ import { Checkbox, FormControlLabel } from "@mui/material";
 
 
 const Administracion = () => {
-  const isMobile = useMediaQuery("(max-width:600px)");
+ const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm')); 
   const [showPassword, setShowPassword] = useState(false);
   const [typedText, setTypedText] = useState("");
   const [showCursor, setShowCursor] = useState(true);
