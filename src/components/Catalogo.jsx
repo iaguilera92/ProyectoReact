@@ -24,6 +24,7 @@ const Catalogo = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));  
   const FormatearPesos = (valor) => `$${valor.toLocaleString('es-CL')}`;
   const CalcularValorOld = (valor) => FormatearPesos(valor + 10000);
+  const [productoActivo, setProductoActivo] = useState(null); // null = ninguna girada
 
   const ImgUrlAleatorio = (imgUrl) => {
     const urls = [
@@ -105,12 +106,17 @@ const Catalogo = () => {
             delay: index * 0.5,
             ease: 'easeOut'
           }}
-        >
+        >       
           <Productos
-            producto={producto}
-            FormatearPesos={FormatearPesos}
-            CalcularValorOld={CalcularValorOld}
-          />
+          index={index}
+          producto={producto}
+          girado={productoActivo === index}
+          onGirar={() => {
+            setProductoActivo(productoActivo === index ? null : index);
+          }}
+          FormatearPesos={FormatearPesos}
+          CalcularValorOld={CalcularValorOld}
+        />
         </Grid>
       ))}
     </Grid>

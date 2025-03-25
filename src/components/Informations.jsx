@@ -303,30 +303,50 @@ const [showArrow, setShowArrow] = useState(true);
                 p: 0.5,
               }}
             >
+            <Box
+      sx={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        background: "linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0))",
+        zIndex: 2
+      }}
+    />
            <Box
-          sx={{
-            cursor: isGrabbing ? "grabbing" : "grab",
-            position: "absolute",
-            width: "100%",
-            height: "100%",
-            background: "linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0))",
-            top: 0,
-            left: 0,
-          }}
-          onPointerDown={() => setIsGrabbing(true)}
-          onPointerUp={() => setIsGrabbing(false)}
-          onPointerLeave={() => setIsGrabbing(false)}
-        >
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',                
+                alignItems: 'center', // centra horizontalmente
+                justifyContent: 'center', // centra verticalmente si el contenedor lo permite
+                textAlign: 'center',
+                mb: 2
+              }}
+              onPointerDown={() => setIsGrabbing(true)}
+              onPointerUp={() => setIsGrabbing(false)}
+              onPointerLeave={() => setIsGrabbing(false)}
+            >
       {/* Contenido */}
       <Box sx={{ zIndex: 2, textAlign: "center", padding:0 }}>
         <Typography variant="h6" sx={{ mt: 4, fontWeight: "bold", fontSize: "20px", fontFamily: "inherit" }}>
           {promo.title}
         </Typography>
-        <Typography variant="body2" sx={{ mt: 2, fontSize: "14px", textAlign:"left" }}>
+        <Typography
+          variant="body2"
+          sx={{
+            fontSize: {
+              xs: '0.85rem',
+              sm: '0.95rem'
+            },
+            maxWidth: 400,
+            color: 'white'
+          }}
+        >
           {promo.description}
         </Typography>
 
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.2, mb: 1, ml:2 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.2, mt: 1, ml: 0 }}>
           {[
             'Primer descriptor producto.',
             'Segundo descriptor producto.',

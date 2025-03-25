@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { Box, Card, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 
-const Productos = ({ producto, FormatearPesos, CalcularValorOld }) => {
-  const [girado, setGirado] = useState(false);
+const Productos = ({ producto,  index,  girado,  onGirar,  FormatearPesos,  CalcularValorOld }) => {
 
   return (
 <Box
@@ -19,7 +18,7 @@ const Productos = ({ producto, FormatearPesos, CalcularValorOld }) => {
   }}
 >      {/* Contenedor giratorio */}
       <Box
-        onClick={() => setGirado(!girado)}
+        onClick={onGirar}
         sx={{
           height: {
             xs: 290,
@@ -143,7 +142,7 @@ const Productos = ({ producto, FormatearPesos, CalcularValorOld }) => {
             </Card>
           </Box>
 
-          {/* Cara trasera con       */}
+          {/* Cara trasera con*/}
           <Box
             sx={{
               position: 'absolute',
@@ -165,11 +164,14 @@ const Productos = ({ producto, FormatearPesos, CalcularValorOld }) => {
           overflow: 'hidden'
         }}
       >
-  {/* GIF fondo absoluto */}
+  {girado && (
   <Box
-    component="img"
-    src="online-shop.gif"
-    alt="gif"
+    component="video"
+    src="video-catalogo1.mp4"
+    autoPlay
+    muted
+    loop
+    playsInline
     sx={{
       position: 'absolute',
       top: 0,
@@ -180,6 +182,7 @@ const Productos = ({ producto, FormatearPesos, CalcularValorOld }) => {
       zIndex: 1
     }}
   />
+)}
 
   {/* Título encima del GIF */}
   <Box
