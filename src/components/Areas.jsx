@@ -10,25 +10,25 @@ const data = [
     count: 20,
     text: "Proyectos terminados en distintas empresas",
     image:
-      "developer2-gif.gif",
+      "ProyectoTerminado.mp4",
   },
   {
     count: 45,
     text: "Proyectos a Pymes e Independientes",
     image:
-      "developer-gif.gif",
+      "ProyectoPymes.mp4",
   },
   {
     count: 6,
     text: "Años de Experiencia como desarrolladores",
     image:
-      "experience-gif.gif",
+      "Experience.mp4",
   },
   {
     count: 8,
     text: "Tazas de café en el día ☕",
     image:
-      "cafe-gif.gif",
+      "Cafe.mp4",
   },
 ];
 
@@ -209,18 +209,24 @@ useEffect(() => {
 
       {/* Cara delantera: Imagen */}
       <Box
+        component="video"
+        src={item.image}
+        autoPlay
+        muted
+        loop
+        playsInline
         sx={{
           position: "absolute",
           backfaceVisibility: "hidden",
           width: isMobile ? "115%" : "100%",
-          height: "100%",
-          backgroundImage: `url(${item.image})`,
+          height: "100%",          
           backgroundSize: "cover",
           backgroundPosition: "center",
           borderRadius: 2,
           boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
         }}
         />
+    
               </Box>
             </Box>
            </Grid>
