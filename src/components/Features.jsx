@@ -1,4 +1,4 @@
-import React, { useRef }from "react";
+import React, { useRef } from "react";
 
 import {
   Container,
@@ -105,162 +105,162 @@ function Features({ scrollToInformations }) {
 
   return (
     <Box
-    sx={{
-      backgroundImage: 'url("https://blz-contentstack-images.akamaized.net/v3/assets/blta8f9a8e092360c6c/blt367ca4b27c88c078/Desktop_Blizz_Footer.jpg")',
-      backgroundSize: 'cover',  // Asegura que la imagen cubra todo el contenedor
-      backgroundPosition: 'center',  // Centra la imagen en el fondo
-      backgroundAttachment: 'fixed',  // Asegura que la imagen de fondo no se mueva al hacer scroll
-      py: 4,
-      paddingBottom: "15px",
-      color: "white",  // Ajusta el color del texto para que sea visible sobre el fondo
-    }}
-  >
-    <Container
       sx={{
-        py: 0,
-        maxWidth: "1500px !important",
-        backgroundPosition: "bottom center",
-        backgroundRepeat: "no-repeat",
-        // filter: "blur(20px)", // Descomenta si deseas aplicar el desenfoque
+        backgroundImage: 'url("https://blz-contentstack-images.akamaized.net/v3/assets/blta8f9a8e092360c6c/blt367ca4b27c88c078/Desktop_Blizz_Footer.jpg")',
+        backgroundSize: 'cover',  // Asegura que la imagen cubra todo el contenedor
+        backgroundPosition: 'center',  // Centra la imagen en el fondo
+        backgroundAttachment: 'fixed',  // Asegura que la imagen de fondo no se mueva al hacer scroll
+        py: 4,
+        paddingBottom: "15px",
+        color: "white",  // Ajusta el color del texto para que sea visible sobre el fondo
       }}
     >
-      <Grid container spacing={2}>
-        {features.map((feature, index) => (
-          <Grid item xs={12} md={4} key={feature.id}>
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={cardAnimation}
-              custom={index}
-            >
-              <Card sx={{ position: "relative", overflow: "hidden" }}>
-                <StyledCardActionArea href={feature.link} target="_self">
-                  <CardMedia
-                    className="card-media"
-                    component="img"
-                    image={feature.image}
-                    alt={feature.title}
-                    sx={{
-                      height: isMobile ? 205 : 250,
-                      transition: "transform 1s",
-                    }}
-                  />
-                  <Overlay className="overlay">
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        fontWeight: "bold",
-                        marginTop: isMobile ? "20px" : "30px",
-                        mb: isMobile ? 1 : 1,
-                        textAlign: "left",
-                        width: "100%",
-                        marginLeft: "9px",
-                        fontSize: "1.4rem",
-                      }}
-                    >
-                      {feature.title}
-                    </Typography>
-                    <AdditionalContent className="additional">
-                      <Typography variant="body2" sx={{ mb: 1, px: 1, fontSize: "1rem" }}>
-                        {feature.desc}
-                      </Typography>
-                      <Box variant="contained" sx={{ textAlign: "center",mt: 2, width: "100%" }} target="_self">
-                      <Box sx={{ mt: isMobile ? 0 : 1, textAlign: "center" }}>
-                      <button
-                        className="btn-3-features" zIndex="5"
-                        style={{ cursor: "arrow" }}
-                        onClick={(e) => {
-                          e.stopPropagation(); // ✅ Evita que se propague el click al área del Card
-                          const nombreFeature = feature.title;
-                          const mensaje = `¡Hola!%20Me%20interesó%20${encodeURIComponent(nombreFeature)}%20¿Me%20comentas?`;
-                          window.open(`https://api.whatsapp.com/send?phone=56992914526&text=${mensaje}`, "_blank");
-                        }}
-                      >
-                        <span>Contratar</span>
-                      </button>
-                    </Box>                   
-                      </Box>
-                    </AdditionalContent>
-                  </Overlay>
-                </StyledCardActionArea>
-              </Card>
-            </motion.div>
-          </Grid>
-        ))}
-      </Grid>
-      <br />
-      <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
-      <Button
-      onClick={() => {
-        scrollToInformations.current?.scrollIntoView({ behavior: "smooth" });
-      }}
-      variant="contained"
-      target="_self"
-      sx={{
-        textTransform: "none",
-        fontWeight: "bold",
-        letterSpacing: "3.1px",
-        fontFamily: "albert sans, sans-serif",
-        border: "1px solid #007de0",
-        fontSize: { xs: "10px", sm: "1.1rem" },
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        position: "relative",
-        overflow: "hidden",
-        width: { xs: "93%", sm: "460px" },
-        maxWidth: "460px",
-        height: "50px",
-        backgroundColor: "#007de0",
-        transition: "width 0.3s ease",
-        "&:hover": {
-          width: { xs: "95%", sm: "470px" },
-          backgroundColor: "#007de0",
-        },
-        "&:hover .icon": {
-          opacity: 1,
-          transform: "translateX(-10px)",
-        },
-        "&:hover .letter": {
-          transform: "translateX(15px)",
-        },
-      }}
-      ref={ref} // Se activa el observador para el botón
-    >
-      <Box sx={{ position: "relative", display: "flex", alignItems: "center" }}>
-        <Box
-          component="span"
-          className={`icon ${inView ? "animate" : ""}`} // Activar animación al estar en vista
-          sx={{
-            position: "absolute",
-            left: 0,
-            display: "flex",
-            alignItems: "center",
-            opacity: inView ? 0 : 1,  // Al hacer scroll, se oculta el icono
-            transform: inView ? "translateX(10px)" : "translateX(0)", // Mover el icono a la derecha
-            transition: "all 1s ease", // Transición suave
-            zIndex: 2,
-          }}
-        >
-          <FaHubspot style={{ color: "#fff", fontSize: "1.5rem" }} />
-        </Box>
-      </Box>
-      <Box
-        component="span"
-        fontSize={isMobile ? "11px" : "15px"}
-        className={`letter ${inView ? "animate" : ""}`} // Activar animación al estar en vista
+      <Container
         sx={{
-          ml: 1,
-          transition: "all 1s ease", // Transición suave
-          transform: inView ? "translateX(0)" : "translateX(15px)", // Inicialmente a la derecha (15px)
+          py: 0,
+          maxWidth: "1500px !important",
+          backgroundPosition: "bottom center",
+          backgroundRepeat: "no-repeat",
+          // filter: "blur(20px)", // Descomenta si deseas aplicar el desenfoque
         }}
       >
-        + SOLUCIONES PARA TU EMPRESA
-      </Box>
-    </Button>
+        <Grid container spacing={2}>
+          {features.map((feature, index) => (
+            <Grid item xs={12} md={4} key={feature.id}>
+              <motion.div
+                initial="hidden"
+                animate="visible"
+                variants={cardAnimation}
+                custom={index}
+              >
+                <Card sx={{ position: "relative", overflow: "hidden" }}>
+                  <StyledCardActionArea href={feature.link} target="_self">
+                    <CardMedia
+                      className="card-media"
+                      component="img"
+                      image={feature.image}
+                      alt={feature.title}
+                      sx={{
+                        height: isMobile ? 205 : 250,
+                        transition: "transform 1s",
+                      }}
+                    />
+                    <Overlay className="overlay">
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: "bold",
+                          marginTop: isMobile ? "20px" : "30px",
+                          mb: isMobile ? 1 : 1,
+                          textAlign: "left",
+                          width: "100%",
+                          marginLeft: "9px",
+                          fontSize: "1.4rem",
+                        }}
+                      >
+                        {feature.title}
+                      </Typography>
+                      <AdditionalContent className="additional">
+                        <Typography variant="body2" sx={{ mb: 1, px: 1, fontSize: "1rem" }}>
+                          {feature.desc}
+                        </Typography>
+                        <Box variant="contained" sx={{ textAlign: "center", mt: 2, width: "100%" }} target="_self">
+                          <Box sx={{ mt: isMobile ? 0 : 1, textAlign: "center" }}>
+                            <button
+                              className="btn-3-features" zIndex="5"
+                              style={{ cursor: "arrow" }}
+                              onClick={(e) => {
+                                e.stopPropagation(); // ✅ Evita que se propague el click al área del Card
+                                const nombreFeature = feature.title;
+                                const mensaje = `¡Hola!%20Me%20interesó%20${encodeURIComponent(nombreFeature)}%20¿Me%20comentas?`;
+                                window.open(`https://api.whatsapp.com/send?phone=56992914526&text=${mensaje}`, "_blank");
+                              }}
+                            >
+                              <span>Contratar</span>
+                            </button>
+                          </Box>
+                        </Box>
+                      </AdditionalContent>
+                    </Overlay>
+                  </StyledCardActionArea>
+                </Card>
+              </motion.div>
+            </Grid>
+          ))}
+        </Grid>
+        <br />
+        <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
+          <Button
+            onClick={() => {
+              scrollToInformations.current?.scrollIntoView({ behavior: "smooth" });
+            }}
+            variant="contained"
+            target="_self"
+            sx={{
+              textTransform: "none",
+              fontWeight: "bold",
+              letterSpacing: "3.1px",
+              fontFamily: "albert sans, sans-serif",
+              border: "1px solid #007de0",
+              fontSize: { xs: "10px", sm: "1.1rem" },
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              position: "relative",
+              overflow: "hidden",
+              width: { xs: "93%", sm: "460px" },
+              maxWidth: "460px",
+              height: "50px",
+              backgroundColor: "#007de0",
+              transition: "width 0.3s ease",
+              "&:hover": {
+                width: { xs: "95%", sm: "470px" },
+                backgroundColor: "#007de0",
+              },
+              "&:hover .icon": {
+                opacity: 1,
+                transform: "translateX(-10px)",
+              },
+              "&:hover .letter": {
+                transform: "translateX(15px)",
+              },
+            }}
+            ref={ref} // Se activa el observador para el botón
+          >
+            <Box sx={{ position: "relative", display: "flex", alignItems: "center" }}>
+              <Box
+                component="span"
+                className={`icon ${inView ? "animate" : ""}`} // Activar animación al estar en vista
+                sx={{
+                  position: "absolute",
+                  left: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  opacity: inView ? 0 : 1,  // Al hacer scroll, se oculta el icono
+                  transform: inView ? "translateX(10px)" : "translateX(0)", // Mover el icono a la derecha
+                  transition: "all 1s ease", // Transición suave
+                  zIndex: 2,
+                }}
+              >
+                <FaHubspot style={{ color: "#fff", fontSize: "1.5rem" }} />
+              </Box>
+            </Box>
+            <Box
+              component="span"
+              fontSize={isMobile ? "11px" : "15px"}
+              className={`letter ${inView ? "animate" : ""}`} // Activar animación al estar en vista
+              sx={{
+                ml: 1,
+                transition: "all 1s ease", // Transición suave
+                transform: inView ? "translateX(0)" : "translateX(15px)", // Inicialmente a la derecha (15px)
+              }}
+            >
+              + SOLUCIONES PARA TU EMPRESA
+            </Box>
+          </Button>
 
-      </Box>
-    </Container>
+        </Box>
+      </Container>
     </Box>
   );
 }

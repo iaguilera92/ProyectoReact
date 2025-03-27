@@ -21,7 +21,7 @@ const Catalogo = () => {
   const location = useLocation();
   const [snackbar, setSnackbar] = useState({ open: false, type: 'success', message: '' });
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));  
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const FormatearPesos = (valor) => `$${valor.toLocaleString('es-CL')}`;
   const CalcularValorOld = (valor) => FormatearPesos(valor + 10000);
   const [productoActivo, setProductoActivo] = useState(null); // null = ninguna girada
@@ -87,60 +87,60 @@ const Catalogo = () => {
           backgroundPosition: 'center'
         }}
       >
-    <Grid container columnSpacing={{ xs: 2, md: 4 }} rowSpacing={{ xs: 5, md: 7 }}>
-  {/* CONTENEDOR PRODUCTOS */}
-  <Grid item xs={12} md={9}>
-    <Grid container spacing={{ xs: 2, md: 3 }}>
-      {productos.map((producto, index) => (
-        <Grid
-          item
-          xs={6}
-          sm={6}
-          md={4}
-          key={producto.IdProducto}
-          component={motion.div}
-          initial={{ opacity: 0, x: 100 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{
-            duration: 0.5,
-            delay: index * 0.5,
-            ease: 'easeOut'
-          }}
-        >       
-          <Productos
-          index={index}
-          producto={producto}
-          girado={productoActivo === index}
-          onGirar={() => {
-            setProductoActivo(productoActivo === index ? null : index);
-          }}
-          FormatearPesos={FormatearPesos}
-          CalcularValorOld={CalcularValorOld}
-        />
-        </Grid>
-      ))}
-    </Grid>
-  </Grid>
+        <Grid container columnSpacing={{ xs: 2, md: 4 }} rowSpacing={{ xs: 5, md: 7 }}>
+          {/* CONTENEDOR PRODUCTOS */}
+          <Grid item xs={12} md={9}>
+            <Grid container spacing={{ xs: 2, md: 3 }}>
+              {productos.map((producto, index) => (
+                <Grid
+                  item
+                  xs={6}
+                  sm={6}
+                  md={4}
+                  key={producto.IdProducto}
+                  component={motion.div}
+                  initial={{ opacity: 0, x: 100 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{
+                    duration: 0.5,
+                    delay: index * 0.5,
+                    ease: 'easeOut'
+                  }}
+                >
+                  <Productos
+                    index={index}
+                    producto={producto}
+                    girado={productoActivo === index}
+                    onGirar={() => {
+                      setProductoActivo(productoActivo === index ? null : index);
+                    }}
+                    FormatearPesos={FormatearPesos}
+                    CalcularValorOld={CalcularValorOld}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          </Grid>
 
-  {/* IMAGEN SOLO ESCRITORIO */}
-  <Grid item xs={0} md={3} sx={{ display: { xs: 'none', md: 'flex' } }}>
-    <Box
-      sx={{
-        height: '100%',
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center'
-      }}
-    >
-      <img
-        src="catalogo-img.png"
-        alt="Shopping"
-        style={{ maxHeight: '80vh', width: 'auto', objectFit: 'contain' }}
-      />
-    </Box>
-  </Grid>
-</Grid>
+          {/* IMAGEN SOLO ESCRITORIO */}
+          <Grid item xs={0} md={3} sx={{ display: { xs: 'none', md: 'flex' } }}>
+            <Box
+              sx={{
+                height: '100%',
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+            >
+              <img
+                src="catalogo-img.png"
+                alt="Shopping"
+                style={{ maxHeight: '80vh', width: 'auto', objectFit: 'contain' }}
+              />
+            </Box>
+          </Grid>
+        </Grid>
 
       </Container>
 

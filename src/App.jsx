@@ -30,7 +30,7 @@ function Home({ informationsRef, contactoRef }) {
 }
 
 function App() {
-  
+
   const [showContacto, setShowContacto] = useState(false);
   const [showArrow, setShowArrow] = useState(false);
   const [openBubble, setOpenBubble] = useState(false);
@@ -58,7 +58,7 @@ function App() {
     const timer = setTimeout(() => {
       setOpenBubble(true);
     }, 2000);
-    return () => clearTimeout(timer); 
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -71,9 +71,9 @@ function App() {
   useEffect(() => {
     if (openBubble) {
       const timer = setTimeout(() => {
-        setOpenBubble(false); 
+        setOpenBubble(false);
       }, 3000);
-      return () => clearTimeout(timer); 
+      return () => clearTimeout(timer);
     }
   }, [openBubble]);
 
@@ -103,24 +103,24 @@ function App() {
       <CssBaseline />
       <Box sx={{ m: isMobile ? 0 : 2, border: isMobile ? "none" : "4px solid white", borderRadius: isMobile ? "none" : "20px", overflow: "hidden" }}>
         <Box sx={{ minHeight: "100vh", background: "radial-gradient(circle, #111111 20%, #000000 80%)", color: "white", position: "relative" }}>
-        {(location.pathname !== "/administracion") && (
-          <>
-          <Navbar contactoRef={contactoRef} /> {/* Pasamos el ref al Navbar */}
-          </>
-        )}    
+          {(location.pathname !== "/administracion") && (
+            <>
+              <Navbar contactoRef={contactoRef} /> {/* Pasamos el ref al Navbar */}
+            </>
+          )}
           <Box sx={{ minHeight: "100vh" }}>
             <Routes location={location} key={location.pathname}>
-              <Route path="/" element={<Home informationsRef={informationsRef} contactoRef= {contactoRef}/>} />
+              <Route path="/" element={<Home informationsRef={informationsRef} contactoRef={contactoRef} />} />
               <Route path="/administracion" element={<Administracion />} />
               <Route path="/catalogo" element={<Catalogo />} />
               <Route path="/contacto" element={<Contacto />} />
-            </Routes> 
+            </Routes>
             {/* Solo muestra estas secciones si NO estamos en /catalogo */}
             {(location.pathname !== "/catalogo" && location.pathname !== "/administracion") && (
               <>
                 <Box id="areas-section">
                   <Areas />
-                </Box>                        
+                </Box>
                 <div ref={informationsRef}>
                   <Informations />
                 </div>
@@ -129,38 +129,38 @@ function App() {
                 </Box>
                 <Footer />
               </>
-            )}            
-          </Box>
-          
-          {(location.pathname !== "/catalogo") && (
-            <>
-          <Box sx={{
-            position: "fixed", bottom: "40px", right: "40px", zIndex: 100,
-            transition: "bottom 0.3s ease", 
-          }}>
-            <IconButton onClick={() => {
-              window.open("https://api.whatsapp.com/send?phone=56992914526", "_blank");
-              handleUserInteraction();
-            }} sx={{
-              width: "60px", height: "60px", backgroundColor: "#25d366", color: "#FFF", borderRadius: "50%",
-              boxShadow: "2px 2px 3px #999", "&:hover": { backgroundColor: "#1ebe5d" }, zIndex: 101,
-            }}>
-              <WhatsAppIcon sx={{ fontSize: "30px" }} />
-            </IconButton>
-
-            {openBubble && (
-              <Box sx={{
-                position: "fixed", bottom: "110px", right: "40px", backgroundColor: "#fff", color: "#000",
-                boxShadow: "0 4px 8px rgba(0,0,0,0.2)", borderRadius: "20px", padding: "8px 16px",
-                fontFamily: "Poppins, sans-serif", zIndex: 102, opacity: openBubble ? 1 : 0,
-                transform: openBubble ? "translateX(0)" : "translateX(100%)", transition: "transform 0.5s ease, opacity 0.5s ease",
-              }} onClick={() => setOpenBubble(false)}>
-                Puedes escribirnos al wsp!
-              </Box>
             )}
           </Box>
-          </>
-        )}    
+
+          {(location.pathname !== "/catalogo") && (
+            <>
+              <Box sx={{
+                position: "fixed", bottom: "40px", right: "40px", zIndex: 100,
+                transition: "bottom 0.3s ease",
+              }}>
+                <IconButton onClick={() => {
+                  window.open("https://api.whatsapp.com/send?phone=56992914526", "_blank");
+                  handleUserInteraction();
+                }} sx={{
+                  width: "60px", height: "60px", backgroundColor: "#25d366", color: "#FFF", borderRadius: "50%",
+                  boxShadow: "2px 2px 3px #999", "&:hover": { backgroundColor: "#1ebe5d" }, zIndex: 101,
+                }}>
+                  <WhatsAppIcon sx={{ fontSize: "30px" }} />
+                </IconButton>
+
+                {openBubble && (
+                  <Box sx={{
+                    position: "fixed", bottom: "110px", right: "40px", backgroundColor: "#fff", color: "#000",
+                    boxShadow: "0 4px 8px rgba(0,0,0,0.2)", borderRadius: "20px", padding: "8px 16px",
+                    fontFamily: "Poppins, sans-serif", zIndex: 102, opacity: openBubble ? 1 : 0,
+                    transform: openBubble ? "translateX(0)" : "translateX(100%)", transition: "transform 0.5s ease, opacity 0.5s ease",
+                  }} onClick={() => setOpenBubble(false)}>
+                    Puedes escribirnos al wsp!
+                  </Box>
+                )}
+              </Box>
+            </>
+          )}
           {showArrow && (
             <IconButton onClick={scrollToTop} sx={{
               position: "fixed", bottom: "120px", right: "40px", backgroundColor: "#fff", color: "#000",

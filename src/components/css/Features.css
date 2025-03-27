@@ -1,4 +1,5 @@
 .icon.animate {
   opacity: 0;
-  transform: translateX(10px); /* El icono se mueve a la derecha */
+  transform: translateX(10px);
+  /* El icono se mueve a la derecha */
 }

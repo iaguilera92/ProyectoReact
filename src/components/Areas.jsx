@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Typography, Box,useMediaQuery,useTheme } from "@mui/material";
+import { Grid, Typography, Box, useMediaQuery, useTheme } from "@mui/material";
 import "@fontsource/poppins";
 import CountUp from "react-countup";
 import { useInView } from "react-intersection-observer";
@@ -48,7 +48,7 @@ const Areas = () => {
       const timer = setTimeout(() => {
         setDelayed(true);
       }, 1700); // ⏳ Ahora el contador se activa después de 1.2 segundos
-  
+
       return () => clearTimeout(timer); // Limpia el temporizador al desmontarse
     }
   }, [inView]);
@@ -82,211 +82,212 @@ const Areas = () => {
   ];
 
 
-useEffect(() => {
-  const interval = setInterval(() => {
-    setCurrentImage((prevImage) => (prevImage + 1) % images.length); // Cambia la imagen cada vez
-  }, 5000); // Cambia cada 5 segundos
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImage((prevImage) => (prevImage + 1) % images.length); // Cambia la imagen cada vez
+    }, 5000); // Cambia cada 5 segundos
 
-  return () => clearInterval(interval); // Limpia el intervalo cuando el componente se desmonta
-}, []);
+    return () => clearInterval(interval); // Limpia el intervalo cuando el componente se desmonta
+  }, []);
 
-useEffect(() => {
-  if (isMobile) {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }
-}, [isMobile]);
+  useEffect(() => {
+    if (isMobile) {
+      const handleScroll = () => {
+        setScrollY(window.scrollY);
+      };
+      window.addEventListener("scroll", handleScroll);
+      return () => window.removeEventListener("scroll", handleScroll);
+    }
+  }, [isMobile]);
 
   return (
-    
+
     <Box
-    sx={{
-      backgroundImage: isMobile ? 'url(/fondo-areas2.jpg)' : 'url(/fondo-areas1.jpg)',
-      backgroundRepeat: "no-repeat",
-      backgroundSize: isMobile ? "100% 100%" : "100% auto", 
-      backgroundPosition: isMobile ? "center" :"",    
-      backgroundAttachment: isMobile ? "initial" : "fixed",
-      minHeight: isMobile ? "85vh" : "auto",
-      paddingTop: "30px !important",
-      padding: { xs: 4, md: 16 },
-      paddingBottom: { xs: 14, md: 16 },
-    }}
-  >
+      sx={{
+        backgroundImage: isMobile ? 'url(/fondo-areas2.jpg)' : 'url(/fondo-areas1.jpg)',
+        backgroundRepeat: "no-repeat",
+        backgroundSize: isMobile ? "100% 100%" : "100% auto",
+        backgroundPosition: isMobile ? "center" : "",
+        backgroundAttachment: isMobile ? "initial" : "fixed",
+        minHeight: isMobile ? "85vh" : "auto",
+        paddingTop: "30px !important",
+        padding: { xs: 4, md: 16 },
+        paddingBottom: { xs: 14, md: 16 },
+      }}
+    >
       <Grid container spacing={4} alignItems="center">
         <Grid item xs={12} md={6}>
           <Grid container spacing={4}>
             {data.map((item, index) => (
               <Grid item xs={6} sm={6} md={6} key={index}>
                 <Box
-              sx={{
-                textAlign: "center",
-                color: "white",
-                borderRadius: 2,
-                width: "100%",
-                height: 150,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                fontFamily: "'Poppins', sans-serif",
-                perspective: "1000px",
-                cursor: "pointer",
-                position: "relative",
+                  sx={{
+                    textAlign: "center",
+                    color: "white",
+                    borderRadius: 2,
+                    width: "100%",
+                    height: 150,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    fontFamily: "'Poppins', sans-serif",
+                    perspective: "1000px",
+                    cursor: "pointer",
+                    position: "relative",
+                  }}
+                  ref={ref}
+                >
+                  {/* Caja para rotación 3D */}
+                  <Box
+                    sx={{
+                      width: "100%",
+                      height: "100%",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      transformStyle: "preserve-3d",
+                      transition: "transform 2.6s",
+                      transitionDelay: inView ? "0.8s" : "0s",
+                      transform: inView ? "rotateY(180deg)" : "rotateY(0deg)",
+                      position: "relative",
+                    }}
+                  >
+                    {/* Cara trasera: Información */}
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        backfaceVisibility: "hidden",
+                        width: isMobile ? "115%" : "100%",
+                        height: "100%",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        flexDirection: "column",
+                        backgroundColor: "rgba(24, 26, 27, 0.9)",
+                        borderRadius: 2,
+                        boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
+                        zIndex: 2,
+                        transform: "rotateY(180deg)",
+                      }}
+                    >
+                      {/* Contenedor fijo para evitar que se mueva el contador */}
+                      <Box
+                        sx={{
+                          minWidth: "100px", // Asegura que el ancho no cambie
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                        }}
+                      >
+                        {/* Contador con retraso de 0.8 segundos */}
+                        <Typography
+                          variant="h3"
+                          gutterBottom
+                          sx={{
+                            fontFamily: "'Saira', Sans-serif",
+                            fontWeight: "700",
+                            minWidth: "80px",
+                            textAlign: "center",
+                            marginBottom: "0.15em",
+                            fontSize: isMobile ? "2.6rem" : "2.2rem", // Aumentado el tamaño
+                          }}
+                        >
+                          +{delayed ? <CountUp start={0} end={item.count} duration={3} /> : "0"}
+                        </Typography>
+                        <Box
+                          sx={{
+                            textAlign: "center",
+                            maxWidth: isMobile ? "100%" : "90%",
+                            fontSize: isMobile ? "0.93rem" : "1.1rem", // Reducir tamaño del texto en móviles
+                            fontFamily: "'Oswald', sans-serif", // Fuente agregada
+                          }}
+                        >
+                          {splitTextIntoWords(item.text)}
+                        </Box>
+                      </Box>
+                    </Box>
+
+                    {/* Cara delantera: Imagen */}
+                    <Box
+                      component="video"
+                      src={item.image}
+                      autoPlay
+                      muted
+                      playsInline
+                      onEnded={(e) => {
+                        e.target.pause(); // ✅ Detiene el video al finalizar
+                      }}
+                      sx={{
+                        position: "absolute",
+                        backfaceVisibility: "hidden",
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        borderRadius: 2,
+                        boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)"
+                      }}
+                    />
+
+                  </Box>
+                </Box>
+              </Grid>
+            ))}
+          </Grid>
+        </Grid>
+
+        <Grid item xs={12} md={6} display="flex" justifyContent="center">
+          <motion.div
+            key={currentImage}
+            initial={{ rotateY: 0 }}
+            animate={{
+              rotateY: [0, 90, 180], // Gira hasta 180° y cambia la imagen en el proceso
+              y: [0, -10, 0], // Flotación de arriba a abajo
+            }}
+            transition={{
+              rotateY: { duration: 1.5, ease: "easeInOut" },
+              y: { duration: 2, repeat: Infinity, ease: "easeInOut" }, // Mantiene la flotación constante
+            }}
+            onAnimationComplete={() => setTimeout(() => { setCurrentImage((prev) => (prev + 1) % images.length); }, 5000)} // Cambia la imagen después de 5 segundos
+            style={{
+              position: "relative",
+              width: isMobile ? 420 : 450,
+              height: isMobile ? 280 : 336,
+              perspective: 1200, // Mantiene el efecto 3D
+              transformStyle: 'preserve-3d', // Necesario para que las imágenes se giren correctamente
+            }}
+          >
+            {/* Imagen visible antes del giro */}
+            <motion.img
+              key={`front-${currentImage}`}
+              src={images[currentImage]}
+              alt="Rotating Image"
+              width={isMobile ? "100%" : "100%"}
+              height={isMobile ? "100%" : "100%"}
+              style={{
+                position: "absolute",
+                backfaceVisibility: "hidden", // Oculta la cara trasera de la imagen
+                transform: 'rotateY(0deg)', // Asegura que la imagen frontal no se voltee
               }}
-              ref={ref}
-            >
-  {/* Caja para rotación 3D */}
-  <Box
-    sx={{
-      width: "100%",
-      height: "100%",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      transformStyle: "preserve-3d",
-      transition: "transform 2.6s",
-      transitionDelay: inView ? "0.8s" : "0s",
-      transform: inView ? "rotateY(180deg)" : "rotateY(0deg)",
-      position: "relative",
-    }}
-  >
-    {/* Cara trasera: Información */}
-    <Box
-      sx={{
-        position: "absolute",
-        backfaceVisibility: "hidden",
-        width: isMobile ? "115%" : "100%",
-        height: "100%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        flexDirection: "column",
-        backgroundColor: "rgba(24, 26, 27, 0.9)",
-        borderRadius: 2,
-        boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
-        zIndex: 2,
-        transform: "rotateY(180deg)",        
-      }}
-    >
-      {/* Contenedor fijo para evitar que se mueva el contador */}
-      <Box
-        sx={{
-          minWidth: "100px", // Asegura que el ancho no cambie
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",          
-        }}
-      >
-        {/* Contador con retraso de 0.8 segundos */}
-        <Typography
-        variant="h3"
-        gutterBottom
-        sx={{
-          fontFamily: "'Saira', Sans-serif",
-          fontWeight: "700",
-          minWidth: "80px",
-          textAlign: "center",
-          marginBottom: "0.15em",
-          fontSize: isMobile ? "2.6rem" : "2.2rem", // Aumentado el tamaño
-        }}
-        >
-      +{delayed ? <CountUp start={0} end={item.count} duration={3} /> : "0"}
-      </Typography>
-        <Box
-          sx={{
-            textAlign: "center",
-            maxWidth: isMobile ? "100%" : "90%",
-            fontSize: isMobile ? "0.93rem" : "1.1rem", // Reducir tamaño del texto en móviles
-            fontFamily: "'Oswald', sans-serif", // Fuente agregada
-          }}
-        >
-          {splitTextIntoWords(item.text)}
-        </Box>
-      </Box>
-    </Box>
+            />
 
-      {/* Cara delantera: Imagen */}
-      <Box
-        component="video"
-        src={item.image}
-        autoPlay
-        muted
-        loop
-        playsInline
-        sx={{
-          position: "absolute",
-          backfaceVisibility: "hidden",
-          width: isMobile ? "115%" : "100%",
-          height: "100%",          
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          borderRadius: 2,
-          boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
-        }}
-        />
-    
-              </Box>
-            </Box>
-           </Grid>
-      ))}
-    </Grid>
-  </Grid>
+            {/* Imagen visible después del giro */}
+            <motion.img
+              key={`back-${(currentImage + 1) % images.length}`}
+              src={images[(currentImage + 1) % images.length]}
+              alt="Next Rotating Image"
+              width={isMobile ? "100%" : "100%"}
+              height={isMobile ? "100%" : "100%"}
+              initial={{ rotateY: 180, opacity: 1 }}
+              style={{
+                position: "absolute",
+                transform: 'rotateY(180deg)', // Imagen trasera en la posición de 180 grados
+                backfaceVisibility: "hidden", // Oculta la cara trasera de la imagen
+              }}
+            />
+          </motion.div>
+        </Grid>
 
-  <Grid item xs={12} md={6} display="flex" justifyContent="center">
-      <motion.div
-        key={currentImage}
-        initial={{ rotateY: 0 }}
-        animate={{
-          rotateY: [0, 90, 180], // Gira hasta 180° y cambia la imagen en el proceso
-          y: [0, -10, 0], // Flotación de arriba a abajo
-        }}
-        transition={{
-          rotateY: { duration: 1.5, ease: "easeInOut" },
-          y: { duration: 2, repeat: Infinity, ease: "easeInOut" }, // Mantiene la flotación constante
-        }}
-        onAnimationComplete={() => setTimeout(() => { setCurrentImage((prev) => (prev + 1) % images.length); }, 5000)} // Cambia la imagen después de 5 segundos
-        style={{
-          position: "relative",
-          width: isMobile ? 420 : 450,
-          height: isMobile ? 280 : 336,
-          perspective: 1200, // Mantiene el efecto 3D
-          transformStyle: 'preserve-3d', // Necesario para que las imágenes se giren correctamente
-        }}
-      >
-        {/* Imagen visible antes del giro */}
-        <motion.img
-          key={`front-${currentImage}`}
-          src={images[currentImage]}
-          alt="Rotating Image"
-          width={isMobile ? "100%" : "100%"}
-          height={isMobile ? "100%" : "100%"}
-          style={{
-            position: "absolute",
-            backfaceVisibility: "hidden", // Oculta la cara trasera de la imagen
-            transform: 'rotateY(0deg)', // Asegura que la imagen frontal no se voltee
-          }}
-        />
 
-        {/* Imagen visible después del giro */}
-        <motion.img
-          key={`back-${(currentImage + 1) % images.length}`}
-          src={images[(currentImage + 1) % images.length]}
-          alt="Next Rotating Image"
-          width={isMobile ? "100%" : "100%"}
-          height={isMobile ? "100%" : "100%"}
-          initial={{ rotateY: 180, opacity: 1 }}          
-          style={{
-            position: "absolute",
-            transform: 'rotateY(180deg)', // Imagen trasera en la posición de 180 grados
-            backfaceVisibility: "hidden", // Oculta la cara trasera de la imagen
-          }}
-        />
-      </motion.div>
-    </Grid>
-
-    
       </Grid>
     </Box>
   );

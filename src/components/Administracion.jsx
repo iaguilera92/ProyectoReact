@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
-  Box,  
+  Box,
   Link,
   TextField,
   Button,
@@ -21,8 +21,8 @@ import { Checkbox, FormControlLabel } from "@mui/material";
 
 
 const Administracion = () => {
- const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm')); 
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [showPassword, setShowPassword] = useState(false);
   const [typedText, setTypedText] = useState("");
   const [showCursor, setShowCursor] = useState(true);
@@ -34,38 +34,38 @@ const Administracion = () => {
   const [password, setPassword] = useState("");
   const [recordarme, setRecordarme] = useState(false);
 
-//VALIDAR INICIO DE SESIÓN
-const [snackbar, setSnackbar] = useState({
-  open: false,
-  type: "success", // "success", "error", "warning", "info"
-  message: "",
-});
+  //VALIDAR INICIO DE SESIÓN
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    type: "success", // "success", "error", "warning", "info"
+    message: "",
+  });
 
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const usuarioValido = await validarCredenciales(email, password);
-  console.log("Resultado de validación:", usuarioValido);
+    const usuarioValido = await validarCredenciales(email, password);
+    console.log("Resultado de validación:", usuarioValido);
 
-  if (usuarioValido) {    
-    navigate("/catalogo", {
-      state: {
-        snackbar: {
-          open: true,
-          type: "success",
-          message: `Bienvenido ${usuarioValido.nombre} 😎`,
+    if (usuarioValido) {
+      navigate("/catalogo", {
+        state: {
+          snackbar: {
+            open: true,
+            type: "success",
+            message: `Bienvenido ${usuarioValido.nombre} 😎`,
+          },
         },
-      },
-    });
-  } else {
-    setSnackbar({
-      open: true,
-      type: "error",
-      message: "Usuario o contraseña incorrectos",
-    });
-  }
-};
+      });
+    } else {
+      setSnackbar({
+        open: true,
+        type: "error",
+        message: "Usuario o contraseña incorrectos",
+      });
+    }
+  };
 
 
   useEffect(() => {
@@ -134,97 +134,97 @@ const handleSubmit = async (e) => {
         }}
       >
         <Box
-        component="img"
-        src="/user.png" // asegúrate que esté en la carpeta `public/`
-        alt="Usuario"
-        sx={{
-          width: 80,
-          height: 80,
-          borderRadius: "50%",
-          objectFit: "cover",
-          margin: "0 auto",
-          mb: 2,
-          border: "2px solid #E95420",
-        }}
-      />
+          component="img"
+          src="/user.png" // asegúrate que esté en la carpeta `public/`
+          alt="Usuario"
+          sx={{
+            width: 80,
+            height: 80,
+            borderRadius: "50%",
+            objectFit: "cover",
+            margin: "0 auto",
+            mb: 2,
+            border: "2px solid #E95420",
+          }}
+        />
 
-<Typography
-      variant="h6"
-      fontWeight="bold"
-      gutterBottom
-      sx={{
-        fontFamily: "monospace",
-        color: "white",
-        minHeight: "1.5em",
-      }}
-    >
-      {typedText}
-      {showCursor && (
-          <span
-            style={{
-              display: "inline-block",
-              fontWeight: "bold",
-              transform: "scaleX(1.8)", // 👉 hace el | más ancho
-            }}
-          >
-            |
-          </span>
-        )}
-    </Typography>
+        <Typography
+          variant="h6"
+          fontWeight="bold"
+          gutterBottom
+          sx={{
+            fontFamily: "monospace",
+            color: "white",
+            minHeight: "1.5em",
+          }}
+        >
+          {typedText}
+          {showCursor && (
+            <span
+              style={{
+                display: "inline-block",
+                fontWeight: "bold",
+                transform: "scaleX(1.8)", // 👉 hace el | más ancho
+              }}
+            >
+              |
+            </span>
+          )}
+        </Typography>
 
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
-        <TextField
-  fullWidth
-  variant="filled"
-  label="Usuario o correo"
-  margin="dense"
-  value={email} // ← este es el estado que almacena lo escrito
-  onChange={(e) => setEmail(e.target.value)} // ← actualiza el estado al escribir
-  InputProps={{
-    style: { backgroundColor: "#ffffff10", color: "white" },
-  }}
-  InputLabelProps={{
-    style: { color: "#bbb" },
-  }}
-/>
+          <TextField
+            fullWidth
+            variant="filled"
+            label="Usuario o correo"
+            margin="dense"
+            value={email} // ← este es el estado que almacena lo escrito
+            onChange={(e) => setEmail(e.target.value)} // ← actualiza el estado al escribir
+            InputProps={{
+              style: { backgroundColor: "#ffffff10", color: "white" },
+            }}
+            InputLabelProps={{
+              style: { color: "#bbb" },
+            }}
+          />
 
-<TextField
-  fullWidth
-  type={showPassword ? "text" : "password"}
-  variant="filled"
-  label="Contraseña"
-  margin="dense"
-  value={password}
-  onChange={(e) => setPassword(e.target.value)}
-  InputProps={{
-    style: { backgroundColor: "#ffffff10", color: "white" },
-    endAdornment: (
-      <InputAdornment position="end">
-        <IconButton onClick={handleTogglePassword} edge="end" sx={{ color: "#fff" }}>
-          {showPassword ? <VisibilityOff /> : <Visibility />}
-        </IconButton>
-      </InputAdornment>
-    ),
-  }}
-  InputLabelProps={{
-    style: { color: "white" },
-  }}
-/>
-<FormControlLabel
-  control={
-    <Checkbox
-      checked={recordarme}
-      onChange={(e) => setRecordarme(e.target.checked)}
-      sx={{ color: "white" }}
-    />
-  }
-  label="Recordarme"
-  sx={{
-    color: "#bbb",
-    mt: 0,
-    fontSize: "0.8rem"
-  }}
-/>
+          <TextField
+            fullWidth
+            type={showPassword ? "text" : "password"}
+            variant="filled"
+            label="Contraseña"
+            margin="dense"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            InputProps={{
+              style: { backgroundColor: "#ffffff10", color: "white" },
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={handleTogglePassword} edge="end" sx={{ color: "#fff" }}>
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            InputLabelProps={{
+              style: { color: "white" },
+            }}
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={recordarme}
+                onChange={(e) => setRecordarme(e.target.checked)}
+                sx={{ color: "white" }}
+              />
+            }
+            label="Recordarme"
+            sx={{
+              color: "#bbb",
+              mt: 0,
+              fontSize: "0.8rem"
+            }}
+          />
           <Button
             type="submit"
             fullWidth
@@ -238,51 +238,51 @@ const handleSubmit = async (e) => {
                 backgroundColor: "#E95420",
               },
             }}
-          >       
+          >
             Entrar
           </Button>
           <Box sx={{ mt: 2 }}>
-          <Link
-            component="button"
-            onClick={() => navigate("/")}
-            underline="hover"
-            sx={{
-              color: "#bbb",
-              fontSize: "0.9rem",
-              "&:hover": {
-                color: "#E95420",
-              },
-            }}
-          >
-            ← Volver al inicio
-          </Link>
-        </Box>
+            <Link
+              component="button"
+              onClick={() => navigate("/")}
+              underline="hover"
+              sx={{
+                color: "#bbb",
+                fontSize: "0.9rem",
+                "&:hover": {
+                  color: "#E95420",
+                },
+              }}
+            >
+              ← Volver al inicio
+            </Link>
+          </Box>
 
         </Box>
-        
-      </Paper>    
+
+      </Paper>
       <Snackbar
-  open={snackbar.open}
-  autoHideDuration={4000}
-  onClose={() => setSnackbar({ ...snackbar, open: false })}
-  anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
->
-  <Alert
-    onClose={() => setSnackbar({ ...snackbar, open: false })}
-    severity={snackbar.type}
-    sx={{
-      width: "100%",
-      maxWidth: 360,
-      fontSize: "0.9rem",
-      boxShadow: 3,
-    }}
-  >
-    {snackbar.message}
-  </Alert>
-</Snackbar>
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.type}
+          sx={{
+            width: "100%",
+            maxWidth: 360,
+            fontSize: "0.9rem",
+            boxShadow: 3,
+          }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
 
     </Box>
-    
+
   );
 };
 

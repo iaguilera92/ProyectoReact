@@ -1,4 +1,4 @@
-import { Box, Container, Typography, Link, keyframes, useMediaQuery,Snackbar, Alert, useTheme } from "@mui/material";
+import { Box, Container, Typography, Link, keyframes, useMediaQuery, Snackbar, Alert, useTheme } from "@mui/material";
 import { useState } from "react";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import FacebookIcon from "@mui/icons-material/Facebook";
@@ -26,59 +26,59 @@ const expandIcon = keyframes`
 // Botón social con animaciones
 const SocialButton = ({ href, Icon, bgColor, hoverStyles, isMobile }) => (
   <Box
-     component="a"
-     href={href}
-     target="_blank"
-     rel="noopener"
-     sx={{
-       width:  isMobile ? 60 : 40,
-       height: isMobile ? 60 : 40,
-       borderRadius: "50%",
-       position: "relative",
-       display: "flex",
-       alignItems: "center",
-       justifyContent: "center",
-       overflow: "hidden",
-       "&:hover .circle": {
-         animation: `${shrinkCircle} 900ms forwards`,
-       },
-       "&:hover .icon": {
-         animation: `${expandIcon} 150ms 150ms ease-in forwards`,
-         ...hoverStyles, // Se aplican los estilos únicos de cada red
-       },
-     }}
-   >
-   {/* Círculo de fondo */}
-   <Box
-       className="circle"
-       sx={{
-         position: "absolute",
-         width: "100%",
-         height: "100%",
-         borderRadius: "50%",
-         background: bgColor,
-         transition: "transform 300ms ease-out",
-       }}
-     />
- 
-     {/* Icono con color inicial en blanco */}
-     <Icon
-       className="icon"
-       sx={{
-         color: "white",
-         fontSize: isMobile ? 35 : 24,
-         position: "absolute",
-         transition: "color 300ms ease-in, transform 300ms ease-in",
-       }}
-     />
-   </Box>
+    component="a"
+    href={href}
+    target="_blank"
+    rel="noopener"
+    sx={{
+      width: isMobile ? 60 : 40,
+      height: isMobile ? 60 : 40,
+      borderRadius: "50%",
+      position: "relative",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      overflow: "hidden",
+      "&:hover .circle": {
+        animation: `${shrinkCircle} 900ms forwards`,
+      },
+      "&:hover .icon": {
+        animation: `${expandIcon} 150ms 150ms ease-in forwards`,
+        ...hoverStyles, // Se aplican los estilos únicos de cada red
+      },
+    }}
+  >
+    {/* Círculo de fondo */}
+    <Box
+      className="circle"
+      sx={{
+        position: "absolute",
+        width: "100%",
+        height: "100%",
+        borderRadius: "50%",
+        background: bgColor,
+        transition: "transform 300ms ease-out",
+      }}
+    />
+
+    {/* Icono con color inicial en blanco */}
+    <Icon
+      className="icon"
+      sx={{
+        color: "white",
+        fontSize: isMobile ? 35 : 24,
+        position: "absolute",
+        transition: "color 300ms ease-in, transform 300ms ease-in",
+      }}
+    />
+  </Box>
 );
 
 const Footer = () => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));  
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [openAlert, setOpenAlert] = useState(false);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const handleClick = (event) => {
     setOpenAlert(true);
@@ -119,25 +119,25 @@ const Footer = () => {
           >
             {/* 🔹 Columna 1: Contacto */}
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
-   <Typography variant="h6" sx={{ color: "var(--darkreader-text-00b4ff, #1abcff)" }}>
-     Contacto
-   </Typography>
- 
-   <Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-     <img src="https://www.connectic.cl/wp-content/uploads/2021/04/telephone.png" alt="Teléfono" width={16} />
-     <Link href="tel:+56999999999" color="inherit">+56 987654321</Link>
-   </Typography>
- 
-   <Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-     <img src="https://www.connectic.cl/wp-content/uploads/2021/04/correo-1.png" alt="Correo" width={16} />
-     <Link href="mailto:aguileraignacio1992@gmail.com" color="inherit">aguileraignacio1992@gmail.com</Link>
-   </Typography>
- 
-   <Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-     <img src="https://www.connectic.cl/wp-content/uploads/2021/04/location.png" alt="Ubicación" width={16} />
-     Dirección #321, Santiago.
-   </Typography>
- </Box>
+              <Typography variant="h6" sx={{ color: "var(--darkreader-text-00b4ff, #1abcff)" }}>
+                Contacto
+              </Typography>
+
+              <Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <img src="https://www.connectic.cl/wp-content/uploads/2021/04/telephone.png" alt="Teléfono" width={16} />
+                <Link href="tel:+56999999999" color="inherit">+56 987654321</Link>
+              </Typography>
+
+              <Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <img src="https://www.connectic.cl/wp-content/uploads/2021/04/correo-1.png" alt="Correo" width={16} />
+                <Link href="mailto:aguileraignacio1992@gmail.com" color="inherit">aguileraignacio1992@gmail.com</Link>
+              </Typography>
+
+              <Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <img src="https://www.connectic.cl/wp-content/uploads/2021/04/location.png" alt="Ubicación" width={16} />
+                Dirección #321, Santiago.
+              </Typography>
+            </Box>
 
             {/* 🔹 Columna 2: Logo + Redes Sociales */}
             <Box
@@ -159,75 +159,75 @@ const Footer = () => {
                   animation: socialInView ? `${growElement} 1s forwards` : "none",
                 }}
               >
-                 <SocialButton
-                 href="https://www.instagram.com/plataformas.web/?hl=es-la"
-                 Icon={InstagramIcon}
-                 bgColor="linear-gradient(45deg, #cf198c, #f41242)"
-                 hoverStyles={{
-                   color: "#cf198c",
-                   background: "-webkit-linear-gradient(45deg, #cf198c, #f41242)",
-                   WebkitBackgroundClip: "text",
-                   WebkitTextFillColor: "transparent",
-                 }}
-               />
- 
-               {/* Facebook con su hover personalizado */}
-               <SocialButton
-                 href="https://www.facebook.com/profile.php?id=100063452866880"
-                 Icon={FacebookIcon}
-                 bgColor="linear-gradient(45deg, #00B5F5, #002A8F)"
-                 hoverStyles={{
-                   color: "white",
-                   background: "-webkit-linear-gradient(45deg, #00B5F5, #002A8F)",
-                   WebkitBackgroundClip: "text",
-                   WebkitTextFillColor: "transparent",
-                 }}
-               />
- 
-               {/* LinkedIn */}
-               <SocialButton
-                 href="https://www.linkedin.com/company/mittarentacar/?viewAsMember=true"
-                 Icon={LinkedInIcon}
-                 bgColor="linear-gradient(45deg, #00B5F5, #0077b7)"
-                 hoverStyles={{
-                   color: "#0077b7",
-                   background: "-webkit-linear-gradient(45deg, #00B5F5, #0077b7)",
-                   WebkitBackgroundClip: "text",
-                   WebkitTextFillColor: "transparent",
-                 }}
-               />
+                <SocialButton
+                  href="https://www.instagram.com/plataformas.web/?hl=es-la"
+                  Icon={InstagramIcon}
+                  bgColor="linear-gradient(45deg, #cf198c, #f41242)"
+                  hoverStyles={{
+                    color: "#cf198c",
+                    background: "-webkit-linear-gradient(45deg, #cf198c, #f41242)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                  }}
+                />
+
+                {/* Facebook con su hover personalizado */}
+                <SocialButton
+                  href="https://www.facebook.com/profile.php?id=100063452866880"
+                  Icon={FacebookIcon}
+                  bgColor="linear-gradient(45deg, #00B5F5, #002A8F)"
+                  hoverStyles={{
+                    color: "white",
+                    background: "-webkit-linear-gradient(45deg, #00B5F5, #002A8F)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                  }}
+                />
+
+                {/* LinkedIn */}
+                <SocialButton
+                  href="https://www.linkedin.com/company/mittarentacar/?viewAsMember=true"
+                  Icon={LinkedInIcon}
+                  bgColor="linear-gradient(45deg, #00B5F5, #0077b7)"
+                  hoverStyles={{
+                    color: "#0077b7",
+                    background: "-webkit-linear-gradient(45deg, #00B5F5, #0077b7)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                  }}
+                />
               </Box>
             </Box>
 
             {/* 🔹 Columna 3: Proveedores */}
             <Box
-  sx={{
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: 0.5, // menor separación entre imagen y texto
-  }}
->
-  <img
-    src="area-clientes.png"
-    width={120}
-    alt="Área Clientes"
-    style={{ marginTop: -35, marginBottom: "10px" }} // Ajusta el valor según necesites
-  />
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 0.5, // menor separación entre imagen y texto
+              }}
+            >
+              <img
+                src="area-clientes.png"
+                width={120}
+                alt="Área Clientes"
+                style={{ marginTop: -35, marginBottom: "10px" }} // Ajusta el valor según necesites
+              />
 
-  <Typography
-    sx={{
-      display: "flex",
-      alignItems: "center",
-      gap: 0.5,
-    }}
-  >
-    <AdminPanelSettingsIcon fontSize="small" />
-    <Link href="administracion" color="inherit" onClick={handleClick}>
-      Administración
-    </Link>
-  </Typography>
-</Box>
+              <Typography
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 0.5,
+                }}
+              >
+                <AdminPanelSettingsIcon fontSize="small" />
+                <Link href="administracion" color="inherit" onClick={handleClick}>
+                  Administración
+                </Link>
+              </Typography>
+            </Box>
 
           </Box>
         )}
@@ -245,20 +245,20 @@ const Footer = () => {
               sx={{
                 display: "flex",
                 gap: 6,
-                mb:2,
+                mb: 2,
                 animation: socialInView ? `${growElement} 1s forwards` : "none",
               }}
             >
-              <SocialButton href="https://www.instagram.com/plataformas.web/?hl=es-la" Icon={InstagramIcon} bgColor="linear-gradient(45deg, #cf198c, #f41242)" isMobile={isMobile}/>
-              <SocialButton href="https://www.facebook.com/profile.php?id=100063452866880" Icon={FacebookIcon} bgColor="linear-gradient(45deg, #00B5F5, #002A8F)" isMobile={isMobile}/>
+              <SocialButton href="https://www.instagram.com/plataformas.web/?hl=es-la" Icon={InstagramIcon} bgColor="linear-gradient(45deg, #cf198c, #f41242)" isMobile={isMobile} />
+              <SocialButton href="https://www.facebook.com/profile.php?id=100063452866880" Icon={FacebookIcon} bgColor="linear-gradient(45deg, #00B5F5, #002A8F)" isMobile={isMobile} />
               <SocialButton href="https://www.linkedin.com/company/mittarentacar/?viewAsMember=true" Icon={LinkedInIcon} bgColor="linear-gradient(45deg, #00B5F5, #0077b7)" isMobile={isMobile} />
-            </Box>   
+            </Box>
 
             <Box
               sx={{
                 display: "flex",
                 flexDirection: "column",
-                alignItems: "left",                
+                alignItems: "left",
                 gap: 0.5, // menor separación entre imagen y texto
               }}
             >
@@ -266,31 +266,31 @@ const Footer = () => {
                 src="area-clientes.png"
                 width={120}
                 alt="Área Clientes"
-                style={{ marginTop: 30,marginRight: 30, marginBottom: "20px" }} // Ajusta el valor según necesites
+                style={{ marginTop: 30, marginRight: 30, marginBottom: "20px" }} // Ajusta el valor según necesites
               />
 
               <Typography
-                ml = {"10px"}
+                ml={"10px"}
                 sx={{
                   display: "flex",
                   alignItems: "center",
                   gap: 0,
                 }}
               >
-                <AdminPanelSettingsIcon fontSize="small"/>
+                <AdminPanelSettingsIcon fontSize="small" />
                 <Link href="administracion" color="inherit" onClick={handleClick}>
                   Administración
                 </Link>
               </Typography>
-            </Box>              
+            </Box>
           </Box>
-          
+
         )}
 
         <Typography variant="body2" align="center" mt={2} sx={{ marginTop: "5vh" }}>
-        @Plataformas web React 2025 - v1.0.8
+          @Plataformas web React 2025 - v1.0.9
         </Typography>
-      </Container>      
+      </Container>
     </Box>
   );
 };

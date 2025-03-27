@@ -1,43 +1,74 @@
-@font-face{font-family:"Font Awesome 5 Free";font-style:normal;font-weight:400;font-display:block;src:url("https://cdn-jeogh.nitrocdn.com/svPVqNThfGfQjwyBRxWYUktDoEOCGAjs/assets/static/source/rev-30dd8fd/cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/webfonts/fa-regular-400.woff2") format("woff2");}@font-face{font-family:"Font Awesome 5 Free";font-style:normal;font-weight:900;font-display:block;src:url("https://cdn-jeogh.nitrocdn.com/svPVqNThfGfQjwyBRxWYUktDoEOCGAjs/assets/static/source/rev-30dd8fd/cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/webfonts/fa-solid-900.woff2") format("woff2");}@font-face{font-family:"entypo-fontello";font-weight:normal;font-style:normal;font-display:auto;src:url("https://cdn-jeogh.nitrocdn.com/svPVqNThfGfQjwyBRxWYUktDoEOCGAjs/assets/static/source/rev-30dd8fd/www.tichile.cl/wp-content/themes/enfold/config-templatebuilder/avia-template-builder/assets/fonts/entypo-fontello.woff2") format("woff2");}
+@font-face {
+  font-family: "Font Awesome 5 Free";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("https://cdn-jeogh.nitrocdn.com/svPVqNThfGfQjwyBRxWYUktDoEOCGAjs/assets/static/source/rev-30dd8fd/cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/webfonts/fa-regular-400.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Font Awesome 5 Free";
+  font-style: normal;
+  font-weight: 900;
+  font-display: block;
+  src: url("https://cdn-jeogh.nitrocdn.com/svPVqNThfGfQjwyBRxWYUktDoEOCGAjs/assets/static/source/rev-30dd8fd/cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/webfonts/fa-solid-900.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "entypo-fontello";
+  font-weight: normal;
+  font-style: normal;
+  font-display: auto;
+  src: url("https://cdn-jeogh.nitrocdn.com/svPVqNThfGfQjwyBRxWYUktDoEOCGAjs/assets/static/source/rev-30dd8fd/www.tichile.cl/wp-content/themes/enfold/config-templatebuilder/avia-template-builder/assets/fonts/entypo-fontello.woff2") format("woff2");
+}
 
 @keyframes pulsacion {
-    0% {
-        opacity: .3;
-    }
-    
-    40% {
-        opacity: .5;
-        box-shadow: 0 0 0 2px rgba(255, 255, 255, .1), 0 0 10px 10px #fff, 0 0 0 10px rgba(255, 255, 255, .5);
-    }
-    100% {
-        opacity: 0;
-        box-shadow: 0 0 0 2px rgba(255, 255, 255, .1), 0 0 10px 10px #fff, 0 0 0 10px rgba(255, 255, 255, .5);
-        transform: scale(1.5);
-    }
-}
-  
-.vertical-line {
-    position: absolute;
-    top: 95%; /* Centrado en el medio del contenedor */
-    left: 50%; /* Centrado horizontalmente */
-    transform: translateX(-50%); /* Ajuste para centrar correctamente */
-    width: 1px;
-    height: 0%; /* Empieza sin altura */
-    border-right-width: 1px;
-    border-right-style: dashed;
-    z-index: 1; /* Asegurarse de que la línea esté debajo de los círculos */
-    animation: line-border 1s 0.5s ease-out forwards;
-    opacity: 0;
-    color: white;
+  0% {
+    opacity: .3;
   }
-  @keyframes line-border {
-    0% {
-      opacity: 0;
-      height: 0%; /* Empieza sin altura */
-    }
-    100% {
-      opacity: 1;
-      height: 45%; /* La línea se extiende hasta el 50% del contenedor */
-    }
-  }  
-  
+
+  40% {
+    opacity: .5;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, .1), 0 0 10px 10px #fff, 0 0 0 10px rgba(255, 255, 255, .5);
+  }
+
+  100% {
+    opacity: 0;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, .1), 0 0 10px 10px #fff, 0 0 0 10px rgba(255, 255, 255, .5);
+    transform: scale(1.5);
+  }
+}
+
+.vertical-line {
+  position: absolute;
+  top: 95%;
+  /* Centrado en el medio del contenedor */
+  left: 50%;
+  /* Centrado horizontalmente */
+  transform: translateX(-50%);
+  /* Ajuste para centrar correctamente */
+  width: 1px;
+  height: 0%;
+  /* Empieza sin altura */
+  border-right-width: 1px;
+  border-right-style: dashed;
+  z-index: 1;
+  /* Asegurarse de que la línea esté debajo de los círculos */
+  animation: line-border 1s 0.5s ease-out forwards;
+  opacity: 0;
+  color: white;
+}
+
+@keyframes line-border {
+  0% {
+    opacity: 0;
+    height: 0%;
+    /* Empieza sin altura */
+  }
+
+  100% {
+    opacity: 1;
+    height: 45%;
+    /* La línea se extiende hasta el 50% del contenedor */
+  }
+}

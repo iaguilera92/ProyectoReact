@@ -8,4 +8,5 @@ Currently, two official plugins are available:
 - [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
 
-Passoword Example: node hashea.js admin 1234
+Password Example (Comando Git): node hashea.js admin 1234
+Shift + Alt + F (Ordenar Código)

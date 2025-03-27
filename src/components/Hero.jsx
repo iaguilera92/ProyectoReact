@@ -8,7 +8,7 @@ function Hero({ scrollToContacto }) {
   const [openAlert, setOpenAlert] = useState(false);
   const [showButton, setShowButton] = useState(false); // Estado para mostrar el botón después del delay
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm')); 
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const texts = [
     { title: "SOLUCIONES TECNOLÓGICAS", description: "Soluciones digitales a la medida." },
@@ -45,37 +45,37 @@ function Hero({ scrollToContacto }) {
     >
       {/* Video de fondo */}
       <Box
-  sx={{
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    overflow: "hidden",
-  }}
->
-<video
-  autoPlay
-  muted
-  loop
-  playsInline  // 🔹 Asegura que el video se reproduzca en móviles sin abrir en pantalla completa
-  id="background-video"
-  style={{
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
-    pointerEvents: "none", // Evita interacción del usuario
-  }}
-  disablePictureInPicture
-  controlsList="nodownload nofullscreen noremoteplayback"
->
-  <source
-    src="https://www.connectic.cl/wp-content/uploads/2024/07/136268-764387688_small.mp4"
-    type="video/mp4"
-  />
-</video>
+        sx={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          overflow: "hidden",
+        }}
+      >
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline  // 🔹 Asegura que el video se reproduzca en móviles sin abrir en pantalla completa
+          id="background-video"
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            pointerEvents: "none", // Evita interacción del usuario
+          }}
+          disablePictureInPicture
+          controlsList="nodownload nofullscreen noremoteplayback"
+        >
+          <source
+            src="https://www.connectic.cl/wp-content/uploads/2024/07/136268-764387688_small.mp4"
+            type="video/mp4"
+          />
+        </video>
 
-</Box>
+      </Box>
 
 
       {/* Contenido sobre el video */}
@@ -128,10 +128,9 @@ function Hero({ scrollToContacto }) {
                   transition={{ duration: 0.5, ease: "easeOut" }}
                 >
                   <Box sx={{ mt: isMobile ? 4 : 1 }}>
-                    <button className="btn-3" onClick={() => 
-                    {
+                    <button className="btn-3" onClick={() => {
                       setOpenAlert(true);
-                      scrollToContacto.current?.scrollIntoView({ behavior: "smooth"}); 
+                      scrollToContacto.current?.scrollIntoView({ behavior: "smooth" });
                     }}>
                       <span>Contactar</span>
                     </button>

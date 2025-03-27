@@ -2,21 +2,21 @@ import React, { useState } from 'react';
 import { Box, Card, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 
-const Productos = ({ producto,  index,  girado,  onGirar,  FormatearPesos,  CalcularValorOld }) => {
+const Productos = ({ producto, index, girado, onGirar, FormatearPesos, CalcularValorOld }) => {
 
   return (
-<Box
-  sx={{
-    width: {
-      xs: '100%',
-      sm: 260,
-      md: 280,
-      lg: 300
-    },
-    mx: 'auto',
-    position: 'relative'
-  }}
->      {/* Contenedor giratorio */}
+    <Box
+      sx={{
+        width: {
+          xs: '100%',
+          sm: 260,
+          md: 280,
+          lg: 300
+        },
+        mx: 'auto',
+        position: 'relative'
+      }}
+    >      {/* Contenedor giratorio */}
       <Box
         onClick={onGirar}
         sx={{
@@ -45,8 +45,8 @@ const Productos = ({ producto,  index,  girado,  onGirar,  FormatearPesos,  Calc
               producto.Stock >= 10
                 ? '#4CAF50'
                 : producto.Stock > 0
-                ? '#FFA000'
-                : '#F44336',
+                  ? '#FFA000'
+                  : '#F44336',
             color: 'white',
             fontWeight: 'bold',
             fontSize: 12,
@@ -105,40 +105,40 @@ const Productos = ({ producto,  index,  girado,  onGirar,  FormatearPesos,  Calc
                   left: 0
                 }}
               />
-             <Box
-            sx={{
-              position: 'relative',
-              zIndex: 2,
-              height: '100%',
-              color: 'white',
-              p: {
-                xs: 1,
-                sm: 1.5,
-                md: 2
-              },
-              display: 'flex',
-              alignItems: 'flex-start'
-            }}
-          >
-            <Typography
-                        variant="subtitle1"
-                        fontWeight="bold"
-                        noWrap
-                        sx={{
-                          fontFamily: '"RC Type Cond", Arial, sans-serif',
-                          color: 'white',         
-                          borderRadius: 1,
-                          px: 1,
-                          fontSize: {
-                            xs: '0.9rem',
-                            sm: '1rem',
-                            md: '1.1rem'
-                          }
-                        }}
-                      >
-                {producto.NombreProducto}
-              </Typography>
-            </Box>
+              <Box
+                sx={{
+                  position: 'relative',
+                  zIndex: 2,
+                  height: '100%',
+                  color: 'white',
+                  p: {
+                    xs: 1,
+                    sm: 1.5,
+                    md: 2
+                  },
+                  display: 'flex',
+                  alignItems: 'flex-start'
+                }}
+              >
+                <Typography
+                  variant="subtitle1"
+                  fontWeight="bold"
+                  noWrap
+                  sx={{
+                    fontFamily: '"RC Type Cond", Arial, sans-serif',
+                    color: 'white',
+                    borderRadius: 1,
+                    px: 1,
+                    fontSize: {
+                      xs: '0.9rem',
+                      sm: '1rem',
+                      md: '1.1rem'
+                    }
+                  }}
+                >
+                  {producto.NombreProducto}
+                </Typography>
+              </Box>
             </Card>
           </Box>
 
@@ -156,70 +156,70 @@ const Productos = ({ producto,  index,  girado,  onGirar,  FormatearPesos,  Calc
               border: '2px solid white'
             }}
           >
-           <Card
-        sx={{
-          width: '100%',
-          height: '100%',
-          position: 'relative',
-          overflow: 'hidden'
-        }}
-      >
-  {girado && (
-  <Box
-    component="video"
-    src="video-catalogo1.mp4"
-    autoPlay
-    muted
-    loop
-    playsInline
-    sx={{
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '100%',
-      objectFit: 'cover',
-      zIndex: 1
-    }}
-  />
-)}
+            <Card
+              sx={{
+                width: '100%',
+                height: '100%',
+                position: 'relative',
+                overflow: 'hidden'
+              }}
+            >
+              {girado && (
+                <Box
+                  component="video"
+                  src="video-catalogo1.mp4"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    zIndex: 1
+                  }}
+                />
+              )}
 
-  {/* Título encima del GIF */}
-  <Box
-  sx={{
-    position: 'relative',
-    zIndex: 2,
-    height: '100%',
-    color: 'white',
-    p: {
-      xs: 1,
-      sm: 1.5,
-      md: 2
-    },
-    display: 'flex',
-    alignItems: 'flex-start'
-  }}
->
-    <Typography
-            variant="subtitle1"
-            fontWeight="bold"
-            noWrap
-            sx={{
-              fontFamily: '"RC Type Cond", Arial, sans-serif',
-              color: 'white',
-              borderRadius: 1,
-              px: 1,
-              fontSize: {
-                xs: '0.9rem',
-                sm: '1rem',
-                md: '1.1rem'
-              }
-            }}
-          >
-      {producto.NombreProducto}
-    </Typography>
-  </Box>
-</Card>
+              {/* Título encima del GIF */}
+              <Box
+                sx={{
+                  position: 'relative',
+                  zIndex: 2,
+                  height: '100%',
+                  color: 'white',
+                  p: {
+                    xs: 1,
+                    sm: 1.5,
+                    md: 2
+                  },
+                  display: 'flex',
+                  alignItems: 'flex-start'
+                }}
+              >
+                <Typography
+                  variant="subtitle1"
+                  fontWeight="bold"
+                  noWrap
+                  sx={{
+                    fontFamily: '"RC Type Cond", Arial, sans-serif',
+                    color: 'white',
+                    borderRadius: 1,
+                    px: 1,
+                    fontSize: {
+                      xs: '0.9rem',
+                      sm: '1rem',
+                      md: '1.1rem'
+                    }
+                  }}
+                >
+                  {producto.NombreProducto}
+                </Typography>
+              </Box>
+            </Card>
 
           </Box>
         </motion.div>
