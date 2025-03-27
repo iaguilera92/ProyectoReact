@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Container, Typography, Box, TextField, Button, Snackbar, Alert, Grid, useMediaQuery, useTheme } from "@mui/material";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import { Container, Typography, Box, Snackbar, Alert, Grid, useMediaQuery, useTheme } from "@mui/material";
 import { useInView } from "react-intersection-observer";
 import { motion } from "framer-motion";
 import "./css/Contacto.css"; // Importamos el CSS
 import "leaflet/dist/leaflet.css"; // Estilo básico de Leaflet
-import { MapContainer, TileLayer, Marker, useMap, useMapEvent } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, useMapEvent } from "react-leaflet";
 import L from "leaflet";
-import emailjs from "@emailjs/browser";
 import ContactoForm from './ContactoForm';
 
 const finalPosition = [-33.435054, -70.688067];
@@ -21,33 +19,18 @@ const letterVariants = {
   }),
 };
 
-const customIcon = new L.Icon({
-  iconUrl: "/gps-mobile.png", // Ruta a la imagen en la carpeta public
-  iconSize: [70, 70], // Tamaño del icono
-  iconAnchor: [35, 35], // Centrado del icono
-  popupAnchor: [0, -35], // Popup ligeramente por encima del marcador
-});
-
 
 function Contacto() {
   const [formSubmitted, setFormSubmitted] = useState(false);
-  const [openAlert, setOpenAlert] = useState(false);
   const [startAnimation, setStartAnimation] = useState(false);
-  const [bgPosition, setBgPosition] = useState("center 0px");
   const [containerHeight, setContainerHeight] = useState("50vh"); // Inicia con 50vh
   const [rotate, setRotate] = useState(0);
   const [isHovered, setIsHovered] = useState(false); // Estado para detectar si el mouse está encima
-  const [intervalActive, setIntervalActive] = useState(true);
   const initialZoom = 3; // Zoom inicial lejano
   const finalZoom = 17; // Zoom final al que queremos llegar
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.3 });
-  const [animar, setAnimar] = useState(false);
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [message, setMessage] = useState("");
-  const [errors, setErrors] = useState({});
 
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -61,67 +44,10 @@ function Contacto() {
         setStartAnimation(true);
         // Después de la animación, restauramos la altura
         setContainerHeight("auto");
-      }, 1000); // Ajusta el tiempo de animación según lo necesites
+      }, 1300); // Ajusta el tiempo de animación según lo necesites
       return () => clearTimeout(timer);
     }
   }, [inView]);
-
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    const newErrors = {};
-
-    if (!name.trim()) newErrors.name = true;
-    if (!phone.trim()) newErrors.phone = true;
-    if (!message.trim()) newErrors.message = true;
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      setSnackbar({
-        open: true,
-        message: "Por favor, completa todos los campos.",
-        type: "error",
-      });
-      return;
-    }
-
-    // Si todo está bien
-    setErrors({});
-
-    // Enviar correo con EmailJS
-    emailjs.send(
-      'service_29hsjvu',          // ✅ Tu Service ID
-      'template_j4i5shl',         // ✅ Tu Template ID
-      {
-        nombre: name,
-        telefono: phone,
-        mensaje: message,
-        email: 'aguileraignacio1992@gmail.com' // 👈 Aquí va tu email como destinatario
-      },
-      'Oa-0XdMQ4lgneSOXx'          // ✅ Tu Public Key correcta
-    )
-      .then(() => {
-        setSnackbar({
-          open: true,
-          message: "¡Mensaje enviado con éxito! 📬",
-          type: "success",
-        });
-
-        // Limpiar campos
-        setName("");
-        setPhone("");
-        setMessage("");
-      })
-      .catch((error) => {
-        console.error("Error al enviar el correo:", error);
-        setSnackbar({
-          open: true,
-          message: "Ocurrió un error al enviar el mensaje 😥",
-          type: "error",
-        });
-      });
-  };
 
 
   // Componente que maneja los clics en el mapa
@@ -154,12 +80,11 @@ function Contacto() {
     if (inView) {
       const timeout = setTimeout(() => {
         setAnimar(true);
-      }, 1400); // ⏱ 2 segundos de delay
+      }, 0); // ⏱ 2 segundos de delay
 
       return () => clearTimeout(timeout); // Limpieza por si el componente se desmonta
     }
   }, [inView]);
-
 
 
 
@@ -173,7 +98,7 @@ function Contacto() {
         overflow: "hidden",
         paddingTop: 0,
         paddingBottom: "20px",
-        minHeight: isMobile ? containerHeight : "auto", // 👈 Cambia esto
+        minHeight: isMobile ? containerHeight : containerHeight, // 👈 Cambia esto
         backgroundImage: isMobile ? 'url(/fondo-mundo-mobile.png)' : 'url(/fondo-mundo.png)',
         backgroundSize: "cover",
         backgroundPosition: "center",
@@ -182,249 +107,252 @@ function Contacto() {
       }}
       ref={ref}
     >
-
-
       {/* Divs con imágenes */}
       <div
         className={`image image-left ${startAnimation ? "animate-left" : ""}`}
-
         style={{
-          width: isMobile ? "50vw" : "50vw", // ✅ Mantiene altura adaptable en móviles
-          height: isMobile ? "50vh" : "76vh", // ✅ Mantiene altura adaptable en móviles
+          width: "50%",
+          height: isMobile ? "50vh" : "76vh",
           backgroundImage: isMobile ? "url('/fono-left.jpg')" : "url('/mapa.jpg')",
-          backgroundSize: "cover", // ✅ Evita cortes extraños en la imagen
-          backgroundPosition: "center", // ✅ Centra la imagen correctamente
-          backgroundRepeat: "no-repeat", // ✅ Evita que la imagen se repita
+          backgroundSize: isMobile ? "cover" : "contain",   // 👈 Mostrar completa en escritorio
+          backgroundPosition: isMobile ? "center" : "top",  // 👈 Alinear arriba para escritorio
+          backgroundRepeat: "no-repeat",
+          backgroundColor: "#000" // para evitar espacios blancos si sobra
         }}
       ></div>
 
       <div
         className={`image image-right ${startAnimation ? "animate-right" : ""}`}
         style={{
-          width: isMobile ? "50vw" : "50vw", // ✅ Mantiene altura adaptable en móviles
-          height: isMobile ? "50vh" : "76vh", // ✅ Mantiene altura adaptable en móviles
+          width: "50%",
+          height: isMobile ? "50vh" : "76vh",
           backgroundImage: isMobile ? "url('/fono-right.jpg')" : "url('/contactar.jpg')",
-          backgroundSize: "cover", // ✅ Se ajusta sin cortes ni estiramientos
-          backgroundPosition: "center", // ✅ Centra la imagen correctamente en cualquier pantalla
+          backgroundSize: isMobile ? "cover" : "contain",   // 👈 Mostrar completa en escritorio
+          backgroundPosition: isMobile ? "center" : "top",  // 👈 Alinear arriba para escritorio
           backgroundRepeat: "no-repeat",
+          backgroundColor: "#000"
         }}
       ></div>
+
 
 
       {!startAnimation && (
         <Box
           sx={{
-            position: "absolute", // ✅ Se posiciona respecto al Container (que tiene position: relative)
-            top: isMobile ? "15%" : "40%",
-            left: isMobile ? "35%" : "44%",
-            transform: "translate(-50%, -50%)",
+            position: "absolute", // clave para que se ancle al Container
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
             zIndex: 1001,
-            width: "auto",
-            height: "auto",
+            pointerEvents: "none", // opcional para que no bloquee clics
           }}
         >
           <div id="loader" />
         </Box>
       )}
 
-      {/* Contenido de contacto */}
-      <Box sx={{ position: "relative", zIndex: 2, paddingTop: "20px", display: "flex", flexDirection: "column", height: "100%" }}>
-        {/* Título animado */}
-        {!formSubmitted && (
-          <Typography variant={isMobile ? "h4" : "h3"} align="left" gutterBottom sx={{ color: "white", display: "flex" }}>
-            {"Contáctanos".split("").map((char, index) => (
-              <motion.span key={index} custom={index} variants={letterVariants} initial="hidden" animate={inView ? "visible" : "hidden"}>
-                {char}
-              </motion.span>
-            ))}
-          </Typography>
-        )}
 
-        {!formSubmitted ? (
-          <Grid container spacing={4} sx={{ height: "auto" }}>
-            {/* Mapa */}
-            <Grid item xs={12} md={6} sx={{ height: "auto" }}>
-              <motion.div
-                ref={ref}
-                initial={{ rotateY: 0 }}
-                animate={{ rotateY: rotate }}
-                transition={{
-                  rotateY: { duration: 1.5, ease: "easeInOut" },
-                }}
-                style={{
-                  position: "relative",
+
+
+      {startAnimation && (
+        <Box
+          sx={{
+            opacity: startAnimation ? 1 : 0,
+            transition: "opacity 0.8s ease-in-out, transform 0.8s ease-in-out",
+            transform: startAnimation ? "translateY(0)" : "translateY(40px)",
+          }}
+        >
+          < Box sx={{ position: "relative", zIndex: 2, paddingTop: "20px", display: "flex", flexDirection: "column", height: "100%" }}>
+
+            {!formSubmitted && (
+              <Typography variant={isMobile ? "h4" : "h3"} align="left" gutterBottom sx={{ color: "white", display: "flex" }}>
+                {"Contáctanos".split("").map((char, index) => (
+                  <motion.span key={index} custom={index} variants={letterVariants} initial="hidden" animate={inView ? "visible" : "hidden"}>
+                    {char}
+                  </motion.span>
+                ))}
+              </Typography>
+            )}
+
+            {!formSubmitted ? (
+              <Grid container spacing={4} sx={{ height: "auto" }}>
+                {/* Mapa */}
+                <Grid item xs={12} md={6} sx={{ height: "auto" }}>
+                  <motion.div
+                    ref={ref}
+                    initial={{ rotateY: 0 }}
+                    animate={{ rotateY: rotate }}
+                    transition={{
+                      rotateY: { duration: 1.5, ease: "easeInOut" },
+                    }}
+                    style={{
+                      position: "relative",
+                      width: "100%",
+                      minHeight: "40vh", // 🔹 Asegura que en móviles no desaparezca
+                      height: isMobile ? "40vh" : "100%",
+                      perspective: 1200, // 🔹 Mantiene el efecto 3D
+                      transformStyle: "preserve-3d", // Necesario para la rotación 3D
+                    }}
+                  >
+                    {/* ✅ Cara frontal: Mapa */}
+                    <motion.div
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        backgroundColor: "#fff",
+                        boxShadow: 3,
+                        borderRadius: 5,
+                        border: "1px solid #30363D",
+                        boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.2)", // Sombra sutil
+                        overflow: "hidden",
+                        transform: "rotateY(0deg)",
+                        backfaceVisibility: "hidden",
+                      }}
+                    >
+                      <Box sx={{ flexGrow: 1, height: "100%" }}>
+                        <Box sx={{ width: "100%", height: isMobile ? "40vh" : "100%", overflow: "hidden" }}>
+                          <MapContainer
+                            center={finalPosition}
+                            zoom={initialZoom}
+                            style={{
+                              width: "100%",
+                              height: isMobile ? "40vh" : "100%",
+                            }}
+                            dragging={false}
+                            scrollWheelZoom={false}
+                            touchZoom={false}
+                            doubleClickZoom={false}
+                            zoomSnap={isMobile ? 0.25 : 1}
+                            zoomDelta={isMobile ? 0.5 : 1}
+                          >
+                            <TileLayer
+                              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                            />
+                            <Marker
+                              position={finalPosition}
+                              icon={new L.Icon({
+                                iconUrl: "/gps-mobile.png",
+                                iconSize: [70, 70],
+                                iconAnchor: [35, 70],
+                                popupAnchor: [0, -35],
+                              })}
+                            />
+                            <ZoomEffect zoom={finalZoom} />
+                            {/* ✅ Mensaje "Encuéntranos!" */}
+                            <div
+                              style={{
+                                position: "absolute",
+                                top: isMobile ? "14%" : "16%",
+                                left: "50%",
+                                transform: "translateX(-50%)",
+                                backgroundColor: "black",
+                                color: "white",
+                                padding: "10px 20px",
+                                borderRadius: "5px",
+                                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.5)",
+                                fontSize: "16px",
+                                fontWeight: "bold",
+                                zIndex: 1000,
+                                pointerEvents: "none",
+                              }}
+                            >
+                              ¡Encuéntranos!
+                              <div
+                                style={{
+                                  position: "absolute",
+                                  bottom: "-8px",
+                                  left: "50%",
+                                  transform: "translateX(-50%)",
+                                  width: 0,
+                                  height: 0,
+                                  borderLeft: "10px solid transparent",
+                                  borderRight: "10px solid transparent",
+                                  borderTop: "10px solid black",
+                                }}
+                              />
+                            </div>
+                            <MapClickHandler />
+                          </MapContainer>
+
+
+                        </Box>
+                      </Box>
+                    </motion.div>
+
+                    {/* ✅ Cara trasera: Imagen */}
+                    <motion.div
+                      style={{
+                        position: "absolute",
+                        top: isMobile ? 25 : 0,
+                        left: isMobile ? 0 : 0,
+                        right: isMobile ? 0 : 30,
+                        width: "100%",
+                        height: "100%",
+                        transform: "rotateY(180deg)",
+                        backfaceVisibility: "hidden",
+                      }}
+                    >
+                      <img
+                        src="/contacto.webp"
+                        alt="Imagen de contacto"
+                        style={{
+                          width: isMobile ? "100%" : "80%",
+                          height: isMobile ? "85%" : "100%",
+                          borderRadius: 2,
+                        }}
+                      />
+                    </motion.div>
+                  </motion.div>
+                </Grid>
+
+
+                <Grid item xs={12} md={6}>
+                  <ContactoForm setSnackbar={setSnackbar} />
+
+                </Grid>
+
+              </Grid>
+            ) : (
+              <Box sx={{ p: 8, mt: 4, minHeight: "300px", backgroundColor: "#e0f7e9", borderRadius: 2, textAlign: "center", boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)" }}>
+                <CheckCircleIcon sx={{ fontSize: 180, color: "green", mb: 2 }} />
+                <Typography variant="h4" sx={{ color: "black" }}>
+                  Se ha enviado su mensaje correctamente! Le hablaremos por WhatsApp y correo a la brevedad.
+                </Typography>
+              </Box>
+            )}
+
+            <Snackbar
+              open={snackbar.open}
+              autoHideDuration={4000}
+              sx={{ zIndex: 1400 }} // 🛡️ Material UI usa 1300 para modales por defecto
+              onClose={() => setSnackbar({ ...snackbar, open: false })}
+              anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+            >
+              <Alert
+                onClose={() => setSnackbar({ ...snackbar, open: false })}
+                severity={snackbar.type}
+                sx={{
                   width: "100%",
-                  minHeight: "40vh", // 🔹 Asegura que en móviles no desaparezca
-                  height: isMobile ? "40vh" : "100%",
-                  perspective: 1200, // 🔹 Mantiene el efecto 3D
-                  transformStyle: "preserve-3d", // Necesario para la rotación 3D
-                }}
-                onMouseEnter={() => {
-                  setIsHovered(true);
-                  setIntervalActive(false);
-                }}
-                onMouseLeave={() => {
-                  setIsHovered(false);
-                  setIntervalActive(true);
+                  maxWidth: 360,
+                  fontSize: "0.9rem",
+                  boxShadow: 3,
                 }}
               >
-                {/* ✅ Cara frontal: Mapa */}
-                <motion.div
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    height: "100%",
-                    backgroundColor: "#fff",
-                    boxShadow: 3,
-                    borderRadius: 5,
-                    border: "1px solid #30363D",
-                    boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.2)", // Sombra sutil
-                    overflow: "hidden",
-                    transform: "rotateY(0deg)",
-                    backfaceVisibility: "hidden",
-                  }}
-                >
-                  <Box sx={{ flexGrow: 1, height: "100%" }}>
-                    <Box sx={{ width: "100%", height: isMobile ? "40vh" : "100%", overflow: "hidden" }}>
-                      <MapContainer
-                        center={finalPosition}
-                        zoom={initialZoom}
-                        style={{
-                          width: "100%",
-                          height: isMobile ? "40vh" : "100%",
-                        }}
-                        dragging={false}
-                        scrollWheelZoom={false}
-                        touchZoom={false}
-                        doubleClickZoom={false}
-                        zoomSnap={isMobile ? 0.25 : 1}
-                        zoomDelta={isMobile ? 0.5 : 1}
-                      >
-                        <TileLayer
-                          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                        />
-                        <Marker
-                          position={finalPosition}
-                          icon={new L.Icon({
-                            iconUrl: "/gps-mobile.png",
-                            iconSize: [70, 70],
-                            iconAnchor: [35, 70],
-                            popupAnchor: [0, -35],
-                          })}
-                        />
-                        <ZoomEffect zoom={finalZoom} />
-                        {/* ✅ Mensaje "Encuéntranos!" */}
-                        <div
-                          style={{
-                            position: "absolute",
-                            top: isMobile ? "14%" : "16%",
-                            left: "50%",
-                            transform: "translateX(-50%)",
-                            backgroundColor: "black",
-                            color: "white",
-                            padding: "10px 20px",
-                            borderRadius: "5px",
-                            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.5)",
-                            fontSize: "16px",
-                            fontWeight: "bold",
-                            zIndex: 1000,
-                            pointerEvents: "none",
-                          }}
-                        >
-                          ¡Encuéntranos!
-                          <div
-                            style={{
-                              position: "absolute",
-                              bottom: "-8px",
-                              left: "50%",
-                              transform: "translateX(-50%)",
-                              width: 0,
-                              height: 0,
-                              borderLeft: "10px solid transparent",
-                              borderRight: "10px solid transparent",
-                              borderTop: "10px solid black",
-                            }}
-                          />
-                        </div>
-                        <MapClickHandler />
-                      </MapContainer>
-
-
-                    </Box>
-                  </Box>
-                </motion.div>
-
-                {/* ✅ Cara trasera: Imagen */}
-                <motion.div
-                  style={{
-                    position: "absolute",
-                    top: isMobile ? 25 : 0,
-                    left: isMobile ? 0 : 0,
-                    right: isMobile ? 0 : 30,
-                    width: "100%",
-                    height: "100%",
-                    transform: "rotateY(180deg)",
-                    backfaceVisibility: "hidden",
-                  }}
-                >
-                  <img
-                    src="/contacto.webp"
-                    alt="Imagen de contacto"
-                    style={{
-                      width: isMobile ? "100%" : "80%",
-                      height: isMobile ? "85%" : "100%",
-                      borderRadius: 2,
-                    }}
-                  />
-                </motion.div>
-              </motion.div>
-            </Grid>
-
-
-            <Grid item xs={12} md={6}>
-              <ContactoForm setSnackbar={setSnackbar} />
-
-            </Grid>
-
-
-
-
-
-          </Grid>
-        ) : (
-          <Box sx={{ p: 8, mt: 4, minHeight: "300px", backgroundColor: "#e0f7e9", borderRadius: 2, textAlign: "center", boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)" }}>
-            <CheckCircleIcon sx={{ fontSize: 180, color: "green", mb: 2 }} />
-            <Typography variant="h4" sx={{ color: "black" }}>
-              Se ha enviado su mensaje correctamente! Le hablaremos por WhatsApp y correo a la brevedad.
-            </Typography>
+                {snackbar.message}
+              </Alert>
+            </Snackbar>
           </Box>
-        )}
-
-        <Snackbar
-          open={snackbar.open}
-          autoHideDuration={4000}
-          sx={{ zIndex: 1400 }} // 🛡️ Material UI usa 1300 para modales por defecto
-          onClose={() => setSnackbar({ ...snackbar, open: false })}
-          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        >
-          <Alert
-            onClose={() => setSnackbar({ ...snackbar, open: false })}
-            severity={snackbar.type}
-            sx={{
-              width: "100%",
-              maxWidth: 360,
-              fontSize: "0.9rem",
-              boxShadow: 3,
-            }}
-          >
-            {snackbar.message}
-          </Alert>
-        </Snackbar>
-      </Box>
-    </Container>
+        </Box>
+      )}
+    </Container >
   );
 }
 const ZoomEffect = ({ zoom }) => {
@@ -467,7 +395,7 @@ const ZoomEffect = ({ zoom }) => {
         };
 
         requestAnimationFrame(animateZoom);
-      }, 1500); // ⏱️ Delay de 2 segundos
+      }, 300); // ⏱️ Delay de 2 segundos
 
       return () => clearTimeout(delayTimer);
     }

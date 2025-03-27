@@ -56,10 +56,6 @@
 }
 
 #loader {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   width: 120px;
   height: 120px;
   border-radius: 50%;
@@ -71,6 +67,7 @@
   box-shadow: 0 0 20px rgba(0, 210, 255, 0.2), 0 0 40px rgba(58, 123, 213, 0.2);
   z-index: 1001;
 }
+
 
 #loader::before {
   content: "";

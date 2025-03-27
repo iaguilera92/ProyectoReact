@@ -78,6 +78,7 @@ const ContactoForm = ({ setSnackbar }) => {
     };
 
     const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.3 });
+
     const [startAnimation, setStartAnimation] = useState(false);
 
     useEffect(() => {
@@ -104,7 +105,7 @@ const ContactoForm = ({ setSnackbar }) => {
                     borderRadius: 5,
                     boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.2)",
                     border: "1px solid #30363D",
-                    maxHeight: "100vh",
+                    height: "auto",
                     transition: "all 0.3s ease-in-out",
                     "&:hover": {
                         boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.3)"
@@ -230,7 +231,6 @@ const ContactoForm = ({ setSnackbar }) => {
 
             <Box sx={{ mt: 2, px: 1 }}>
                 <MotionBox
-                    ref={ref}
                     initial={{ opacity: 0, y: 50 }}
                     animate={startAnimation ? { opacity: 1, y: 0 } : {}}
                     transition={{ duration: 0.6, ease: "easeOut" }}
