@@ -5,16 +5,17 @@ import {
   Snackbar,
   Box,
   Alert,
-  Grid,
-  Card,
   useTheme,
-  useMediaQuery,
-  Typography
+  useMediaQuery
 } from '@mui/material';
 import './css/Catalogo.css';
 import { motion } from 'framer-motion';
 import Productos from './Productos';
-
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import { Grid } from '@mui/material';
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { IconButton } from '@mui/material';
 
 const Catalogo = () => {
   const [productos, setProductos] = useState([]);
@@ -24,7 +25,8 @@ const Catalogo = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const FormatearPesos = (valor) => `$${valor.toLocaleString('es-CL')}`;
   const CalcularValorOld = (valor) => FormatearPesos(valor + 10000);
-  const [productoActivo, setProductoActivo] = useState(null); // null = ninguna girada
+  const [productoActivo, setProductoActivo] = useState(null);
+  const [showArrow, setShowArrow] = useState(true);
 
   const ImgUrlAleatorio = (imgUrl) => {
     const urls = [
@@ -55,7 +57,10 @@ const Catalogo = () => {
       GetProducto(3, 35000, 3, 3, false),
       GetProducto(4, 23990, 4, 4, true),
       GetProducto(5, 17990, 5, 12, true),
-      GetProducto(6, 7000, 6, 1, false)
+      GetProducto(6, 7000, 6, 1, false),
+      GetProducto(7, 23990, 4, 4, true),
+      GetProducto(8, 17990, 5, 12, true),
+      GetProducto(9, 7000, 6, 1, false)
     ]);
 
     window.scrollTo(0, 0);
@@ -67,6 +72,19 @@ const Catalogo = () => {
       window.history.replaceState({}, document.title);
     }
   }, [location.state]);
+
+  const chunkProductos = (arr, size) => {
+    const chunks = [];
+    for (let i = 0; i < arr.length; i += size) {
+      chunks.push(arr.slice(i, i + size));
+    }
+    return chunks;
+  };
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    setProductoActivo({ 0: 0 }); // ← activa claramente el primer producto (grupo 0, índice 0)
+  }, []);
+
 
   return (
     <Box>
@@ -80,84 +98,117 @@ const Catalogo = () => {
           px: 1.2,
           position: 'relative',
           overflow: 'hidden',
-          backgroundImage: isMobile ? 'url("https://blz-contentstack-images.akamaized.net/v3/assets/blta8f9a8e092360c6c/blt367ca4b27c88c078/Desktop_Blizz_Footer.jpg")' : 'url(/fondo-blanco.jpg)',
+          backgroundImage: isMobile
+            ? 'url("https://blz-contentstack-images.akamaized.net/v3/assets/blta8f9a8e092360c6c/blt367ca4b27c88c078/Desktop_Blizz_Footer.jpg")'
+            : 'url(/fondo-blanco.jpg)',
           backgroundSize: 'cover',
           backgroundRepeat: 'no-repeat',
           backgroundAttachment: 'fixed',
-          backgroundPosition: 'center'
+          backgroundPosition: 'center',
         }}
       >
-        <Grid container columnSpacing={{ xs: 2, md: 4 }} rowSpacing={{ xs: 5, md: 7 }}>
-          {/* CONTENEDOR PRODUCTOS */}
-          <Grid item xs={12} md={9}>
-            <Grid container spacing={{ xs: 2, md: 3 }}>
-              {productos.map((producto, index) => (
-                <Grid
-                  item
-                  xs={6}
-                  sm={6}
-                  md={4}
-                  key={producto.IdProducto}
-                  component={motion.div}
-                  initial={{ opacity: 0, x: 100 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{
-                    duration: 0.5,
-                    delay: index * 0.5,
-                    ease: 'easeOut'
-                  }}
+
+        {isMobile ? (
+          chunkProductos(productos, 5).map((grupo, grupoIndex) => (
+            <Box key={`swiper-container-${grupoIndex}`} sx={{ position: 'relative', py: 2 }}>
+              {showArrow && (
+                <motion.div
+                  animate={{ x: [0, 5, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                  style={{ position: "absolute", top: -5, right: 5, zIndex: 10 }}
                 >
+                  <IconButton
+                    sx={{
+                      color: "white",
+                      boxShadow: "none",
+                      padding: 0.5,
+                      "&:hover": { backgroundColor: "rgba(0,0,0,0.4)" },
+                    }}
+                  >
+                    <ArrowForwardIcon fontSize="large" sx={{ fontSize: "24px" }} />
+                  </IconButton>
+                </motion.div>
+              )}
+
+              <Swiper
+                spaceBetween={16}
+                slidesPerView={'auto'}
+                centeredSlides={false}
+                style={{ padding: '16px 0', paddingRight: '20px' }}
+                onSlideChange={(swiper) => {
+                  setShowArrow(!swiper.isEnd);
+                }}
+              >
+                {grupo.map((producto, index) => {
+                  const productoIndexGlobal = index + grupoIndex * 5;
+                  const isGirado = productoActivo[grupoIndex] === index;
+
+                  return (
+                    <SwiperSlide
+                      key={producto.IdProducto}
+                      style={{ width: '90%', maxWidth: '322px', marginLeft: "5px" }}
+                    >
+                      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                        <Productos
+                          index={productoIndexGlobal}
+                          producto={producto}
+                          girado={isGirado}
+                          onGirar={() => {
+                            setProductoActivo((prevState) => ({
+                              ...prevState,
+                              [grupoIndex]: prevState[grupoIndex] === index ? null : index
+                            }));
+                          }}
+                          FormatearPesos={FormatearPesos}
+                          CalcularValorOld={CalcularValorOld}
+                        />
+                      </Box>
+                    </SwiperSlide>
+                  );
+                })}
+              </Swiper>
+            </Box>
+          ))
+        ) : (
+
+          // Vista desktop (Grid exacto con 5 productos por fila)
+          <Grid container spacing={2}>
+            {productos.map((producto, index) => (
+              <Grid item md={12 / 5} key={producto.IdProducto}>
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                   <Productos
                     index={index}
                     producto={producto}
                     girado={productoActivo === index}
-                    onGirar={() => {
-                      setProductoActivo(productoActivo === index ? null : index);
-                    }}
+                    onGirar={() =>
+                      setProductoActivo(productoActivo === index ? null : index)
+                    }
                     FormatearPesos={FormatearPesos}
                     CalcularValorOld={CalcularValorOld}
                   />
-                </Grid>
-              ))}
-            </Grid>
+                </Box>
+              </Grid>
+            ))}
           </Grid>
+        )}
 
-          {/* IMAGEN SOLO ESCRITORIO */}
-          <Grid item xs={0} md={3} sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <Box
-              sx={{
-                height: '100%',
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center'
-              }}
-            >
-              <img
-                src="catalogo-img.png"
-                alt="Shopping"
-                style={{ maxHeight: '80vh', width: 'auto', objectFit: 'contain' }}
-              />
-            </Box>
-          </Grid>
-        </Grid>
 
-      </Container>
 
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={4000}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert
-          severity={snackbar.type}
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={4000}
           onClose={() => setSnackbar({ ...snackbar, open: false })}
-          sx={{ width: '100%', maxWidth: 360 }}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
+          <Alert
+            severity={snackbar.type}
+            onClose={() => setSnackbar({ ...snackbar, open: false })}
+            sx={{ width: '100%', maxWidth: 360 }}
+          >
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
+      </Container>
     </Box>
   );
 };
