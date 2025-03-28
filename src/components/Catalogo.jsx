@@ -320,10 +320,13 @@ const Catalogo = () => {
               zIndex: 9999,
               display: 'flex',
               flexDirection: 'column',
-              justifyContent: 'center',
+              justifyContent: 'flex-start',
               alignItems: 'center',
+              overflowY: 'auto',
+              py: 4
             }}
           >
+
             <video
               key={videoFullScreenProducto?.IdProducto}
               src={videoFullScreenProducto?.VideoUrl}
