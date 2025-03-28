@@ -15,41 +15,56 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos }) => {
   }, [girado]);
 
   const handleFullScreen = () => {
-    if (containerRef.current && videoRef.current) {
-      const container = containerRef.current;
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    if (videoRef.current) {
       const video = videoRef.current;
 
-      const afterFullscreen = () => {
-        // Intenta simular una interacción real
-        const clickEvent = new MouseEvent('click', { bubbles: true, cancelable: true, view: window });
-        video.dispatchEvent(clickEvent);
+      if (isMobile) {
+        // ✅ MÓVIL: Safari o Chrome
+        if (video.webkitEnterFullscreen) {
+          video.webkitEnterFullscreen(); // Safari iOS
+          video.currentTime = 0;
+          video.play();
+        } else if (video.requestFullscreen) {
+          video.requestFullscreen();
+          video.currentTime = 0;
+          video.play();
+        }
+      } else if (containerRef.current) {
+        // ✅ DESKTOP: usa tu código actual
+        const container = containerRef.current;
 
-        video.currentTime = 0;
-        video.muted = true; // ⚠️ debe estar silenciado para evitar bloqueos
-        const playPromise = video.play();
+        const afterFullscreen = () => {
+          const clickEvent = new MouseEvent('click', {
+            bubbles: true,
+            cancelable: true,
+            view: window,
+          });
+          video.dispatchEvent(clickEvent);
 
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => {
-              // Reproducción exitosa
-            })
-            .catch((error) => {
+          video.currentTime = 0;
+          video.muted = true;
+          const playPromise = video.play();
+
+          if (playPromise !== undefined) {
+            playPromise.catch((error) => {
               console.warn('No se pudo reproducir el video:', error);
             });
-        }
+          }
 
-        // Limpia el listener
-        document.removeEventListener('fullscreenchange', afterFullscreen);
-        document.removeEventListener('webkitfullscreenchange', afterFullscreen);
-      };
+          document.removeEventListener('fullscreenchange', afterFullscreen);
+          document.removeEventListener('webkitfullscreenchange', afterFullscreen);
+        };
 
-      document.addEventListener('fullscreenchange', afterFullscreen);
-      document.addEventListener('webkitfullscreenchange', afterFullscreen);
+        document.addEventListener('fullscreenchange', afterFullscreen);
+        document.addEventListener('webkitfullscreenchange', afterFullscreen);
 
-      container.requestFullscreen?.() ||
-        container.webkitRequestFullscreen?.() ||
-        container.mozRequestFullScreen?.() ||
-        container.msRequestFullscreen?.();
+        container.requestFullscreen?.() ||
+          container.webkitRequestFullscreen?.() ||
+          container.mozRequestFullScreen?.() ||
+          container.msRequestFullscreen?.();
+      }
     }
   };
 
