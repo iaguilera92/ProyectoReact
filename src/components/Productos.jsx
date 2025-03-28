@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { Box, Card, Typography, Button, Stack } from '@mui/material';
 import { motion } from 'framer-motion';
 
-const Productos = ({ producto, girado, onGirar, FormatearPesos }) => {
+const Productos = ({ producto, girado, onGirar, FormatearPesos, onVisualizarMobile }) => {
   const videoRef = useRef(null);
   const containerRef = useRef(null);
   const botonWhatsappRef = useRef(null);
@@ -226,11 +226,17 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos }) => {
                     }}
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleFullScreen();
+                      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                      if (isMobile) {
+                        onVisualizarMobile(producto); // 👉 activa overlay
+                      } else {
+                        handleFullScreen(); // tu lógica actual
+                      }
                     }}
                   >
                     Visualizar
                   </Button>
+
 
                   {/* Precio claramente centrado */}
                   <Typography

@@ -27,6 +27,7 @@ const Catalogo = () => {
   const CalcularValorOld = (valor) => FormatearPesos(valor + 10000);
   const [productoActivo, setProductoActivo] = useState(null);
   const [showArrow, setShowArrow] = useState(true);
+  const [videoFullScreenProducto, setVideoFullScreenProducto] = useState(null);
 
   const ImgUrlAleatorio = (imgUrl) => {
     const urls = [
@@ -85,6 +86,13 @@ const Catalogo = () => {
     setProductoActivo({ 0: 0 }); // ← activa claramente el primer producto (grupo 0, índice 0)
   }, []);
 
+  useEffect(() => {
+    if (videoFullScreenProducto) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+  }, [videoFullScreenProducto]);
 
   return (
     <Box>
@@ -161,13 +169,16 @@ const Catalogo = () => {
                           }}
                           FormatearPesos={FormatearPesos}
                           CalcularValorOld={CalcularValorOld}
+                          onVisualizarMobile={setVideoFullScreenProducto}
                         />
+
                       </Box>
                     </SwiperSlide>
                   );
                 })}
               </Swiper>
             </Box>
+
           ))
         ) : (
 
@@ -208,8 +219,81 @@ const Catalogo = () => {
             {snackbar.message}
           </Alert>
         </Snackbar>
+
+
+
+        {videoFullScreenProducto && (
+          <Box
+            component={motion.div}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            sx={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              bgcolor: 'black',
+              zIndex: 9999,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <Box
+              component="video"
+              src="/video-catalogo1.mp4"
+              autoPlay
+              muted
+              controls
+              playsInline
+              sx={{
+                width: '100%',
+                height: 'auto',
+                maxHeight: '70vh',
+                objectFit: 'contain',
+              }}
+            />
+            <Button
+              variant="contained"
+              sx={{
+                mt: 2,
+                bgcolor: '#25D366',
+                color: 'white',
+                textTransform: 'none',
+                fontSize: '1rem',
+                px: 4,
+                py: 1,
+                borderRadius: '30px',
+                boxShadow: '0px 4px 10px rgba(0,0,0,0.3)'
+              }}
+              onClick={() => {
+                const mensaje = `Me interesó el ${videoFullScreenProducto.NombreProducto}, ¿sigue disponible?`;
+                const telefono = '56992914526';
+                const urlWhatsapp = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
+                window.open(urlWhatsapp, '_blank');
+              }}
+            >
+              Me interesa!
+            </Button>
+            <Button
+              onClick={() => setVideoFullScreenProducto(null)}
+              sx={{
+                mt: 1,
+                color: 'white',
+                textTransform: 'none'
+              }}
+            >
+              Cerrar
+            </Button>
+          </Box>
+        )}
       </Container>
     </Box>
+
   );
 };
 
