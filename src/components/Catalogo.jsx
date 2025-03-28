@@ -245,11 +245,15 @@ const Catalogo = () => {
           >
             <Box
               component="video"
+              key={videoFullScreenProducto?.IdProducto}
               src="/video-catalogo1.mp4"
               autoPlay
               muted
               controls
               playsInline
+              preload="auto"
+              disablePictureInPicture
+              controlsList="nodownload"
               sx={{
                 width: '100%',
                 height: 'auto',
@@ -257,6 +261,7 @@ const Catalogo = () => {
                 objectFit: 'contain',
               }}
             />
+
             <Button
               variant="contained"
               sx={{
