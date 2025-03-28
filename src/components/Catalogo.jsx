@@ -6,7 +6,9 @@ import {
   Box,
   Alert,
   useTheme,
-  useMediaQuery
+  useMediaQuery,
+  Typography,
+  Button
 } from '@mui/material';
 import './css/Catalogo.css';
 import { motion } from 'framer-motion';
@@ -243,12 +245,16 @@ const Catalogo = () => {
               alignItems: 'center',
             }}
           >
+            <Typography color="black" mb={1}>
+              Reproduciendo: {videoFullScreenProducto.NombreProducto}
+            </Typography>
+
             <Box
               component="video"
               key={videoFullScreenProducto?.IdProducto}
               src="/video-catalogo1.mp4"
-              muted
               autoPlay
+              muted
               controls
               playsInline
               preload="auto"
@@ -261,8 +267,10 @@ const Catalogo = () => {
                 objectFit: 'contain',
               }}
               onCanPlay={(e) => {
-                // Forzar play al estar listo
-                e.target.play().catch(() => { });
+                const playPromise = e.target.play();
+                if (playPromise !== undefined) {
+                  playPromise.catch(err => console.warn("AutoPlay Error:", err));
+                }
               }}
             />
 
@@ -288,6 +296,7 @@ const Catalogo = () => {
             >
               Me interesa!
             </Button>
+
             <Button
               onClick={() => setVideoFullScreenProducto(null)}
               sx={{
@@ -300,6 +309,7 @@ const Catalogo = () => {
             </Button>
           </Box>
         )}
+
       </Container>
     </Box>
 

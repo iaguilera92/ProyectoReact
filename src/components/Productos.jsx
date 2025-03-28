@@ -228,9 +228,9 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos, onVisualizarMobi
                       e.stopPropagation();
                       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
                       if (isMobile) {
-                        onVisualizarMobile(producto); // 👉 activa overlay
+                        onVisualizarMobile(producto); // <- asegúrate que se ejecuta
                       } else {
-                        handleFullScreen(); // tu lógica actual
+                        handleFullScreen();
                       }
                     }}
                   >
