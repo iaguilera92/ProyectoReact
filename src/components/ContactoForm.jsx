@@ -85,7 +85,7 @@ const ContactoForm = ({ setSnackbar }) => {
         if (inView) {
             setTimeout(() => {
                 setStartAnimation(true);
-            }, 1700);
+            }, 800);
         }
     }, [inView]);
 

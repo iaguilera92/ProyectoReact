@@ -143,7 +143,7 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos }) => {
             width: '100%',
             height: '100%',
             position: 'relative',
-            transformStyle: 'preserve-3d'
+            transformStyle: 'preserve-3d',
           }}
         >
           {/* Cara frontal */}
@@ -153,6 +153,9 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos }) => {
               width: '100%',
               height: '100%',
               backfaceVisibility: 'hidden',
+              WebkitBackfaceVisibility: 'hidden', // Safari fix
+              zIndex: 2, // Asegura que esté sobre la trasera cuando se ve
+              transform: 'rotateY(0deg)',
               borderRadius: 3,
               overflow: 'hidden',
               boxShadow: 4,
@@ -185,6 +188,7 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos }) => {
                   p: 1.5,
                   background: 'rgba(0,0,0,0.6)',
                   color: 'white',
+                  pointerEvents: girado ? 'none' : 'auto'
                 }}
               >
                 <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1}>
@@ -270,13 +274,16 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos }) => {
               width: '100%',
               height: '100%',
               backfaceVisibility: 'hidden',
+              WebkitBackfaceVisibility: 'hidden',
               transform: 'rotateY(180deg)',
+              zIndex: 1,
               borderRadius: 3,
               overflow: 'hidden',
               boxShadow: 4,
-              border: '2px solid white'
+              border: '2px solid white',
             }}
           >
+
             <Card sx={{ width: '100%', height: '100%', position: 'relative' }}>
               <Box
                 component="video"
@@ -306,7 +313,7 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos }) => {
                 variant="contained"
                 sx={{
                   position: 'absolute',
-                  bottom: '20px',
+                  bottom: 20,
                   left: '50%',
                   transform: 'translateX(-50%)',
                   bgcolor: '#25D366',
@@ -314,10 +321,16 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos }) => {
                   textTransform: 'none',
                   fontSize: '1rem',
                   borderRadius: '20px',
-                  px: 2,
+                  px: 3,
                   py: 1,
                   zIndex: 9999,
-                  display: 'none', // inicialmente oculto
+                  display: 'none', // ← lo controlamos desde el fullscreen listener
+                  boxShadow: '0px 4px 10px rgba(0,0,0,0.3)',
+                  '@media (max-width: 600px)': {
+                    fontSize: '0.95rem',
+                    px: 2,
+                    py: 0.8,
+                  }
                 }}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -329,6 +342,7 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos }) => {
               >
                 Me interesa!
               </Button>
+
 
             </Card>
           </Box>
