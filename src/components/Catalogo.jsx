@@ -7,7 +7,6 @@ import {
   Alert,
   useTheme,
   useMediaQuery,
-  Typography,
   Button
 } from '@mui/material';
 import './css/Catalogo.css';
@@ -64,7 +63,11 @@ const Catalogo = () => {
       GetProducto(6, 7000, 6, 1, false),
       GetProducto(7, 23990, 4, 4, true),
       GetProducto(8, 17990, 5, 12, true),
-      GetProducto(9, 7000, 6, 1, false)
+      GetProducto(9, 7000, 6, 1, false),
+      GetProducto(10, 7000, 6, 1, false),
+      GetProducto(11, 23990, 4, 4, true),
+      GetProducto(12, 17990, 5, 12, true),
+      GetProducto(13, 7000, 6, 1, false)
     ]);
 
     window.scrollTo(0, 0);
@@ -84,6 +87,9 @@ const Catalogo = () => {
     }
     return chunks;
   };
+
+  const grupos = chunkProductos(productos, 5);
+
   useEffect(() => {
     window.scrollTo(0, 0);
     setProductoActivo({ 0: 0 }); // ← activa claramente el primer producto (grupo 0, índice 0)
@@ -120,26 +126,70 @@ const Catalogo = () => {
       >
 
         {isMobile ? (
-          chunkProductos(productos, 5).map((grupo, grupoIndex) => (
-            <Box key={`swiper-container-${grupoIndex}`} sx={{ position: 'relative', py: 2 }}>
-              {showArrow && (
-                <motion.div
-                  animate={{ x: [0, 5, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                  style={{ position: "absolute", top: -5, right: 5, zIndex: 10 }}
-                >
-                  <IconButton
+          grupos.map((grupo, grupoIndex) => (
+            <Box key={`swiper-container-${grupoIndex}`} sx={{ position: 'relative', py: 0 }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  px: 0,
+                  mb: 0,
+                  position: 'relative',
+                  zIndex: 20,
+                  height: 40,
+                }}
+              >
+                {/* Título con ícono estilo reels */}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, ml: 1 }}>
+                  <Box
+                    component="img"
+                    src="cine.png"
+                    alt="Reels icon"
                     sx={{
-                      color: "white",
-                      boxShadow: "none",
-                      padding: 0.5,
-                      "&:hover": { backgroundColor: "rgba(0,0,0,0.4)" },
+                      width: 18,
+                      height: 18,
+                      marginBottom: 0.5,
+                      filter: 'invert(1)',
+                    }}
+                  />
+                  <Box
+                    sx={{
+                      fontWeight: 'bold',
+                      fontSize: '0.9rem',
+                      color: 'white',
+                      letterSpacing: 0.5,
+                      fontFamily: '"Segoe UI", sans-serif',
                     }}
                   >
-                    <ArrowForwardIcon fontSize="large" sx={{ fontSize: "24px" }} />
-                  </IconButton>
-                </motion.div>
-              )}
+                    {grupoIndex === 0 ? 'Explora el catálogo' : 'Más productos..'}
+                  </Box>
+                </Box>
+
+                {/* Flecha o espacio */}
+                <Box sx={{ width: 40, textAlign: 'right' }}>
+                  {showArrow ? (
+                    <motion.div
+                      animate={{ x: [0, 5, 0] }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                    >
+                      <IconButton
+                        sx={{
+                          color: "white",
+                          boxShadow: "none",
+                          padding: 0.5,
+                          "&:hover": { backgroundColor: "rgba(0,0,0,0.4)" },
+                        }}
+                      >
+                        <ArrowForwardIcon fontSize="large" sx={{ fontSize: "24px" }} />
+                      </IconButton>
+                    </motion.div>
+                  ) : (
+                    <Box sx={{ width: 40 }} />
+                  )}
+                </Box>
+              </Box>
+
 
               <Swiper
                 spaceBetween={16}
@@ -246,10 +296,6 @@ const Catalogo = () => {
               alignItems: 'center',
             }}
           >
-            <Typography color="white" mb={1}>
-              Reproduciendo: {videoFullScreenProducto.NombreProducto}
-            </Typography>
-
             <video
               key={videoFullScreenProducto?.IdProducto}
               src="/video-catalogo1.mp4"

@@ -128,7 +128,7 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos, onVisualizarMobi
             position: 'absolute',
             top: -12,
             right: -11,
-            zIndex: 10,
+            zIndex: 99,
             width: 28,
             height: 28,
             borderRadius: '50%',
@@ -238,21 +238,52 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos, onVisualizarMobi
                   </Button>
 
 
-                  {/* Precio claramente centrado */}
-                  <Typography
-                    variant="subtitle1"
-                    fontWeight="bold"
+                  {/* Precio (con o sin descuento) */}
+                  <Box
                     sx={{
-                      fontFamily: '"RC Type Cond", Arial, sans-serif',
-                      fontSize: { xs: '1.2rem', sm: '1rem' },
-                      letterSpacing: 0.5,
-                      color: '#FFFFFF',
-                      textAlign: 'center',
-                      flex: '1'
+                      flex: 1,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      lineHeight: 1,
+                      minHeight: '32px',
+                      overflow: 'hidden',
+                      minWidth: '80px', // 💡 nuevo: mejora visibilidad
                     }}
                   >
-                    {FormatearPesos(producto.Valor)}
-                  </Typography>
+                    <Typography
+                      fontWeight="bold"
+                      sx={{
+                        fontFamily: '"RC Type Cond", Arial, sans-serif',
+                        fontSize: { xs: '1.2rem', sm: '1rem' },
+                        color: producto.ConDescuento ? '#00e676' : '#FFFFFF',
+                        textShadow: '0 1px 2px rgba(0, 0, 0, 20)', // contraste suav
+                        letterSpacing: 0.5,
+                        lineHeight: 1.2,
+                        textAlign: 'center',
+                      }}
+                    >
+                      {FormatearPesos(producto.Valor)}
+                    </Typography>
+
+                    {producto.ConDescuento && (
+                      <Typography
+                        sx={{
+                          fontSize: '0.65rem',
+                          color: '#ccc',
+                          textDecoration: 'line-through',
+                          lineHeight: 1,
+                          mt: 0,
+                          textAlign: 'center',
+                        }}
+                      >
+                        {FormatearPesos(producto.Valor + 10000)}
+                      </Typography>
+                    )}
+                  </Box>
+
+
 
                   {/* Botón Solicitar (derecha) */}
                   <Button
