@@ -30,6 +30,7 @@ const Catalogo = () => {
   const [productoActivo, setProductoActivo] = useState(null);
   const [showArrow, setShowArrow] = useState(true);
   const [videoFullScreenProducto, setVideoFullScreenProducto] = useState(null);
+  const [mostrarControlesVideo, setMostrarControlesVideo] = useState(false);
 
   const ImgUrlAleatorio = (imgUrl) => {
     const urls = [
@@ -245,27 +246,28 @@ const Catalogo = () => {
               alignItems: 'center',
             }}
           >
-            <Typography color="black" mb={1}>
+            <Typography color="white" mb={1}>
               Reproduciendo: {videoFullScreenProducto.NombreProducto}
             </Typography>
 
-            <Box
-              component="video"
+            <video
               key={videoFullScreenProducto?.IdProducto}
               src="/video-catalogo1.mp4"
               autoPlay
               muted
-              controls
               playsInline
               preload="auto"
               disablePictureInPicture
               controlsList="nodownload"
-              sx={{
+              controls={mostrarControlesVideo} // solo si el usuario toca
+              style={{
                 width: '100%',
                 height: 'auto',
                 maxHeight: '70vh',
                 objectFit: 'contain',
+                backgroundColor: 'black',
               }}
+              onClick={() => setMostrarControlesVideo(true)} // tap = muestra controles
               onCanPlay={(e) => {
                 const playPromise = e.target.play();
                 if (playPromise !== undefined) {
