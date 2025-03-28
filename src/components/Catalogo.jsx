@@ -247,8 +247,8 @@ const Catalogo = () => {
               component="video"
               key={videoFullScreenProducto?.IdProducto}
               src="/video-catalogo1.mp4"
-              autoPlay
               muted
+              autoPlay
               controls
               playsInline
               preload="auto"
@@ -259,6 +259,10 @@ const Catalogo = () => {
                 height: 'auto',
                 maxHeight: '70vh',
                 objectFit: 'contain',
+              }}
+              onCanPlay={(e) => {
+                // Forzar play al estar listo
+                e.target.play().catch(() => { });
               }}
             />
 
