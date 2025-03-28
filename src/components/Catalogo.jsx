@@ -17,6 +17,7 @@ import 'swiper/css';
 import { Grid } from '@mui/material';
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { IconButton } from '@mui/material';
+import { Virtual } from 'swiper/modules';
 
 const Catalogo = () => {
   const [productos, setProductos] = useState([]);
@@ -30,6 +31,7 @@ const Catalogo = () => {
   const [showArrow, setShowArrow] = useState(true);
   const [videoFullScreenProducto, setVideoFullScreenProducto] = useState(null);
   const [mostrarControlesVideo, setMostrarControlesVideo] = useState(false);
+  const [animarFlecha, setAnimarFlecha] = useState(true);
 
   const ImgUrlAleatorio = (imgUrl) => {
     const urls = [
@@ -50,8 +52,10 @@ const Catalogo = () => {
     Valor: precio,
     Stock: stock,
     ImageUrl: ImgUrlAleatorio(img),
-    ConDescuento: descuento
+    ConDescuento: descuento,
+    VideoUrl: `/videos/producto${(id % 4) + 1}.mp4`, // entre 4 opciones distintas
   });
+
 
   useEffect(() => {
     setProductos([
@@ -102,6 +106,14 @@ const Catalogo = () => {
       document.body.style.overflow = 'auto';
     }
   }, [videoFullScreenProducto]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setAnimarFlecha(false);
+    }, 3000); // ⏱️ dura aprox. 3 segundos para mostrar 2 movimientos
+
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <Box>
@@ -169,10 +181,24 @@ const Catalogo = () => {
                 {/* Flecha o espacio */}
                 <Box sx={{ width: 40, textAlign: 'right' }}>
                   {showArrow ? (
-                    <motion.div
-                      animate={{ x: [0, 5, 0] }}
-                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                    >
+                    animarFlecha ? (
+                      <motion.div
+                        animate={{ x: [0, 5, 0] }}
+                        transition={{ duration: 1.5, repeat: 1, ease: "easeInOut" }}
+                      >
+
+                        <IconButton
+                          sx={{
+                            color: "white",
+                            boxShadow: "none",
+                            padding: 0.5,
+                            "&:hover": { backgroundColor: "rgba(0,0,0,0.4)" },
+                          }}
+                        >
+                          <ArrowForwardIcon fontSize="large" sx={{ fontSize: "24px" }} />
+                        </IconButton>
+                      </motion.div>
+                    ) : (
                       <IconButton
                         sx={{
                           color: "white",
@@ -183,15 +209,17 @@ const Catalogo = () => {
                       >
                         <ArrowForwardIcon fontSize="large" sx={{ fontSize: "24px" }} />
                       </IconButton>
-                    </motion.div>
+                    )
                   ) : (
                     <Box sx={{ width: 40 }} />
                   )}
                 </Box>
+
               </Box>
 
 
               <Swiper
+                modules={[Virtual]}
                 spaceBetween={16}
                 slidesPerView={'auto'}
                 centeredSlides={false}
@@ -298,7 +326,7 @@ const Catalogo = () => {
           >
             <video
               key={videoFullScreenProducto?.IdProducto}
-              src="/video-catalogo1.mp4"
+              src={videoFullScreenProducto?.VideoUrl}
               autoPlay
               muted
               playsInline
@@ -333,7 +361,7 @@ const Catalogo = () => {
                 px: 4,
                 py: 1,
                 borderRadius: '30px',
-                boxShadow: '0px 4px 10px rgba(0,0,0,0.3)'
+                boxShadow: '0px 4px 12px rgba(0,0,0,0.4)'
               }}
               onClick={() => {
                 const mensaje = `Me interesó el ${videoFullScreenProducto.NombreProducto}, ¿sigue disponible?`;

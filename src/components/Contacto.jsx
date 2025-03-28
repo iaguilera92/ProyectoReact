@@ -15,7 +15,7 @@ const letterVariants = {
   visible: (i) => ({
     opacity: 1,
     x: 0,
-    transition: { delay: 1.45 + i * 0.1 },
+    transition: { delay: 0.4 + i * 0.1 },
   }),
 };
 

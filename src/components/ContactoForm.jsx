@@ -6,7 +6,9 @@ import {
     Grid,
     Typography,
     useMediaQuery,
-    useTheme
+    useTheme,
+    FormControlLabel,
+    Checkbox
 } from "@mui/material";
 import { useInView } from "react-intersection-observer";
 import emailjs from "@emailjs/browser";
@@ -14,6 +16,7 @@ import { motion } from "framer-motion";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+
 
 const MotionBox = motion(Box);
 
@@ -24,6 +27,9 @@ const ContactoForm = ({ setSnackbar }) => {
     const [errors, setErrors] = useState({});
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    const [enviarCopia, setEnviarCopia] = useState(false);
+    const [emailCopia, setEmailCopia] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -44,6 +50,7 @@ const ContactoForm = ({ setSnackbar }) => {
         }
 
         setErrors({});
+        setIsSubmitting(true); // 👈 Bloquea
 
         emailjs
             .send(
@@ -53,19 +60,22 @@ const ContactoForm = ({ setSnackbar }) => {
                     nombre: name,
                     telefono: phone,
                     mensaje: message,
-                    email: "aguileraignacio1992@gmail.com"
+                    email: "aguileraignacio1992@gmail.com",
+                    cc: enviarCopia ? emailCopia : ""
                 },
                 "Oa-0XdMQ4lgneSOXx"
             )
             .then(() => {
                 setSnackbar({
                     open: true,
-                    message: "¡Mensaje enviado con éxito! 📬",
+                    message: "¡Mensaje el correo a Plataformas.web con éxito! 📬",
                     type: "success"
                 });
                 setName("");
                 setPhone("");
                 setMessage("");
+                setEmailCopia("");
+                setIsSubmitting(false); // ✅ Desbloquea
             })
             .catch((error) => {
                 console.error("Error al enviar el correo:", error);
@@ -74,8 +84,10 @@ const ContactoForm = ({ setSnackbar }) => {
                     message: "Ocurrió un error al enviar el mensaje 😥",
                     type: "error"
                 });
+                setIsSubmitting(false); // ✅ Desbloquea
             });
     };
+
 
     const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.3 });
 
@@ -138,47 +150,159 @@ const ContactoForm = ({ setSnackbar }) => {
                                 },
                                 "&.Mui-focused fieldset": {
                                     borderColor: errors.name ? "#ff4d4f" : "#58A6FF"
-                                }
+                                }, opacity: isSubmitting ? 0.6 : 1,
+                                pointerEvents: isSubmitting ? "none" : "auto"
                             }}
                         />
+
                     </Grid>
 
                     <Grid item xs={12} sm={6}>
-                        <TextField
-                            label="Teléfono"
-                            variant="outlined"
-                            fullWidth
-                            value={phone}
-                            onChange={(e) => {
-                                const value = e.target.value;
-                                if (/^\+?\d*$/.test(value) && value.length <= 12) {
-                                    setPhone(value);
-                                }
-                            }}
-                            inputProps={{ maxLength: 12 }}
-                            error={Boolean(errors.phone)}
+                        <Box
                             sx={{
-                                backgroundColor: "#161B22",
-                                borderRadius: 2,
-                                input: { color: "#E6EDF3", fontSize: "0.9rem" },
-                                label: { color: errors.phone ? "#ff4d4f" : "#E6EDF3" },
-                                fieldset: {
-                                    borderColor: errors.phone ? "#ff4d4f" : "#30363D"
-                                },
-                                "&:hover fieldset": {
-                                    borderColor: errors.phone ? "#ff4d4f" : "#58A6FF"
-                                },
-                                "&.Mui-focused fieldset": {
-                                    borderColor: errors.phone ? "#ff4d4f" : "#58A6FF"
-                                }
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1.5
                             }}
-                        />
+                        >
+                            <TextField
+                                label="Teléfono"
+                                variant="outlined"
+                                fullWidth
+                                disabled={isSubmitting}
+                                InputProps={{
+                                    style: {
+                                        color: "#888", // texto más apagado
+                                        cursor: "not-allowed"
+                                    }
+                                }}
+                                value={phone}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (/^\+?\d*$/.test(value) && value.length <= 12) {
+                                        setPhone(value);
+                                    }
+                                }}
+                                inputProps={{ maxLength: 12 }}
+                                error={Boolean(errors.phone)}
+                                sx={{
+                                    opacity: isSubmitting ? 0.6 : 1,
+                                    pointerEvents: isSubmitting ? "none" : "auto",
+                                    backgroundColor: "#161B22",
+                                    borderRadius: 2,
+                                    input: { color: "#E6EDF3", fontSize: "0.9rem" },
+                                    label: { color: errors.phone ? "#ff4d4f" : "#E6EDF3" },
+                                    fieldset: {
+                                        borderColor: errors.phone ? "#ff4d4f" : "#30363D"
+                                    },
+                                    "&:hover fieldset": {
+                                        borderColor: errors.phone ? "#ff4d4f" : "#58A6FF"
+                                    },
+                                    "&.Mui-focused fieldset": {
+                                        borderColor: errors.phone ? "#ff4d4f" : "#58A6FF"
+                                    },
+                                    flex: 1
+                                }}
+                            />
+
+                            {!enviarCopia ? (
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={enviarCopia}
+                                            onChange={(e) => setEnviarCopia(e.target.checked)}
+                                            size="small"
+                                            sx={{
+                                                color: "#58A6FF",
+                                                "&.Mui-checked": { color: "#58A6FF" },
+                                                p: 0.25
+                                            }}
+                                        />
+                                    }
+                                    label={
+                                        <Typography sx={{ fontSize: "0.7rem", color: "#E6EDF3", whiteSpace: "nowrap" }}>
+                                            Copia correo
+                                        </Typography>
+                                    }
+                                    sx={{
+                                        ml: 0,
+                                        mr: 0,
+                                        whiteSpace: "nowrap",
+                                        minWidth: "fit-content"
+                                    }}
+                                />
+                            ) : (
+                                <TextField
+                                    label="Correo electrónico"
+                                    variant="outlined"
+                                    disabled={isSubmitting}
+                                    InputProps={{
+                                        style: {
+                                            color: "#888", // texto más apagado
+                                            cursor: "not-allowed"
+                                        }
+                                    }}
+                                    fullWidth={false}
+                                    value={emailCopia}
+                                    onChange={(e) => setEmailCopia(e.target.value)}
+                                    error={Boolean(!emailCopia.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) && emailCopia.length > 0}
+                                    sx={{
+                                        width: "200px",
+                                        backgroundColor: "#161B22",
+                                        borderRadius: 2,
+
+                                        input: {
+                                            color: "#E6EDF3",
+                                            fontSize: "0.9rem",
+                                            fontFamily: '"Segoe UI", sans-serif'
+                                        },
+                                        label: {
+                                            color:
+                                                !emailCopia.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/) && emailCopia.length > 0
+                                                    ? "#ff4d4f"
+                                                    : "#E6EDF3",
+                                            fontSize: "0.9rem",
+                                            fontFamily: '"Segoe UI", sans-serif'
+                                        },
+                                        fieldset: {
+                                            borderColor:
+                                                !emailCopia.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/) && emailCopia.length > 0
+                                                    ? "#ff4d4f"
+                                                    : "#30363D"
+                                        },
+                                        "&:hover fieldset": {
+                                            borderColor:
+                                                !emailCopia.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/) && emailCopia.length > 0
+                                                    ? "#ff4d4f"
+                                                    : "#58A6FF"
+                                        },
+                                        "&.Mui-focused fieldset": {
+                                            borderColor:
+                                                !emailCopia.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/) && emailCopia.length > 0
+                                                    ? "#ff4d4f"
+                                                    : "#58A6FF"
+                                        }, opacity: isSubmitting ? 0.6 : 1,
+                                        pointerEvents: isSubmitting ? "none" : "auto"
+                                    }}
+                                />
+
+                            )}
+
+                        </Box>
                     </Grid>
+
 
                     <Grid item xs={12}>
                         <TextField
                             label="Mensaje"
                             variant="outlined"
+                            disabled={isSubmitting}
+                            InputProps={{
+                                style: {
+                                    color: "#888", // texto más apagado
+                                    cursor: "not-allowed"
+                                }
+                            }}
                             fullWidth
                             multiline
                             rows={3}
@@ -198,7 +322,8 @@ const ContactoForm = ({ setSnackbar }) => {
                                 },
                                 "&.Mui-focused fieldset": {
                                     borderColor: errors.message ? "#ff4d4f" : "#58A6FF"
-                                }
+                                }, opacity: isSubmitting ? 0.6 : 1,
+                                pointerEvents: isSubmitting ? "none" : "auto"
                             }}
                         />
                     </Grid>
@@ -208,6 +333,7 @@ const ContactoForm = ({ setSnackbar }) => {
                             type="submit"
                             variant="contained"
                             fullWidth
+                            disabled={isSubmitting}
                             sx={{
                                 fontSize: "1rem",
                                 fontWeight: "bold",
@@ -216,6 +342,8 @@ const ContactoForm = ({ setSnackbar }) => {
                                 textTransform: "none",
                                 backgroundColor: "var(--darkreader-background-c4211a, #9d1a15)",
                                 color: "#fff",
+                                opacity: isSubmitting ? 0.6 : 1,
+                                cursor: isSubmitting ? "not-allowed" : "pointer",
                                 boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
                                 "&:hover": {
                                     backgroundColor: "var(--darkreader-background-b62821, #92201a)",
@@ -223,8 +351,9 @@ const ContactoForm = ({ setSnackbar }) => {
                                 }
                             }}
                         >
-                            Contactar
+                            {isSubmitting ? "Enviando..." : "Contactar"}
                         </Button>
+
                     </Grid>
                 </Grid>
             </Box>

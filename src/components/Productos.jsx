@@ -155,6 +155,7 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos, onVisualizarMobi
           animate={{ rotateY: girado ? 180 : 0 }}
           transition={{ duration: 0.8, ease: 'easeInOut' }}
           style={{
+            willChange: 'transform',
             width: '100%',
             height: '100%',
             position: 'relative',
@@ -340,7 +341,7 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos, onVisualizarMobi
               <Box
                 component="video"
                 ref={videoRef}
-                src="/video-catalogo1.mp4"
+                src={producto.VideoUrl}
                 muted
                 playsInline
                 sx={{
