@@ -123,7 +123,7 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos, onVisualizarMobi
         }}
       >
         {/* Stock badge */}
-        <Box
+        {/*<Box
           sx={{
             position: 'absolute',
             top: -12,
@@ -149,7 +149,7 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos, onVisualizarMobi
           }}
         >
           {producto.Stock}
-        </Box>
+        </Box> */}
 
         <motion.div
           animate={{ rotateY: girado ? 180 : 0 }}
@@ -344,6 +344,10 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos, onVisualizarMobi
                 src={producto.VideoUrl}
                 muted
                 playsInline
+                preload="metadata"
+                poster={producto.ImageUrl}
+                disablePictureInPicture
+                controlsList="nodownload"
                 sx={{
                   width: '100%',
                   height: '100%',
@@ -355,9 +359,11 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos, onVisualizarMobi
                   pointerEvents: girado ? 'auto' : 'none',
                   transition: 'opacity 0.5s ease',
                 }}
-                onEnded={() => {
-                  onGirar();
+                onCanPlay={() => {
+                  // Puedes disparar alguna acción si necesitas saber cuándo está listo
+                  console.log('🎥 Video listo para reproducirse');
                 }}
+                onEnded={onGirar}
               />
 
               {/* Botón "Me interesa!" siempre visible en fullscreen */}

@@ -76,17 +76,6 @@ function Contacto() {
     return () => clearInterval(interval); // Limpia el intervalo al desmontar o cambiar la visibilidad
   }, [isHovered, inView]);
 
-  useEffect(() => {
-    if (inView) {
-      const timeout = setTimeout(() => {
-        setAnimar(true);
-      }, 0); // ⏱ 2 segundos de delay
-
-      return () => clearTimeout(timeout); // Limpieza por si el componente se desmonta
-    }
-  }, [inView]);
-
-
 
   return (
     <Container
