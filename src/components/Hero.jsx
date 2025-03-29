@@ -70,7 +70,7 @@ function Hero({ scrollToContacto }) {
           controlsList="nodownload nofullscreen noremoteplayback"
         >
           <source
-            src="https://www.connectic.cl/wp-content/uploads/2024/07/136268-764387688_small.mp4"
+            src="videos/video-inicio.mp4"
             type="video/mp4"
           />
         </video>
