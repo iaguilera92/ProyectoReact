@@ -9,6 +9,7 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos, onVisualizarMobi
 
   useEffect(() => {
     if (girado && videoRef.current) {
+      videoRef.current.pause();
       videoRef.current.currentTime = 0; // Reinicia claramente el video al inicio
       videoRef.current.play();          // Reproduce claramente el video
     }
@@ -100,6 +101,24 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos, onVisualizarMobi
     };
   }, [producto.IdProducto]);
 
+  useEffect(() => {
+    const video = videoRef.current;
+
+    if (!video) return;
+
+    if (girado) {
+      video.currentTime = 0;
+      setTimeout(() => {
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+          playPromise.catch((err) => console.warn("Error al reproducir:", err));
+        }
+      }, 100);
+    } else {
+      video.pause();
+    }
+  }, [girado]);
+
 
 
   return (
@@ -123,7 +142,7 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos, onVisualizarMobi
         }}
       >
         {/* Stock badge */}
-        {/*<Box
+        <Box
           sx={{
             position: 'absolute',
             top: -12,
@@ -149,7 +168,7 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos, onVisualizarMobi
           }}
         >
           {producto.Stock}
-        </Box> */}
+        </Box>
 
         <motion.div
           animate={{ rotateY: girado ? 180 : 0 }}
@@ -341,14 +360,14 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos, onVisualizarMobi
               <Box
                 component="video"
                 ref={videoRef}
+                loading="lazy"
                 src={producto.VideoUrl}
                 muted
-                playsInline // 👈 clave para iOS
-                preload="metadata"
-                poster={producto.ImageUrl}
-                disablePictureInPicture
-                controlsList="nodownload"
+                playsInline
+                preload="metadata" // ✅ aquí
+                decode="async"
                 sx={{
+                  objectFit: 'contain',
                   width: '100%',
                   height: '100%',
                   objectFit: 'cover',
@@ -357,13 +376,11 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos, onVisualizarMobi
                   left: 0,
                   opacity: girado ? 1 : 0,
                   pointerEvents: girado ? 'auto' : 'none',
-                  transition: 'opacity 0.5s ease',
+                  transition: girado ? 'none' : 'opacity 0.5s ease'
                 }}
-                onCanPlay={() => {
-                  // Puedes disparar alguna acción si necesitas saber cuándo está listo
-                  console.log('🎥 Video listo para reproducirse');
+                onEnded={() => {
+                  onGirar();
                 }}
-                onEnded={onGirar}
               />
 
               {/* Botón "Me interesa!" siempre visible en fullscreen */}

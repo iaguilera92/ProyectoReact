@@ -70,7 +70,7 @@ function Hero({ scrollToContacto }) {
           controlsList="nodownload nofullscreen noremoteplayback"
         >
           <source
-            src="videos/video-inicio.mp4"
+            src="video-inicio.mp4"
             type="video/mp4"
           />
         </video>

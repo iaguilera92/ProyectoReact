@@ -17,7 +17,6 @@ import 'swiper/css';
 import { Grid } from '@mui/material';
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { IconButton } from '@mui/material';
-import { Virtual } from 'swiper/modules';
 
 const Catalogo = () => {
   const [productos, setProductos] = useState([]);
@@ -219,10 +218,11 @@ const Catalogo = () => {
 
 
               <Swiper
-                modules={[Virtual]}
                 spaceBetween={16}
                 slidesPerView={'auto'}
                 centeredSlides={false}
+                touchRatio={1.2}
+                threshold={5}
                 style={{ padding: '16px 0', paddingRight: '20px' }}
                 onSlideChange={(swiper) => {
                   setShowArrow(!swiper.isEnd);
@@ -235,7 +235,11 @@ const Catalogo = () => {
                   return (
                     <SwiperSlide
                       key={producto.IdProducto}
-                      style={{ width: '90%', maxWidth: '322px', marginLeft: "5px" }}
+                      style={{
+                        width: 'calc(100vw - 32px)',
+                        maxWidth: '320px',
+                        scrollSnapAlign: 'start',
+                      }}
                     >
                       <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                         <Productos
@@ -290,7 +294,7 @@ const Catalogo = () => {
           open={snackbar.open}
           autoHideDuration={4000}
           onClose={() => setSnackbar({ ...snackbar, open: false })}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         >
           <Alert
             severity={snackbar.type}
