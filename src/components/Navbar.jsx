@@ -486,6 +486,7 @@ function Navbar({ contactoRef, informationsRef }) {
           </AnimatePresence>
 
           {/* Redes sociales al final del menú móvil */}
+          <Box sx={{ flexGrow: 1 }} />
           <AnimatePresence mode="wait">
             {open && (
               <>
@@ -508,7 +509,6 @@ function Navbar({ contactoRef, informationsRef }) {
                     display: "flex",
                     justifyContent: "center",
                     gap: "24px",
-                    marginTop: "auto",
                     padding: "20px 0",
                   }}
                 >
