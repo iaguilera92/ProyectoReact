@@ -370,16 +370,17 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos, onVisualizarMobi
                   ppreload="none"
                   decode="async"
                   sx={{
-                    objectFit: 'contain',
+                    maxWidth: '100%',
+                    maxHeight: '100%',
                     width: '100%',
                     height: '100%',
-                    objectFit: 'cover',
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    opacity: girado ? 1 : 0,
-                    pointerEvents: girado ? 'auto' : 'none',
-                    transition: girado ? 'none' : 'opacity 0.5s ease'
+                    objectFit: 'contain',
+                    display: 'block',
+                    margin: '0 auto',            // ✅ Centra horizontalmente
+                    position: 'relative',        // ✅ Más fácil de alinear sin interferir
+                    zIndex: 2,
+                    backgroundColor: 'black',
+                    borderRadius: '8px'
                   }}
                   onEnded={() => {
                     onGirar();

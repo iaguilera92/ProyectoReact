@@ -17,6 +17,7 @@ import 'swiper/css';
 import { Grid } from '@mui/material';
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { IconButton } from '@mui/material';
+import { Virtual } from 'swiper/modules';
 
 const Catalogo = () => {
   const [productos, setProductos] = useState([]);
@@ -226,7 +227,7 @@ const Catalogo = () => {
                 centeredSlides={false}
                 touchRatio={1.2}
                 threshold={5}
-                style={{ padding: '16px 0', paddingRight: '20px' }}
+                style={{ padding: '16px 10px', paddingRight: '20px' }}
                 onSlideChange={(swiper) => {
                   setShowArrow(!swiper.isEnd);
                 }}
