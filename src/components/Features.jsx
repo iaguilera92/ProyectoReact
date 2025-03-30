@@ -191,9 +191,11 @@ function Features({ scrollToInformations }) {
         <br />
         <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
           <Button
-            onClick={() => {
-              scrollToInformations.current?.scrollIntoView({ behavior: "smooth" });
-            }}
+          onClick={() => {
+            const offset = -80; // Ajusta esto según la altura de tu navbar
+            const y = scrollToInformations.current.getBoundingClientRect().top + window.scrollY + offset;
+            window.scrollTo({ top: y, behavior: 'smooth' });
+          }}
             variant="contained"
             target="_self"
             sx={{

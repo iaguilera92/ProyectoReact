@@ -126,7 +126,7 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos, onVisualizarMobi
       className="productos-card"
       sx={{
         width: '100%',
-        height: { xs: 420, sm: 320 },
+        height: { xs: 300, sm: 260 }, // Ajustado
         mx: 'auto',
         position: 'relative',
       }}
@@ -367,25 +367,25 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos, onVisualizarMobi
                   poster={producto.ImageUrl}
                   muted
                   playsInline
-                  ppreload="none"
+                  preload="metadata"
                   decode="async"
                   sx={{
-                    maxWidth: '100%',
-                    maxHeight: '100%',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
                     width: '100%',
                     height: '100%',
-                    objectFit: 'contain',
-                    display: 'block',
-                    margin: '0 auto',            // ✅ Centra horizontalmente
-                    position: 'relative',        // ✅ Más fácil de alinear sin interferir
-                    zIndex: 2,
+                    objectFit: 'cover',
+                    objectPosition: 'center 60%', // 💡 Esto asegura que el recorte comience desde arriba
                     backgroundColor: 'black',
-                    borderRadius: '8px'
+                    borderRadius: 0,
+                    zIndex: 2,
                   }}
                   onEnded={() => {
                     onGirar();
                   }}
                 />
+
               )}
               {/* Botón "Me interesa!" siempre visible en fullscreen */}
               <Button

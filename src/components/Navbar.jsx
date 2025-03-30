@@ -25,7 +25,6 @@ import "@fontsource/poppins";
 import { useNavigate } from "react-router-dom";
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 
-
 const shrinkCircle = keyframes`
   0% { transform: scale(1); opacity: 1; }
   100% { transform: scale(0); opacity: 0; }
@@ -39,6 +38,15 @@ const expandIcon = keyframes`
 const growElement = keyframes`
   0% { transform: scale(0.5); opacity: 0.5; }
   100% { transform: scale(1); opacity: 1; }
+`;
+
+const rotateTwice = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(720deg); /* 2 vueltas */
+  }
 `;
 const menuItemVariants = {
   hidden: { x: 60, opacity: 0 },
@@ -151,6 +159,7 @@ function Navbar({ contactoRef, informationsRef }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [rotarCerrar, setRotarCerrar] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -320,12 +329,17 @@ function Navbar({ contactoRef, informationsRef }) {
         }}
       >
         <Box sx={{ overflowY: 'auto', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-          {/* ❌ Botón cerrar */}
           <Box sx={{ display: "flex", justifyContent: "flex-end", p: 2 }}>
-            <IconButton onClick={() => setOpen(false)}>
+            <IconButton
+              onClick={() => setOpen(false)}
+              sx={{
+                animation: open ? `${rotateTwice} 1s ease-in-out` : "none",
+              }}
+            >
               <Close sx={{ fontSize: 32, color: "white" }} />
             </IconButton>
           </Box>
+
 
           {/* 📋 Menú navegación */}
           <AnimatePresence mode="wait">

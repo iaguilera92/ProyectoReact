@@ -222,7 +222,7 @@ const Catalogo = () => {
                 modules={[Virtual]} // ✅ Solo usa los módulos que realmente ocupas
                 lazy={true}
                 watchSlidesProgress
-                spaceBetween={16}
+                spaceBetween={12}
                 slidesPerView={'auto'}
                 centeredSlides={false}
                 touchRatio={1.2}
@@ -240,7 +240,7 @@ const Catalogo = () => {
                     <SwiperSlide
                       key={producto.IdProducto}
                       style={{
-                        width: 'calc(100vw - 32px)',
+                        width: '60vw', // 👉 Ocupa dos tercios del ancho
                         maxWidth: '320px',
                         scrollSnapAlign: 'start',
                       }}

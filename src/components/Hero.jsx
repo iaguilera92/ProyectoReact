@@ -128,10 +128,13 @@ function Hero({ scrollToContacto }) {
                   transition={{ duration: 0.5, ease: "easeOut" }}
                 >
                   <Box sx={{ mt: isMobile ? 4 : 1 }}>
-                    <button className="btn-3" onClick={() => {
-                      setOpenAlert(true);
-                      scrollToContacto.current?.scrollIntoView({ behavior: "smooth" });
-                    }}>
+                    <button className="btn-3"
+                   onClick={() => {
+                    setOpenAlert(true);
+                    const offset = -80; // Ajusta esto según la altura de tu navbar
+                    const y = scrollToContacto.current.getBoundingClientRect().top + window.scrollY + offset;
+                    window.scrollTo({ top: y, behavior: 'smooth' });
+                  }}>
                       <span>Contactar</span>
                     </button>
                   </Box>
