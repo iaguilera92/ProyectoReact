@@ -16,6 +16,7 @@ import Administracion from "./components/Administracion";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import { useLocation } from "react-router-dom";
+import Evidencias from "./components/Evidencias";
 
 
 function Home({ informationsRef, contactoRef }) {
@@ -124,6 +125,7 @@ function App() {
                 <div ref={informationsRef}>
                   <Informations />
                 </div>
+                <Evidencias />
                 <Box ref={contactoRef}>
                   <Contacto />
                 </Box>

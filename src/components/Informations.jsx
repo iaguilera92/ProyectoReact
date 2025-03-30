@@ -72,15 +72,19 @@ const Informations = () => {
   return (
     <Box
       sx={{
+        position: "relative", // 🆕 necesario para controlar el zIndex
+        zIndex: 10,            // 🆕 alto para sobresalir
         backgroundImage: 'url(fondo-blizz.avif)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed',
-        py: 4,
-        marginTop: "-100px",
+        py: 8,
+        pt: 5,
+        marginTop: "-90px",
+        marginBottom: "-10px",
         color: "white",
-        borderRadius: isMobile ? '90px 90px 0 0' : '120px 120px 0 0', // Valor general para otros navegadores
-        overflow: 'hidden',  // Asegura que no se desborde el contenido
+        borderRadius: isMobile ? '90px' : '120px',
+        overflow: 'hidden',
       }}
     >
       <Container sx={{ textAlign: "center", color: "white", maxWidth: "1400px !important", }}>
@@ -150,7 +154,7 @@ const Informations = () => {
               },
             }}
           >
-            Ayudanos hacer crecer tu negocio
+            Ayudamos a hacer crecer tu negocio
           </Typography>
 
           {/* Línea debajo del título con animación (con retraso de 2 segundos) */}
