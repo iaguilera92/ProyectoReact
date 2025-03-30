@@ -11,6 +11,8 @@ import {
   ListItemText,
   Container,
   Box,
+  useTheme,
+  useMediaQuery
 } from "@mui/material";
 import { Menu as MenuIcon, Home, Build, Mail, Close } from "@mui/icons-material"; // Agregamos Close para la "X"
 import InstagramIcon from "@mui/icons-material/Instagram";
@@ -147,6 +149,8 @@ function Navbar({ contactoRef, informationsRef }) {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     const handleScroll = () => {
@@ -508,7 +512,7 @@ function Navbar({ contactoRef, informationsRef }) {
                     display: "flex",
                     justifyContent: "center",
                     gap: "24px",
-                    marginBottom: "50px",
+                    marginBottom: isMobile ? 85 : 0,
                     padding: "20px 0",
                   }}
                 >
