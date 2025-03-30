@@ -301,7 +301,7 @@ function Navbar({ contactoRef, informationsRef }) {
           "& .MuiDrawer-paper": {
             display: "flex",
             flexDirection: "column",
-            height: "100vh",
+            height: "100dvh",// ✅ Dinámico y confiable
             width: { xs: '80vw', sm: '60vw', md: '50vw' },
             maxWidth: '700px',
             minWidth: '300px',
@@ -512,7 +512,7 @@ function Navbar({ contactoRef, informationsRef }) {
                     display: "flex",
                     justifyContent: "center",
                     gap: "24px",
-                    marginBottom: isMobile ? 85 : 0,
+                    marginBottom: isMobile ? 0 : 90,
                     padding: "20px 0",
                   }}
                 >
