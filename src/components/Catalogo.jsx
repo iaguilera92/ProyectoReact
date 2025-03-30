@@ -218,6 +218,9 @@ const Catalogo = () => {
 
 
               <Swiper
+                modules={[Virtual]} // ✅ Solo usa los módulos que realmente ocupas
+                lazy={true}
+                watchSlidesProgress
                 spaceBetween={16}
                 slidesPerView={'auto'}
                 centeredSlides={false}

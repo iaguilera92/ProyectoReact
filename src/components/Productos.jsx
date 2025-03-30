@@ -142,7 +142,7 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos, onVisualizarMobi
         }}
       >
         {/* Stock badge */}
-        <Box
+        {/* <Box
           sx={{
             position: 'absolute',
             top: -12,
@@ -168,7 +168,7 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos, onVisualizarMobi
           }}
         >
           {producto.Stock}
-        </Box>
+        </Box>*/}
 
         <motion.div
           animate={{ rotateY: girado ? 180 : 0 }}
@@ -200,6 +200,7 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos, onVisualizarMobi
             <Card sx={{ width: '100%', height: '100%', position: 'relative' }}>
               <Box
                 component="img"
+                loading="lazy"
                 src={producto.ImageUrl}
                 alt={producto.NombreProducto}
                 sx={{
@@ -357,32 +358,34 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos, onVisualizarMobi
           >
 
             <Card sx={{ width: '100%', height: '100%', position: 'relative' }}>
-              <Box
-                component="video"
-                ref={videoRef}
-                loading="lazy"
-                src={producto.VideoUrl}
-                muted
-                playsInline
-                preload="metadata" // ✅ aquí
-                decode="async"
-                sx={{
-                  objectFit: 'contain',
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  opacity: girado ? 1 : 0,
-                  pointerEvents: girado ? 'auto' : 'none',
-                  transition: girado ? 'none' : 'opacity 0.5s ease'
-                }}
-                onEnded={() => {
-                  onGirar();
-                }}
-              />
-
+              {girado && (
+                <Box
+                  component="video"
+                  ref={videoRef}
+                  className="swiper-lazy"
+                  src={producto.VideoUrl}
+                  poster={producto.ImageUrl}
+                  muted
+                  playsInline
+                  ppreload="none"
+                  decode="async"
+                  sx={{
+                    objectFit: 'contain',
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    opacity: girado ? 1 : 0,
+                    pointerEvents: girado ? 'auto' : 'none',
+                    transition: girado ? 'none' : 'opacity 0.5s ease'
+                  }}
+                  onEnded={() => {
+                    onGirar();
+                  }}
+                />
+              )}
               {/* Botón "Me interesa!" siempre visible en fullscreen */}
               <Button
                 ref={botonWhatsappRef}
