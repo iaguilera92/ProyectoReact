@@ -297,7 +297,7 @@ function Navbar({ contactoRef, informationsRef }) {
           "& .MuiDrawer-paper": {
             display: "flex",
             flexDirection: "column",
-            height: "100vh", // ✅ Ocupa toda la pantalla
+            height: "100vh",
             width: { xs: '80vw', sm: '60vw', md: '50vw' },
             maxWidth: '700px',
             minWidth: '300px',
@@ -315,7 +315,7 @@ function Navbar({ contactoRef, informationsRef }) {
           },
         }}
       >
-        <Box sx={{ flexGrow: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ overflowY: 'auto', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
           {/* ❌ Botón cerrar */}
           <Box sx={{ display: "flex", justifyContent: "flex-end", p: 2 }}>
             <IconButton onClick={() => setOpen(false)}>
@@ -486,7 +486,6 @@ function Navbar({ contactoRef, informationsRef }) {
           </AnimatePresence>
 
           {/* Redes sociales al final del menú móvil */}
-          <Box sx={{ flexGrow: 1 }} />
           <AnimatePresence mode="wait">
             {open && (
               <>
@@ -509,6 +508,7 @@ function Navbar({ contactoRef, informationsRef }) {
                     display: "flex",
                     justifyContent: "center",
                     gap: "24px",
+                    marginBottom: "50px",
                     padding: "20px 0",
                   }}
                 >
