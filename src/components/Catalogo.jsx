@@ -53,7 +53,7 @@ const Catalogo = () => {
     Stock: stock,
     ImageUrl: ImgUrlAleatorio(img),
     ConDescuento: descuento,
-    VideoUrl: `/videos/Producto${(id % 4) + 1}.mp4`, // entre 4 opciones distintas
+    VideoUrl: `/Producto${(id % 3) + 1}.mp4`, // entre 4 opciones distintas
   });
 
 
@@ -128,8 +128,8 @@ const Catalogo = () => {
           position: 'relative',
           overflow: 'hidden',
           backgroundImage: isMobile
-            ? 'url("https://blz-contentstack-images.akamaized.net/v3/assets/blta8f9a8e092360c6c/blt367ca4b27c88c078/Desktop_Blizz_Footer.jpg")'
-            : 'url("https://blz-contentstack-images.akamaized.net/v3/assets/blta8f9a8e092360c6c/blt367ca4b27c88c078/Desktop_Blizz_Footer.jpg")',
+            ? 'url(fondo-blizz.avif)'
+            : 'url(fondo-blizz.avif)',
           backgroundSize: 'cover',
           backgroundRepeat: 'no-repeat',
           backgroundAttachment: 'fixed',

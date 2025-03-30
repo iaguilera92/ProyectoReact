@@ -106,7 +106,7 @@ function Features({ scrollToInformations }) {
   return (
     <Box
       sx={{
-        backgroundImage: 'url("https://blz-contentstack-images.akamaized.net/v3/assets/blta8f9a8e092360c6c/blt367ca4b27c88c078/Desktop_Blizz_Footer.jpg")',
+        backgroundImage: 'url(fondo-blizz.avif)',
         backgroundSize: 'cover',  // Asegura que la imagen cubra todo el contenedor
         backgroundPosition: 'center',  // Centra la imagen en el fondo
         backgroundAttachment: 'fixed',  // Asegura que la imagen de fondo no se mueva al hacer scroll

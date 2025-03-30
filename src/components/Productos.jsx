@@ -343,7 +343,7 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos, onVisualizarMobi
                 ref={videoRef}
                 src={producto.VideoUrl}
                 muted
-                playsInline
+                playsInline // 👈 clave para iOS
                 preload="metadata"
                 poster={producto.ImageUrl}
                 disablePictureInPicture

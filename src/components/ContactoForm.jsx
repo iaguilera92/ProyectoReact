@@ -468,7 +468,7 @@ const ContactoForm = ({ setSnackbar }) => {
                                         variant="body1"
                                         sx={{ fontSize: "0.9rem", mb: 1, marginLeft: 1 }}
                                     >
-                                        Escríbenos directamente por WhatsApp para resolver tus dudas al instante.
+                                        Escríbenos directamente por WhatsApp para resolver tus dudas.
                                     </Typography>
                                     <Button
                                         href="https://api.whatsapp.com/send?phone=56992914526"
