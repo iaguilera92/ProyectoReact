@@ -297,7 +297,7 @@ function Navbar({ contactoRef, informationsRef }) {
           "& .MuiDrawer-paper": {
             display: "flex",
             flexDirection: "column",
-            height: "100vh",
+            height: "auto",
             width: { xs: '80vw', sm: '60vw', md: '50vw' },
             maxWidth: '700px',
             minWidth: '300px',
