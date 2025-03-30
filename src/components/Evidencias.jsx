@@ -6,16 +6,26 @@ import {
     Card,
     CardMedia,
     useTheme,
-    useMediaQuery
+    useMediaQuery, Snackbar, Alert
 } from '@mui/material';
 import { motion } from 'framer-motion';
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 
 
 const Evidencias = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const videoRef = useRef();
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+
+    const handleSnackbarOpen = () => {
+        setSnackbarOpen(true);
+    };
+
+    const handleSnackbarClose = (event, reason) => {
+        if (reason === 'clickaway') return;
+        setSnackbarOpen(false);
+    };
 
 
     useEffect(() => {
@@ -97,7 +107,7 @@ const Evidencias = () => {
                     position: 'relative',
                     background: 'linear-gradient(to bottom, #ffffff, #f3f3f3)',
                     pt: isMobile ? 3 : 5,
-                    pb: 8,
+                    pb: 4,
                     px: { xs: 2, sm: 4 },
                     zIndex: 2,
                     mt: -10,
@@ -165,34 +175,79 @@ const Evidencias = () => {
                                             },
                                         }}
                                     >
-                                        {!isMobile && (
-                                            <CardMedia
-                                                poster="/fondo-areas1.jpg" // 👈 preview estático
-                                                component="video"
-                                                ref={videoRef}
-                                                src={`/video-inicio.mp4`}
-                                                muted
-                                                loop
-                                                playsInline
-                                                autoPlay
-                                                preload="metadata" // ⚠️ importante para que no descargue de inmediato
-                                                sx={{
-                                                    width: '100%',
-                                                    height: 250,
-                                                    objectFit: 'cover',
-                                                    position: 'relative',
-                                                    zIndex: 1,
-                                                }}
-                                            />
-                                        )}
+                                        <CardMedia
+                                            poster="/fondo-areas1.jpg" // 👈 preview estático
+                                            component="video"
+                                            ref={videoRef}
+                                            src={`/video-inicio.mp4`}
+                                            muted
+                                            loop
+                                            playsInline
+                                            autoPlay
+                                            preload="metadata" // ⚠️ importante para que no descargue de inmediato
+                                            sx={{
+                                                width: '100%',
+                                                height: 250,
+                                                objectFit: 'cover',
+                                                position: 'relative',
+                                                zIndex: 1,
+                                            }}
+                                        />
                                     </Card>
 
                                 </motion.div>
                             </Grid>
                         ))}
                     </Grid>
+                    <Box
+                        sx={{
+                            mt: 4,
+                            textAlign: 'right',
+                            px: { xs: 1, sm: 3 },
+                        }}
+                    >
+                        <Box
+                            onClick={handleSnackbarOpen}
+                            sx={{
+                                color: '#1976d2',
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                fontFamily: 'Montserrat, sans-serif',
+                                fontWeight: 500,
+                                fontSize: '1.05rem',
+                            }}
+                        >
+                            <span style={{ textDecoration: 'underline' }}>
+                                Ver más trabajos
+                            </span>
+                            <span
+                                style={{
+                                    textDecoration: 'none',
+                                    fontSize: '1.05rem',
+                                    transform: 'translateY(1px)',
+                                }}
+                            >
+                                →
+                            </span>
+                        </Box>
+                    </Box>
+
+
+
                 </Box>
             </Box>
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={4000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert onClose={handleSnackbarClose} severity="info" sx={{ width: '100%' }}>
+                    Para ver más trabajos contáctanos vía redes sociales.
+                </Alert>
+            </Snackbar>
 
         </Box >
     );
