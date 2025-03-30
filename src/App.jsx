@@ -105,7 +105,7 @@ function App() {
         <Box sx={{ minHeight: "100vh", background: "radial-gradient(circle, #111111 20%, #000000 80%)", color: "white", position: "relative" }}>
           {(location.pathname !== "/administracion") && (
             <>
-              <Navbar contactoRef={contactoRef} /> {/* Pasamos el ref al Navbar */}
+              <Navbar contactoRef={contactoRef} informationsRef={informationsRef} /> {/* Pasamos el ref al Navbar */}
             </>
           )}
           <Box sx={{ minHeight: "100vh" }}>
@@ -132,7 +132,7 @@ function App() {
             )}
           </Box>
 
-          {(location.pathname !== "/catalogo") && (
+          {(location.pathname !== "/catalogo" && location.pathname !== "/administracion") && (
             <>
               <Box sx={{
                 position: "fixed", bottom: "40px", right: "40px", zIndex: 100,

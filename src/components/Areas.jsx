@@ -192,7 +192,7 @@ const Areas = () => {
                             fontSize: isMobile ? "2.6rem" : "2.2rem", // Aumentado el tamaño
                           }}
                         >
-                          +{delayed ? <CountUp start={0} end={item.count} duration={3} /> : "0"}
+                          +{delayed ? <CountUp start={0} end={item.count} duration={3.1} /> : "0"}
                         </Typography>
                         <Box
                           sx={{
@@ -244,7 +244,7 @@ const Areas = () => {
               y: [0, -10, 0], // Flotación de arriba a abajo
             }}
             transition={{
-              rotateY: { duration: 1.5, ease: "easeInOut" },
+              rotateY: { duration: 1.4, ease: "easeInOut" },
               y: { duration: 2, repeat: Infinity, ease: "easeInOut" }, // Mantiene la flotación constante
             }}
             onAnimationComplete={() => setTimeout(() => { setCurrentImage((prev) => (prev + 1) % images.length); }, 5000)} // Cambia la imagen después de 5 segundos

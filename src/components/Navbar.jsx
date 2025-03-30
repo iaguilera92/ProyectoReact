@@ -5,7 +5,7 @@ import {
   Button,
   IconButton,
   Drawer,
-  List,
+  Typography,
   ListItem,
   ListItemButton,
   ListItemText,
@@ -16,11 +16,13 @@ import { Menu as MenuIcon, Home, Build, Mail, Close } from "@mui/icons-material"
 import InstagramIcon from "@mui/icons-material/Instagram";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { keyframes } from "@emotion/react";
 import ViewListIcon from '@mui/icons-material/ViewList';
 import "@fontsource/poppins";
 import { useNavigate } from "react-router-dom";
+import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
+
 
 const shrinkCircle = keyframes`
   0% { transform: scale(1); opacity: 1; }
@@ -36,6 +38,54 @@ const growElement = keyframes`
   0% { transform: scale(0.5); opacity: 0.5; }
   100% { transform: scale(1); opacity: 1; }
 `;
+const menuItemVariants = {
+  hidden: { x: 60, opacity: 0 },
+  visible: (i) => ({
+    x: 0,
+    opacity: 1,
+    transition: {
+      duration: 0.5,
+      delay: i * 0.1, // 🪄 Efecto cascada
+      ease: "easeOut",
+    },
+  }),
+};
+const listVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.15,
+    },
+  },
+};
+const bienvenidaVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut",
+      delay: 0.2,
+    },
+  },
+  exit: { opacity: 0, y: 20, transition: { duration: 0.3 } },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, x: 50 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.5,
+      ease: "easeOut",
+    },
+  },
+  exit: { opacity: 0, x: 40, transition: { duration: 0.3 } },
+};
+
 
 const SocialButton = ({ href, Icon, bgColor, hoverStyles }) => (
   <Box
@@ -93,7 +143,7 @@ const menuItems = [
   { name: "Contacto", icon: <Mail /> },
 ];
 
-function Navbar({ contactoRef }) {
+function Navbar({ contactoRef, informationsRef }) {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -110,12 +160,17 @@ function Navbar({ contactoRef }) {
 
   const handleClick = (item) => {
     setOpen(false);
-    if (item.name === "Contacto") {
-      contactoRef.current.scrollIntoView({ behavior: "smooth" });
+    if (item.name === "Contacto" && contactoRef?.current) {
+      const offset = -80; // 🔧 Ajusta según tu layout
+      const y = contactoRef.current.getBoundingClientRect().top + window.scrollY + offset;
+      window.scrollTo({ top: y, behavior: "smooth" });
     }
     if (item.name === "Inicio") {
-      navigate("/");
-      scrollToTop();
+      if (location.pathname !== "/") {
+        navigate("/");
+      } else {
+        scrollToTop();
+      }
     }
     if (item.name === "Catálogo") {
       navigate("/catalogo"); // Redirige a /catalogo
@@ -151,7 +206,8 @@ function Navbar({ contactoRef }) {
         <AppBar
           position="relative"
           sx={{
-            backgroundColor: isScrolled ? "black" : "rgba(0, 0, 0, 0)",
+            backgroundColor: isScrolled ? "rgba(0,0,0,0.8)" : "transparent",
+            backdropFilter: isScrolled ? "blur(10px)" : "none",
             boxShadow: "none",
             transition: "background-color 0.3s ease-in-out",
             borderRadius: "inherit",
@@ -189,11 +245,13 @@ function Navbar({ contactoRef }) {
               <Box sx={{ display: { xs: "none", md: "flex" }, gap: 2 }}>
                 {menuItems.map((item, index) => (
                   <motion.div
-                    key={index}
-                    initial={{ y: -50, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 0.6, delay: index * 0.2 }}
+                    key={item.name}
+                    custom={index}
+                    initial="hidden"
+                    animate="visible"
+                    variants={menuItemVariants}
                   >
+
                     <Button
                       color="inherit"
                       sx={{
@@ -234,133 +292,282 @@ function Navbar({ contactoRef }) {
         anchor="right"
         open={open}
         onClose={() => setOpen(false)}
+        ModalProps={{ keepMounted: true }}
         sx={{
           "& .MuiDrawer-paper": {
-            width: "50vw", // Ocupar el 50% de la pantalla
-            maxWidth: "700px", // Asegurar que no sea demasiado grande en pantallas grandes
-            minWidth: "300px", // Evitar que se haga demasiado pequeño
-            backgroundImage: 'url(/fondo-fono.png)',
-            backgroundSize: "cover",
-            backgroundPosition: "center",
             display: "flex",
             flexDirection: "column",
-            padding: "20px", // Agregamos padding general
+            height: "100vh",
+            width: { xs: '80vw', sm: '60vw', md: '50vw' },
+            maxWidth: '700px',
+            minWidth: '300px',
+            background: `
+        linear-gradient(135deg, rgba(18, 22, 35, 0.92), rgba(24, 29, 47, 0.95)),
+        radial-gradient(circle at 25% 20%, rgba(63,141,245,0.3) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(160,64,255,0.15) 0%, transparent 50%)
+      `,
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            color: '#ffffff',
+            boxShadow: '0 0 30px rgba(0, 0, 0, 0.6)',
+            borderLeft: '1px solid rgba(255,255,255,0.05)',
+            p: 0,
           },
         }}
       >
-        {/* Botón de cerrar ("X") */}
-        <Box sx={{ display: "flex", justifyContent: "flex-end", padding: "2px" }}>
-          <IconButton
-            onClick={() => setOpen(false)}
-            sx={{
-              animation: open ? `${rotate360} 1s` : "none",
-            }}
-          >
-            <Close sx={{ fontSize: 35 }} />
+        {/* ❌ Botón cerrar */}
+        <Box sx={{ display: "flex", justifyContent: "flex-end", p: 2 }}>
+          <IconButton onClick={() => setOpen(false)}>
+            <Close sx={{ fontSize: 32, color: "white" }} />
           </IconButton>
         </Box>
 
-        {/* Menú de opciones */}
-        <List sx={{ flexGrow: 1, paddingTop: "0", marginTop: "-10px" }}>
-          {menuItems.map((item, index) => (
-            <motion.div
-              key={index}
-              initial={{ x: 200, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.6, delay: index * 0.2 }}
+        {/* 📋 Menú navegación */}
+        <AnimatePresence mode="wait">
+          {open && (
+            <motion.ul
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              variants={listVariants}
+              style={{ listStyle: "none", padding: 0, margin: 0, width: "100%" }}
             >
-              <ListItem disablePadding>
-                <ListItemButton onClick={() => handleClick(item)}>
-                  <ListItemText
-                    primary={
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "10px", // Separación entre icono y texto
-                          padding: "10px 0", // Más espacio entre cada opción del menú
-                        }}
-                      >
-                        <Box sx={{ color: "#3f8df5", fontSize: "1.7rem", marginTop: "4px" }}> {/* Iconos más grandes */}
-                          {item.icon}
-                        </Box>
-                        <span
-                          style={{
-                            color: "#3f8df5",
-                            fontSize: "1.1rem", // Texto más grande
-                            fontWeight: "bold",
-                            textTransform: "uppercase", // Convertir a mayúsculas
-                          }}
-                        >
-                          {item.name}
-                        </span>
-                      </Box>
-                    }
+              {menuItems.map((item, index) => (
+                <motion.li key={item.name} variants={itemVariants}>
+                  <ListItem disablePadding>
+                    <ListItemButton
+                      onClick={() => handleClick(item)}
+                      sx={{
+                        px: 3,
+                        py: 1.2,
+                        borderBottom: "1px solid rgba(255,255,255,0.1)",
+                        borderTop: index === 0 ? "1px solid rgba(255,255,255,0.2)" : "none",
+                        "&:hover": { backgroundColor: "rgba(255,255,255,0.05)" },
+                      }}
+                    >
+                      <ListItemText
+                        primary={
+                          <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                            <Box sx={{ color: "#7ab7ff", fontSize: "1.7rem" }}>{item.icon}</Box>
+                            <span style={{ color: "#fff", fontWeight: "500", fontSize: "1.05rem" }}>
+                              {item.name}
+                            </span>
+                          </Box>
+                        }
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                </motion.li>
+              ))}
+            </motion.ul>
+          )}
+        </AnimatePresence>
+
+        {/* 🧱 Espacio flexible para empujar bienvenida y redes al fondo */}
+        <Box sx={{ flexGrow: 1 }} />
+
+        {/* 🌟 Tarjeta bienvenida */}
+        <AnimatePresence mode="wait">
+          {open && (
+            <motion.div
+              variants={bienvenidaVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+            >
+              <Box
+                sx={{
+                  background: `
+        radial-gradient(circle at top left, rgba(144,202,249,0.1), transparent 70%),
+        linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))
+      `,
+                  borderRadius: 3,
+                  px: 2.5,
+                  py: 2.5,
+                  mx: 2,
+                  mb: 3,
+                  color: "#ffffff",
+                  backdropFilter: "blur(8px)",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  boxShadow: "0 0 12px rgba(255,255,255,0.05)",
+                }}
+              >
+                <Box sx={{ display: "flex", alignItems: "center", mb: 1.2 }}>
+                  <Box
+                    component="img"
+                    src="/logo-react.png"
+                    alt="Bienvenidos"
                     sx={{
-                      fontFamily: "Poppins, sans-serif",
-                      padding: "0px",
-                      borderBottom: "1px solid rgba(0, 0, 0, 0.3)",
+                      width: 50,
+                      height: 50,
+                      objectFit: "contain",
+                      borderRadius: 2,
+                      mr: 2,
                     }}
                   />
-                </ListItemButton>
-              </ListItem>
+                  <Typography
+                    fontSize="1.05rem"
+                    fontWeight={600}
+                    sx={{
+                      fontFamily: 'Poppins, sans-serif',
+                      letterSpacing: 0.3,
+                    }}
+                  >
+                    Bienvenid@ a plataformas.web
+                  </Typography>
+                </Box>
+
+                <Typography
+                  variant="body2"
+                  sx={{
+                    opacity: 0.85,
+                    fontSize: "0.85rem",
+                    mb: 1.5,
+                    fontFamily: 'Poppins, sans-serif',
+                  }}
+                >
+                  Conecta con nuestro equipo y descubre todo lo que podemos hacer por ti.
+                </Typography>
+
+
+                <Button
+                  variant="text"
+                  size="small"
+                  endIcon={
+                    <ArrowForwardIosRoundedIcon
+                      sx={{
+                        fontSize: 16,
+                        transition: 'transform 0.3s ease',
+                      }}
+                    />
+                  }
+                  onClick={() => {
+                    if (informationsRef?.current) {
+                      const offset = -80; // 📏 Ajusta este valor según tu diseño (por ejemplo, altura del navbar)
+                      const y = informationsRef.current.getBoundingClientRect().top + window.scrollY + offset;
+                      window.scrollTo({ top: y, behavior: 'smooth' });
+                      setOpen(false);
+                    }
+                  }}
+                  sx={{
+                    mt: 1,
+                    minHeight: 'unset',
+                    color: "#90caf9",
+                    fontWeight: 600,
+                    fontSize: "0.8rem",
+                    textTransform: "none",
+                    fontFamily: 'Poppins, sans-serif',
+                    pl: 0,
+                    py: 0,
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 0.5,
+                    transition: "all 0.3s ease",
+                    "&:hover": {
+                      color: "#ffffff",
+                      textDecoration: "underline",
+                      backgroundColor: "transparent",
+                      "& .MuiSvgIcon-root": {
+                        transform: "translateX(3px)",
+                      },
+                    },
+                  }}
+                >
+                  Empezar ahora
+                </Button>
+
+
+
+              </Box>
             </motion.div>
-          ))}
-        </List>
+
+          )}
+        </AnimatePresence>
 
         {/* Redes sociales al final del menú móvil */}
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            gap: 4, // Espacio entre iconos
-            mt: "auto",
-            padding: "20px 0", // Más espacio
-          }}
-        >
-          {["Instagram", "Facebook", "LinkedIn"].map((social, index) => {
-            const socialData = {
-              Instagram: {
-                href: "https://www.instagram.com/plataformas.web/?hl=es-la",
-                Icon: InstagramIcon,
-                bgColor: "linear-gradient(45deg, #cf198c, #f41242)",
-              },
-              Facebook: {
-                href: "https://www.facebook.com/profile.php?id=100063452866880",
-                Icon: FacebookIcon,
-                bgColor: "linear-gradient(45deg, #00B5F5, #002A8F)",
-              },
-              LinkedIn: {
-                href: "https://www.instagram.com/plataformas.web/?hl=es-la",
-                Icon: LinkedInIcon,
-                bgColor: "linear-gradient(45deg, #00B5F5, #0077b7)",
-              },
-            };
+        <AnimatePresence mode="wait">
+          {open && (
+            <>
+              {/* Redes sociales animadas */}
 
-            return (
               <motion.div
-                key={social}
-                initial={{ x: 200, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ duration: 0.6, delay: index * 0.2 }}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                variants={{
+                  hidden: {},
+                  visible: {
+                    transition: {
+                      staggerChildren: 0.12,
+                      delayChildren: 0.3,
+                    },
+                  },
+                }}
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: "24px",
+                  marginTop: "auto",
+                  padding: "20px 0",
+                }}
               >
-                <SocialButton
-                  href={socialData[social].href}
-                  Icon={socialData[social].Icon}
-                  bgColor={socialData[social].bgColor}
-                  size="1rem" // Tamaño más grande
-                  hoverStyles={{
-                    color: social === "Instagram" ? "#cf198c" : social === "Facebook" ? "#0077b7" : "#0077b7",
-                    background: `-webkit-linear-gradient(45deg, ${socialData[social].bgColor})`,
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                  }}
-                />
+                {["Instagram", "Facebook", "LinkedIn"].map((social, index) => {
+                  const socialData = {
+                    Instagram: {
+                      href: "https://www.instagram.com/plataformas.web/?hl=es-la",
+                      Icon: InstagramIcon,
+                      bgColor: "linear-gradient(45deg, #cf198c, #f41242)",
+                    },
+                    Facebook: {
+                      href: "https://www.facebook.com/profile.php?id=100063452866880",
+                      Icon: FacebookIcon,
+                      bgColor: "linear-gradient(45deg, #00B5F5, #002A8F)",
+                    },
+                    LinkedIn: {
+                      href: "https://www.linkedin.com/company/plataformas-web/",
+                      Icon: LinkedInIcon,
+                      bgColor: "linear-gradient(45deg, #00B5F5, #0077b7)",
+                    },
+                  };
+
+                  return (
+                    <motion.div
+                      key={social}
+                      variants={{
+                        hidden: { opacity: 0, x: 40 },
+                        visible: {
+                          opacity: 1,
+                          x: 0,
+                          transition: { duration: 0.5, ease: "easeOut" },
+                        },
+                        exit: { opacity: 0, x: 30, transition: { duration: 0.3 } },
+                      }}
+                    >
+                      <SocialButton
+                        href={socialData[social].href}
+                        Icon={socialData[social].Icon}
+                        bgColor={socialData[social].bgColor}
+                        hoverStyles={{
+                          color:
+                            social === "Instagram"
+                              ? "#cf198c"
+                              : social === "Facebook"
+                                ? "#0077b7"
+                                : "#0077b7",
+                          background: `-webkit-linear-gradient(45deg, ${socialData[social].bgColor})`,
+                          WebkitBackgroundClip: "text",
+                          WebkitTextFillColor: "transparent",
+                        }}
+                      />
+                    </motion.div>
+                  );
+                })}
               </motion.div>
-            );
-          })}
-        </Box>
-      </Drawer>
+            </>
+          )}
+        </AnimatePresence>
+
+      </Drawer >
 
     </>
   );
