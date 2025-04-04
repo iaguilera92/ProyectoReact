@@ -27,6 +27,7 @@ import "@fontsource/poppins";
 import { useNavigate } from "react-router-dom";
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 import CloseIcon from "@mui/icons-material/Close";
+import ViewCarouselIcon from '@mui/icons-material/ViewCarousel';
 
 
 const socialData = {
@@ -168,7 +169,8 @@ const SocialButton = ({ href, Icon, bgColor, hoverStyles }) => (
 const menuItems = [
   { name: "Inicio", icon: <Home /> },
   { name: "Servicios", icon: <ViewListIcon /> },
-  { name: "Presentación Empresa", icon: <SlideshowIcon /> },
+  { name: "Catálogo", icon: <ViewCarouselIcon /> },
+  { name: "Presentación", icon: <SlideshowIcon /> },
   { name: "Nosotros", icon: <GroupsIcon /> },
   { name: "Contacto", icon: <Mail /> },
 ];
@@ -220,10 +222,13 @@ function Navbar({ contactoRef, informationsRef }) {
       case "Servicios":
         navigate("/servicios");
         break;
+      case "Catálogo":
+        navigate("/catalogo");
+        break;
       case "Nosotros":
         navigate("/nosotros");
         break;
-      case "Presentación Empresa":
+      case "Presentación":
         handleOpenPDF();
         break;
       default:

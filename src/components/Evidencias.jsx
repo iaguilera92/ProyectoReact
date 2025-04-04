@@ -208,23 +208,25 @@ const Evidencias = () => {
                                                 }}
                                             >
                                                 <CardMedia
-                                                    poster="/fondo-areas1.jpg" // 👈 preview estático
+                                                    poster="/fondo-areas1.jpg"
                                                     component="video"
                                                     ref={videoRef}
-                                                    src={`/video-inicio.mp4`}
+                                                    src={`/evidencia${i + 1}.${i === 1 ? 'mp4' : 'mov'}`}
                                                     muted
                                                     loop
                                                     playsInline
                                                     autoPlay
-                                                    preload="metadata" // ⚠️ importante para que no descargue de inmediato
+                                                    preload="metadata"
                                                     sx={{
                                                         width: '100%',
                                                         height: 250,
-                                                        objectFit: 'cover',
+                                                        objectFit: i === 1 ? 'contain' : 'cover', // 👈 solo evidencia2 usa "contain"
                                                         position: 'relative',
                                                         zIndex: 1,
+                                                        backgroundColor: '#000' // opcional para bordes negros
                                                     }}
                                                 />
+
                                             </Card>
 
                                         </motion.div>
