@@ -151,7 +151,7 @@ function Features({ scrollToInformations }) {
                         sx={{
                           fontWeight: "bold",
                           marginTop: isMobile ? "20px" : "30px",
-                          mb: isMobile ? 1 : 1,
+                          mb: 1,
                           textAlign: "left",
                           width: "100%",
                           marginLeft: "9px",
@@ -160,30 +160,58 @@ function Features({ scrollToInformations }) {
                       >
                         {feature.title}
                       </Typography>
+
                       <AdditionalContent className="additional">
-                        <Typography variant="body2" sx={{ mb: 1, px: 1, fontSize: "1rem" }}>
+                        <Typography
+                          variant="body2"
+                          sx={{ mb: 1, px: 1, fontSize: "1rem" }}
+                        >
                           {feature.desc}
                         </Typography>
-                        <Box variant="contained" sx={{ textAlign: "center", mt: 2, width: "100%" }} target="_self">
-                          <Box sx={{ mt: isMobile ? 0 : 1, textAlign: "center" }}>
-                            <button
-                              className="btn-3-features" zIndex="5"
-                              style={{ cursor: "arrow" }}
-                              onClick={(e) => {
-                                e.stopPropagation(); // ✅ Evita que se propague el click al área del Card
+
+                        {/* ✅ Botón personalizado, fuera del <button> de CardActionArea */}
+                        <Box sx={{ textAlign: "center", mt: 2 }}>
+                          <Box
+                            component="span"
+                            role="button"
+                            tabIndex={0}
+                            className="btn-3-features"
+                            sx={{
+                              zIndex: 5,
+                              cursor: "pointer",
+                              display: "inline-block",
+                            }}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation(); // Evita que se dispare el href del CardActionArea
+                              const nombreFeature = feature.title;
+                              const mensaje = `¡Hola! Me interesó ${encodeURIComponent(nombreFeature)} ¿Me comentas?`;
+                              window.open(
+                                `https://api.whatsapp.com/send?phone=56992914526&text=${mensaje}`,
+                                "_blank"
+                              );
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                e.stopPropagation();
                                 const nombreFeature = feature.title;
-                                const mensaje = `¡Hola!%20Me%20interesó%20${encodeURIComponent(nombreFeature)}%20¿Me%20comentas?`;
-                                window.open(`https://api.whatsapp.com/send?phone=56992914526&text=${mensaje}`, "_blank");
-                              }}
-                            >
-                              <span>Contratar</span>
-                            </button>
+                                const mensaje = `¡Hola! Me interesó ${encodeURIComponent(nombreFeature)} ¿Me comentas?`;
+                                window.open(
+                                  `https://api.whatsapp.com/send?phone=9&text=${mensaje}`,
+                                  "_blank"
+                                );
+                              }
+                            }}
+                          >
+                            <span>Contratar</span>
                           </Box>
                         </Box>
                       </AdditionalContent>
                     </Overlay>
                   </StyledCardActionArea>
                 </Card>
+
               </motion.div>
             </Grid>
           ))}
@@ -191,11 +219,11 @@ function Features({ scrollToInformations }) {
         <br />
         <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
           <Button
-          onClick={() => {
-            const offset = -80; // Ajusta esto según la altura de tu navbar
-            const y = scrollToInformations.current.getBoundingClientRect().top + window.scrollY + offset;
-            window.scrollTo({ top: y, behavior: 'smooth' });
-          }}
+            onClick={() => {
+              const offset = -80; // Ajusta esto según la altura de tu navbar
+              const y = scrollToInformations.current.getBoundingClientRect().top + window.scrollY + offset;
+              window.scrollTo({ top: y, behavior: 'smooth' });
+            }}
             variant="contained"
             target="_self"
             sx={{

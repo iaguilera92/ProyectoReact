@@ -18,7 +18,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 
 
-const MotionBox = motion(Box);
+const MotionBox = motion.create(Box);
 
 const ContactoForm = ({ setSnackbar }) => {
     const [name, setName] = useState("");
