@@ -6,6 +6,7 @@ import Servicios from "./components/Servicios";
 import Nosotros from "./components/Nosotros";
 import Contacto from "./components/Contacto";
 import Administracion from "./components/Administracion";
+import Catalogo from "./components/Catalogo";
 
 const router = createBrowserRouter(
     [
@@ -18,10 +19,12 @@ const router = createBrowserRouter(
                 { path: "nosotros", element: <Nosotros /> },
                 { path: "contacto", element: <Contacto /> },
                 { path: "administracion", element: <Administracion /> },
+                { path: "catalogo", element: <Catalogo /> },
             ],
         },
     ],
     {
+        // ✅ Este flag es el que evita el warning
         future: {
             v7_startTransition: true,
         },

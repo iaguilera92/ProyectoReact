@@ -19,18 +19,7 @@ import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import { useLocation } from "react-router-dom";
 import Evidencias from "./components/Evidencias";
-
-
-function Home({ informationsRef, contactoRef }) {
-  return (
-    <Box>
-      <Hero scrollToContacto={contactoRef} />
-      <Box>
-        <Features scrollToInformations={informationsRef} />
-      </Box>
-    </Box>
-  );
-}
+import { Outlet } from "react-router-dom";
 
 function App() {
 
@@ -112,14 +101,7 @@ function App() {
             </>
           )}
           <Box sx={{ minHeight: "100vh" }}>
-            <Routes location={location} key={location.pathname}>
-              <Route path="/" element={<Home informationsRef={informationsRef} contactoRef={contactoRef} />} />
-              <Route path="/administracion" element={<Administracion />} />
-              <Route path="/catalogo" element={<Catalogo />} />
-              <Route path="/contacto" element={<Contacto />} />
-              <Route path="/servicios" element={<Servicios />} />
-              <Route path="/nosotros" element={<Nosotros />} />
-            </Routes>
+            <Outlet />
             {/* Solo muestra estas secciones si NO estamos en /catalogo */}
             {(location.pathname !== "/catalogo" && location.pathname !== "/servicios" && location.pathname !== "/nosotros" && location.pathname !== "/administracion") && (
               <>
