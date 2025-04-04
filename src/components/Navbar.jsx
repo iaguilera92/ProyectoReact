@@ -12,18 +12,44 @@ import {
   Container,
   Box,
   useTheme,
-  useMediaQuery
+  useMediaQuery, Dialog, DialogTitle, DialogContent
 } from "@mui/material";
-import { Menu as MenuIcon, Home, Build, Mail, Close } from "@mui/icons-material"; // Agregamos Close para la "X"
+import { Menu as MenuIcon, Home, Mail, Close } from "@mui/icons-material"; // Agregamos Close para la "X"
 import InstagramIcon from "@mui/icons-material/Instagram";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import { motion, AnimatePresence } from "framer-motion";
 import { keyframes } from "@emotion/react";
 import ViewListIcon from '@mui/icons-material/ViewList';
+import GroupsIcon from '@mui/icons-material/Groups';
+import SlideshowIcon from '@mui/icons-material/Slideshow';
 import "@fontsource/poppins";
 import { useNavigate } from "react-router-dom";
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
+import CloseIcon from "@mui/icons-material/Close";
+
+
+const socialData = {
+  Instagram: {
+    href: "https://www.instagram.com/plataformas.web/?hl=es-la",
+    Icon: InstagramIcon,
+    bgColor: "linear-gradient(45deg, #cf198c, #f41242)",
+    hoverColor: "#cf198c"
+  },
+  Facebook: {
+    href: "https://www.facebook.com/profile.php?id=100063452866880",
+    Icon: FacebookIcon,
+    bgColor: "linear-gradient(45deg, #00B5F5, #002A8F)",
+    hoverColor: "#0077b7"
+  },
+  LinkedIn: {
+    href: "https://www.linkedin.com/company/plataformas-web/",
+    Icon: LinkedInIcon,
+    bgColor: "linear-gradient(45deg, #00B5F5, #0077b7)",
+    hoverColor: "#0077b7"
+  }
+};
+
 
 const shrinkCircle = keyframes`
   0% { transform: scale(1); opacity: 1; }
@@ -33,11 +59,6 @@ const shrinkCircle = keyframes`
 const expandIcon = keyframes`
   0% { transform: scale(1); opacity: 1; }
   100% { transform: scale(1.5); opacity: 1; }
-`;
-
-const growElement = keyframes`
-  0% { transform: scale(0.5); opacity: 0.5; }
-  100% { transform: scale(1); opacity: 1; }
 `;
 
 const rotateTwice = keyframes`
@@ -143,13 +164,12 @@ const SocialButton = ({ href, Icon, bgColor, hoverStyles }) => (
     />
   </Box>
 );
-const rotate360 = keyframes`
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-`;
+
 const menuItems = [
   { name: "Inicio", icon: <Home /> },
-  { name: "Catálogo", icon: <ViewListIcon /> },
+  { name: "Servicios", icon: <ViewListIcon /> },
+  { name: "Presentación Empresa", icon: <SlideshowIcon /> },
+  { name: "Nosotros", icon: <GroupsIcon /> },
   { name: "Contacto", icon: <Mail /> },
 ];
 
@@ -159,7 +179,17 @@ function Navbar({ contactoRef, informationsRef }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const [rotarCerrar, setRotarCerrar] = useState(false);
+  const [openPDF, setOpenPDF] = useState(false);
+  const handleOpenPDF = () => {
+    if (isMobile) {
+      window.open("/plataformasweb-pdf.pdf", "_blank");
+    } else {
+      setOpenPDF(true);
+    }
+  };
+  const handleClosePDF = () => setOpenPDF(false);
+  const pdfZoom = isMobile ? 100 : 60;
+  const pdfSrc = `/plataformasweb-pdf.pdf#zoom=${pdfZoom}`;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -171,22 +201,33 @@ function Navbar({ contactoRef, informationsRef }) {
     };
   }, []);
 
+  const scrollToRef = (ref, offset = -80) => {
+    if (ref?.current) {
+      const y = ref.current.getBoundingClientRect().top + window.scrollY + offset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+  };
+
   const handleClick = (item) => {
     setOpen(false);
-    if (item.name === "Contacto" && contactoRef?.current) {
-      const offset = -80; // 🔧 Ajusta según tu layout
-      const y = contactoRef.current.getBoundingClientRect().top + window.scrollY + offset;
-      window.scrollTo({ top: y, behavior: "smooth" });
-    }
-    if (item.name === "Inicio") {
-      if (location.pathname !== "/") {
-        navigate("/");
-      } else {
-        scrollToTop();
-      }
-    }
-    if (item.name === "Catálogo") {
-      navigate("/catalogo"); // Redirige a /catalogo
+    switch (item.name) {
+      case "Contacto":
+        scrollToRef(contactoRef);
+        break;
+      case "Inicio":
+        location.pathname !== "/" ? navigate("/") : scrollToTop();
+        break;
+      case "Servicios":
+        navigate("/servicios");
+        break;
+      case "Nosotros":
+        navigate("/nosotros");
+        break;
+      case "Presentación Empresa":
+        handleOpenPDF();
+        break;
+      default:
+        break;
     }
   };
 
@@ -222,8 +263,8 @@ function Navbar({ contactoRef, informationsRef }) {
             backgroundColor: isScrolled ? "rgba(0,0,0,0.8)" : "transparent",
             backdropFilter: isScrolled ? "blur(10px)" : "none",
             boxShadow: "none",
-            transition: "background-color 0.3s ease-in-out",
-            borderRadius: "inherit",
+            transition: "all 0.3s ease",
+            borderRadius: "50px",
             overflow: "hidden",
           }}
         >
@@ -245,9 +286,9 @@ function Navbar({ contactoRef, informationsRef }) {
                   style={{ cursor: "pointer" }}
                 >
                   <img
-                    src="/logo-react.png"
+                    src="/logo-plataformas-web.png"
                     alt="Logo"
-                    style={{ height: "75px", marginTop: "10px", cursor: "pointer" }}
+                    style={{ height: "55px", marginTop: "10px", marginRight: isMobile ? "0" : "0", cursor: "pointer" }}
                     onClick={LogoInicio}
                   />
                 </motion.div>
@@ -255,7 +296,7 @@ function Navbar({ contactoRef, informationsRef }) {
 
               <Box sx={{ flexGrow: 1 }} />
 
-              <Box sx={{ display: { xs: "none", md: "flex" }, gap: 2 }}>
+              <Box sx={{ display: { xs: "none", md: "flex" }, gap: 1 }}>
                 {menuItems.map((item, index) => (
                   <motion.div
                     key={item.name}
@@ -270,7 +311,7 @@ function Navbar({ contactoRef, informationsRef }) {
                       sx={{
                         color: "white",
                         fontFamily: "Poppins, sans-serif",
-                        padding: "10px 20px",
+                        padding: "10px 14px", // 👈 más angosto
                         "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" },
                       }}
                       onClick={() => handleClick(item)}
@@ -329,8 +370,9 @@ function Navbar({ contactoRef, informationsRef }) {
         }}
       >
         <Box sx={{ overflowY: 'auto', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-          <Box sx={{ display: "flex", justifyContent: "flex-end", p: 2 }}>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", p: 1.2 }}>
             <IconButton
+              aria-label="Abrir menú"
               onClick={() => setOpen(false)}
               sx={{
                 animation: open ? `${rotateTwice} 1s ease-in-out` : "none",
@@ -357,8 +399,8 @@ function Navbar({ contactoRef, informationsRef }) {
                       <ListItemButton
                         onClick={() => handleClick(item)}
                         sx={{
-                          px: 3,
-                          py: 1.2,
+                          px: 2,
+                          py: 1,
                           borderBottom: "1px solid rgba(255,255,255,0.1)",
                           borderTop: index === 0 ? "1px solid rgba(255,255,255,0.2)" : "none",
                           "&:hover": { backgroundColor: "rgba(255,255,255,0.05)" },
@@ -367,7 +409,7 @@ function Navbar({ contactoRef, informationsRef }) {
                         <ListItemText
                           primary={
                             <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                              <Box sx={{ color: "#7ab7ff", fontSize: "1.7rem" }}>{item.icon}</Box>
+                              <Box sx={{ color: "#7ab7ff", fontSize: "1.7rem", marginBottom: "-5px" }}>{item.icon}</Box>
                               <span style={{ color: "#fff", fontWeight: "500", fontSize: "1.05rem" }}>
                                 {item.name}
                               </span>
@@ -401,31 +443,31 @@ function Navbar({ contactoRef, informationsRef }) {
         linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))
       `,
                     borderRadius: 3,
-                    px: 2.5,
-                    py: 2.5,
+                    px: 2,
+                    py: 1,
                     mx: 2,
-                    mb: 3,
+                    mb: 1,
                     color: "#ffffff",
                     backdropFilter: "blur(8px)",
                     border: "1px solid rgba(255,255,255,0.1)",
                     boxShadow: "0 0 12px rgba(255,255,255,0.05)",
                   }}
                 >
-                  <Box sx={{ display: "flex", alignItems: "center", mb: 1.2 }}>
+                  <Box sx={{ display: "flex", alignItems: "center", mb: 0 }}>
                     <Box
                       component="img"
-                      src="/logo-react.png"
+                      src="/logo-plataformas-web.png"
                       alt="Bienvenidos"
                       sx={{
-                        width: 50,
-                        height: 50,
+                        width: 110,
+                        height: 70,
                         objectFit: "contain",
                         borderRadius: 2,
-                        mr: 2,
+                        mr: 1,
                       }}
                     />
                     <Typography
-                      fontSize="1.05rem"
+                      fontSize="0.8rem"
                       fontWeight={600}
                       sx={{
                         fontFamily: 'Poppins, sans-serif',
@@ -441,11 +483,11 @@ function Navbar({ contactoRef, informationsRef }) {
                     sx={{
                       opacity: 0.85,
                       fontSize: "0.85rem",
-                      mb: 1.5,
+                      mb: 1.1,
                       fontFamily: 'Poppins, sans-serif',
                     }}
                   >
-                    Conecta con nuestro equipo y descubre todo lo que podemos hacer por ti.
+                    Conecta con nuestro equipo y trabaja con nosotros.
                   </Typography>
 
 
@@ -531,23 +573,7 @@ function Navbar({ contactoRef, informationsRef }) {
                   }}
                 >
                   {["Instagram", "Facebook", "LinkedIn"].map((social, index) => {
-                    const socialData = {
-                      Instagram: {
-                        href: "https://www.instagram.com/plataformas.web/?hl=es-la",
-                        Icon: InstagramIcon,
-                        bgColor: "linear-gradient(45deg, #cf198c, #f41242)",
-                      },
-                      Facebook: {
-                        href: "https://www.facebook.com/profile.php?id=100063452866880",
-                        Icon: FacebookIcon,
-                        bgColor: "linear-gradient(45deg, #00B5F5, #002A8F)",
-                      },
-                      LinkedIn: {
-                        href: "https://www.linkedin.com/company/plataformas-web/",
-                        Icon: LinkedInIcon,
-                        bgColor: "linear-gradient(45deg, #00B5F5, #0077b7)",
-                      },
-                    };
+                    const info = socialData[social];
 
                     return (
                       <motion.div
@@ -563,17 +589,11 @@ function Navbar({ contactoRef, informationsRef }) {
                         }}
                       >
                         <SocialButton
-                          href={socialData[social].href}
-                          Icon={socialData[social].Icon}
-                          bgColor={socialData[social].bgColor}
+                          href={info.href}
+                          Icon={info.Icon}
+                          bgColor={info.bgColor}
                           hoverStyles={{
-                            color:
-                              social === "Instagram"
-                                ? "#cf198c"
-                                : social === "Facebook"
-                                  ? "#0077b7"
-                                  : "#0077b7",
-                            background: `-webkit-linear-gradient(45deg, ${socialData[social].bgColor})`,
+                            color: info.hoverColor,
                             WebkitBackgroundClip: "text",
                             WebkitTextFillColor: "transparent",
                           }}
@@ -587,7 +607,78 @@ function Navbar({ contactoRef, informationsRef }) {
           </AnimatePresence>
         </Box>
       </Drawer >
+      {/* PDF */}
+      <Dialog
+        open={openPDF}
+        onClose={handleClosePDF}
+        fullWidth
+        maxWidth="lg"
+        PaperProps={{
+          sx: {
+            backgroundColor: "#f5f7fa",
+            color: "#1a1a1a",
+            borderRadius: 3,
+            boxShadow: "0 12px 30px rgba(0,0,0,0.15)",
+            overflow: "hidden",
+          }
+        }}
+        BackdropProps={{
+          sx: {
+            backgroundColor: "rgba(0,0,0,0.7)"
+          }
+        }}
+        // 👇 Agregá esto para evitar que se desplace el layout
+        disableScrollLock
+      >
 
+        <DialogTitle
+          sx={{
+            fontWeight: 600,
+            fontSize: "1.25rem",
+            px: 3,
+            py: 2.5,
+            borderBottom: "1px solid rgba(0,0,0,0.1)",
+            position: "relative",
+            background: `linear-gradient(135deg, #e0f2ff 0%, #ffffff 100%)`,
+            color: "#1a237e",
+          }}
+        >
+          Presentación Plataformas.web - PDF
+          <IconButton
+            aria-label="close"
+            onClick={handleClosePDF}
+            sx={{
+              position: "absolute",
+              right: 12,
+              top: 12,
+              color: "#1a237e"
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+
+        <DialogContent sx={{ p: 0 }}>
+          <Box
+            sx={{
+              height: { xs: "75vh", sm: "80vh", md: "85vh" },
+              width: "100%",
+              backgroundColor: "#000",
+            }}
+          >
+            <iframe
+              src={pdfSrc}
+              title="Presentación Plataformas web"
+              width="100%"
+              height="100%"
+              style={{
+                border: 'none',
+              }}
+            />
+
+          </Box>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

@@ -222,16 +222,19 @@ function Contacto() {
                             zoomDelta={isMobile ? 0.5 : 1}
                           >
                             <TileLayer
-                              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                              url={isMobile ? "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" : "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png"}
+                              attribution='&copy; <a href="https://carto.com/">CartoDB</a> contributors'
+                              subdomains={['a', 'b', 'c', 'd']}
+                              maxZoom={20}
                             />
                             <Marker
                               position={finalPosition}
                               icon={new L.Icon({
-                                iconUrl: "/gps-mobile.png",
-                                iconSize: [70, 70],
-                                iconAnchor: [35, 70],
-                                popupAnchor: [0, -35],
+                                iconUrl: "/logo-mapa.png",
+                                iconSize: [160, 160],
+                                iconAnchor: [80, 80],
+                                popupAnchor: [0, -80],
+                                className: ""
                               })}
                             />
                             <ZoomEffect zoom={finalZoom} />

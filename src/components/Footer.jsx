@@ -149,7 +149,7 @@ const Footer = () => {
                 animation: logoInView ? `${growElement} 1s forwards` : "none",
               }}
             >
-              <img src="/logo-react.png" alt="Logo" style={{ height: "95px", marginBottom: "10px" }} />
+              <img src="/logo-plataformas-web.png" alt="Logo" style={{ height: "95px", marginBottom: "10px" }} />
               <Box
                 ref={socialRef}
                 sx={{
@@ -236,7 +236,7 @@ const Footer = () => {
         {isMobile && (
           <Box display="flex" flexDirection="column" alignItems="center" mb={7}>
             <Box ref={logoRef} sx={{ animation: logoInView ? `${growElement} 1s forwards` : "none" }}>
-              <img src="/logo-react.png" alt="Logo" style={{ height: "85px", marginBottom: "0" }} />
+              <img src="/logo-plataformas-web.png" alt="Logo" style={{ height: "85px", marginBottom: "0" }} />
             </Box>
 
             {/* Redes Sociales */}

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Container, Typography, Box, Snackbar, Alert, useMediaQuery, useTheme } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
 import "./css/Hero.css"; // Asegúrate de importar el CSS
+import CircularProgress from "@mui/material/CircularProgress";
 
 function Hero({ scrollToContacto }) {
   const [currentText, setCurrentText] = useState(0);
@@ -9,6 +10,7 @@ function Hero({ scrollToContacto }) {
   const [showButton, setShowButton] = useState(false); // Estado para mostrar el botón después del delay
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [loadingVideo, setLoadingVideo] = useState(true);
 
   const texts = [
     { title: "SOLUCIONES TECNOLÓGICAS", description: "Soluciones digitales a la medida." },
@@ -54,12 +56,32 @@ function Hero({ scrollToContacto }) {
           overflow: "hidden",
         }}
       >
+        {/* Loader encima del video */}
+        {loadingVideo && (
+          <Box
+            sx={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              zIndex: 2,
+              width: "100%",
+              height: "100%",
+              backgroundColor: "rgba(0,0,0,0.4)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <CircularProgress size={60} sx={{ color: "#ffffff" }} />
+          </Box>
+        )}
         <video
           autoPlay
           muted
           loop
-          playsInline  // 🔹 Asegura que el video se reproduzca en móviles sin abrir en pantalla completa
+          playsInline
           id="background-video"
+          onCanPlay={() => setLoadingVideo(false)} // 👈 Video listo
           style={{
             width: "100%",
             height: "100%",
@@ -77,74 +99,74 @@ function Hero({ scrollToContacto }) {
 
       </Box>
 
-
       {/* Contenido sobre el video */}
-      <Container
-        sx={{
-          position: "relative",
-          color: "white",
-          zIndex: 2,
-          perspective: "1000px",
-        }}
-      >
-        <Box
+      {!loadingVideo && (
+        <Container
           sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            height: "150px",
+            position: "relative",
+            color: "white",
+            zIndex: 2,
+            perspective: "1000px",
           }}
         >
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentText}
-              initial={{ rotateY: -180, opacity: 0 }}
-              animate={{ rotateY: 0, opacity: 1 }}
-              exit={{ rotateY: 180, opacity: 0 }}
-              transition={{ duration: 1, ease: "easeInOut" }}
-              style={{
-                position: "absolute",
-                transformStyle: "preserve-3d",
-                textAlign: "center",
-              }}
-            >
-              <Typography
-                variant="h3"
-                gutterBottom
-                className="text"
-                sx={{ fontSize: isMobile ? "1.64rem" : "2.5rem" }} // Cambia tamaño en móvil
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              height: "150px",
+            }}
+          >
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentText}
+                initial={{ rotateY: -180, opacity: 0 }}
+                animate={{ rotateY: 0, opacity: 1 }}
+                exit={{ rotateY: 180, opacity: 0 }}
+                transition={{ duration: 1, ease: "easeInOut" }}
+                style={{
+                  position: "absolute",
+                  transformStyle: "preserve-3d",
+                  textAlign: "center",
+                }}
               >
-                {texts[currentText].title}
-              </Typography>
-              <Typography variant="h6" paragraph>
-                {texts[currentText].description}
-              </Typography>
-
-              {/* Botón con animación después de 1s */}
-              {showButton && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, ease: "easeOut" }}
+                <Typography
+                  variant="h3"
+                  gutterBottom
+                  className="text"
+                  sx={{ fontSize: isMobile ? "1.64rem" : "2.5rem" }} // Cambia tamaño en móvil
                 >
-                  <Box sx={{ mt: isMobile ? 4 : 1 }}>
-                    <button className="btn-3"
-                      onClick={() => {
-                        setOpenAlert(true);
-                        const offset = -80; // Ajusta esto según la altura de tu navbar
-                        const y = scrollToContacto.current.getBoundingClientRect().top + window.scrollY + offset;
-                        window.scrollTo({ top: y, behavior: 'smooth' });
-                      }}>
-                      <span>Contactar</span>
-                    </button>
-                  </Box>
-                </motion.div>
-              )}
-            </motion.div>
-          </AnimatePresence>
-        </Box>
-      </Container>
+                  {texts[currentText].title}
+                </Typography>
+                <Typography variant="h6" paragraph>
+                  {texts[currentText].description}
+                </Typography>
 
+                {/* Botón con animación después de 1s */}
+                {showButton && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                  >
+                    <Box sx={{ mt: isMobile ? 4 : 1 }}>
+                      <button className="btn-3"
+                        onClick={() => {
+                          setOpenAlert(true);
+                          const offset = -80; // Ajusta esto según la altura de tu navbar
+                          const y = scrollToContacto.current.getBoundingClientRect().top + window.scrollY + offset;
+                          window.scrollTo({ top: y, behavior: 'smooth' });
+                        }}>
+                        <span>Contactar</span>
+                      </button>
+                    </Box>
+                  </motion.div>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </Box>
+        </Container>
+      )}
       {/* Snackbar con alerta animada */}
       <Snackbar
         open={openAlert}

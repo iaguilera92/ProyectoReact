@@ -12,6 +12,8 @@ import Informations from "./components/Informations";
 import Contacto from "./components/Contacto";
 import Footer from "./components/Footer";
 import Catalogo from "./components/Catalogo";
+import Servicios from "./components/Servicios";
+import Nosotros from "./components/Nosotros";
 import Administracion from "./components/Administracion";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
@@ -115,9 +117,11 @@ function App() {
               <Route path="/administracion" element={<Administracion />} />
               <Route path="/catalogo" element={<Catalogo />} />
               <Route path="/contacto" element={<Contacto />} />
+              <Route path="/servicios" element={<Servicios />} />
+              <Route path="/nosotros" element={<Nosotros />} />
             </Routes>
             {/* Solo muestra estas secciones si NO estamos en /catalogo */}
-            {(location.pathname !== "/catalogo" && location.pathname !== "/administracion") && (
+            {(location.pathname !== "/catalogo" && location.pathname !== "/servicios" && location.pathname !== "/nosotros" && location.pathname !== "/administracion") && (
               <>
                 <Box id="areas-section">
                   <Areas />
@@ -129,11 +133,14 @@ function App() {
                 <Box ref={contactoRef}>
                   <Contacto />
                 </Box>
-                <Footer />
               </>
             )}
           </Box>
-
+          {(location.pathname !== "/administracion") && (
+            <>
+              <Footer />
+            </>
+          )}
           {(location.pathname !== "/catalogo" && location.pathname !== "/administracion") && (
             <>
               <Box sx={{
