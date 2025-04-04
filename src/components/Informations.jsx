@@ -328,6 +328,7 @@ const Informations = () => {
                   <SwiperSlide key={index}>
                     <Box
                       sx={{
+                        cursor: isGrabbing ? 'grabbing' : 'grab', // 👈 cambia el cursor
                         width: "100%%",
                         height: "360px",
                         display: "flex",
@@ -342,7 +343,11 @@ const Informations = () => {
                         overflow: "hidden",
                         color: "white",
                         p: 0.5,
+
                       }}
+                      onPointerDown={() => setIsGrabbing(true)}
+                      onPointerUp={() => setIsGrabbing(false)}
+                      onPointerLeave={() => setIsGrabbing(false)}
                     >
                       <Box
                         sx={{
@@ -359,14 +364,12 @@ const Informations = () => {
                         sx={{
                           display: 'flex',
                           flexDirection: 'column',
-                          alignItems: 'center', // centra horizontalmente
-                          justifyContent: 'center', // centra verticalmente si el contenedor lo permite
+                          alignItems: 'center',
+                          justifyContent: 'center',
                           textAlign: 'center',
-                          mb: 2
+                          mb: 2,
+                          transition: 'cursor 0.2s ease'
                         }}
-                        onPointerDown={() => setIsGrabbing(true)}
-                        onPointerUp={() => setIsGrabbing(false)}
-                        onPointerLeave={() => setIsGrabbing(false)}
                       >
                         {/* Contenido */}
                         <Box sx={{ zIndex: 2, textAlign: "center", padding: 0 }}>
