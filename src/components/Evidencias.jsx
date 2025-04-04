@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
     Box,
     Typography,
@@ -11,62 +11,68 @@ import {
     Alert,
 } from '@mui/material';
 import { motion } from 'framer-motion';
-import { useRef, useEffect, useState } from 'react';
-import { useInView } from "react-intersection-observer";
 
 const Evidencias = () => {
     const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-    const videoRef = useRef();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [visible, setVisible] = useState(false);
     const sectionRef = useRef();
+    const videosRef = useRef([]);
 
-
-    const handleSnackbarOpen = () => setSnackbarOpen(true);
-    const handleSnackbarClose = (event, reason) => {
+    const handleSnackbarClose = (_, reason) => {
         if (reason === 'clickaway') return;
         setSnackbarOpen(false);
     };
 
+    // Reproducción automática solo si es visible
     useEffect(() => {
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting && videoRef.current) {
-                    videoRef.current.play();
-                } else {
-                    videoRef.current?.pause();
-                }
-            },
-            { threshold: 0.2 }
-        );
-        if (videoRef.current) observer.observe(videoRef.current);
+        const observers = videosRef.current.map((video) => {
+            if (!video) return null;
+            const observer = new IntersectionObserver(
+                ([entry]) => {
+                    if (entry.isIntersecting) video.play();
+                    else video.pause();
+                },
+                { threshold: 0.3 }
+            );
+            observer.observe(video);
+            return observer;
+        });
+
         return () => {
-            if (videoRef.current) observer.unobserve(videoRef.current);
+            observers.forEach((observer, index) => {
+                if (observer && videosRef.current[index]) {
+                    observer.unobserve(videosRef.current[index]);
+                }
+            });
         };
     }, []);
 
-    const logos = [
-        'logo1.jpg', '/logo2.svg', '/logo3.jpg',
-        '/logo4.jpg', '/logo5.jpg', '/logo6.jpg',
-        '/logo7.png', '/logo8.png', '/logo9.avif',
-        '/logo10.jpg', '/logo11.jpg', '/logo12.jpg'
-    ];
     useEffect(() => {
         const observer = new IntersectionObserver(
             ([entry]) => {
-                if (entry.isIntersecting) {
-                    setVisible(true);
-                }
+                if (entry.isIntersecting) setVisible(true);
             },
             { threshold: 0.1 }
         );
         if (sectionRef.current) observer.observe(sectionRef.current);
         return () => observer.disconnect();
     }, []);
+
+    const handleFullscreen = (video) => {
+        if (video.requestFullscreen) {
+            video.requestFullscreen();
+        } else if (video.webkitRequestFullscreen) {
+            video.webkitRequestFullscreen();
+        } else if (video.msRequestFullscreen) {
+            video.msRequestFullscreen();
+        }
+    };
+
     return (
         <Box sx={{ width: '100%', position: 'relative', mt: '-80px' }}>
-            {/* 🔹 Sección 1 */}
+            {/* Sección 1 */}
             <Box
                 sx={{
                     position: 'relative',
@@ -76,7 +82,6 @@ const Evidencias = () => {
                     alignItems: 'flex-start',
                     justifyContent: 'center',
                     pt: { xs: 11, sm: 10 },
-                    zIndex: 0,
                     backgroundImage: `url('https://entel.cdn.modyo.com/uploads/019e0744-4f00-4bab-bcca-b6e5c3ae083b/original/bg-secondary-desk-xxl_Eq.webp')`,
                     backgroundAttachment: isMobile ? 'scroll' : 'fixed',
                     backgroundSize: 'cover',
@@ -84,7 +89,7 @@ const Evidencias = () => {
                     backgroundPosition: 'center',
                 }}
             >
-                <Box sx={{ width: '100%', overflow: 'hidden', position: 'relative', height: 'auto' }}>
+                <Box sx={{ width: '100%', overflow: 'hidden', position: 'relative' }}>
                     <motion.div
                         initial={{ x: '100%' }}
                         animate={{ x: '-100%' }}
@@ -107,18 +112,16 @@ const Evidencias = () => {
                 </Box>
             </Box>
 
-            {/* 🔹 Sección 2 */}
+            {/* Sección 2 */}
             <Box
                 sx={{
-                    position: 'relative',
                     backgroundImage: `linear-gradient(to bottom, rgba(10,10,10,0) 50%, #0a0a0a 100%), url('/fondo-blanco2.jpg')`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat',
-                    pt: isMobile ? 0 : 0,
-                    pb: 4,
                     px: { xs: 2, sm: 4 },
-                    zIndex: 2,
+                    pt: 0,
+                    pb: 4,
                     mt: -8,
                     boxShadow: '0px -4px 20px rgba(0,0,0,0.05)',
                     borderTop: '1px solid #e0e0e0',
@@ -144,7 +147,7 @@ const Evidencias = () => {
                     }}
                 />
 
-                {/* Logos (quedan por encima del degradado) */}
+                {/* Logos y videos */}
                 <motion.div
                     ref={sectionRef}
                     initial={{ opacity: 0, y: 50 }}
@@ -153,13 +156,11 @@ const Evidencias = () => {
                     style={{ position: 'relative', zIndex: 6 }}
                 >
                     <Box sx={{ position: 'relative', zIndex: 1 }}>
-                        {/* 🔹 Logos de empresas */}
                         <Box
                             sx={{
-                                background: "var(--darkreader-background-f7f4f4, #241a1a)",
+                                background: "#241a1a",
                                 borderRadius: 4,
                                 p: { xs: 2, sm: 4 },
-                                mt: 0,
                                 boxShadow: '0 8px 30px rgba(0, 0, 0, 0.25)',
                                 maxWidth: "1200px",
                                 mx: "auto",
@@ -173,7 +174,7 @@ const Evidencias = () => {
                                     fontWeight: 600,
                                     fontSize: { xs: "1.5rem", sm: "2rem" },
                                     mb: 3,
-                                    fontfamily: '"Poppins", sans-serif'
+                                    fontFamily: '"Poppins", sans-serif'
                                 }}
                             >
                                 Han confiado en nosotros
@@ -207,32 +208,93 @@ const Evidencias = () => {
                                                     },
                                                 }}
                                             >
-                                                <CardMedia
-                                                    poster="/fondo-areas1.jpg"
-                                                    component="video"
-                                                    ref={videoRef}
-                                                    src={`/evidencia${i + 1}.${i === 1 ? 'mp4' : 'mov'}`}
-                                                    muted
-                                                    loop
-                                                    playsInline
-                                                    autoPlay
-                                                    preload="metadata"
+                                                <Box
                                                     sx={{
                                                         width: '100%',
                                                         height: 250,
-                                                        objectFit: i === 1 ? 'contain' : 'cover', // 👈 solo evidencia2 usa "contain"
-                                                        position: 'relative',
-                                                        zIndex: 1,
-                                                        backgroundColor: '#000' // opcional para bordes negros
+                                                        backgroundColor: '#000',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        overflow: 'hidden',
                                                     }}
-                                                />
-
+                                                >
+                                                    <CardMedia
+                                                        component="video"
+                                                        muted
+                                                        loop
+                                                        playsInline
+                                                        autoPlay
+                                                        preload="metadata"
+                                                        controlsList="nodownload nofullscreen noremoteplayback"
+                                                        disablePictureInPicture
+                                                        src={`/evidencia${n}.${n === 2 ? 'mov' : 'mov'}`}
+                                                        onClick={(e) => {
+                                                            if (e.target.requestFullscreen) {
+                                                                e.target.requestFullscreen();
+                                                            } else if (e.target.webkitRequestFullscreen) {
+                                                                e.target.webkitRequestFullscreen();
+                                                            }
+                                                        }}
+                                                        sx={{
+                                                            height: '100%',
+                                                            width: i === 1 ? 'auto' : '100%',
+                                                            objectFit: i === 1 ? 'contain' : 'cover',
+                                                            cursor: 'pointer',
+                                                            zIndex: 1,
+                                                        }}
+                                                    />
+                                                </Box>
                                             </Card>
 
+                                            {i === 0 && (
+                                                <Typography
+                                                    variant="body2"
+                                                    align="center"
+                                                    sx={{
+                                                        mt: 1,
+                                                        color: 'gray',
+                                                        fontStyle: 'italic',
+                                                        fontFamily: 'Poppins, sans-serif',
+                                                    }}
+                                                >
+                                                    AutoGest
+                                                </Typography>
+                                            )}
+                                            {/* 👇 Texto "En desarrollo..." solo para evidencia3 */}
+                                            {i === 1 && (
+                                                <Typography
+                                                    variant="body2"
+                                                    align="center"
+                                                    sx={{
+                                                        mt: 1,
+                                                        color: 'gray',
+                                                        fontStyle: 'italic',
+                                                        fontFamily: 'Poppins, sans-serif',
+                                                    }}
+                                                >
+                                                    Resolución Teléfono
+                                                </Typography>
+                                            )}
+                                            {i === 2 && (
+                                                <Typography
+                                                    variant="body2"
+                                                    align="center"
+                                                    sx={{
+                                                        mt: 1,
+                                                        color: 'gray',
+                                                        fontStyle: 'italic',
+                                                        fontFamily: 'Poppins, sans-serif',
+                                                    }}
+                                                >
+                                                    En desarrollo...
+                                                </Typography>
+                                            )}
                                         </motion.div>
                                     </Grid>
                                 ))}
                             </Grid>
+
                         </Box>
                     </Box>
                 </motion.div>
