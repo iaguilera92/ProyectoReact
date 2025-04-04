@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Container, Typography, Box, Snackbar, Alert, useMediaQuery, useTheme } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
 import "./css/Hero.css"; // Asegúrate de importar el CSS
@@ -11,6 +11,10 @@ function Hero({ scrollToContacto }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [loadingVideo, setLoadingVideo] = useState(true);
+  const [isHeroVisible, setIsHeroVisible] = useState(true);
+  const heroRef = useRef(null);
+  const intervalRef = useRef(null);
+
 
   const texts = [
     { title: "SOLUCIONES TECNOLÓGICAS", description: "Soluciones digitales a la medida." },
@@ -32,6 +36,103 @@ function Hero({ scrollToContacto }) {
     }, 1000);
     return () => clearTimeout(timer);
   }, []);
+
+  //PAUSAR VIDEO SI NO SE VE
+  useEffect(() => {
+    const video = document.getElementById("background-video");
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video?.play();
+        } else {
+          video?.pause();
+        }
+      },
+      { threshold: 0.3 } // Se pausa si menos del 30% del video es visible
+    );
+
+    if (video) observer.observe(video);
+
+    return () => video && observer.unobserve(video);
+  }, []);
+
+
+
+  // Detectar visibilidad con IntersectionObserver
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsHeroVisible(entry.isIntersecting);
+      },
+      { threshold: 0.3 }
+    );
+
+    if (heroRef.current) observer.observe(heroRef.current);
+
+    return () => {
+      if (heroRef.current) observer.unobserve(heroRef.current);
+    };
+  }, []);
+
+  // Cambiar texto cada 6 segundos solo si la sección está visible y la pestaña activa
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      const isPageVisible = document.visibilityState === "visible";
+
+      if (isPageVisible && isHeroVisible) {
+        startTextRotation();
+      } else {
+        stopTextRotation();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    // Start on mount if visible
+    if (document.visibilityState === "visible" && isHeroVisible) {
+      startTextRotation();
+    }
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      stopTextRotation();
+    };
+  }, [isHeroVisible]);
+  const startTextRotation = () => {
+    if (intervalRef.current) return;
+    intervalRef.current = setInterval(() => {
+      setCurrentText((prev) => (prev + 1) % texts.length);
+    }, 6000);
+  };
+
+  const stopTextRotation = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
+  //MONITOREAR - COMENTAR PRD
+  /*useEffect(() => {
+    const video = document.getElementById("background-video");
+
+    const onPlay = () => console.log("▶️ El video está reproduciéndose");
+    const onPause = () => console.log("⏸ El video fue pausado");
+
+    if (video) {
+      video.addEventListener("play", onPlay);
+      video.addEventListener("pause", onPause);
+    }
+
+    return () => {
+      if (video) {
+        video.removeEventListener("play", onPlay);
+        video.removeEventListener("pause", onPause);
+      }
+    };
+  }, []);*/
+
+
 
   return (
     <Box
