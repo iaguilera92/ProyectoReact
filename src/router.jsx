@@ -1,12 +1,12 @@
 // src/router.jsx
 import { createBrowserRouter } from "react-router-dom";
 import App from "./App";
-import Home from "./components/Home";
 import Servicios from "./components/Servicios";
 import Nosotros from "./components/Nosotros";
 import Contacto from "./components/Contacto";
 import Administracion from "./components/Administracion";
 import Catalogo from "./components/Catalogo";
+import Home from "./components/Home";
 
 const router = createBrowserRouter(
     [
@@ -14,7 +14,10 @@ const router = createBrowserRouter(
             path: "/",
             element: <App />,
             children: [
-                { path: "", element: <Home /> },
+                {
+                    path: "",
+                    element: <HomeWrapper />, // 👈 usamos wrapper para pasar los refs
+                },
                 { path: "servicios", element: <Servicios /> },
                 { path: "nosotros", element: <Nosotros /> },
                 { path: "contacto", element: <Contacto /> },
@@ -24,11 +27,18 @@ const router = createBrowserRouter(
         },
     ],
     {
-        // ✅ Este flag es el que evita el warning
         future: {
             v7_startTransition: true,
         },
     }
 );
+
+// 👇 Wrapper para pasar los refs desde el contexto de App
+import { useOutletContext } from "react-router-dom";
+
+function HomeWrapper() {
+    const { contactoRef, informationsRef } = useOutletContext();
+    return <Home contactoRef={contactoRef} informationsRef={informationsRef} />;
+}
 
 export default router;

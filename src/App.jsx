@@ -5,16 +5,10 @@ import { ThemeProvider } from "@mui/material/styles";
 import { Routes, Route } from "react-router-dom";
 import "@fontsource/poppins";
 import Navbar from "./components/Navbar";
-import Hero from "./components/Hero";
-import Features from "./components/Features";
 import Areas from "./components/Areas";
 import Informations from "./components/Informations";
 import Contacto from "./components/Contacto";
 import Footer from "./components/Footer";
-import Catalogo from "./components/Catalogo";
-import Servicios from "./components/Servicios";
-import Nosotros from "./components/Nosotros";
-import Administracion from "./components/Administracion";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import { useLocation } from "react-router-dom";
@@ -101,7 +95,8 @@ function App() {
             </>
           )}
           <Box sx={{ minHeight: "100vh" }}>
-            <Outlet />
+            <Outlet context={{ contactoRef, informationsRef }} />
+
             {/* Solo muestra estas secciones si NO estamos en /catalogo */}
             {(location.pathname !== "/catalogo" && location.pathname !== "/servicios" && location.pathname !== "/nosotros" && location.pathname !== "/administracion") && (
               <>
