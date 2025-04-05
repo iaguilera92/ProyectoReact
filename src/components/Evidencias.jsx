@@ -115,13 +115,15 @@ const Evidencias = () => {
             {/* Sección 2 */}
             <Box
                 sx={{
+                    position: 'relative',
                     backgroundImage: `linear-gradient(to bottom, rgba(10,10,10,0) 50%, #0a0a0a 100%), url('/fondo-blanco2.jpg')`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat',
-                    px: { xs: 2, sm: 4 },
-                    pt: 0,
+                    pt: isMobile ? 0 : 0,
                     pb: 4,
+                    px: { xs: 2, sm: 4 },
+                    zIndex: 2,
                     mt: -8,
                     boxShadow: '0px -4px 20px rgba(0,0,0,0.05)',
                     borderTop: '1px solid #e0e0e0',
