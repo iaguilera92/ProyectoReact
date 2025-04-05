@@ -32,6 +32,8 @@ const Catalogo = () => {
   const [videoFullScreenProducto, setVideoFullScreenProducto] = useState(null);
   const [mostrarControlesVideo, setMostrarControlesVideo] = useState(false);
   const [animarFlecha, setAnimarFlecha] = useState(true);
+  const [isLoaded, setIsLoaded] = useState(false);
+
 
   const ImgUrlAleatorio = (imgUrl) => {
     const urls = [
@@ -77,6 +79,24 @@ const Catalogo = () => {
     window.scrollTo(0, 0);
   }, []);
 
+  //CARGAR ANTES DE EMPEZAR
+  useEffect(() => {
+    const handleLoad = () => {
+      setTimeout(() => {
+        setIsLoaded(true);
+      }, 1100); // le das un pequeño respiro para asegurarte
+    };
+
+    if (document.readyState === 'complete') {
+      handleLoad();
+    } else {
+      window.addEventListener('load', handleLoad);
+    }
+
+    return () => window.removeEventListener('load', handleLoad);
+  }, []);
+
+
   useEffect(() => {
     if (location.state?.snackbar) {
       setSnackbar(location.state.snackbar);
@@ -115,292 +135,374 @@ const Catalogo = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  return (
-    <Box>
-      <Container
-        maxWidth={false}
-        disableGutters
-        sx={{
-          minHeight: '100vh',
-          width: '100vw',
-          py: 14,
-          px: 1.2,
-          position: 'relative',
-          overflow: 'hidden',
-          backgroundImage: isMobile
-            ? 'url(fondo-blizz.avif)'
-            : 'url(fondo-blizz.avif)',
-          backgroundSize: 'cover',
-          backgroundRepeat: 'no-repeat',
-          backgroundAttachment: 'fixed',
-          backgroundPosition: 'center',
-        }}
-      >
+  useEffect(() => {
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual'; // ← impide la restauración automática
+    }
 
-        {isMobile ? (
-          grupos.map((grupo, grupoIndex) => (
-            <Box key={`swiper-container-${grupoIndex}`} sx={{ position: 'relative', py: 0 }}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  px: 0,
-                  mb: 0,
-                  position: 'relative',
-                  zIndex: 20,
-                  height: 40,
-                }}
-              >
-                {/* Título con ícono estilo reels */}
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, ml: 1 }}>
+    window.scrollTo(0, 0); // fuerza el inicio al tope
+  }, []);
+
+  return (
+    <Box key={isLoaded ? 'loaded' : 'loading'}>
+      {isLoaded ? (
+        <Container
+          maxWidth={false}
+          disableGutters
+          sx={{
+            minHeight: '100vh',
+            width: '100vw',
+            py: 14,
+            px: 1.2,
+            position: 'relative',
+            overflow: 'hidden',
+            backgroundImage: isMobile
+              ? 'url(fondo-blizz.avif)'
+              : 'url(fondo-blizz.avif)',
+            backgroundSize: 'cover',
+            backgroundRepeat: 'no-repeat',
+            backgroundAttachment: 'fixed',
+            backgroundPosition: 'center',
+          }}
+        >
+
+          {
+            isMobile ? (
+              grupos.map((grupo, grupoIndex) => (
+                <Box key={`swiper-container-${grupoIndex}`} sx={{ position: 'relative', py: 0 }}>
                   <Box
-                    component="img"
-                    src="cine.png"
-                    alt="Reels icon"
                     sx={{
-                      width: 18,
-                      height: 18,
-                      marginBottom: 0.5,
-                      filter: 'invert(1)',
-                    }}
-                  />
-                  <Box
-                    sx={{
-                      fontWeight: 'bold',
-                      fontSize: '0.9rem',
-                      color: 'white',
-                      letterSpacing: 0.5,
-                      fontFamily: '"Segoe UI", sans-serif',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      px: 0,
+                      mb: 0,
+                      position: 'relative',
+                      zIndex: 20,
+                      height: 40,
                     }}
                   >
-                    {grupoIndex === 0 ? 'Explora el catálogo' : 'Más productos..'}
-                  </Box>
-                </Box>
-
-                {/* Flecha o espacio */}
-                <Box sx={{ width: 40, textAlign: 'right' }}>
-                  {showArrow ? (
-                    animarFlecha ? (
-                      <motion.div
-                        animate={{ x: [0, 5, 0] }}
-                        transition={{ duration: 1.5, repeat: 1, ease: "easeInOut" }}
-                      >
-
-                        <IconButton
-                          sx={{
-                            color: "white",
-                            boxShadow: "none",
-                            padding: 0.5,
-                            "&:hover": { backgroundColor: "rgba(0,0,0,0.4)" },
-                          }}
-                        >
-                          <ArrowForwardIcon fontSize="large" sx={{ fontSize: "24px" }} />
-                        </IconButton>
-                      </motion.div>
-                    ) : (
-                      <IconButton
+                    {/* Título con ícono estilo reels */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, ml: 1 }}>
+                      <Box
+                        component="img"
+                        src="cine.png"
+                        alt="Reels icon"
                         sx={{
-                          color: "white",
-                          boxShadow: "none",
-                          padding: 0.5,
-                          "&:hover": { backgroundColor: "rgba(0,0,0,0.4)" },
+                          width: 18,
+                          height: 18,
+                          marginBottom: 0.5,
+                          filter: 'invert(1)',
+                        }}
+                      />
+                      <Box
+                        sx={{
+                          fontWeight: 'bold',
+                          fontSize: '0.9rem',
+                          color: 'white',
+                          letterSpacing: 0.5,
+                          fontFamily: '"Segoe UI", sans-serif',
                         }}
                       >
-                        <ArrowForwardIcon fontSize="large" sx={{ fontSize: "24px" }} />
-                      </IconButton>
-                    )
-                  ) : (
-                    <Box sx={{ width: 40 }} />
-                  )}
+                        {grupoIndex === 0 ? 'Explora el catálogo' : 'Más productos..'}
+                      </Box>
+                    </Box>
+
+                    {/* Flecha o espacio */}
+                    <Box sx={{ width: 40, textAlign: 'right' }}>
+                      {showArrow ? (
+                        animarFlecha ? (
+                          <motion.div
+                            animate={{ x: [0, 5, 0] }}
+                            transition={{ duration: 1.5, repeat: 1, ease: "easeInOut" }}
+                          >
+
+                            <IconButton
+                              sx={{
+                                color: "white",
+                                boxShadow: "none",
+                                padding: 0.5,
+                                "&:hover": { backgroundColor: "rgba(0,0,0,0.4)" },
+                              }}
+                            >
+                              <ArrowForwardIcon fontSize="large" sx={{ fontSize: "24px" }} />
+                            </IconButton>
+                          </motion.div>
+                        ) : (
+                          <IconButton
+                            sx={{
+                              color: "white",
+                              boxShadow: "none",
+                              padding: 0.5,
+                              "&:hover": { backgroundColor: "rgba(0,0,0,0.4)" },
+                            }}
+                          >
+                            <ArrowForwardIcon fontSize="large" sx={{ fontSize: "24px" }} />
+                          </IconButton>
+                        )
+                      ) : (
+                        <Box sx={{ width: 40 }} />
+                      )}
+                    </Box>
+
+                  </Box>
+
+
+                  <Swiper
+                    modules={[Virtual]} // ✅ Solo usa los módulos que realmente ocupas
+                    lazy={true}
+                    watchSlidesProgress
+                    spaceBetween={12}
+                    slidesPerView={'auto'}
+                    centeredSlides={false}
+                    touchRatio={1.2}
+                    threshold={5}
+                    style={{ padding: '16px 10px', paddingRight: '20px' }}
+                    onSlideChange={(swiper) => {
+                      setShowArrow(!swiper.isEnd);
+                    }}
+                  >
+                    {grupo.map((producto, index) => {
+                      const productoIndexGlobal = index + grupoIndex * 5;
+                      const isGirado = productoActivo[grupoIndex] === index;
+
+                      return (
+                        <SwiperSlide
+                          key={producto.IdProducto}
+                          style={{
+                            width: '60vw', // 👉 Ocupa dos tercios del ancho
+                            maxWidth: '320px',
+                            scrollSnapAlign: 'start',
+                          }}
+                        >
+                          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                            <Productos
+                              index={productoIndexGlobal}
+                              producto={producto}
+                              girado={isGirado}
+                              onGirar={() => {
+                                setProductoActivo((prevState) => ({
+                                  ...prevState,
+                                  [grupoIndex]: prevState[grupoIndex] === index ? null : index
+                                }));
+                              }}
+                              FormatearPesos={FormatearPesos}
+                              CalcularValorOld={CalcularValorOld}
+                              onVisualizarMobile={setVideoFullScreenProducto}
+                            />
+
+                          </Box>
+                        </SwiperSlide>
+                      );
+                    })}
+                  </Swiper>
                 </Box>
 
-              </Box>
+              ))
+            ) : (
+
+              // Vista desktop (Grid exacto con 5 productos por fila)
+              <Grid container spacing={2}>
+                {productos.map((producto, index) => (
+                  <Grid item md={12 / 5} key={producto.IdProducto}>
+                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                      <Productos
+                        index={index}
+                        producto={producto}
+                        girado={productoActivo === index}
+                        onGirar={() =>
+                          setProductoActivo(productoActivo === index ? null : index)
+                        }
+                        FormatearPesos={FormatearPesos}
+                        CalcularValorOld={CalcularValorOld}
+                      />
+                    </Box>
+                  </Grid>
+                ))}
+              </Grid>
+            )}
 
 
-              <Swiper
-                modules={[Virtual]} // ✅ Solo usa los módulos que realmente ocupas
-                lazy={true}
-                watchSlidesProgress
-                spaceBetween={12}
-                slidesPerView={'auto'}
-                centeredSlides={false}
-                touchRatio={1.2}
-                threshold={5}
-                style={{ padding: '16px 10px', paddingRight: '20px' }}
-                onSlideChange={(swiper) => {
-                  setShowArrow(!swiper.isEnd);
+
+          <Snackbar
+            open={snackbar.open}
+            autoHideDuration={4000}
+            onClose={() => setSnackbar({ ...snackbar, open: false })}
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          >
+            <Alert
+              severity={snackbar.type}
+              onClose={() => setSnackbar({ ...snackbar, open: false })}
+              sx={{ width: '100%', maxWidth: 360 }}
+            >
+              {snackbar.message}
+            </Alert>
+          </Snackbar>
+
+
+
+          {videoFullScreenProducto && (
+            <Box
+              component={motion.div}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              sx={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '100vw',
+                height: '100vh',
+                bgcolor: 'black',
+                zIndex: 9999,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'flex-start',
+                alignItems: 'center',
+                overflowY: 'auto',
+                py: 4
+              }}
+            >
+
+              <video
+                key={videoFullScreenProducto?.IdProducto}
+                src={videoFullScreenProducto?.VideoUrl}
+                autoPlay
+                muted
+                playsInline
+                preload="auto"
+                disablePictureInPicture
+                controlsList="nodownload"
+                controls={mostrarControlesVideo} // solo si el usuario toca
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  maxHeight: '70vh',
+                  objectFit: 'contain',
+                  backgroundColor: 'black',
+                }}
+                onClick={() => setMostrarControlesVideo(true)} // tap = muestra controles
+                onCanPlay={(e) => {
+                  const playPromise = e.target.play();
+                  if (playPromise !== undefined) {
+                    playPromise.catch(err => console.warn("AutoPlay Error:", err));
+                  }
+                }}
+              />
+
+              <Button
+                variant="contained"
+                sx={{
+                  mt: 2,
+                  bgcolor: '#25D366',
+                  color: 'white',
+                  textTransform: 'none',
+                  fontSize: '1rem',
+                  px: 4,
+                  py: 1,
+                  borderRadius: '30px',
+                  boxShadow: '0px 4px 12px rgba(0,0,0,0.4)'
+                }}
+                onClick={() => {
+                  const mensaje = `Me interesó el ${videoFullScreenProducto.NombreProducto}, ¿sigue disponible?`;
+                  const telefono = '56992914526';
+                  const urlWhatsapp = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
+                  window.open(urlWhatsapp, '_blank');
                 }}
               >
-                {grupo.map((producto, index) => {
-                  const productoIndexGlobal = index + grupoIndex * 5;
-                  const isGirado = productoActivo[grupoIndex] === index;
+                Me interesa!
+              </Button>
 
-                  return (
-                    <SwiperSlide
-                      key={producto.IdProducto}
-                      style={{
-                        width: '60vw', // 👉 Ocupa dos tercios del ancho
-                        maxWidth: '320px',
-                        scrollSnapAlign: 'start',
-                      }}
-                    >
-                      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                        <Productos
-                          index={productoIndexGlobal}
-                          producto={producto}
-                          girado={isGirado}
-                          onGirar={() => {
-                            setProductoActivo((prevState) => ({
-                              ...prevState,
-                              [grupoIndex]: prevState[grupoIndex] === index ? null : index
-                            }));
-                          }}
-                          FormatearPesos={FormatearPesos}
-                          CalcularValorOld={CalcularValorOld}
-                          onVisualizarMobile={setVideoFullScreenProducto}
-                        />
-
-                      </Box>
-                    </SwiperSlide>
-                  );
-                })}
-              </Swiper>
+              <Button
+                onClick={() => setVideoFullScreenProducto(null)}
+                sx={{
+                  mt: 1,
+                  color: 'white',
+                  textTransform: 'none'
+                }}
+              >
+                Cerrar
+              </Button>
             </Box>
-
-          ))
-        ) : (
-
-          // Vista desktop (Grid exacto con 5 productos por fila)
-          <Grid container spacing={2}>
-            {productos.map((producto, index) => (
-              <Grid item md={12 / 5} key={producto.IdProducto}>
-                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                  <Productos
-                    index={index}
-                    producto={producto}
-                    girado={productoActivo === index}
-                    onGirar={() =>
-                      setProductoActivo(productoActivo === index ? null : index)
-                    }
-                    FormatearPesos={FormatearPesos}
-                    CalcularValorOld={CalcularValorOld}
-                  />
-                </Box>
-              </Grid>
-            ))}
-          </Grid>
-        )}
-
-
-
-        <Snackbar
-          open={snackbar.open}
-          autoHideDuration={4000}
-          onClose={() => setSnackbar({ ...snackbar, open: false })}
-          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        >
-          <Alert
-            severity={snackbar.type}
-            onClose={() => setSnackbar({ ...snackbar, open: false })}
-            sx={{ width: '100%', maxWidth: 360 }}
-          >
-            {snackbar.message}
-          </Alert>
-        </Snackbar>
-
-
-
-        {videoFullScreenProducto && (
+          )}
+          ) : (
           <Box
-            component={motion.div}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
             sx={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              width: '100vw',
               height: '100vh',
-              bgcolor: 'black',
-              zIndex: 9999,
               display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'flex-start',
+              justifyContent: 'center',
               alignItems: 'center',
-              overflowY: 'auto',
-              py: 4
+              bgcolor: 'black'
             }}
           >
+            <img src="/logo.svg" alt="Cargando..." width={100} />
+          </Box>
+        </Container>
+      ) : (
+        <Box
+          sx={{
+            backgroundImage: isMobile
+              ? 'url(fondo-blizz.avif)'
+              : 'url(fondo-blizz.avif)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            height: '100vh',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            bgcolor: 'rgba(0,0,0,0.85)', // capa oscura elegante
+            position: 'relative',
+            zIndex: 9999,
+          }}
+        >
+          <motion.img
+            src="/logo-plataformas-web.png"
+            alt="Cargando..."
+            width={260}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1.2, ease: 'easeOut' }}
+            style={{ marginBottom: '28px' }}
+          />
 
-            <video
-              key={videoFullScreenProducto?.IdProducto}
-              src={videoFullScreenProducto?.VideoUrl}
-              autoPlay
-              muted
-              playsInline
-              preload="auto"
-              disablePictureInPicture
-              controlsList="nodownload"
-              controls={mostrarControlesVideo} // solo si el usuario toca
-              style={{
-                width: '100%',
-                height: 'auto',
-                maxHeight: '70vh',
-                objectFit: 'contain',
-                backgroundColor: 'black',
+          <Box
+            sx={{
+              width: '220px',
+              height: '6px',
+              backgroundColor: '#222',
+              borderRadius: '30px',
+              overflow: 'hidden',
+              position: 'relative',
+            }}
+          >
+            <motion.div
+              initial={{ x: '-50%' }}
+              animate={{ x: '150%' }}
+              transition={{
+                repeat: Infinity,
+                duration: 1.6,
+                ease: 'easeInOut',
               }}
-              onClick={() => setMostrarControlesVideo(true)} // tap = muestra controles
-              onCanPlay={(e) => {
-                const playPromise = e.target.play();
-                if (playPromise !== undefined) {
-                  playPromise.catch(err => console.warn("AutoPlay Error:", err));
-                }
+              style={{
+                width: '50%',
+                height: '100%',
+                background: 'linear-gradient(90deg, #25D366, #5cf08a)',
+                borderRadius: '30px',
+                position: 'absolute',
+                top: 0,
+                left: 0,
               }}
             />
-
-            <Button
-              variant="contained"
-              sx={{
-                mt: 2,
-                bgcolor: '#25D366',
-                color: 'white',
-                textTransform: 'none',
-                fontSize: '1rem',
-                px: 4,
-                py: 1,
-                borderRadius: '30px',
-                boxShadow: '0px 4px 12px rgba(0,0,0,0.4)'
-              }}
-              onClick={() => {
-                const mensaje = `Me interesó el ${videoFullScreenProducto.NombreProducto}, ¿sigue disponible?`;
-                const telefono = '56992914526';
-                const urlWhatsapp = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
-                window.open(urlWhatsapp, '_blank');
-              }}
-            >
-              Me interesa!
-            </Button>
-
-            <Button
-              onClick={() => setVideoFullScreenProducto(null)}
-              sx={{
-                mt: 1,
-                color: 'white',
-                textTransform: 'none'
-              }}
-            >
-              Cerrar
-            </Button>
           </Box>
-        )}
+        </Box>
 
-      </Container>
+
+      )}
     </Box>
-
-  );
+  )
 };
 
 export default Catalogo;
