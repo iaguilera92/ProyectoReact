@@ -14,9 +14,11 @@ import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import { useLocation } from "react-router-dom";
 import Evidencias from "./components/Evidencias";
 import { Outlet } from "react-router-dom";
+import Cargando from './components/Cargando';
+
 
 function App() {
-
+  const [isLoading, setIsLoading] = useState(true);
   const [showContacto, setShowContacto] = useState(false);
   const [showArrow, setShowArrow] = useState(false);
   const [openBubble, setOpenBubble] = useState(false);
@@ -82,84 +84,96 @@ function App() {
     }
   }, [location.pathname]);
 
-
+  //CARGANDO
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+    return () => clearTimeout(timeout);
+  }, []);
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Box sx={{ m: isMobile ? 0 : 2, border: isMobile ? "none" : "4px solid white", borderRadius: isMobile ? "none" : "20px", overflow: "hidden" }}>
-        <Box sx={{ minHeight: "100vh", background: "radial-gradient(circle, #111111 20%, #000000 80%)", color: "white", position: "relative" }}>
-          {(location.pathname !== "/administracion") && (
-            <>
-              <Navbar contactoRef={contactoRef} informationsRef={informationsRef} /> {/* Pasamos el ref al Navbar */}
-            </>
-          )}
-          <Box sx={{ minHeight: "100vh" }}>
-            <Outlet context={{ contactoRef, informationsRef }} />
+    <>
+      {isLoading ? (
+        <Cargando />
+      ) : (
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <Box sx={{ m: isMobile ? 0 : 2, border: isMobile ? "none" : "4px solid white", borderRadius: isMobile ? "none" : "20px", overflow: "hidden" }}>
+            <Box sx={{ minHeight: "100vh", background: "radial-gradient(circle, #111111 20%, #000000 80%)", color: "white", position: "relative" }}>
+              {(location.pathname !== "/administracion") && (
+                <>
+                  <Navbar contactoRef={contactoRef} informationsRef={informationsRef} /> {/* Pasamos el ref al Navbar */}
+                </>
+              )}
+              <Box sx={{ minHeight: "100vh" }}>
+                <Outlet context={{ contactoRef, informationsRef }} />
 
-            {/* Solo muestra estas secciones si NO estamos en /catalogo */}
-            {(location.pathname !== "/catalogo" && location.pathname !== "/servicios" && location.pathname !== "/nosotros" && location.pathname !== "/administracion") && (
-              <>
-                <Box id="areas-section">
-                  <Areas />
-                </Box>
-                <div ref={informationsRef}>
-                  <Informations />
-                </div>
-                <Evidencias />
-                <Box ref={contactoRef}>
-                  <Contacto />
-                </Box>
-              </>
-            )}
-          </Box>
-          {(location.pathname !== "/administracion") && (
-            <>
-              <Footer />
-            </>
-          )}
-          {(location.pathname !== "/catalogo" && location.pathname !== "/administracion") && (
-            <>
-              <Box sx={{
-                position: "fixed", bottom: "40px", right: "40px", zIndex: 100,
-                transition: "bottom 0.3s ease",
-              }}>
-                <IconButton onClick={() => {
-                  window.open("https://api.whatsapp.com/send?phone=56992914526", "_blank");
-                  handleUserInteraction();
-                }} sx={{
-                  width: "60px", height: "60px", backgroundColor: "#25d366", color: "#FFF", borderRadius: "50%",
-                  boxShadow: "2px 2px 3px #999", "&:hover": { backgroundColor: "#1ebe5d" }, zIndex: 101,
-                }}>
-                  <WhatsAppIcon sx={{ fontSize: "30px" }} />
-                </IconButton>
-
-                {openBubble && (
-                  <Box sx={{
-                    position: "fixed", bottom: "110px", right: "40px", backgroundColor: "#fff", color: "#000",
-                    boxShadow: "0 4px 8px rgba(0,0,0,0.2)", borderRadius: "20px", padding: "8px 16px",
-                    fontFamily: "Poppins, sans-serif", zIndex: 102, opacity: openBubble ? 1 : 0,
-                    transform: openBubble ? "translateX(0)" : "translateX(100%)", transition: "transform 0.5s ease, opacity 0.5s ease",
-                  }} onClick={() => setOpenBubble(false)}>
-                    Puedes escribirnos al wsp!
-                  </Box>
+                {/* Solo muestra estas secciones si NO estamos en /catalogo */}
+                {(location.pathname !== "/catalogo" && location.pathname !== "/servicios" && location.pathname !== "/nosotros" && location.pathname !== "/administracion") && (
+                  <>
+                    <Box id="areas-section">
+                      <Areas />
+                    </Box>
+                    <div ref={informationsRef}>
+                      <Informations />
+                    </div>
+                    <Evidencias />
+                    <Box ref={contactoRef}>
+                      <Contacto />
+                    </Box>
+                  </>
                 )}
               </Box>
-            </>
-          )}
-          {showArrow && (
-            <IconButton onClick={scrollToTop} sx={{
-              position: "fixed", bottom: "120px", right: "40px", backgroundColor: "#fff", color: "#000",
-              borderRadius: "50%", padding: "10px", boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.2)", zIndex: 101,
-              transition: "transform 0.3s ease-in-out", "&:hover": { transform: "scale(1.1)", cursor: "pointer", backgroundColor: "#000", color: "#fff" }
-            }}>
-              <ArrowUpwardIcon sx={{ fontSize: "30px" }} />
-            </IconButton>
-          )}
-        </Box>
-      </Box>
-    </ThemeProvider>
+              {(location.pathname !== "/administracion") && (
+                <>
+                  <Footer />
+                </>
+              )}
+              {(location.pathname !== "/catalogo" && location.pathname !== "/administracion") && (
+                <>
+                  <Box sx={{
+                    position: "fixed", bottom: "40px", right: "40px", zIndex: 100,
+                    transition: "bottom 0.3s ease",
+                  }}>
+                    <IconButton onClick={() => {
+                      window.open("https://api.whatsapp.com/send?phone=56992914526", "_blank");
+                      handleUserInteraction();
+                    }} sx={{
+                      width: "60px", height: "60px", backgroundColor: "#25d366", color: "#FFF", borderRadius: "50%",
+                      boxShadow: "2px 2px 3px #999", "&:hover": { backgroundColor: "#1ebe5d" }, zIndex: 101,
+                    }}>
+                      <WhatsAppIcon sx={{ fontSize: "30px" }} />
+                    </IconButton>
+
+                    {openBubble && (
+                      <Box sx={{
+                        position: "fixed", bottom: "110px", right: "40px", backgroundColor: "#fff", color: "#000",
+                        boxShadow: "0 4px 8px rgba(0,0,0,0.2)", borderRadius: "20px", padding: "8px 16px",
+                        fontFamily: "Poppins, sans-serif", zIndex: 102, opacity: openBubble ? 1 : 0,
+                        transform: openBubble ? "translateX(0)" : "translateX(100%)", transition: "transform 0.5s ease, opacity 0.5s ease",
+                      }} onClick={() => setOpenBubble(false)}>
+                        Puedes escribirnos al wsp!
+                      </Box>
+                    )}
+                  </Box>
+                </>
+              )}
+              {showArrow && (
+                <IconButton onClick={scrollToTop} sx={{
+                  position: "fixed", bottom: "120px", right: "40px", backgroundColor: "#fff", color: "#000",
+                  borderRadius: "50%", padding: "10px", boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.2)", zIndex: 101,
+                  transition: "transform 0.3s ease-in-out", "&:hover": { transform: "scale(1.1)", cursor: "pointer", backgroundColor: "#000", color: "#fff" }
+                }}>
+                  <ArrowUpwardIcon sx={{ fontSize: "30px" }} />
+                </IconButton>
+              )}
+            </Box>
+          </Box>
+        </ThemeProvider>
+      )}
+    </>
   );
-}
+};
 
 export default App;

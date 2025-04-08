@@ -87,17 +87,21 @@ const Nosotros = () => {
                     <Typography variant="h4" color="white" gutterBottom>
                       ¿Quiénes Somos?
                     </Typography>
+
                     <Typography variant="body1" sx={{ color: '#ccc', textAlign: 'justify', mb: 2 }}>
-                      Realizamos Proyectos que aportan valor a nuestros clientes y su entorno. Con foco al posicionamiento de la Industria 4.0.
+                      Somos una empresa de soluciones tecnológicas con más de 8 años de experiencia desarrollando proyectos a medida para empresas de distintas industrias.
                     </Typography>
+
                     <Typography variant="body1" sx={{ color: '#ccc', textAlign: 'justify', mb: 2 }}>
-                      Consultores de Ingeniería con especialidad en Eléctrica, Automatización y Control de Procesos.
+                      Nos especializamos en la creación de páginas web, aplicaciones móviles y sistemas personalizados que se adaptan a las necesidades de cada cliente, sin importar el rubro.
                     </Typography>
+
                     <Typography variant="body1" sx={{ color: '#ccc', textAlign: 'justify' }}>
-                      Realizamos servicios especializados tanto Eléctricos como para la Evaluación y Gestión de Proyectos Industriales.
+                      Brindamos soporte evolutivo, mejoras continuas y acompañamiento estratégico para que cada negocio aproveche al máximo su potencial digital.
                     </Typography>
                   </CardContent>
                 </Card>
+
               </motion.div>
             </Box>
           </Grid>
@@ -216,17 +220,18 @@ const Nosotros = () => {
                       Misión
                     </Typography>
                     <Typography variant="body1" sx={{ color: '#ccc', textAlign: 'left', mb: 3 }}>
-                      Apoyar a los Clientes a cumplir con los desafíos de las Modernizaciones Industriales.
+                      Brindar soluciones tecnológicas innovadoras que impulsen el crecimiento y la eficiencia de nuestros clientes, mediante el desarrollo de software, sistemas personalizados y soporte evolutivo de alto nivel.
                     </Typography>
 
                     <Typography variant="h4" color="white" gutterBottom>
                       Visión
                     </Typography>
                     <Typography variant="body1" sx={{ color: '#ccc', textAlign: 'left' }}>
-                      Ser un Referente Nacional en la Evaluación, implementación y Gestión de proyectos de Transformaciones Industriales.
+                      Ser una empresa referente en el desarrollo e implementación de soluciones informáticas a nivel nacional, reconocida por su capacidad de adaptarse a distintos rubros y por entregar resultados concretos que transforman digitalmente a las organizaciones.
                     </Typography>
                   </CardContent>
                 </Card>
+
               </motion.div>
             </Box>
 

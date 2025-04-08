@@ -18,6 +18,7 @@ import { Grid } from '@mui/material';
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { IconButton } from '@mui/material';
 import { Virtual } from 'swiper/modules';
+import Cargando from './Cargando';
 
 const Catalogo = () => {
   const [productos, setProductos] = useState([]);
@@ -81,19 +82,45 @@ const Catalogo = () => {
 
   //CARGAR ANTES DE EMPEZAR
   useEffect(() => {
-    const handleLoad = () => {
-      setTimeout(() => {
+    const esperarCargaRecursos = () => {
+      const images = Array.from(document.images);
+      const videos = Array.from(document.querySelectorAll('video'));
+
+      const totalRecursos = [...images, ...videos];
+      let cargados = 0;
+
+      if (totalRecursos.length === 0) {
+        // Si no hay recursos, pasamos altiro
         setIsLoaded(true);
-      }, 1100); // le das un pequeño respiro para asegurarte
+        return;
+      }
+
+      const verificarCarga = () => {
+        cargados++;
+        if (cargados === totalRecursos.length) {
+          setTimeout(() => {
+            setIsLoaded(true);
+          }, 1500); // opcional: para una transición más suave
+        }
+      };
+
+      totalRecursos.forEach((recurso) => {
+        if (recurso.complete || recurso.readyState >= 3) {
+          verificarCarga();
+        } else {
+          recurso.addEventListener('load', verificarCarga);
+          recurso.addEventListener('error', verificarCarga);
+        }
+      });
     };
 
     if (document.readyState === 'complete') {
-      handleLoad();
+      esperarCargaRecursos();
     } else {
-      window.addEventListener('load', handleLoad);
+      window.addEventListener('load', esperarCargaRecursos);
     }
 
-    return () => window.removeEventListener('load', handleLoad);
+    return () => window.removeEventListener('load', esperarCargaRecursos);
   }, []);
 
 
@@ -426,80 +453,9 @@ const Catalogo = () => {
               </Button>
             </Box>
           )}
-          ) : (
-          <Box
-            sx={{
-              height: '100vh',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              bgcolor: 'black'
-            }}
-          >
-            <img src="/logo.svg" alt="Cargando..." width={100} />
-          </Box>
         </Container>
       ) : (
-        <Box
-          sx={{
-            backgroundImage: isMobile
-              ? 'url(fondo-blizz.avif)'
-              : 'url(fondo-blizz.avif)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-            height: '100vh',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            bgcolor: 'rgba(0,0,0,0.85)', // capa oscura elegante
-            position: 'relative',
-            zIndex: 9999,
-          }}
-        >
-          <motion.img
-            src="/logo-plataformas-web.png"
-            alt="Cargando..."
-            width={260}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.2, ease: 'easeOut' }}
-            style={{ marginBottom: '28px' }}
-          />
-
-          <Box
-            sx={{
-              width: '220px',
-              height: '6px',
-              backgroundColor: '#222',
-              borderRadius: '30px',
-              overflow: 'hidden',
-              position: 'relative',
-            }}
-          >
-            <motion.div
-              initial={{ x: '-50%' }}
-              animate={{ x: '150%' }}
-              transition={{
-                repeat: Infinity,
-                duration: 1.6,
-                ease: 'easeInOut',
-              }}
-              style={{
-                width: '50%',
-                height: '100%',
-                background: 'linear-gradient(90deg, #25D366, #5cf08a)',
-                borderRadius: '30px',
-                position: 'absolute',
-                top: 0,
-                left: 0,
-              }}
-            />
-          </Box>
-        </Box>
-
-
+        <Cargando />
       )}
     </Box>
   )

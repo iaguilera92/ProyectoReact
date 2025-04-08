@@ -1,10 +1,14 @@
 import { Box, Typography, Container, Grid, Button, ListItem, ListItemIcon, ListItemText, useMediaQuery, useTheme, IconButton } from "@mui/material";
-import { Chat, Insights, SmartToy, Visibility } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { FaCode } from "react-icons/fa";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useInView } from 'react-intersection-observer';  // Importa el hook
+import Public from '@mui/icons-material/Public';
+import GroupAdd from '@mui/icons-material/GroupAdd';
+import Campaign from '@mui/icons-material/Campaign';
+import DashboardCustomize from '@mui/icons-material/DashboardCustomize';
+
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import "./css/Informations.css"; // Importamos el CSS
 import "swiper/css";
@@ -54,7 +58,7 @@ const Informations = () => {
   // Controla la vista del componente
   const [isGrabbing, setIsGrabbing] = useState(false);
   const { ref, inView } = useInView({
-    threshold: 0.1, // Se activa cuando el 20% del componente es visible
+    threshold: 0.25, // Se activa cuando el 20% del componente es visible
     triggerOnce: true, // La animación ocurre solo una vez
   });
   const [shouldAnimate, setShouldAnimate] = useState(false);
@@ -62,12 +66,27 @@ const Informations = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [showArrow, setShowArrow] = useState(true);
 
+  const [swiperInstance, setSwiperInstance] = useState(null);
+  const { ref: swiperRef, inView: swiperInView } = useInView({
+    threshold: 0.2,
+    triggerOnce: true,
+  });
+  const [hasAnimated, setHasAnimated] = useState(false);
+
+
   useEffect(() => {
     if (inView) {
       setShouldAnimate(true); // 🔹 Activa la animación cuando el componente es visible
     }
   }, [inView]);
 
+  //ANIMACIÓN DESCRIPTORES
+  useEffect(() => {
+    if (swiperInView && swiperInstance && !hasAnimated) {
+      swiperInstance.slideTo(0, 1500); // mueve del último al primero
+      setHasAnimated(true);
+    }
+  }, [swiperInView, swiperInstance, hasAnimated]);
 
   return (
     <Box
@@ -127,35 +146,42 @@ const Informations = () => {
             </motion.div>
           </Box>
 
-          <Typography
-            variant="h4"
-            gutterBottom
-            sx={{
-              fontFamily: "'Montserrat', Helvetica, Arial, sans-serif !important",
-              fontSize: { xs: "1.5rem", md: "2rem" }, // Ajusta el tamaño de la fuente para móviles y pantallas grandes
-              paddingLeft: { xs: "100px", md: "30px" },
-              paddingRight: { xs: "100px", md: "30px" },
-              letterSpacing: "3px",
-              my: 0,
-              display: "inline-block",
-              position: "relative",
-              zIndex: 1,
-              backgroundColor: "trasparent",
-              color: "white",
-              "::after": {
-                content: '""',
-                position: "absolute",
-                left: 0,
-                right: 0,
-                bottom: "-5px", // Ajusta la posición del bloque de fondo
-                height: "10px", // Ajusta la altura del fondo extendido
-                backgroundColor: "trasparent", // Mismo color del fondo del título
-                zIndex: 2, // Se coloca por encima del `hr`
-              },
-            }}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={shouldAnimate ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
           >
-            Ayudamos a hacer crecer tu negocio
-          </Typography>
+            <Typography
+              variant="h4"
+              gutterBottom
+              sx={{
+                fontFamily: "'Montserrat', Helvetica, Arial, sans-serif !important",
+                fontSize: { xs: "1.5rem", md: "2rem" },
+                paddingLeft: { xs: "100px", md: "30px" },
+                paddingRight: { xs: "100px", md: "30px" },
+                letterSpacing: "3px",
+                my: 0,
+                display: "inline-block",
+                position: "relative",
+                zIndex: 1,
+                backgroundColor: "transparent",
+                color: "white",
+                "::after": {
+                  content: '""',
+                  position: "absolute",
+                  left: 0,
+                  right: 0,
+                  bottom: "-5px",
+                  height: "10px",
+                  backgroundColor: "transparent",
+                  zIndex: 2,
+                },
+              }}
+            >
+              Impulsa tu negocio con tecnología
+            </Typography>
+          </motion.div>
+
 
           {/* Línea debajo del título con animación (con retraso de 2 segundos) */}
           <motion.hr
@@ -181,147 +207,149 @@ const Informations = () => {
           <Grid item xs={12} md={6} ref={ref}>
             {[
               {
-                icon: <SmartToy sx={{ color: "white", fontSize: "2.2rem" }} />,
-                text: "Automatización Inteligente",
-                desc: "Optimiza procesos rutinarios con IA para liberar recursos valiosos.",
+                icon: <Public sx={{ color: "white", fontSize: "2.2rem" }} />,
+                text: "Muestra tu negocio al mundo.",
+                desc: "Haz visible tu marca con presencia digital moderna y profesional.",
                 hideLine: false,
               },
               {
-                icon: <Insights sx={{ color: "white", fontSize: "2.2rem" }} />,
-                text: "Análisis Predictivo",
-                desc: "Anticipa el comportamiento de clientes y mejora tu oferta.",
+                icon: <GroupAdd sx={{ color: "white", fontSize: "2.2rem" }} />,
+                text: "Atrae más clientes potenciales.",
+                desc: "Conecta con clientes ideales mediante estrategias digitales inteligentes.",
                 hideLine: false,
               },
               {
-                icon: <Chat sx={{ color: "white", fontSize: "2.2rem" }} />,
-                text: "Comunicación con clientes",
-                desc: "Mejora la interacción con tus clientes.",
+                icon: <Campaign sx={{ color: "white", fontSize: "2.2rem" }} />,
+                text: "Aumenta el alcance de tus proyectos.",
+                desc: "Difunde tus servicios a un público más amplio y segmentado.",
                 hideLine: false,
               },
               {
-                icon: <Visibility sx={{ color: "white", fontSize: "2.2rem" }} />,
-                text: "Monitorea tu negocio",
-                desc: "Podrás visualizar como avanza tu negocio.",
+                icon: <DashboardCustomize sx={{ color: "white", fontSize: "2.2rem" }} />,
+                text: "Administra y potencia tu negocio.",
+                desc: "Toma decisiones con herramientas de monitoreo y gestión digital.",
                 hideLine: true,
               },
-            ].map((item, index) => {
-              const hasLineAbove = index !== 0;
+            ]
+              .map((item, index) => {
+                const hasLineAbove = index !== 0;
 
-              return (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={shouldAnimate ? { opacity: 1, y: 0 } : {}}
-                  transition={{
-                    delay: 0.5 * index, // Círculo aparece primero
-                    duration: 0.5,      // Un poco más corto
-                  }}
-                >
-                  <ListItem sx={{ display: "flex", alignItems: "center", zIndex: 2 }}>
-                    <ListItemIcon sx={{ zIndex: 2 }}>
-                      <Box
-                        sx={{
-                          position: "relative",
-                          width: 100,
-                          height: 85, // antes era 100
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        {/* LÍNEA QUE SUBE DESDE EL CÍRCULO ACTUAL */}
-                        {!item.hideLine && (
-                          <motion.div
-                            initial={{ height: 0 }}
-                            animate={shouldAnimate ? { height: 40 } : { height: 0 }}
-                            transition={{
-                              delay: 0.5 * index,
-                              duration: 1,
-                              ease: "easeInOut",
-                            }}
-                            style={{
-                              position: "absolute",
-                              top: "80%",
-                              left: "50%",
-                              transform: "translateX(-50%)",
-                              width: "2px",
-                              backgroundImage: "linear-gradient(white 40%, rgba(255,255,255,0) 0%)",
-                              backgroundPosition: "left",
-                              backgroundSize: "2px 6px", // grosor y separación
-                              backgroundRepeat: "repeat-y",
-                              zIndex: 1,
-                            }}
-                          />
-
-                        )}
-
-
-                        {/* CÍRCULO CON ÍCONO */}
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={shouldAnimate ? { opacity: 1, y: 0 } : {}}
+                    transition={{
+                      delay: 0.5 * index, // Círculo aparece primero
+                      duration: 0.5,      // Un poco más corto
+                    }}
+                  >
+                    <ListItem sx={{ display: "flex", alignItems: "center", zIndex: 2 }}>
+                      <ListItemIcon sx={{ zIndex: 2 }}>
                         <Box
                           sx={{
-                            width: 70,
-                            height: 70,
-                            borderRadius: "50%",
-                            border: "2px solid white",
-                            backgroundColor: "#072138",
+                            position: "relative",
+                            width: 100,
+                            height: 85, // antes era 100
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
-                            position: "relative",
-                            zIndex: 2,
                           }}
                         >
-                          {item.icon}
+                          {/* LÍNEA QUE SUBE DESDE EL CÍRCULO ACTUAL */}
+                          {!item.hideLine && (
+                            <motion.div
+                              initial={{ height: 0 }}
+                              animate={shouldAnimate ? { height: 40 } : { height: 0 }}
+                              transition={{
+                                delay: 0.5 * index,
+                                duration: 1,
+                                ease: "easeInOut",
+                              }}
+                              style={{
+                                position: "absolute",
+                                top: "80%",
+                                left: "50%",
+                                transform: "translateX(-50%)",
+                                width: "2px",
+                                backgroundImage: "linear-gradient(white 40%, rgba(255,255,255,0) 0%)",
+                                backgroundPosition: "left",
+                                backgroundSize: "2px 6px", // grosor y separación
+                                backgroundRepeat: "repeat-y",
+                                zIndex: 1,
+                              }}
+                            />
 
-                          {/* Efecto de pulsación */}
-                          <motion.div
-                            style={{
-                              position: "absolute",
-                              top: 0,
-                              left: 0,
-                              width: "100%",
-                              height: "100%",
+                          )}
+
+
+                          {/* CÍRCULO CON ÍCONO */}
+                          <Box
+                            sx={{
+                              width: 70,
+                              height: 70,
                               borderRadius: "50%",
-                              backgroundColor: "rgba(255, 255, 255, 0.2)",
-                              zIndex: 1,
-                              animation: "pulsacion 1s ease-in-out 0.1s infinite",
+                              border: "2px solid white",
+                              backgroundColor: "#072138",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              position: "relative",
+                              zIndex: 2,
                             }}
-                          />
-                        </Box>
-                      </Box>
-                    </ListItemIcon>
+                          >
+                            {item.icon}
 
-                    <ListItemText
-                      sx={{
-                        fontFamily: "'Montserrat', Helvetica, Arial, sans-serif !important",
-                        "& .MuiListItemText-primary": {
-                          fontSize: "1.2rem",
-                        },
-                        "& .MuiListItemText-secondary": {
-                          color: "white",
-                        },
-                      }}
-                      primary={item.text}
-                      secondary={item.desc}
-                    />
-                  </ListItem>
-                </motion.div>
-              );
-            })}
+                            {/* Efecto de pulsación */}
+                            <motion.div
+                              style={{
+                                position: "absolute",
+                                top: 0,
+                                left: 0,
+                                width: "100%",
+                                height: "100%",
+                                borderRadius: "50%",
+                                backgroundColor: "rgba(255, 255, 255, 0.2)",
+                                zIndex: 1,
+                                animation: "pulsacion 1s ease-in-out 0.1s infinite",
+                              }}
+                            />
+                          </Box>
+                        </Box>
+                      </ListItemIcon>
+
+                      <ListItemText
+                        sx={{
+                          fontFamily: "'Montserrat', Helvetica, Arial, sans-serif !important",
+                          "& .MuiListItemText-primary": {
+                            fontSize: "1.2rem",
+                          },
+                          "& .MuiListItemText-secondary": {
+                            color: "white",
+                          },
+                        }}
+                        primary={item.text}
+                        secondary={item.desc}
+                      />
+                    </ListItem>
+                  </motion.div>
+                );
+              })}
           </Grid>
 
           {/* Columna de los descriptores */}
           <Grid item xs={12} md={6}>
-            <Box sx={{ display: isMobile ? "block" : "block", position: "relative", px: 1, pt: 3, pb: 1.5 }}>
+            <Box ref={swiperRef} sx={{ display: isMobile ? "block" : "block", position: "relative", px: 1, pt: 3, pb: 1.5 }}>
               <Swiper
                 spaceBetween={20}
                 slidesPerView={1.2}
+                onSwiper={setSwiperInstance}
+                initialSlide={promotions.length - 1} // Comienza en el último
                 centeredSlides={false}
-                initialSlide={0}
                 pagination={{ clickable: true }}
                 onSlideChange={(swiper) => {
                   const index = swiper.activeIndex;
-                  setShowArrow(index !== 2); // Oculta en la tercera tarjeta
+                  setShowArrow(index !== 2);
                 }}
               >
                 {promotions.map((promo, index) => (
