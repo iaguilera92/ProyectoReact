@@ -53,13 +53,6 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (openBubble && hasInteracted) {
-      const notificationSound = new Audio("/whatsapp-notification.mp3");
-      notificationSound.play().catch((err) => console.error("Error al reproducir el sonido:", err));
-    }
-  }, [openBubble, hasInteracted]);
-
-  useEffect(() => {
     if (openBubble) {
       const timer = setTimeout(() => {
         setOpenBubble(false);

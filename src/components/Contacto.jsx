@@ -89,6 +89,7 @@ function Contacto() {
         paddingBottom: "20px",
         minHeight: isMobile ? containerHeight : containerHeight, // 👈 Cambia esto
         backgroundImage: isMobile ? 'url(/fondo-mundo-mobile.png)' : 'url(/fondo-mundo.png)',
+        backgroundColor: "black",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
