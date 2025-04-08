@@ -106,7 +106,7 @@ const Informations = () => {
         overflow: 'hidden',
       }}
     >
-      <Container sx={{ textAlign: "center", color: "white", maxWidth: "1400px !important", }}>
+      <Container sx={{ textAlign: "center", color: "white", maxWidth: "1400px !important", paddingLeft: isMobile ? "0" : "24px", paddingRight: isMobile ? "0" : "24px" }}>
 
         <Box sx={{ position: "relative", textAlign: "center", mb: 2 }}>
 
@@ -244,7 +244,7 @@ const Informations = () => {
                       duration: 0.5,      // Un poco más corto
                     }}
                   >
-                    <ListItem sx={{ display: "flex", alignItems: "center", zIndex: 2 }}>
+                    <ListItem sx={{ display: "flex", alignItems: "center", zIndex: 2, paddingLeft: isMobile ? "0" : "16px", paddingRight: isMobile ? "0" : "16px" }}>
                       <ListItemIcon sx={{ zIndex: 2 }}>
                         <Box
                           sx={{
@@ -322,7 +322,7 @@ const Informations = () => {
                         sx={{
                           fontFamily: "'Montserrat', Helvetica, Arial, sans-serif !important",
                           "& .MuiListItemText-primary": {
-                            fontSize: "1.2rem",
+                            fontSize: isMobile ? "0.99rem" : "1.2rem",
                           },
                           "& .MuiListItemText-secondary": {
                             color: "white",
