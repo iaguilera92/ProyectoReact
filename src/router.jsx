@@ -37,8 +37,15 @@ const router = createBrowserRouter(
 import { useOutletContext } from "react-router-dom";
 
 function HomeWrapper() {
-    const { contactoRef, informationsRef } = useOutletContext();
-    return <Home contactoRef={contactoRef} informationsRef={informationsRef} />;
+    const { contactoRef, informationsRef, setVideoReady } = useOutletContext();
+    return (
+        <Home
+            contactoRef={contactoRef}
+            informationsRef={informationsRef}
+            setVideoReady={setVideoReady}
+        />
+    );
 }
+
 
 export default router;

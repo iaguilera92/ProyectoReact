@@ -4,7 +4,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import "./css/Hero.css"; // Asegúrate de importar el CSS
 import CircularProgress from "@mui/material/CircularProgress";
 
-function Hero({ scrollToContacto }) {
+function Hero({ scrollToContacto, setVideoReady }) {
+
   const [currentText, setCurrentText] = useState(0);
   const [openAlert, setOpenAlert] = useState(false);
   const [showButton, setShowButton] = useState(false); // Estado para mostrar el botón después del delay
@@ -182,7 +183,14 @@ function Hero({ scrollToContacto }) {
           loop
           playsInline
           id="background-video"
-          onCanPlay={() => setLoadingVideo(false)} // 👈 Video listo
+          onCanPlay={() => {
+            console.log("🎥 Video listo");
+            setLoadingVideo(false);
+            if (setVideoReady) {
+              console.log("✅ Notificando a App");
+              setVideoReady(true);
+            }
+          }}
           style={{
             width: "100%",
             height: "100%",
