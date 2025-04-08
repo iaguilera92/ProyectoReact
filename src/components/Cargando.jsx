@@ -26,7 +26,7 @@ const Cargando = () => {
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    transform: 'translateY(-10%)', // sube 10%
+                    transform: 'translateY(-40%)', // sube 10%
                 }}
             >
                 <motion.img
