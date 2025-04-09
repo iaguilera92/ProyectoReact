@@ -116,7 +116,7 @@ function Contacto() {
         style={{
           width: "50%",
           height: isMobile ? "50vh" : "76vh",
-          backgroundImage: isMobile ? "url('/fono-right.jpg')" : "url('/contactar.jpg')",
+          backgroundImage: isMobile ? "url('/fono-right.jpg')" : "url('/contactar.webp')",
           backgroundSize: isMobile ? "cover" : "contain",   // 👈 Mostrar completa en escritorio
           backgroundPosition: isMobile ? "center" : "top",  // 👈 Alinear arriba para escritorio
           backgroundRepeat: "no-repeat",

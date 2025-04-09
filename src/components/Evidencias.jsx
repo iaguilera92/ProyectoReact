@@ -116,7 +116,7 @@ const Evidencias = () => {
             <Box
                 sx={{
                     position: 'relative',
-                    backgroundImage: `linear-gradient(to bottom, rgba(10,10,10,0) 50%, #0a0a0a 100%), url('/fondo-blanco2.jpg')`,
+                    backgroundImage: `linear-gradient(to bottom, rgba(10,10,10,0) 50%, #0a0a0a 100%), url('/fondo-blanco2.webp')`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat',
@@ -141,7 +141,7 @@ const Evidencias = () => {
                         clipPath: isMobile
                             ? "polygon(0 0, 50% 50%, 100% 0, 100% 100%, 0 100%)"
                             : "polygon(0 0, 50% 70%, 100% 0, 100% 100%, 0 100%)",
-                        backgroundImage: `url('/fondo-blanco2.jpg')`,
+                        backgroundImage: `url('/fondo-blanco2.webp')`,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat',
@@ -223,29 +223,43 @@ const Evidencias = () => {
                                                 >
                                                     <CardMedia
                                                         component="video"
+                                                        ref={(el) => (videosRef.current[i] = el)}
+                                                        src={`/evidencia${n}.mp4`}
+                                                        playsInline
                                                         muted
                                                         loop
-                                                        playsInline
-                                                        autoPlay
-                                                        preload="metadata"
-                                                        controlsList="nodownload nofullscreen noremoteplayback"
+                                                        preload="auto"
+                                                        controls={false}
                                                         disablePictureInPicture
-                                                        src={`/evidencia${n}.${n === 2 ? 'mov' : 'mov'}`}
+                                                        controlsList="nodownload nofullscreen noremoteplayback"
                                                         onClick={(e) => {
-                                                            if (e.target.requestFullscreen) {
-                                                                e.target.requestFullscreen();
-                                                            } else if (e.target.webkitRequestFullscreen) {
-                                                                e.target.webkitRequestFullscreen();
+                                                            const video = e.target;
+
+                                                            // Solo en móvil: forzar fullscreen
+                                                            if (isMobile) {
+                                                                if (video.requestFullscreen) {
+                                                                    video.requestFullscreen();
+                                                                } else if (video.webkitEnterFullscreen) {
+                                                                    video.webkitEnterFullscreen(); // Safari iOS
+                                                                } else if (video.webkitRequestFullscreen) {
+                                                                    video.webkitRequestFullscreen(); // Chrome Android
+                                                                } else if (video.msRequestFullscreen) {
+                                                                    video.msRequestFullscreen();
+                                                                }
+
+                                                                // Reproducir manualmente si está pausado
+                                                                if (video.paused) video.play();
                                                             }
                                                         }}
                                                         sx={{
                                                             height: '100%',
                                                             width: i === 1 ? 'auto' : '100%',
-                                                            objectFit: i === 1 ? 'contain' : 'cover',
+                                                            objectFit: i === 1 ? 'contain' : 'contain',
                                                             cursor: 'pointer',
                                                             zIndex: 1,
                                                         }}
                                                     />
+
                                                 </Box>
                                             </Card>
 

@@ -38,7 +38,7 @@
 .image-right {
   right: 0%;
   /* 20% fuera de la pantalla */
-  background-image: url('/contactar.jpg');
+  background-image: url('/contactar.webp');
   transform-origin: left center;
   z-index: 3;
 }

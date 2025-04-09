@@ -104,7 +104,7 @@ const Areas = () => {
 
     <Box
       sx={{
-        backgroundImage: isMobile ? 'url(/fondo-areas2.jpg)' : 'url(/fondo-areas1.jpg)',
+        backgroundImage: isMobile ? 'url(/fondo-areas2.jpg)' : 'url(/fondo-areas1.webp)',
         backgroundRepeat: "no-repeat",
         backgroundSize: isMobile ? "100% 100%" : "100% auto",
         backgroundPosition: isMobile ? "center" : "",
