@@ -103,7 +103,7 @@ function Contacto() {
         style={{
           width: "50%",
           height: isMobile ? "50vh" : "76vh",
-          backgroundImage: isMobile ? "url('/fono-left.jpg')" : "url('/mapa.jpg')",
+          backgroundImage: isMobile ? "url('/fono-left.jpg')" : "url('/mapa.webp')",
           backgroundSize: isMobile ? "cover" : "contain",   // 👈 Mostrar completa en escritorio
           backgroundPosition: isMobile ? "center" : "top",  // 👈 Alinear arriba para escritorio
           backgroundRepeat: "no-repeat",
@@ -197,7 +197,6 @@ function Contacto() {
                         width: "100%",
                         height: "100%",
                         backgroundColor: "#fff",
-                        boxShadow: 3,
                         borderRadius: 5,
                         border: "1px solid #30363D",
                         boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.2)", // Sombra sutil

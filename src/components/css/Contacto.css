@@ -30,7 +30,7 @@
 .image-left {
   left: 0%;
   /* 20% fuera de la pantalla */
-  background-image: url('/mapa.jpg');
+  background-image: url('/mapa.webp');
   transform-origin: right center;
   z-index: 3;
 }

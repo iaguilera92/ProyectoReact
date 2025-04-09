@@ -336,7 +336,7 @@ const Servicios = () => {
                                   {
                                     title: 'Actualizaciones constantes',
                                     description: 'Refactorización de código y mejoras incrementales.',
-                                    image: '/servicio3.jpg',
+                                    image: '/servicio3.webp',
                                     items: [
                                       'Actualización de librerías.',
                                       'Optimización de rendimiento.',
