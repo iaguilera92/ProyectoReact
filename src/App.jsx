@@ -16,7 +16,7 @@ import Evidencias from "./components/Evidencias";
 import { Outlet } from "react-router-dom";
 import Cargando from './components/Cargando';
 import { AnimatePresence, motion } from 'framer-motion';
-
+import "./components/css/App.css";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -29,7 +29,9 @@ function App() {
   const informationsRef = useRef(null); // ✅ AÑADE AQUÍ EL REF PARA SCROLL
   const location = useLocation();
   const [videoReady, setVideoReady] = useState(false);
-  const isCompletelyReady = !isLoading && videoReady;
+  const requiereVideo = ["/", "/inicio", ""].includes(location.pathname);
+  const isCompletelyReady = !isLoading && (requiereVideo ? videoReady : true);
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -82,11 +84,45 @@ function App() {
 
   //CARGANDO
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      setIsLoading(false);
+    let tiempoMinimoCumplido = false;
+    let timeoutMin = null;
+    let timeoutMax = null;
+
+    const intentarQuitarCargando = () => {
+      if (tiempoMinimoCumplido && (videoReady || !requiereVideo)) {
+        setIsLoading(false);
+      }
+    };
+
+    // ⏳ Timer mínimo (1.5 segundos)
+    timeoutMin = setTimeout(() => {
+      tiempoMinimoCumplido = true;
+      intentarQuitarCargando();
     }, 1500);
-    return () => clearTimeout(timeout);
-  }, []);
+
+    // ⏱️ Timer máximo (5 segundos)
+    timeoutMax = setTimeout(() => {
+      setIsLoading(false); // fuerza el fin de carga
+    }, 5000);
+
+    return () => {
+      clearTimeout(timeoutMin);
+      clearTimeout(timeoutMax);
+    };
+  }, [videoReady, requiereVideo]);
+  //LIBERAR CARGANDO
+  useEffect(() => {
+    const body = document.body;
+
+    if (!isCompletelyReady) {
+      body.classList.add('no-scroll');
+    } else {
+      body.classList.remove('no-scroll');
+    }
+
+    return () => body.classList.remove('no-scroll');
+  }, [isCompletelyReady]);
+
 
   return (
     <ThemeProvider theme={theme}>
@@ -94,7 +130,7 @@ function App() {
 
       {/* Pantalla de carga */}
       <AnimatePresence>
-        {(isLoading || !videoReady) && (
+        {!isCompletelyReady && (
           <motion.div
             key="cargando"
             initial={{ opacity: 1 }}
@@ -118,8 +154,8 @@ function App() {
       {/* Contenido principal, oculto mientras se carga */}
       <Box
         sx={{
-          visibility: isLoading || !videoReady ? "hidden" : "visible",
-          pointerEvents: isLoading || !videoReady ? "none" : "auto",
+          visibility: isCompletelyReady ? "visible" : "hidden",
+          pointerEvents: isCompletelyReady ? "auto" : "none",
         }}
       >
         {/* Navbar solo si no estás en /administracion */}
