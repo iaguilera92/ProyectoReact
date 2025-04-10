@@ -113,7 +113,7 @@ function App() {
     const body = document.body;
     const html = document.documentElement;
 
-    if (!isCompletelyReady) {
+    if (!showApp) {
       body.classList.add('no-scroll');
       html.classList.add('no-scroll');
     } else {
@@ -125,7 +125,8 @@ function App() {
       body.classList.remove('no-scroll');
       html.classList.remove('no-scroll');
     };
-  }, [isCompletelyReady]);
+  }, [showApp]);
+
 
   //LIMPIAR CACHE
   useEffect(() => {
