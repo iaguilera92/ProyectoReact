@@ -16,7 +16,7 @@ import Evidencias from "./components/Evidencias";
 import { Outlet } from "react-router-dom";
 import Cargando from './components/Cargando';
 import { AnimatePresence, motion } from 'framer-motion';
-
+import "./css/App.css";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -87,6 +87,26 @@ function App() {
     }, 1500);
     return () => clearTimeout(timeout);
   }, []);
+
+  useEffect(() => {
+    const body = document.body;
+    const html = document.documentElement;
+
+    if (!showApp) {
+      body.classList.add('no-scroll');
+      html.classList.add('no-scroll');
+    } else {
+      body.classList.remove('no-scroll');
+      html.classList.remove('no-scroll');
+    }
+
+    return () => {
+      body.classList.remove('no-scroll');
+      html.classList.remove('no-scroll');
+    };
+  }, [showApp]);
+
+
 
   return (
     <ThemeProvider theme={theme}>

@@ -222,7 +222,7 @@ function Contacto() {
                             zoomDelta={isMobile ? 0.5 : 1}
                           >
                             <TileLayer
-                              url={isMobile ? "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" : "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png"}
+                              url={isMobile ? "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"}
                               attribution='&copy; <a href="https://carto.com/">CartoDB</a> contributors'
                               subdomains={['a', 'b', 'c', 'd']}
                               maxZoom={20}
