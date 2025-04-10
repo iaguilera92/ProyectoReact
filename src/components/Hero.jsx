@@ -193,7 +193,7 @@ function Hero({ scrollToContacto, setVideoReady }) {
           playsInline
           id="background-video"
           onLoadedData={() => {
-            console.log("🎥 Video listo");
+            console.log("🎥 Componentes cargados");
             setLoadingVideo(false);
             if (setVideoReady) setVideoReady(true); // Opcional si lo estás usando en App
           }}
