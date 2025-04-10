@@ -375,7 +375,7 @@ function Navbar({ contactoRef, informationsRef }) {
         }}
       >
         <Box sx={{ overflowY: 'auto', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-          <Box sx={{ display: "flex", justifyContent: "flex-end", p: 1.2 }}>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", p: 0.5 }}>
             <IconButton
               aria-label="Abrir menú"
               onClick={() => setOpen(false)}
@@ -405,7 +405,7 @@ function Navbar({ contactoRef, informationsRef }) {
                         onClick={() => handleClick(item)}
                         sx={{
                           px: 2,
-                          py: 1,
+                          py: 0.5,
                           borderBottom: "1px solid rgba(255,255,255,0.1)",
                           borderTop: index === 0 ? "1px solid rgba(255,255,255,0.2)" : "none",
                           "&:hover": { backgroundColor: "rgba(255,255,255,0.05)" },
@@ -451,7 +451,8 @@ function Navbar({ contactoRef, informationsRef }) {
                     px: 2,
                     py: 1,
                     mx: 2,
-                    mb: 1,
+                    mb: 0,
+                    pt: 0,
                     color: "#ffffff",
                     backdropFilter: "blur(8px)",
                     border: "1px solid rgba(255,255,255,0.1)",
