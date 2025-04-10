@@ -16,7 +16,6 @@ function Hero({ scrollToContacto, setVideoReady }) {
   const heroRef = useRef(null);
   const intervalRef = useRef(null);
 
-
   const texts = [
     { title: "SOLUCIONES TECNOLÓGICAS", description: "Soluciones digitales a la medida." },
     { title: "SOPORTE EVOLUTIVO", description: "Últimas tecnologías para generar sistemas y sitios web." },
@@ -134,6 +133,16 @@ function Hero({ scrollToContacto, setVideoReady }) {
   }, []);*/
 
 
+  useEffect(() => {
+    const fallbackTimer = setTimeout(() => {
+      if (loadingVideo) {
+        setLoadingVideo(false);
+      }
+    }, 3000);
+
+    return () => clearTimeout(fallbackTimer);
+  }, [loadingVideo]);
+
 
   return (
     <Box
@@ -183,13 +192,10 @@ function Hero({ scrollToContacto, setVideoReady }) {
           loop
           playsInline
           id="background-video"
-          onCanPlay={() => {
+          onLoadedData={() => {
             console.log("🎥 Video listo");
             setLoadingVideo(false);
-            if (setVideoReady) {
-              console.log("✅ Notificando a App");
-              setVideoReady(true);
-            }
+            if (setVideoReady) setVideoReady(true); // Opcional si lo estás usando en App
           }}
           style={{
             width: "100%",

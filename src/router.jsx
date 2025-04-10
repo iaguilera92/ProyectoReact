@@ -1,12 +1,20 @@
 // src/router.jsx
+import { lazy, Suspense } from "react";
 import { createBrowserRouter } from "react-router-dom";
 import App from "./App";
-import Servicios from "./components/Servicios";
-import Nosotros from "./components/Nosotros";
-import Contacto from "./components/Contacto";
-import Administracion from "./components/Administracion";
-import Catalogo from "./components/Catalogo";
-import Home from "./components/Home";
+const Servicios = lazy(() => import("./components/Servicios"));
+const Nosotros = lazy(() => import("./components/Nosotros"));
+const Contacto = lazy(() => import("./components/Contacto"));
+const Administracion = lazy(() => import("./components/Administracion"));
+const Catalogo = lazy(() => import("./components/Catalogo"));
+const Home = lazy(() => import("./components/Home"));
+
+// ✅ HOC para envolver cualquier componente con Suspense
+const withSuspense = (Component) => (
+    <Suspense fallback={null}>
+        <Component />
+    </Suspense>
+);
 
 const router = createBrowserRouter(
     [
@@ -16,13 +24,17 @@ const router = createBrowserRouter(
             children: [
                 {
                     path: "",
-                    element: <HomeWrapper />, // 👈 usamos wrapper para pasar los refs
+                    element: (
+                        <Suspense fallback={null}>
+                            <HomeWrapper />
+                        </Suspense>
+                    ),
                 },
-                { path: "servicios", element: <Servicios /> },
-                { path: "nosotros", element: <Nosotros /> },
-                { path: "contacto", element: <Contacto /> },
-                { path: "administracion", element: <Administracion /> },
-                { path: "catalogo", element: <Catalogo /> },
+                { path: "servicios", element: withSuspense(Servicios) },
+                { path: "nosotros", element: withSuspense(Nosotros) },
+                { path: "contacto", element: withSuspense(Contacto) },
+                { path: "administracion", element: withSuspense(Administracion) },
+                { path: "catalogo", element: withSuspense(Catalogo) },
             ],
         },
     ],
@@ -33,17 +45,20 @@ const router = createBrowserRouter(
     }
 );
 
+
 // 👇 Wrapper para pasar los refs desde el contexto de App
 import { useOutletContext } from "react-router-dom";
 
 function HomeWrapper() {
     const { contactoRef, informationsRef, setVideoReady } = useOutletContext();
     return (
-        <Home
-            contactoRef={contactoRef}
-            informationsRef={informationsRef}
-            setVideoReady={setVideoReady}
-        />
+        <Suspense fallback={null}>
+            <Home
+                contactoRef={contactoRef}
+                informationsRef={informationsRef}
+                setVideoReady={setVideoReady}
+            />
+        </Suspense>
     );
 }
 

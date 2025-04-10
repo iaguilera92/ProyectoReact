@@ -208,6 +208,7 @@ function Contacto() {
                       <Box sx={{ flexGrow: 1, height: "100%" }}>
                         <Box sx={{ width: "100%", height: isMobile ? "40vh" : "100%", overflow: "hidden" }}>
                           <MapContainer
+                            preferCanvas={true}
                             center={finalPosition}
                             zoom={initialZoom}
                             style={{
@@ -225,7 +226,11 @@ function Contacto() {
                               url={isMobile ? "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"}
                               attribution='&copy; <a href="https://carto.com/">CartoDB</a> contributors'
                               subdomains={['a', 'b', 'c', 'd']}
-                              maxZoom={20}
+                              maxZoom={17}
+                              tileSize={256}
+                              updateWhenIdle={true}
+                              updateWhenZooming={false}
+                              keepBuffer={2}
                             />
                             <Marker
                               position={finalPosition}
@@ -347,54 +352,53 @@ function Contacto() {
     </Container >
   );
 }
-const ZoomEffect = ({ zoom }) => {
-  const map = useMapEvent("load", () => { }); // Obtener la instancia del mapa
+const ZoomEffect = ({ zoom, startAnimation }) => {
+  const map = useMapEvent("load", () => { });
   const zoomApplied = useRef(false);
-  const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.3 }); // Detectar si el mapa entra en pantalla
-  const isMobile = useMediaQuery("(max-width:600px)"); // Detectar si es móvil
+  const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.3 });
+  const isMobile = useMediaQuery("(max-width:600px)");
 
   useEffect(() => {
-    if (map && inView && !zoomApplied.current) {
-      zoomApplied.current = true; // Evita múltiples ejecuciones
+    if (!map || !inView || zoomApplied.current || startAnimation) return;
 
-      // ⏱️ Delay de 2 segundos antes de iniciar la animación
-      const delayTimer = setTimeout(() => {
-        let zoomLevel = isMobile ? 7 : 5;
-        const zoomSpeed = isMobile ? 0.06 : 0.05;
+    zoomApplied.current = true;
 
-        const offsetY = isMobile ? 0.0001 : 0;
-        const correctedPosition = [finalPosition[0] + offsetY, finalPosition[1]];
+    const delayTimer = setTimeout(() => {
+      let zoomLevel = isMobile ? 7 : 5;
+      const zoomSpeed = isMobile ? 0.06 : 0.05;
+      const offsetY = isMobile ? 0.0001 : 0;
+      const correctedPosition = [finalPosition[0] + offsetY, finalPosition[1]];
 
-        map.setView(correctedPosition, zoomLevel, {
-          animate: true,
-          duration: isMobile ? 0.4 : 0.3,
-          easeLinearity: 1,
-        });
+      map.setView(correctedPosition, zoomLevel, {
+        animate: true,
+        duration: isMobile ? 0.4 : 0.3,
+        easeLinearity: 1,
+      });
 
-        const animateZoom = () => {
-          if (zoomLevel < zoom) {
-            zoomLevel += zoomSpeed;
-            if (zoomLevel >= zoom) zoomLevel = zoom;
+      const animateZoom = () => {
+        if (zoomLevel < zoom) {
+          zoomLevel += zoomSpeed;
+          if (zoomLevel >= zoom) zoomLevel = zoom;
 
-            map.flyTo(correctedPosition, zoomLevel, {
-              animate: true,
-              duration: isMobile ? 0.4 : 0.3,
-              easeLinearity: 1,
-            });
+          map.flyTo(correctedPosition, zoomLevel, {
+            animate: true,
+            duration: isMobile ? 0.4 : 0.3,
+            easeLinearity: 1,
+          });
 
-            requestAnimationFrame(animateZoom);
-          }
-        };
+          requestAnimationFrame(animateZoom);
+        }
+      };
 
-        requestAnimationFrame(animateZoom);
-      }, 300); // ⏱️ Delay de 2 segundos
+      requestAnimationFrame(animateZoom);
+    }, 300); // delay antes de empezar animación
 
-      return () => clearTimeout(delayTimer);
-    }
-  }, [inView, map, zoom, isMobile]);
+    return () => clearTimeout(delayTimer);
+  }, [inView, map, zoom, isMobile, startAnimation]);
 
   return <div ref={ref} style={{ width: "100%", height: "100%" }} />;
 };
+
 
 
 // Componente que redirige a Google Maps al hacer clic en el mapa

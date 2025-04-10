@@ -235,21 +235,19 @@ const Evidencias = () => {
                                                         onClick={(e) => {
                                                             const video = e.target;
 
-                                                            // Solo en móvil: forzar fullscreen
-                                                            if (isMobile) {
-                                                                if (video.requestFullscreen) {
-                                                                    video.requestFullscreen();
-                                                                } else if (video.webkitEnterFullscreen) {
-                                                                    video.webkitEnterFullscreen(); // Safari iOS
-                                                                } else if (video.webkitRequestFullscreen) {
-                                                                    video.webkitRequestFullscreen(); // Chrome Android
-                                                                } else if (video.msRequestFullscreen) {
-                                                                    video.msRequestFullscreen();
-                                                                }
-
-                                                                // Reproducir manualmente si está pausado
-                                                                if (video.paused) video.play();
+                                                            // Intentar pantalla completa en todos los dispositivos
+                                                            if (video.requestFullscreen) {
+                                                                video.requestFullscreen();
+                                                            } else if (video.webkitEnterFullscreen) {
+                                                                video.webkitEnterFullscreen(); // Safari iOS
+                                                            } else if (video.webkitRequestFullscreen) {
+                                                                video.webkitRequestFullscreen(); // Chrome
+                                                            } else if (video.msRequestFullscreen) {
+                                                                video.msRequestFullscreen(); // IE / Edge
                                                             }
+
+                                                            // Reproducir manualmente si está pausado
+                                                            if (video.paused) video.play();
                                                         }}
                                                         sx={{
                                                             height: '100%',
@@ -267,15 +265,26 @@ const Evidencias = () => {
                                                 <Typography
                                                     variant="body2"
                                                     align="center"
+                                                    component="a"
+                                                    href="https://www.autoges-web.cl"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
                                                     sx={{
+                                                        display: 'block',
                                                         mt: 1,
-                                                        color: 'gray',
-                                                        fontStyle: 'italic',
+                                                        color: '#00bcd4', // celeste tipo cyan claro
                                                         fontFamily: 'Poppins, sans-serif',
+                                                        textDecoration: 'none',
+                                                        textAlign: 'center',
+                                                        '&:hover': {
+                                                            textDecoration: 'underline',
+                                                            color: '#26c6da', // un tono más claro al pasar el mouse
+                                                        },
                                                     }}
                                                 >
-                                                    AutoGest
+                                                    www.autoges-web.cl
                                                 </Typography>
+
                                             )}
                                             {/* 👇 Texto "En desarrollo..." solo para evidencia3 */}
                                             {i === 1 && (
