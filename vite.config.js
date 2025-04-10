@@ -40,6 +40,19 @@ export default defineConfig({
       }
     })
   ],
+  build: {
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Divide librerías grandes en sus propios archivos
+          react: ['react', 'react-dom'],
+          mui: ['@mui/material', '@emotion/react', '@emotion/styled'],
+          motion: ['framer-motion'],
+        }
+      }
+    }
+  },
   server: {
     mimeTypes: {
       '.jsx': 'application/javascript'

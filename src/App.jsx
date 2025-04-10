@@ -4,15 +4,17 @@ import theme from "./theme";
 import { ThemeProvider } from "@mui/material/styles";
 import { Routes, Route } from "react-router-dom";
 import "@fontsource/poppins";
-import Navbar from "./components/Navbar";
-import Areas from "./components/Areas";
-import Informations from "./components/Informations";
-import Contacto from "./components/Contacto";
-import Footer from "./components/Footer";
+import { lazy, Suspense } from "react";
+const Areas = lazy(() => import("./components/Areas"));
+const Informations = lazy(() => import("./components/Informations"));
+const Contacto = lazy(() => import("./components/Contacto"));
+const Evidencias = lazy(() => import("./components/Evidencias"));
+const Footer = lazy(() => import("./components/Footer"));
+const Navbar = lazy(() => import("./components/Navbar"));
+
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import { useLocation } from "react-router-dom";
-import Evidencias from "./components/Evidencias";
 import { Outlet } from "react-router-dom";
 import Cargando from './components/Cargando';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -29,8 +31,9 @@ function App() {
   const informationsRef = useRef(null); // ✅ AÑADE AQUÍ EL REF PARA SCROLL
   const location = useLocation();
   const [videoReady, setVideoReady] = useState(false);
-  const requiereVideo = ["/", "/inicio", ""].includes(location.pathname);
-  const isCompletelyReady = !isLoading && (requiereVideo ? videoReady : true);
+  const isHome = ["/", "/inicio", ""].includes(location.pathname);
+  const isCompletelyReady = !isLoading && (isHome ? videoReady : true);
+  const [showApp, setShowApp] = useState(false);
 
 
   useEffect(() => {
@@ -82,46 +85,28 @@ function App() {
     }
   }, [location.pathname]);
 
-  //CARGANDO
+  // ⏳ CARGANDO CON LÓGICA CORRECTA
   useEffect(() => {
-    let tiempoMinimoCumplido = false;
-    let timeoutMin = null;
-    let timeoutMax = null;
+    let minListo = false;
 
-    const intentarQuitarCargando = () => {
-      if (tiempoMinimoCumplido && (videoReady || !requiereVideo)) {
-        setIsLoading(false);
+    const requiereVideo = ["/", "/inicio", ""].includes(location.pathname);
+
+    const minTimeout = setTimeout(() => {
+      minListo = true;
+      if (!requiereVideo || videoReady) {
+        setShowApp(true);
       }
-    };
+    }, 1500); // mínimo visible
 
-    // ⏳ Timer mínimo (1.5 segundos)
-    timeoutMin = setTimeout(() => {
-      tiempoMinimoCumplido = true;
-      intentarQuitarCargando();
-    }, 1500);
-
-    // ⏱️ Timer máximo (5 segundos)
-    timeoutMax = setTimeout(() => {
-      setIsLoading(false); // fuerza el fin de carga
-    }, 5000);
+    const maxTimeout = setTimeout(() => {
+      setShowApp(true); // fuerza mostrar app
+    }, 4000); // máximo espera
 
     return () => {
-      clearTimeout(timeoutMin);
-      clearTimeout(timeoutMax);
+      clearTimeout(minTimeout);
+      clearTimeout(maxTimeout);
     };
-  }, [videoReady, requiereVideo]);
-  //LIBERAR CARGANDO
-  useEffect(() => {
-    const body = document.body;
-
-    if (!isCompletelyReady) {
-      body.classList.add('no-scroll');
-    } else {
-      body.classList.remove('no-scroll');
-    }
-
-    return () => body.classList.remove('no-scroll');
-  }, [isCompletelyReady]);
+  }, [videoReady, location.pathname]);
 
 
   return (
@@ -130,7 +115,7 @@ function App() {
 
       {/* Pantalla de carga */}
       <AnimatePresence>
-        {!isCompletelyReady && (
+        {!showApp && (
           <motion.div
             key="cargando"
             initial={{ opacity: 1 }}
@@ -154,13 +139,15 @@ function App() {
       {/* Contenido principal, oculto mientras se carga */}
       <Box
         sx={{
-          visibility: isCompletelyReady ? "visible" : "hidden",
-          pointerEvents: isCompletelyReady ? "auto" : "none",
+          visibility: showApp ? "visible" : "hidden",
+          pointerEvents: showApp ? "auto" : "none",
         }}
       >
         {/* Navbar solo si no estás en /administracion */}
         {location.pathname !== "/administracion" && (
-          <Navbar contactoRef={contactoRef} informationsRef={informationsRef} />
+          <Suspense fallback={null}>
+            <Navbar contactoRef={contactoRef} informationsRef={informationsRef} />
+          </Suspense>
         )}
 
         {/* Rutas principales con contexto */}
@@ -169,16 +156,27 @@ function App() {
         {/* Secciones visibles solo en la página de inicio */}
         {["/", ""].includes(location.pathname) && (
           <>
-            <Box id="areas-section">
-              <Areas />
-            </Box>
-            <div ref={informationsRef}>
-              <Informations />
-            </div>
-            <Evidencias />
-            <Box ref={contactoRef}>
-              <Contacto />
-            </Box>
+            <Suspense fallback={null}>
+              <Box id="areas-section">
+                <Areas />
+              </Box>
+            </Suspense>
+
+            <Suspense fallback={null}>
+              <div ref={informationsRef}>
+                <Informations />
+              </div>
+            </Suspense>
+            <Suspense fallback={null}>
+              <Evidencias />
+            </Suspense>
+
+            <Suspense fallback={null}>
+              <Box ref={contactoRef}>
+                <Contacto />
+              </Box>
+            </Suspense>
+
           </>
         )}
 
