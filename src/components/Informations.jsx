@@ -8,6 +8,8 @@ import Public from '@mui/icons-material/Public';
 import GroupAdd from '@mui/icons-material/GroupAdd';
 import Campaign from '@mui/icons-material/Campaign';
 import DashboardCustomize from '@mui/icons-material/DashboardCustomize';
+import { useOutletContext } from "react-router-dom";
+
 
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import "./css/Informations.css"; // Importamos el CSS
@@ -54,7 +56,8 @@ const promotions = [
 
 
 
-const Informations = () => {
+function Informations({ informationsRef, triggerInformations }) {
+
   // Controla la vista del componente
   const [isGrabbing, setIsGrabbing] = useState(false);
   const { ref, inView } = useInView({
@@ -87,6 +90,19 @@ const Informations = () => {
       setHasAnimated(true);
     }
   }, [swiperInView, swiperInstance, hasAnimated]);
+
+
+  // Lógica para reiniciar la animación
+  useEffect(() => {
+    if (triggerInformations) {
+      setShouldAnimate(false);
+      const timeout = setTimeout(() => {
+        setShouldAnimate(true);
+      }, 50);
+      return () => clearTimeout(timeout);
+    }
+  }, [triggerInformations]);
+
 
   return (
     <Box
@@ -232,11 +248,9 @@ const Informations = () => {
               },
             ]
               .map((item, index) => {
-                const hasLineAbove = index !== 0;
-
                 return (
                   <motion.div
-                    key={index}
+                    key={shouldAnimate ? `animated-${index}` : `static-${index}`}
                     initial={{ opacity: 0, y: 20 }}
                     animate={shouldAnimate ? { opacity: 1, y: 0 } : {}}
                     transition={{

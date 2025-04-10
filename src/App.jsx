@@ -1,9 +1,8 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, lazy, Suspense } from "react";
 import { CssBaseline, Box, IconButton, useMediaQuery, Snackbar, Alert } from "@mui/material";
 import theme from "./theme";
 import { ThemeProvider } from "@mui/material/styles";
 import "@fontsource/poppins";
-import { lazy, Suspense } from "react";
 const Areas = lazy(() => import("./components/Areas"));
 const Informations = lazy(() => import("./components/Informations"));
 const Contacto = lazy(() => import("./components/Contacto"));
@@ -11,10 +10,8 @@ const Evidencias = lazy(() => import("./components/Evidencias"));
 const Footer = lazy(() => import("./components/Footer"));
 const Navbar = lazy(() => import("./components/Navbar"));
 
-import WhatsAppIcon from "@mui/icons-material/WhatsApp";
-import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
-import { useLocation } from "react-router-dom";
-import { Outlet } from "react-router-dom";
+import { WhatsApp as WhatsAppIcon, ArrowUpward as ArrowUpwardIcon } from "@mui/icons-material";
+import { useLocation, Outlet } from "react-router-dom";
 import Cargando from './components/Cargando';
 import { AnimatePresence, motion } from 'framer-motion';
 import "./components/css/App.css";
@@ -25,15 +22,19 @@ function App() {
   const [showArrow, setShowArrow] = useState(false);
   const [openBubble, setOpenBubble] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
-  const contactoRef = useRef(null); // Crear ref para la sección de contacto
+  const contactoRef = useRef(null);
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const informationsRef = useRef(null); // ✅ AÑADE AQUÍ EL REF PARA SCROLL
+  const informationsRef = useRef(null);
   const location = useLocation();
   const [videoReady, setVideoReady] = useState(false);
   const isHome = ["/", "/inicio", ""].includes(location.pathname);
   const isCompletelyReady = !isLoading && (isHome ? videoReady : true);
   const [showApp, setShowApp] = useState(false);
   const [snackbarVersion, setSnackbarVersion] = useState({ open: false, version: "", });
+
+  const [shouldAnimateInformations, setShouldAnimateInformations] = useState(false);
+  const triggerInformations = (value) => setShouldAnimateInformations(value);
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -145,9 +146,7 @@ function App() {
           console.log("🗂️ Versión anterior:", storedVersion);
           console.log("📄 Versión nueva:", currentVersion);
 
-          // ✅ Mostrar snackbar ANTES de recargar
           //localStorage.setItem("app_version", "0.0.1");
-
           setSnackbarVersion({ open: true, version: currentVersion });
 
           setTimeout(() => {
@@ -224,7 +223,8 @@ function App() {
         )}
 
         {/* Rutas principales con contexto */}
-        <Outlet context={{ setVideoReady, contactoRef, informationsRef }} />
+        <Outlet context={{ setVideoReady, contactoRef, informationsRef, triggerInformations }} />
+
 
         {/* Secciones visibles solo en la página de inicio */}
         {["/", ""].includes(location.pathname) && (
@@ -237,7 +237,10 @@ function App() {
 
             <Suspense fallback={null}>
               <div ref={informationsRef}>
-                <Informations />
+                <Informations
+                  informationsRef={informationsRef}
+                  triggerInformations={triggerInformations}
+                />
               </div>
             </Suspense>
             <Suspense fallback={null}>

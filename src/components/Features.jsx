@@ -1,4 +1,3 @@
-import React, { useRef } from "react";
 
 import {
   Container,
@@ -92,7 +91,7 @@ const AdditionalContent = styled(Box)({
   transition: "opacity 0.3s ease",
 });
 
-function Features({ scrollToInformations }) {
+function Features({ scrollToInformations, triggerInformations }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -102,7 +101,10 @@ function Features({ scrollToInformations }) {
     threshold: 0.8,     // Ajusta este valor si quieres que se active antes o después
   });
 
-
+  const handleContactClick = (title) => {
+    const mensaje = `¡Hola! Me interesó ${encodeURIComponent(title)} ¿Me comentas?`;
+    window.open(`https://api.whatsapp.com/send?phone=56992914526&text=${mensaje}`, "_blank");
+  };
   return (
     <Box
       sx={{
@@ -183,24 +185,14 @@ function Features({ scrollToInformations }) {
                             }}
                             onClick={(e) => {
                               e.preventDefault();
-                              e.stopPropagation(); // Evita que se dispare el href del CardActionArea
-                              const nombreFeature = feature.title;
-                              const mensaje = `¡Hola! Me interesó ${encodeURIComponent(nombreFeature)} ¿Me comentas?`;
-                              window.open(
-                                `https://api.whatsapp.com/send?phone=56992914526&text=${mensaje}`,
-                                "_blank"
-                              );
+                              e.stopPropagation();
+                              handleContactClick(feature.title);
                             }}
                             onKeyDown={(e) => {
                               if (e.key === "Enter" || e.key === " ") {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                const nombreFeature = feature.title;
-                                const mensaje = `¡Hola! Me interesó ${encodeURIComponent(nombreFeature)} ¿Me comentas?`;
-                                window.open(
-                                  `https://api.whatsapp.com/send?phone=9&text=${mensaje}`,
-                                  "_blank"
-                                );
+                                handleContactClick(feature.title);
                               }
                             }}
                           >
@@ -221,11 +213,19 @@ function Features({ scrollToInformations }) {
           <Button
             onClick={() => {
               if (scrollToInformations?.current) {
-                const offset = -80;
-                const y = scrollToInformations.current.getBoundingClientRect().top + window.scrollY + offset;
-                window.scrollTo({ top: y, behavior: 'smooth' });
+                triggerInformations(true); // 👈 Activa animación
+
+                // Espera al siguiente "frame" del navegador para asegurar que el DOM esté listo
+                setTimeout(() => {
+                  requestAnimationFrame(() => {
+                    const offset = -80;
+                    const y = scrollToInformations.current.getBoundingClientRect().top + window.scrollY + offset;
+                    window.scrollTo({ top: y, behavior: 'smooth' });
+                  });
+                }, 50);
               }
             }}
+
 
             variant="contained"
             target="_self"
