@@ -56,7 +56,7 @@ const promotions = [
 
 
 
-function Informations({ informationsRef, triggerInformations }) {
+function Informations({ informationsRef, triggerInformations, setHasSeenInformations }) {
 
   // Controla la vista del componente
   const [isGrabbing, setIsGrabbing] = useState(false);
@@ -74,7 +74,15 @@ function Informations({ informationsRef, triggerInformations }) {
     threshold: 0.2,
     triggerOnce: true,
   });
+
+  //CANCELAR PRIMERA ANIMACIÓN
   const [hasAnimated, setHasAnimated] = useState(false);
+
+  useEffect(() => {
+    if (inView) {
+      setShouldAnimate(true); // 🔹 Activa la animación cuando el componente es visible
+    }
+  }, [inView]);
 
 
   useEffect(() => {

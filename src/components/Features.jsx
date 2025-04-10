@@ -91,7 +91,8 @@ const AdditionalContent = styled(Box)({
   transition: "opacity 0.3s ease",
 });
 
-function Features({ scrollToInformations, triggerInformations }) {
+function Features({ scrollToInformations, triggerInformations, hasSeenInformations }) {
+
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -105,6 +106,8 @@ function Features({ scrollToInformations, triggerInformations }) {
     const mensaje = `¡Hola! Me interesó ${encodeURIComponent(title)} ¿Me comentas?`;
     window.open(`https://api.whatsapp.com/send?phone=56992914526&text=${mensaje}`, "_blank");
   };
+
+
   return (
     <Box
       sx={{
@@ -213,7 +216,10 @@ function Features({ scrollToInformations, triggerInformations }) {
           <Button
             onClick={() => {
               if (scrollToInformations?.current) {
-                triggerInformations(true); // 👈 Activa animación
+                // ✅ SOLO activa animación si ya se ha visto la sección al menos una vez
+                if (hasSeenInformations) {
+                  triggerInformations(true);
+                }
 
                 // Espera al siguiente "frame" del navegador para asegurar que el DOM esté listo
                 setTimeout(() => {
@@ -225,7 +231,6 @@ function Features({ scrollToInformations, triggerInformations }) {
                 }, 50);
               }
             }}
-
 
             variant="contained"
             target="_self"

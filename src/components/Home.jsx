@@ -6,8 +6,7 @@ import Features from "./Features";
 import { useOutletContext } from "react-router-dom";
 
 function Home({ contactoRef, informationsRef, setVideoReady }) {
-    const { triggerInformations } = useOutletContext();
-
+    const { triggerInformations, hasSeenInformations } = useOutletContext();
     return (
         <Box>
             <Hero scrollToContacto={contactoRef} setVideoReady={setVideoReady} />
@@ -15,6 +14,7 @@ function Home({ contactoRef, informationsRef, setVideoReady }) {
                 <Features
                     scrollToInformations={informationsRef}
                     triggerInformations={triggerInformations}
+                    hasSeenInformations={hasSeenInformations}
                 />
             </Box>
         </Box>

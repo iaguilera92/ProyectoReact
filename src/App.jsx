@@ -34,6 +34,7 @@ function App() {
 
   const [shouldAnimateInformations, setShouldAnimateInformations] = useState(false);
   const triggerInformations = (value) => setShouldAnimateInformations(value);
+  const [hasSeenInformations, setHasSeenInformations] = useState(false);
 
 
   useEffect(() => {
@@ -223,7 +224,8 @@ function App() {
         )}
 
         {/* Rutas principales con contexto */}
-        <Outlet context={{ setVideoReady, contactoRef, informationsRef, triggerInformations }} />
+        <Outlet context={{ setVideoReady, contactoRef, informationsRef, triggerInformations, hasSeenInformations }} />
+
 
 
         {/* Secciones visibles solo en la página de inicio */}
@@ -240,6 +242,7 @@ function App() {
                 <Informations
                   informationsRef={informationsRef}
                   triggerInformations={triggerInformations}
+                  setHasSeenInformations={setHasSeenInformations}
                 />
               </div>
             </Suspense>
