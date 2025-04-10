@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import viteImagemin from 'vite-plugin-imagemin';
+import { writeFileSync } from 'fs'; // 👈 añade esto
 
 export default defineConfig({
   assetsInclude: ['**/*.xlsx'],
@@ -38,14 +39,23 @@ export default defineConfig({
       avif: {
         quality: 50
       }
-    })
+    }),
+
+    // 👇 Plugin que crea version.json automáticamente
+    {
+      name: 'generate-version-json',
+      writeBundle() {
+        const version = Date.now().toString(); // o puedes usar un hash de git si quieres
+        writeFileSync('public/version.json', JSON.stringify({ version }), 'utf-8');
+        console.log(`✅ version.json generado: ${version}`);
+      },
+    }
   ],
   build: {
     chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
         manualChunks: {
-          // Divide librerías grandes en sus propios archivos
           react: ['react', 'react-dom'],
           mui: ['@mui/material', '@emotion/react', '@emotion/styled'],
           motion: ['framer-motion'],

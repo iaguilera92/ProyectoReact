@@ -19,7 +19,6 @@ import { Outlet } from "react-router-dom";
 import Cargando from './components/Cargando';
 import { AnimatePresence, motion } from 'framer-motion';
 import "./components/css/App.css";
-import "./css/App.css";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -109,190 +108,217 @@ function App() {
     };
   }, [videoReady, location.pathname]);
 
-  const timeout = setTimeout(() => {
-    setIsLoading(false);
-  }, 1500);
-  return () => clearTimeout(timeout);
-}, []);
+  //LIBERAR CARGANDO
+  useEffect(() => {
+    const body = document.body;
+    const html = document.documentElement;
 
-useEffect(() => {
-  const body = document.body;
-  const html = document.documentElement;
+    if (!isCompletelyReady) {
+      body.classList.add('no-scroll');
+      html.classList.add('no-scroll');
+    } else {
+      body.classList.remove('no-scroll');
+      html.classList.remove('no-scroll');
+    }
 
-  if (!showApp) {
-    body.classList.add('no-scroll');
-    html.classList.add('no-scroll');
-  } else {
-    body.classList.remove('no-scroll');
-    html.classList.remove('no-scroll');
-  }
+    return () => {
+      body.classList.remove('no-scroll');
+      html.classList.remove('no-scroll');
+    };
+  }, [isCompletelyReady]);
 
-  return () => {
-    body.classList.remove('no-scroll');
-    html.classList.remove('no-scroll');
-  };
-}, [showApp]);
+  //LIMPIAR CACHE
+  useEffect(() => {
+    fetch("/version.json", { cache: "no-store" }) // evita cache para esta solicitud
+      .then((res) => res.json())
+      .then((data) => {
+        const storedVersion = localStorage.getItem("app_version");
+
+        if (!storedVersion) {
+          // ⚠️ Primera vez que se encuentra version.json
+          localStorage.setItem("app_version", data.version);
+          caches.keys().then((names) => {
+            for (let name of names) caches.delete(name);
+          });
+          window.location.reload(); // ⚠️ Recarga para aplicar desde cero
+          return;
+        }
+
+        console.log("🗂️ Versión limpiada:", storedVersion || "ninguna");
+        console.log("📄 Versión actual:", currentVersion);
+
+        if (storedVersion !== data.version) {
+          // ✅ Nueva versión detectada
+          caches.keys().then((names) => {
+            for (let name of names) caches.delete(name);
+          });
+          localStorage.setItem("app_version", data.version);
+          window.location.reload(); // recarga la app limpia
+        }
+      })
+      .catch((err) => console.warn("⚠️ No se pudo verificar la versión:", err));
+  }, []);
 
 
 
-return (
-  <ThemeProvider theme={theme}>
-    <CssBaseline />
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
 
-    {/* Pantalla de carga */}
-    <AnimatePresence>
-      {!showApp && (
-        <motion.div
-          key="cargando"
-          initial={{ opacity: 1 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.8 }}
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            zIndex: 9999,
-          }}
-        >
-          <Cargando />
-        </motion.div>
-      )}
-    </AnimatePresence>
-
-    {/* Contenido principal, oculto mientras se carga */}
-    <Box
-      sx={{
-        visibility: showApp ? "visible" : "hidden",
-        pointerEvents: showApp ? "auto" : "none",
-      }}
-    >
-      {/* Navbar solo si no estás en /administracion */}
-      {location.pathname !== "/administracion" && (
-        <Suspense fallback={null}>
-          <Navbar contactoRef={contactoRef} informationsRef={informationsRef} />
-        </Suspense>
-      )}
-
-      {/* Rutas principales con contexto */}
-      <Outlet context={{ setVideoReady, contactoRef, informationsRef }} />
-
-      {/* Secciones visibles solo en la página de inicio */}
-      {["/", ""].includes(location.pathname) && (
-        <>
-          <Suspense fallback={null}>
-            <Box id="areas-section">
-              <Areas />
-            </Box>
-          </Suspense>
-
-          <Suspense fallback={null}>
-            <div ref={informationsRef}>
-              <Informations />
-            </div>
-          </Suspense>
-          <Suspense fallback={null}>
-            <Evidencias />
-          </Suspense>
-
-          <Suspense fallback={null}>
-            <Box ref={contactoRef}>
-              <Contacto />
-            </Box>
-          </Suspense>
-
-        </>
-      )}
-
-      {/* Footer (excepto en administración) */}
-      {location.pathname !== "/administracion" && <Footer />}
-
-      {/* Botón WhatsApp */}
-      {location.pathname !== "/administracion" && (
-        <Box
-          sx={{
-            position: "fixed",
-            bottom: "40px",
-            right: "40px",
-            zIndex: 100,
-            transition: "bottom 0.3s ease",
-          }}
-        >
-          <IconButton
-            onClick={() => {
-              window.open("https://api.whatsapp.com/send?phone=56992914526", "_blank");
-              setHasInteracted(true);
-            }}
-            sx={{
-              width: 60,
-              height: 60,
-              backgroundColor: "#25d366",
-              color: "#FFF",
-              borderRadius: "50%",
-              boxShadow: "2px 2px 3px #999",
-              "&:hover": { backgroundColor: "#1ebe5d" },
-              zIndex: 101,
+      {/* Pantalla de carga */}
+      <AnimatePresence>
+        {!showApp && (
+          <motion.div
+            key="cargando"
+            initial={{ opacity: 1 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8 }}
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100vw",
+              height: "100vh",
+              zIndex: 9999,
             }}
           >
-            <WhatsAppIcon sx={{ fontSize: 30 }} />
-          </IconButton>
+            <Cargando />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-          {/* Burbuja de mensaje */}
-          {openBubble && (
-            <Box
-              sx={{
-                position: "fixed",
-                bottom: 110,
-                right: 40,
-                backgroundColor: "#fff",
-                color: "#000",
-                boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
-                borderRadius: "20px",
-                padding: "8px 16px",
-                fontFamily: "Poppins, sans-serif",
-                zIndex: 102,
-                opacity: openBubble ? 1 : 0,
-                transform: openBubble ? "translateX(0)" : "translateX(100%)",
-                transition: "transform 0.5s ease, opacity 0.5s ease",
+      {/* Contenido principal, oculto mientras se carga */}
+      <Box
+        sx={{
+          visibility: showApp ? "visible" : "hidden",
+          pointerEvents: showApp ? "auto" : "none",
+        }}
+      >
+        {/* Navbar solo si no estás en /administracion */}
+        {location.pathname !== "/administracion" && (
+          <Suspense fallback={null}>
+            <Navbar contactoRef={contactoRef} informationsRef={informationsRef} />
+          </Suspense>
+        )}
+
+        {/* Rutas principales con contexto */}
+        <Outlet context={{ setVideoReady, contactoRef, informationsRef }} />
+
+        {/* Secciones visibles solo en la página de inicio */}
+        {["/", ""].includes(location.pathname) && (
+          <>
+            <Suspense fallback={null}>
+              <Box id="areas-section">
+                <Areas />
+              </Box>
+            </Suspense>
+
+            <Suspense fallback={null}>
+              <div ref={informationsRef}>
+                <Informations />
+              </div>
+            </Suspense>
+            <Suspense fallback={null}>
+              <Evidencias />
+            </Suspense>
+
+            <Suspense fallback={null}>
+              <Box ref={contactoRef}>
+                <Contacto />
+              </Box>
+            </Suspense>
+
+          </>
+        )}
+
+        {/* Footer (excepto en administración) */}
+        {location.pathname !== "/administracion" && <Footer />}
+
+        {/* Botón WhatsApp */}
+        {location.pathname !== "/administracion" && (
+          <Box
+            sx={{
+              position: "fixed",
+              bottom: "40px",
+              right: "40px",
+              zIndex: 100,
+              transition: "bottom 0.3s ease",
+            }}
+          >
+            <IconButton
+              onClick={() => {
+                window.open("https://api.whatsapp.com/send?phone=56992914526", "_blank");
+                setHasInteracted(true);
               }}
-              onClick={() => setOpenBubble(false)}
+              sx={{
+                width: 60,
+                height: 60,
+                backgroundColor: "#25d366",
+                color: "#FFF",
+                borderRadius: "50%",
+                boxShadow: "2px 2px 3px #999",
+                "&:hover": { backgroundColor: "#1ebe5d" },
+                zIndex: 101,
+              }}
             >
-              Puedes escribirnos al wsp!
-            </Box>
-          )}
-        </Box>
-      )}
+              <WhatsAppIcon sx={{ fontSize: 30 }} />
+            </IconButton>
 
-      {/* Botón scroll arriba */}
-      {showArrow && (
-        <IconButton
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          sx={{
-            position: "fixed",
-            bottom: "120px",
-            right: "40px",
-            backgroundColor: "#fff",
-            color: "#000",
-            borderRadius: "50%",
-            padding: "10px",
-            boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.2)",
-            zIndex: 101,
-            transition: "transform 0.3s ease-in-out",
-            "&:hover": {
-              transform: "scale(1.1)",
-              backgroundColor: "#000",
-              color: "#fff",
-            },
-          }}
-        >
-          <ArrowUpwardIcon sx={{ fontSize: 30 }} />
-        </IconButton>
-      )}
-    </Box>
-  </ThemeProvider>
-);
+            {/* Burbuja de mensaje */}
+            {openBubble && (
+              <Box
+                sx={{
+                  position: "fixed",
+                  bottom: 110,
+                  right: 40,
+                  backgroundColor: "#fff",
+                  color: "#000",
+                  boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
+                  borderRadius: "20px",
+                  padding: "8px 16px",
+                  fontFamily: "Poppins, sans-serif",
+                  zIndex: 102,
+                  opacity: openBubble ? 1 : 0,
+                  transform: openBubble ? "translateX(0)" : "translateX(100%)",
+                  transition: "transform 0.5s ease, opacity 0.5s ease",
+                }}
+                onClick={() => setOpenBubble(false)}
+              >
+                Puedes escribirnos al wsp!
+              </Box>
+            )}
+          </Box>
+        )}
+
+        {/* Botón scroll arriba */}
+        {showArrow && (
+          <IconButton
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            sx={{
+              position: "fixed",
+              bottom: "120px",
+              right: "40px",
+              backgroundColor: "#fff",
+              color: "#000",
+              borderRadius: "50%",
+              padding: "10px",
+              boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.2)",
+              zIndex: 101,
+              transition: "transform 0.3s ease-in-out",
+              "&:hover": {
+                transform: "scale(1.1)",
+                backgroundColor: "#000",
+                color: "#fff",
+              },
+            }}
+          >
+            <ArrowUpwardIcon sx={{ fontSize: 30 }} />
+          </IconButton>
+        )}
+      </Box>
+    </ThemeProvider>
+  );
 }
 
 export default App;
