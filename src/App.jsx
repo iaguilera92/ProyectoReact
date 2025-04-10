@@ -127,7 +127,7 @@ function App() {
     };
   }, [isCompletelyReady]);
 
-  // LIMPIAR CACHE
+  //LIMPIAR CACHE
   useEffect(() => {
     fetch("/version.json", { cache: "no-store" }) // evita cache para esta solicitud
       .then((res) => res.json())
@@ -136,28 +136,28 @@ function App() {
         const currentVersion = data.version;
 
         if (!storedVersion) {
-          // ⚠️ Primera vez que se encuentra version.json
           console.log("🗂️ Versión cacheada: ninguna");
           console.log("📄 Versión actual:", currentVersion);
           localStorage.setItem("app_version", currentVersion);
           caches.keys().then((names) => {
             for (let name of names) caches.delete(name);
           });
-          window.location.reload(); // ⚠️ Recarga para aplicar desde cero
+          window.location.reload();
           return;
         }
-
-        console.log("🗂️ Versión cacheada:", storedVersion);
-        console.log("📄 Versión actual:", currentVersion);
 
         if (storedVersion !== currentVersion) {
           // ✅ Nueva versión detectada
           console.log("🆕 Nueva versión detectada. Limpiando caché...");
+          console.log("🗂️ Versión anterior:", storedVersion);
+          console.log("📄 Versión nueva:", currentVersion);
           caches.keys().then((names) => {
             for (let name of names) caches.delete(name);
           });
           localStorage.setItem("app_version", currentVersion);
-          window.location.reload(); // recarga la app limpia
+          window.location.reload();
+        } else {
+          console.log("✅ App actualizada. Versión:", currentVersion);
         }
       })
       .catch((err) => console.warn("⚠️ No se pudo verificar la versión:", err));
