@@ -249,7 +249,7 @@ function Hero({ scrollToContacto, setVideoReady }) {
                   variant="h3"
                   gutterBottom
                   className="text"
-                  sx={{ fontSize: isMobile ? "1.64rem" : "2.5rem" }} // Cambia tamaño en móvil
+                  sx={{ fontSize: isMobile ? "1.64rem !important" : "2.5rem !important" }} // Cambia tamaño en móvil
                 >
                   {texts[currentText].title}
                 </Typography>

@@ -1,8 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
-import { CssBaseline, Box, IconButton, useMediaQuery } from "@mui/material";
+import { CssBaseline, Box, IconButton, useMediaQuery, Snackbar, Alert } from "@mui/material";
 import theme from "./theme";
 import { ThemeProvider } from "@mui/material/styles";
-import { Routes, Route } from "react-router-dom";
 import "@fontsource/poppins";
 import { lazy, Suspense } from "react";
 const Areas = lazy(() => import("./components/Areas"));
@@ -34,7 +33,7 @@ function App() {
   const isHome = ["/", "/inicio", ""].includes(location.pathname);
   const isCompletelyReady = !isLoading && (isHome ? videoReady : true);
   const [showApp, setShowApp] = useState(false);
-
+  const [snackbarVersion, setSnackbarVersion] = useState({ open: false, version: "", });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -130,41 +129,42 @@ function App() {
 
   //LIMPIAR CACHE
   useEffect(() => {
-    fetch("/version.json", { cache: "no-store" }) // evita cache para esta solicitud
+    fetch("/version.json", { cache: "no-store" })
       .then((res) => res.json())
       .then((data) => {
         const storedVersion = localStorage.getItem("app_version");
         const currentVersion = data.version;
 
         if (!storedVersion) {
-          console.log("🗂️ Versión cacheada: ninguna");
-          console.log("📄 Versión actual:", currentVersion);
           localStorage.setItem("app_version", currentVersion);
-          caches.keys().then((names) => {
-            for (let name of names) caches.delete(name);
-          });
-          window.location.reload();
-          return;
+          return; // No mostramos snackbar, solo almacenamos
         }
 
         if (storedVersion !== currentVersion) {
-          // ✅ Nueva versión detectada
           console.log("🆕 Nueva versión detectada. Limpiando caché...");
           console.log("🗂️ Versión anterior:", storedVersion);
           console.log("📄 Versión nueva:", currentVersion);
-          caches.keys().then((names) => {
-            for (let name of names) caches.delete(name);
-          });
-          localStorage.setItem("app_version", currentVersion);
-          window.location.reload();
+
+          // ✅ Mostrar snackbar ANTES de recargar
+          //localStorage.setItem("app_version", "0.0.1");
+
+          setSnackbarVersion({ open: true, version: currentVersion });
+
+          setTimeout(() => {
+            caches.keys().then((names) => {
+              for (let name of names) caches.delete(name);
+            });
+            localStorage.setItem("app_version", currentVersion);
+            window.location.reload();
+          }, 1500); // Espera para mostrar el mensaje
         } else {
           console.log("✅ App actualizada. Versión:", currentVersion);
         }
       })
-      .catch((err) => console.warn("⚠️ No se pudo verificar la versión:", err));
+      .catch((err) =>
+        console.warn("⚠️ No se pudo verificar la versión:", err)
+      );
   }, []);
-
-
 
 
   return (
@@ -174,23 +174,38 @@ function App() {
       {/* Pantalla de carga */}
       <AnimatePresence>
         {!showApp && (
-          <motion.div
-            key="cargando"
-            initial={{ opacity: 1 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.8 }}
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              width: "100vw",
-              height: "100vh",
-              zIndex: 9999,
-            }}
-          >
-            <Cargando />
-          </motion.div>
+          <>
+            <motion.div
+              key="cargando"
+              initial={{ opacity: 1 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.8 }}
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100vw",
+                height: "100vh",
+                zIndex: 9999,
+              }}
+            >
+              <Cargando />
+            </motion.div>
+
+            {/* Snackbar como overlay global */}
+            <Snackbar
+              open={snackbarVersion.open}
+              autoHideDuration={1400}
+              anchorOrigin={{ vertical: "top", horizontal: "center" }}
+              sx={{ zIndex: 20000 }}
+            >
+              <Alert severity="info" icon={false} sx={{ width: "100%" }}>
+                ✅ Nueva versión detectada: {snackbarVersion.version}, Se actualizará.
+              </Alert>
+            </Snackbar>
+
+          </>
         )}
       </AnimatePresence>
 
