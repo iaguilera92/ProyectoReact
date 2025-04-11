@@ -206,8 +206,17 @@ function App() {
               anchorOrigin={{ vertical: "top", horizontal: "center" }}
               sx={{ zIndex: 20000 }}
             >
-              <Alert severity="info" icon={false} sx={{ width: "100%" }}>
-                ✅ Nueva versión detectada: {snackbarVersion.version}, Se actualizará.
+              <Alert
+                severity="info"
+                icon={false}
+                sx={{
+                  width: "100%",
+                  textAlign: "center", // ✅ centra el texto
+                  fontSize: "0.9rem",
+                  boxShadow: 3,
+                }}
+              >
+                ✅Nueva versión disponible:{snackbarVersion.version} 🔄Actualizando
               </Alert>
             </Snackbar>
 
