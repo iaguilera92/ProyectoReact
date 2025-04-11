@@ -62,6 +62,7 @@ const Administracion = () => {
             type: "success",
             message: `Bienvenido ${usuarioValido.nombre} 😎`,
           },
+          usuario: usuarioValido
         },
       });
     }

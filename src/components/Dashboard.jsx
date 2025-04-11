@@ -11,7 +11,8 @@ import { motion } from "framer-motion";
 import ViewCarouselIcon from "@mui/icons-material/ViewCarousel";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import HomeRepairServiceIcon from "@mui/icons-material/HomeRepairService";
-
+import { useLocation } from "react-router-dom";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 
 const Contador = ({ valorFinal, texto, subtexto, delay = 0, variant = "h5", iniciar }) => {
     const [valor, setValor] = useState(0);
@@ -60,6 +61,17 @@ const Dashboard = () => {
     const [mostrarContadorChile, setMostrarContadorChile] = useState(false);
     const [mostrarContadorInt, setMostrarContadorInt] = useState(false);
     const [snackbarServicios, setSnackbarServicios] = useState(false);
+    const location = useLocation();
+    const usuario = location.state?.usuario;
+
+    const letterVariants = {
+        hidden: { opacity: 0, x: -20 },
+        visible: (i) => ({
+            opacity: 1,
+            x: 0,
+            transition: { delay: 0.4 + i * 0.05 }, // puedes ajustar el delay aquí
+        }),
+    };
 
     return (
         <Box
@@ -76,14 +88,72 @@ const Dashboard = () => {
                 overflow: "hidden",
             }}
         >
+            {usuario && (
+                <Grid item sx={{ pt: isMobile ? 12 : 12 }}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            color: "white",
+                            gap: 1,
+                            mb: 1,
+                            flexWrap: "wrap",
+                        }}
+                    >
+                        <Typography
+                            variant="h6"
+                            fontWeight="bold"
+                            sx={{
+                                display: "inline-flex",
+                                flexWrap: "wrap",
+                                justifyContent: "center",
+                            }}
+                        >
+                            {"Bienvenido ".split("").map((char, index) => (
+                                <motion.span
+                                    key={`char-${index}`}
+                                    custom={index}
+                                    variants={letterVariants}
+                                    initial="hidden"
+                                    animate="visible"
+                                    style={{ display: "inline-block" }}
+                                >
+                                    {char === " " ? "\u00A0" : char}
+                                </motion.span>
+                            ))}
+                            {usuario.nombre.split("").map((char, index) => (
+                                <motion.span
+                                    key={`nombre-${index}`}
+                                    custom={index + 10}
+                                    variants={letterVariants}
+                                    initial="hidden"
+                                    animate="visible"
+                                    style={{ display: "inline-block" }}
+                                >
+                                    {char === " " ? "\u00A0" : char}
+                                </motion.span>
+                            ))}
+                        </Typography>
 
+
+                        <motion.div
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 1.4, duration: 0.5 }}
+                        >
+                            <AdminPanelSettingsIcon sx={{ fontSize: 26, color: "white" }} />
+                        </motion.div>
+                    </Box>
+                </Grid>
+            )}
             <Grid
                 container
                 spacing={1.5}
                 justifyContent="top"
                 alignItems="center"
                 direction="column"
-                sx={{ width: "100%", flexGrow: 1, pt: isMobile ? 12 : 12 }}
+                sx={{ width: "100%", flexGrow: 1 }}
             >
                 {/* Cuadro principal con animación */}
                 <Grid item>

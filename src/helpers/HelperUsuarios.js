@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 
 export const cargarUsuariosDesdeExcel = async () => {
   try {
-    const response = await fetch("/database/Usuarios.xlsx");
+    const response = await fetch(`/database/Usuarios.xlsx?v=${Date.now()}`); // 👈 evita cache
     const arrayBuffer = await response.arrayBuffer();
     const workbook = XLSX.read(arrayBuffer, { type: "array" });
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
