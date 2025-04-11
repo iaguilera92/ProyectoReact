@@ -80,7 +80,7 @@ const Dashboard = () => {
             <Grid
                 container
                 spacing={1.5}
-                justifyContent="center"
+                justifyContent="top"
                 alignItems="center"
                 direction="column"
                 sx={{ width: "100%", flexGrow: 1, pt: isMobile ? 12 : 12 }}
