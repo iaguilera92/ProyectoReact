@@ -211,12 +211,20 @@ function App() {
                 icon={false}
                 sx={{
                   width: "100%",
-                  textAlign: "center", // ✅ centra el texto
                   fontSize: "0.9rem",
                   boxShadow: 3,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center", // ✅ centra horizontalmente el contenido
+                  justifyContent: "center",
+                  textAlign: "center",  // ✅ centra el texto
                 }}
               >
-                ✅Nueva versión disponible:{snackbarVersion.version} 🔄Actualizando
+                <Box>
+                  ✅ Nueva versión disponible: {snackbarVersion.version}
+                  <br />
+                  🔄 Actualizando...
+                </Box>
               </Alert>
             </Snackbar>
 
