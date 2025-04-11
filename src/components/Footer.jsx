@@ -1,5 +1,5 @@
 import { Box, Container, Typography, Link, keyframes, useMediaQuery, Snackbar, Alert, useTheme } from "@mui/material";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
@@ -89,6 +89,18 @@ const Footer = () => {
   const { ref: socialRef, inView: socialInView } = useInView({ triggerOnce: true, threshold: 0.1 });
   const { ref: contactRef, inView: contactInView } = useInView({ triggerOnce: true, threshold: 0.1 });
   const { ref: providersRef, inView: providersInView } = useInView({ triggerOnce: true, threshold: 0.1 });
+  const [version, setVersion] = useState("");
+
+  useEffect(() => {
+    fetch("/version.json")
+      .then((res) => res.json())
+      .then((data) => {
+        setVersion(data.version);
+      })
+      .catch((err) => {
+        console.error("No se pudo cargar la versión:", err);
+      });
+  }, []);
 
   return (
     <Box
@@ -288,7 +300,7 @@ const Footer = () => {
         )}
 
         <Typography variant="body2" align="center" mt={2} sx={{ marginTop: "5vh" }}>
-          @Plataformas web React 2025 - v1.2.0
+          @Plataformas web React 2025 {version && `- v${version}`}
         </Typography>
       </Container>
     </Box>
