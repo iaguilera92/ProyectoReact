@@ -84,7 +84,7 @@ const Administracion = () => {
 
   // Animación de tipeo
   useEffect(() => {
-    const delay = 1500; // en milisegundos
+    const delay = 500; // en milisegundos
 
     const timeout = setTimeout(() => {
       const typingInterval = setInterval(() => {
