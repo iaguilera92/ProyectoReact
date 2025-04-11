@@ -49,7 +49,7 @@ const Administracion = () => {
     console.log("Resultado de validación:", usuarioValido);
 
     if (usuarioValido) {
-      navigate("/catalogo", {
+      navigate("/dashboard", {
         state: {
           snackbar: {
             open: true,
@@ -58,6 +58,7 @@ const Administracion = () => {
           },
         },
       });
+
     } else {
       setSnackbar({
         open: true,
@@ -75,20 +76,26 @@ const Administracion = () => {
 
   // Animación de tipeo
   useEffect(() => {
-    const typingInterval = setInterval(() => {
-      const nextChar = textToType.current[currentIndex.current];
+    const delay = 1500; // en milisegundos
 
-      if (currentIndex.current < textToType.current.length) {
-        setTypedText((prev) => prev + nextChar);
-        currentIndex.current += 1;
-      } else {
-        clearInterval(typingInterval);
-        setShowCursor(false); // deja de mostrar el cursor
-      }
-    }, 100);
+    const timeout = setTimeout(() => {
+      const typingInterval = setInterval(() => {
+        const nextChar = textToType.current[currentIndex.current];
 
-    return () => clearInterval(typingInterval);
+        if (currentIndex.current < textToType.current.length) {
+          setTypedText((prev) => prev + nextChar);
+          currentIndex.current += 1;
+        } else {
+          clearInterval(typingInterval);
+          setShowCursor(false); // deja de mostrar el cursor
+        }
+      }, 100);
+    }, delay);
+
+    return () => clearTimeout(timeout); // limpia si el componente se desmonta
   }, []);
+
+
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => {
@@ -127,10 +134,12 @@ const Administracion = () => {
           backgroundColor: "rgba(0,0,0,0.6)",
           color: "white",
           p: 4,
+          top: 0,
           borderRadius: 3,
           maxWidth: 350,
           width: "90%",
           textAlign: "center",
+          mt: isMobile ? -5 : 0,
         }}
       >
         <Box

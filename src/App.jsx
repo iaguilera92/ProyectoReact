@@ -88,6 +88,12 @@ function App() {
 
   // ⏳ CARGANDO CON LÓGICA CORRECTA
   useEffect(() => {
+
+    if (["/dashboard", "/administracion"].includes(location.pathname)) {
+      setShowApp(true);
+      return;
+    }
+
     let minListo = false;
 
     const requiereVideo = ["/", "/inicio", ""].includes(location.pathname);
@@ -173,7 +179,7 @@ function App() {
 
       {/* Pantalla de carga */}
       <AnimatePresence>
-        {!showApp && (
+        {!showApp && location.pathname !== "/dashboard" && location.pathname !== "/administracion" && (
           <>
             <motion.div
               key="cargando"
@@ -260,10 +266,10 @@ function App() {
         )}
 
         {/* Footer (excepto en administración) */}
-        {location.pathname !== "/administracion" && <Footer />}
+        {location.pathname !== "/administracion" && location.pathname !== "/dashboard" && <Footer />}
 
         {/* Botón WhatsApp */}
-        {location.pathname !== "/administracion" && (
+        {location.pathname !== "/administracion" && location.pathname !== "/dashboard" && (
           <Box
             sx={{
               position: "fixed",

@@ -8,6 +8,7 @@ const Contacto = lazy(() => import("./components/Contacto"));
 const Administracion = lazy(() => import("./components/Administracion"));
 const Catalogo = lazy(() => import("./components/Catalogo"));
 const Home = lazy(() => import("./components/Home"));
+const Dashboard = lazy(() => import("./components/Dashboard"));
 
 // ✅ HOC para envolver cualquier componente con Suspense
 const withSuspense = (Component) => (
@@ -35,6 +36,7 @@ const router = createBrowserRouter(
                 { path: "contacto", element: withSuspense(Contacto) },
                 { path: "administracion", element: withSuspense(Administracion) },
                 { path: "catalogo", element: withSuspense(Catalogo) },
+                { path: "dashboard", element: withSuspense(Dashboard) },
             ],
         },
     ],
