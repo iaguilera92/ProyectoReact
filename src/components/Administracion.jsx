@@ -49,6 +49,12 @@ const Administracion = () => {
     console.log("Resultado de validación:", usuarioValido);
 
     if (usuarioValido) {
+      if (recordarme) {
+        localStorage.setItem("credenciales", JSON.stringify({ email, password }));
+      } else {
+        localStorage.removeItem("credenciales");
+      }
+
       navigate("/dashboard", {
         state: {
           snackbar: {
@@ -58,14 +64,16 @@ const Administracion = () => {
           },
         },
       });
-
-    } else {
+    }
+    else {
       setSnackbar({
         open: true,
         type: "error",
         message: "Usuario o contraseña incorrectos",
       });
     }
+
+
   };
 
 
@@ -139,7 +147,7 @@ const Administracion = () => {
           maxWidth: 350,
           width: "90%",
           textAlign: "center",
-          mt: isMobile ? -5 : 0,
+          mt: isMobile ? -2 : 0,
         }}
       >
         <Box

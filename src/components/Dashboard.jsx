@@ -5,7 +5,7 @@ import {
     Paper,
     Typography,
     useMediaQuery,
-    useTheme,
+    useTheme, Snackbar, Alert
 } from "@mui/material";
 import { motion } from "framer-motion";
 import ViewCarouselIcon from "@mui/icons-material/ViewCarousel";
@@ -59,6 +59,7 @@ const Dashboard = () => {
     const [mostrarContadorPrincipal, setMostrarContadorPrincipal] = useState(false);
     const [mostrarContadorChile, setMostrarContadorChile] = useState(false);
     const [mostrarContadorInt, setMostrarContadorInt] = useState(false);
+    const [snackbarServicios, setSnackbarServicios] = useState(false);
 
     return (
         <Box
@@ -331,7 +332,7 @@ const Dashboard = () => {
                                 },
 
                             }}
-                            onClick={() => console.log("Ir a Servicios")}
+                            onClick={() => setSnackbarServicios(true)}
                         >
                             <Box
                                 sx={{
@@ -355,6 +356,20 @@ const Dashboard = () => {
 
 
             </Grid >
+            <Snackbar
+                open={snackbarServicios}
+                autoHideDuration={2000}
+                onClose={() => setSnackbarServicios(false)}
+                anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            >
+                <Alert
+                    severity="info" icon={false}
+                    onClose={() => setSnackbarServicios(false)}
+                    sx={{ width: "100%", fontSize: "0.9rem", boxShadow: 3 }}
+                >
+                    🚧 En Construcción...
+                </Alert>
+            </Snackbar>
 
         </Box >
 
