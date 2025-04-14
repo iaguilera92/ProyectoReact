@@ -2,11 +2,11 @@ const { google } = require("googleapis");
 
 exports.handler = async function (event, context) {
   try {
-    // Autenticación con OAuth2
-    const auth = new google.auth.GoogleAuth({
-      keyFile: "path/to/your-oauth-credentials.json", // 🔁 AJUSTA con tu path real
-      scopes: "https://www.googleapis.com/auth/analytics.readonly",
-    });
+    // Token de acceso almacenado como variable de entorno (Netlify lo maneja vía OAuth)
+    const accessToken = process.env.GOOGLE_ACCESS_TOKEN;
+
+    const auth = new google.auth.OAuth2();
+    auth.setCredentials({ access_token: accessToken });
 
     const analyticsDataClient = google.analyticsdata({
       version: "v1beta",
@@ -14,7 +14,7 @@ exports.handler = async function (event, context) {
     });
 
     const response = await analyticsDataClient.properties.runReport({
-      property: "properties/485494483", // 🔁 Reemplaza con tu GA4 Property ID
+      property: "properties/485494483", // ✅ Tu GA4 property ID
       requestBody: {
         dimensions: [{ name: "country" }],
         metrics: [{ name: "activeUsers" }],
@@ -29,7 +29,7 @@ exports.handler = async function (event, context) {
 
     response.data.rows.forEach((row) => {
       const country = row.dimensionValues[0].value;
-      const value = parseInt(row.metricValues[0].value);
+      const value = parseInt(row.metricValues[0].value, 10);
 
       if (country === "Chile") {
         totals.chile += value;
