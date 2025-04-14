@@ -14,7 +14,7 @@ exports.handler = async function (event, context) {
     });
 
     const response = await analyticsDataClient.properties.runReport({
-      property: "properties/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", // 🔁 Reemplaza con tu GA4 Property ID
+      property: "properties/485494483", // 🔁 Reemplaza con tu GA4 Property ID
       requestBody: {
         dimensions: [{ name: "country" }],
         metrics: [{ name: "activeUsers" }],
