@@ -15,6 +15,7 @@ import { useLocation, Outlet } from "react-router-dom";
 import Cargando from './components/Cargando';
 import { AnimatePresence, motion } from 'framer-motion';
 import "./components/css/App.css";
+import { initGoogleAnalytics, trackPageView } from "./helpers/HelperAnalytics.js"; //GOOGLE ANALYTICS
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -36,6 +37,14 @@ function App() {
   const triggerInformations = (value) => setShouldAnimateInformations(value);
   const [hasSeenInformations, setHasSeenInformations] = useState(false);
 
+  //GOOGLE ANALYTICS
+  useEffect(() => {
+    initGoogleAnalytics(); // solo una vez
+  }, []);
+
+  useEffect(() => {
+    trackPageView(location.pathname + location.search); // en cada cambio de ruta
+  }, [location]);
 
   useEffect(() => {
     const handleScroll = () => {

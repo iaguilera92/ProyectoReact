@@ -63,6 +63,10 @@ const Dashboard = () => {
     const [snackbarServicios, setSnackbarServicios] = useState(false);
     const location = useLocation();
     const usuario = location.state?.usuario;
+    //GOOGLE ANALYTICS
+    const [visitasTotales, setVisitasTotales] = useState(0);
+    const [visitasChile, setVisitasChile] = useState(0);
+    const [visitasInternacional, setVisitasInternacional] = useState(0);
 
     const letterVariants = {
         hidden: { opacity: 0, x: -20 },
@@ -72,6 +76,23 @@ const Dashboard = () => {
             transition: { delay: 0.4 + i * 0.05 }, // puedes ajustar el delay aquí
         }),
     };
+
+    //GOOGLE ANALYTICS
+    useEffect(() => {
+        const obtenerVisitas = async () => {
+            try {
+                const res = await fetch("/.netlify/functions/getAnalyticsStats");
+                const data = await res.json();
+                setVisitasTotales(data.total);
+                setVisitasChile(data.chile);
+                setVisitasInternacional(data.internacional);
+            } catch (error) {
+                console.error("Error al cargar visitas:", error);
+            }
+        };
+
+        obtenerVisitas();
+    }, []);
 
     return (
         <Box
@@ -180,7 +201,7 @@ const Dashboard = () => {
                             }}
                         >
                             <Contador
-                                valorFinal={1000}
+                                valorFinal={visitasTotales}
                                 texto="Visitas"
                                 subtexto="Visitas totales"
                                 variant="h4"
@@ -216,7 +237,7 @@ const Dashboard = () => {
                                 }}
                             >
                                 <Contador
-                                    valorFinal={800}
+                                    valorFinal={visitasChile}
                                     subtexto="Chile"
                                     delay={100}
                                     iniciar={mostrarContadorChile}
@@ -247,7 +268,7 @@ const Dashboard = () => {
                                 }}
                             >
                                 <Contador
-                                    valorFinal={200}
+                                    valorFinal={visitasInternacional}
                                     subtexto="Internacionales"
                                     delay={100}
                                     iniciar={mostrarContadorInt}
