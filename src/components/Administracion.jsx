@@ -46,7 +46,7 @@ const Administracion = () => {
     e.preventDefault();
 
     const usuarioValido = await validarCredenciales(email, password);
-    console.log("Resultado de validación:", usuarioValido);
+    //console.log("Resultado de validación:", usuarioValido);
 
     if (usuarioValido) {
       if (recordarme) {

@@ -83,11 +83,9 @@ const Dashboard = () => {
             try {
                 const res = await fetch("/.netlify/functions/getAnalyticsStats");
                 const data = await res.json();
-                setVisitasTotales(data.total);
-                setVisitasChile(data.chile);
-                setVisitasInternacional(data.internacional);
-            } catch (error) {
-                console.error("Error al cargar visitas:", error);
+                setDatosVisitas(data);
+            } catch (err) {
+                console.error("Error cargando visitas:", err);
             }
         };
 
@@ -201,7 +199,7 @@ const Dashboard = () => {
                             }}
                         >
                             <Contador
-                                valorFinal={visitasTotales}
+                                valorFinal={visitasTotales || 0}
                                 texto="Visitas"
                                 subtexto="Visitas totales"
                                 variant="h4"
@@ -237,7 +235,7 @@ const Dashboard = () => {
                                 }}
                             >
                                 <Contador
-                                    valorFinal={visitasChile}
+                                    valorFinal={visitasChile || 0}
                                     subtexto="Chile"
                                     delay={100}
                                     iniciar={mostrarContadorChile}
@@ -268,7 +266,7 @@ const Dashboard = () => {
                                 }}
                             >
                                 <Contador
-                                    valorFinal={visitasInternacional}
+                                    valorFinal={visitasInternacional || 0}
                                     subtexto="Internacionales"
                                     delay={100}
                                     iniciar={mostrarContadorInt}

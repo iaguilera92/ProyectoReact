@@ -1,9 +1,10 @@
-const { google } = require("googleapis");
+import { google } from "googleapis";
 
-exports.handler = async function (event, context) {
+export async function handler(event, context) {
   try {
     // Token de acceso almacenado como variable de entorno (Netlify lo maneja vía OAuth)
     const accessToken = process.env.GOOGLE_ACCESS_TOKEN;
+    console.log("Access Token:", accessToken);
 
     const auth = new google.auth.OAuth2();
     auth.setCredentials({ access_token: accessToken });
@@ -21,6 +22,8 @@ exports.handler = async function (event, context) {
         dateRanges: [{ startDate: "30daysAgo", endDate: "today" }],
       },
     });
+    console.log("Consultando Google Analytics con property ID: properties/485494483");
+    console.log("Response GA:", response.data);
 
     const totals = {
       chile: 0,
@@ -47,7 +50,9 @@ exports.handler = async function (event, context) {
       }),
     };
   } catch (error) {
+
     console.error("Error al obtener estadísticas:", error);
+    console.error("Stack:", error.stack);
     return {
       statusCode: 500,
       body: JSON.stringify({ message: "Error al obtener estadísticas" }),
