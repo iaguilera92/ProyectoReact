@@ -1,14 +1,22 @@
 import { google } from "googleapis";
 
 export async function handler(event, context) {
+  // ✅ Manejar preflight OPTIONS (opcional, útil para POST en el futuro)
+  if (event.httpMethod === "OPTIONS") {
+    return {
+      statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      },
+      body: "OK",
+    };
+  }
+
   try {
     const accessToken = process.env.GOOGLE_ACCESS_TOKEN;
-
-    if (!accessToken) {
-      throw new Error("Access Token no definido. Revisa GOOGLE_ACCESS_TOKEN en Netlify.");
-    }
-
-    console.log("✅ Access Token detectado");
+    console.log("Access Token recibido:", accessToken);
 
     const auth = new google.auth.OAuth2();
     auth.setCredentials({ access_token: accessToken });
@@ -18,8 +26,10 @@ export async function handler(event, context) {
       auth,
     });
 
+    console.log("Ejecutando runReport...");
+
     const response = await analyticsDataClient.properties.runReport({
-      property: "properties/485494483", // Reemplaza con tu property ID real
+      property: "properties/485494483", // Reemplaza si es necesario
       requestBody: {
         dimensions: [{ name: "country" }],
         metrics: [{ name: "activeUsers" }],
@@ -27,17 +37,16 @@ export async function handler(event, context) {
       },
     });
 
-    console.log("📊 Respuesta recibida de GA:");
-    console.log(JSON.stringify(response.data, null, 2));
+    console.log("Respuesta recibida:", JSON.stringify(response.data, null, 2));
 
     const totals = {
       chile: 0,
       internacional: 0,
     };
 
-    response.data?.rows?.forEach((row) => {
-      const country = row.dimensionValues[0]?.value;
-      const value = parseInt(row.metricValues[0]?.value || "0", 10);
+    response.data.rows.forEach((row) => {
+      const country = row.dimensionValues[0].value;
+      const value = parseInt(row.metricValues[0].value, 10);
 
       if (country === "Chile") {
         totals.chile += value;
@@ -49,7 +58,7 @@ export async function handler(event, context) {
     return {
       statusCode: 200,
       headers: {
-        "Access-Control-Allow-Origin": "*", // ✅ permite solicitudes desde cualquier origen
+        "Access-Control-Allow-Origin": "*",
       },
       body: JSON.stringify({
         chile: totals.chile,
@@ -58,13 +67,16 @@ export async function handler(event, context) {
       }),
     };
   } catch (error) {
-    console.error("Error al obtener estadísticas:", error);
+    console.error("❌ Error al obtener estadísticas:");
+    console.error("Mensaje:", error.message);
+    console.error("Stack:", error.stack);
+
     return {
       statusCode: 500,
       headers: {
-        "Access-Control-Allow-Origin": "*", // ✅ también en el error
+        "Access-Control-Allow-Origin": "*",
       },
-      body: JSON.stringify({ message: "Error al obtener estadísticas" }),
+      body: JSON.stringify({ message: `Error: ${error.message}` }),
     };
   }
 }
