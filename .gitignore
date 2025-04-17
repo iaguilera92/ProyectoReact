@@ -28,3 +28,4 @@ dist-ssr
 
 #ignorar credenciales google analytics
 **/credentials.json
+.env
