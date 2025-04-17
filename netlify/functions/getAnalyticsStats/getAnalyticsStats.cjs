@@ -3,7 +3,6 @@ const path = require("path");
 const { BetaAnalyticsDataClient } = require("@google-analytics/data");
 
 exports.handler = async function (event, context) {
-  // ✅ Manejar preflight OPTIONS para CORS
   if (event.httpMethod === "OPTIONS") {
     return {
       statusCode: 200,
@@ -17,15 +16,11 @@ exports.handler = async function (event, context) {
   }
 
   try {
-
-    console.log("🔍 Cargando desde variable:", !!process.env.GOOGLE_CREDENTIALS_JSON);
-
-    // ✅ Crear el cliente dependiendo de si hay variable de entorno o no
     const client = process.env.GOOGLE_CREDENTIALS_JSON
       ? new BetaAnalyticsDataClient({
         credentials: (() => {
           const raw = JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON);
-          raw.private_key = raw.private_key.replace(/\\n/g, '\n');
+          raw.private_key = raw.private_key.replace(/\\n/g, "\n");
           return raw;
         })(),
       })
@@ -33,30 +28,53 @@ exports.handler = async function (event, context) {
         keyFilename: path.join(__dirname, "credentials.json"),
       });
 
-    console.log("Ejecutando runReport con cuenta de servicio...");
+    console.log("▶️ Ejecutando runReport por país...");
 
-    const [response] = await client.runReport({
+    const [resPais] = await client.runReport({
       property: "properties/485494483",
       dateRanges: [{ startDate: "30daysAgo", endDate: "today" }],
       dimensions: [{ name: "country" }],
       metrics: [{ name: "activeUsers" }],
     });
 
-    console.log("Respuesta recibida:", JSON.stringify(response, null, 2));
-
-    const totals = {
+    const visitas = {
       chile: 0,
       internacional: 0,
     };
 
-    response.rows.forEach((row) => {
+    resPais.rows.forEach((row) => {
       const country = row.dimensionValues[0].value;
       const value = parseInt(row.metricValues[0].value, 10);
+
       if (country === "Chile") {
-        totals.chile += value;
+        visitas.chile += value;
       } else {
-        totals.internacional += value;
+        visitas.internacional += value;
       }
+    });
+
+    console.log("✅ Ejecutando runReport por dispositivo...");
+
+    const [resDispositivos] = await client.runReport({
+      property: "properties/485494483",
+      dateRanges: [{ startDate: "30daysAgo", endDate: "today" }],
+      dimensions: [{ name: "deviceCategory" }],
+      metrics: [{ name: "activeUsers" }],
+    });
+
+    const dispositivos = {
+      mobile: 0,
+      desktop: 0,
+      tablet: 0,
+    };
+
+    resDispositivos.rows.forEach((row) => {
+      const device = row.dimensionValues[0].value;
+      const value = parseInt(row.metricValues[0].value, 10);
+
+      if (device === "mobile") dispositivos.mobile += value;
+      else if (device === "desktop") dispositivos.desktop += value;
+      else if (device === "tablet") dispositivos.tablet += value;
     });
 
     return {
@@ -65,9 +83,16 @@ exports.handler = async function (event, context) {
         "Access-Control-Allow-Origin": "*",
       },
       body: JSON.stringify({
-        chile: totals.chile,
-        internacional: totals.internacional,
-        total: totals.chile + totals.internacional,
+        chile: visitas.chile,
+        internacional: visitas.internacional,
+        total: visitas.chile + visitas.internacional,
+        dispositivos: {
+          mobile: dispositivos.mobile,
+          desktop: dispositivos.desktop,
+          tablet: dispositivos.tablet,
+          total:
+            dispositivos.mobile + dispositivos.desktop + dispositivos.tablet,
+        },
       }),
     };
   } catch (error) {
