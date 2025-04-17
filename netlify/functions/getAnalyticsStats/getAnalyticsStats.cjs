@@ -1,6 +1,7 @@
-import { google } from "googleapis";
+const { google } = require("googleapis");
 
-export async function handler(event, context) {
+
+exports.handler = async function (event, context) {
   // ✅ Manejar preflight OPTIONS (opcional, útil para POST en el futuro)
   if (event.httpMethod === "OPTIONS") {
     return {
