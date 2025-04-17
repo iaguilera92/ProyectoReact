@@ -87,6 +87,10 @@ const Dashboard = () => {
     };
     const [flip, setFlip] = useState(false);
     const [dispositivos, setDispositivos] = useState({ mobile: 0, desktop: 0, tablet: 0 });
+    const [mostrarGrafico, setMostrarGrafico] = useState(false);
+    const [mostrarPorcentajes, setMostrarPorcentajes] = useState(false);
+    const [chartKey, setChartKey] = useState(0);
+    const [datosGrafico, setDatosGrafico] = useState([]);
 
     //GOOGLE ANALYTICS
     useEffect(() => {
@@ -94,7 +98,7 @@ const Dashboard = () => {
             try {
                 const endpoint =
                     window.location.hostname === "localhost"
-                        ? "http://localhost:54497/.netlify/functions/getAnalyticsStats"
+                        ? "http://localhost:9999/.netlify/functions/getAnalyticsStats"
                         : "/.netlify/functions/getAnalyticsStats";
 
                 const res = await fetch(endpoint);
@@ -208,7 +212,31 @@ const Dashboard = () => {
                             width: cardSize,
                             height: cardSize,
                         }}
-                        onClick={() => setFlip(!flip)}
+                        onClick={() => {
+                            // Solo si estamos viendo la cara frontal
+                            if (!flip) {
+                                setFlip(true);
+                                setMostrarGrafico(false);
+                                setMostrarPorcentajes(false);
+                                setDatosGrafico([]); // reinicia
+
+                                setTimeout(() => {
+                                    setMostrarGrafico(true);
+                                    setDatosGrafico([
+                                        { name: "Móvil", value: dispositivos.mobile },
+                                        { name: "Escritorio", value: dispositivos.desktop },
+                                        { name: "Tablet", value: dispositivos.tablet },
+                                    ]);
+                                }, 100);
+
+                                setTimeout(() => {
+                                    setMostrarPorcentajes(true);
+                                }, 1000);
+                            } else {
+                                setFlip(false); // Volver a la cara frontal sin animar nada
+                            }
+                        }}
+
                     >
                         <Box
                             component={motion.div}
@@ -282,39 +310,57 @@ const Dashboard = () => {
                                         p: 2,
                                     }}
                                 >
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <PieChart>
-                                            <Pie
-                                                data={[
-                                                    { name: "Móvil", value: dispositivos.mobile },
-                                                    { name: "Escritorio", value: dispositivos.desktop },
-                                                    { name: "Tablet", value: dispositivos.tablet },
-                                                ]}
-                                                cx="50%"
-                                                cy="50%"
-                                                outerRadius={100}
-                                                dataKey="value"
-                                                label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
-                                                labelLine={false}
-                                                labelStyle={{ fill: "white", fontWeight: "bold" }}
-                                            >
-                                                <Cell fill="#A0E7F8" />  {/* Móvil - Azul pastel */}
-                                                <Cell fill="#8ED1B2" />  {/* Escritorio - Verde jade más oscuro */}
-                                                <Cell fill="#FFB3B3" />  {/* Tablet - Rojo pastel */}
+                                    {mostrarGrafico && (
+                                        <ResponsiveContainer width="100%" height="100%" key={chartKey}>
+                                            <PieChart>
+                                                <Pie
+                                                    data={datosGrafico}
+                                                    cx="50%"
+                                                    cy="50%"
+                                                    outerRadius={isMobile ? 105 : 110}
+                                                    dataKey="value"
+                                                    isAnimationActive={true}
+                                                    animationBegin={0}
+                                                    animationDuration={800} // ⏱️ Más suave
+                                                    label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
+                                                        if (percent === 0 || !mostrarPorcentajes) return null;
+                                                        const RADIAN = Math.PI / 180;
+                                                        const radius = innerRadius + (outerRadius - innerRadius) * 0.6;
+                                                        const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                                                        const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
-                                            </Pie>
-                                            <Tooltip
-                                                contentStyle={{
-                                                    backgroundColor: "#2a2a2a",
-                                                    borderRadius: 6,
-                                                    color: "white",
-                                                    fontSize: 12,
-                                                }}
-                                            />
-                                            <Legend />
-                                        </PieChart>
-                                    </ResponsiveContainer>
+                                                        return (
+                                                            <motion.text
+                                                                x={x}
+                                                                y={y}
+                                                                initial={{ opacity: 0, scale: 0.5 }}
+                                                                animate={{ opacity: 1, scale: 1 }}
+                                                                transition={{ duration: 0.5 }}
+                                                                fill="white"
+                                                                textAnchor="middle"
+                                                                dominantBaseline="central"
+                                                                fontSize={isMobile ? 15 : 18}
+                                                                fontWeight="bold"
+                                                            >
+                                                                {(percent * 100).toFixed(0)}%
+                                                            </motion.text>
+                                                        );
+                                                    }}
+                                                    labelLine={false}
+                                                >
 
+                                                    <Cell fill="#6EB5FF" />   {/* Móvil - Azul pastel */}
+                                                    <Cell fill="#B0F0A5" />   {/* Escritorio - Verde más oscuro */}
+                                                    <Cell fill="#FFB3B3" />   {/* Tablet - Rojo pastel */}
+                                                </Pie>
+                                                <Legend
+                                                    verticalAlign="bottom"
+                                                    height={isMobile ? 36 : 50}
+                                                    wrapperStyle={{ paddingTop: isMobile ? 0 : 10 }}
+                                                />
+                                            </PieChart>
+                                        </ResponsiveContainer>
+                                    )}
 
                                 </Paper>
                             </Box>
