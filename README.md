@@ -23,4 +23,5 @@ Correr hosting: netlify dev
 
 Kill puerto: npx kill-port 5174
 
+REVISAR INSTALADO: npm install @google-analytics/data
 API NETLIFY: npx netlify functions:serve getAnalyticsStats

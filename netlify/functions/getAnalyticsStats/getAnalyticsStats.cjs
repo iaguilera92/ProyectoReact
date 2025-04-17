@@ -1,3 +1,4 @@
+require("dotenv").config();
 const path = require("path");
 const { BetaAnalyticsDataClient } = require("@google-analytics/data");
 
@@ -16,10 +17,18 @@ exports.handler = async function (event, context) {
   }
 
   try {
-    // ✅ Usar cuenta de servicio con el archivo credentials.json
-    const client = new BetaAnalyticsDataClient({
-      keyFilename: path.join(__dirname, "credentials.json"),
-    });
+    // ✅ Crear el cliente dependiendo de si hay variable de entorno o no
+    const client = process.env.GOOGLE_CREDENTIALS_JSON
+      ? new BetaAnalyticsDataClient({
+        credentials: (() => {
+          const raw = JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON);
+          raw.private_key = raw.private_key.replace(/\\n/g, '\n');
+          return raw;
+        })(),
+      })
+      : new BetaAnalyticsDataClient({
+        keyFilename: path.join(__dirname, "credentials.json"),
+      });
 
     console.log("Ejecutando runReport con cuenta de servicio...");
 
