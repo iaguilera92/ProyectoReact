@@ -17,6 +17,9 @@ exports.handler = async function (event, context) {
   }
 
   try {
+
+    console.log("🔍 Cargando desde variable:", !!process.env.GOOGLE_CREDENTIALS_JSON);
+
     // ✅ Crear el cliente dependiendo de si hay variable de entorno o no
     const client = process.env.GOOGLE_CREDENTIALS_JSON
       ? new BetaAnalyticsDataClient({
