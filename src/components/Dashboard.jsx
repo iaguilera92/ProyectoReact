@@ -81,9 +81,17 @@ const Dashboard = () => {
     useEffect(() => {
         const obtenerVisitas = async () => {
             try {
-                const res = await fetch("/.netlify/functions/getAnalyticsStats");
+                const endpoint =
+                    window.location.hostname === "localhost"
+                        ? "http://localhost:9999/.netlify/functions/getAnalyticsStats"
+                        : "/.netlify/functions/getAnalyticsStats";
+
+                const res = await fetch(endpoint);
                 const data = await res.json();
-                setDatosVisitas(data);
+
+                setVisitasChile(data.chile || 0);
+                setVisitasInternacional(data.internacional || 0);
+                setVisitasTotales(data.total || 0);
             } catch (err) {
                 console.error("Error cargando visitas:", err);
             }
@@ -91,6 +99,8 @@ const Dashboard = () => {
 
         obtenerVisitas();
     }, []);
+
+
 
     return (
         <Box
