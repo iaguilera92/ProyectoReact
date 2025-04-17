@@ -1,8 +1,8 @@
-const { google } = require("googleapis");
-
+const path = require("path");
+const { BetaAnalyticsDataClient } = require("@google-analytics/data");
 
 exports.handler = async function (event, context) {
-  // ✅ Manejar preflight OPTIONS (opcional, útil para POST en el futuro)
+  // ✅ Manejar preflight OPTIONS para CORS
   if (event.httpMethod === "OPTIONS") {
     return {
       statusCode: 200,
@@ -16,39 +16,30 @@ exports.handler = async function (event, context) {
   }
 
   try {
-    const accessToken = process.env.GOOGLE_ACCESS_TOKEN;
-    console.log("Access Token recibido:", accessToken);
-
-    const auth = new google.auth.OAuth2();
-    auth.setCredentials({ access_token: accessToken });
-
-    const analyticsDataClient = google.analyticsdata({
-      version: "v1beta",
-      auth,
+    // ✅ Usar cuenta de servicio con el archivo credentials.json
+    const client = new BetaAnalyticsDataClient({
+      keyFilename: path.join(__dirname, "credentials.json"),
     });
 
-    console.log("Ejecutando runReport...");
+    console.log("Ejecutando runReport con cuenta de servicio...");
 
-    const response = await analyticsDataClient.properties.runReport({
-      property: "properties/485494483", // Reemplaza si es necesario
-      requestBody: {
-        dimensions: [{ name: "country" }],
-        metrics: [{ name: "activeUsers" }],
-        dateRanges: [{ startDate: "30daysAgo", endDate: "today" }],
-      },
+    const [response] = await client.runReport({
+      property: "properties/485494483",
+      dateRanges: [{ startDate: "30daysAgo", endDate: "today" }],
+      dimensions: [{ name: "country" }],
+      metrics: [{ name: "activeUsers" }],
     });
 
-    console.log("Respuesta recibida:", JSON.stringify(response.data, null, 2));
+    console.log("Respuesta recibida:", JSON.stringify(response, null, 2));
 
     const totals = {
       chile: 0,
       internacional: 0,
     };
 
-    response.data.rows.forEach((row) => {
+    response.rows.forEach((row) => {
       const country = row.dimensionValues[0].value;
       const value = parseInt(row.metricValues[0].value, 10);
-
       if (country === "Chile") {
         totals.chile += value;
       } else {
@@ -80,4 +71,4 @@ exports.handler = async function (event, context) {
       body: JSON.stringify({ message: `Error: ${error.message}` }),
     };
   }
-}
+};
