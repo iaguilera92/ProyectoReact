@@ -11,7 +11,7 @@ import { motion } from "framer-motion";
 import ViewCarouselIcon from "@mui/icons-material/ViewCarousel";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import HomeRepairServiceIcon from "@mui/icons-material/HomeRepairService";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
@@ -91,6 +91,7 @@ const Dashboard = () => {
     const [mostrarPorcentajes, setMostrarPorcentajes] = useState(false);
     const [chartKey, setChartKey] = useState(0);
     const [datosGrafico, setDatosGrafico] = useState([]);
+    const navigate = useNavigate();
 
     //GOOGLE ANALYTICS
     useEffect(() => {
@@ -581,7 +582,8 @@ const Dashboard = () => {
                                 },
 
                             }}
-                            onClick={() => setSnackbarServicios(true)}
+                            onClick={() => navigate("/configurar-servicios")}
+
                         >
                             <Box
                                 sx={{

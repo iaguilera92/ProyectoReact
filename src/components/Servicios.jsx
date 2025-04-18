@@ -19,41 +19,15 @@ import ExtensionIcon from '@mui/icons-material/Extension';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { motion } from 'framer-motion';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import { cargarServicios } from "../helpers/HelperServicios";
 
-const services = [
-  {
-    title: 'Plataformas web.',
-    img: '/servicio1.jpg',
-    link: '',
-    description: 'Desarrollamos plataformas robustas, seguras y escalables para tu empresa.',
-    background: 'linear-gradient(180deg, #2c3e50, #4ca1af)',
-    icon: <LanguageIcon fontSize="small" />, // 🌐
-  },
-  {
-    title: 'Soporte Evolutivo.',
-    img: 'https://autoges.cl/wp-content/uploads/2022/08/5-Evaluacion-y-Gestion-de-Proyectos-1.jpg',
-    link: '',
-    description: 'Mejoras continuas para mantener tus soluciones siempre actualizadas.',
-    background: 'linear-gradient(180deg, #1f2b4a, #3a506b)',
-    icon: <UpdateIcon fontSize="small" />, // 🔄
-  },
-  {
-    title: 'Sistemas a la medida.',
-    img: 'https://autoges.cl/wp-content/uploads/2022/08/1-Modificaciones-Industriales-1.jpg',
-    link: '',
-    description: 'Creamos software que se adapta exactamente a tus necesidades y objetivos.',
-    background: 'linear-gradient(180deg, #1f4a36, #38ef7d)',
-    icon: <ExtensionIcon fontSize="small" />, // 🧩
-  },
-  {
-    title: 'Tienda Online',
-    img: 'https://autoges.cl/wp-content/uploads/2022/08/3-Especialidad-Electrica-1.jpg',
-    link: '',
-    description: 'Impulsa tus ventas con plataformas de e-commerce seguras y personalizadas.',
-    background: 'linear-gradient(180deg, #4a441f, #f1c40f)',
-    icon: <ShoppingCartIcon fontSize="small" />, // 🛒
-  },
-];
+// Mapear nombres de iconos a los componentes reales
+const iconMap = {
+  LanguageIcon: <LanguageIcon fontSize="small" />,
+  UpdateIcon: <UpdateIcon fontSize="small" />,
+  ExtensionIcon: <ExtensionIcon fontSize="small" />,
+  ShoppingCartIcon: <ShoppingCartIcon fontSize="small" />,
+};
 
 const Servicios = () => {
   const theme = useTheme();
@@ -62,6 +36,7 @@ const Servicios = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [scrollY, setScrollY] = useState(0);
   const containerRef = React.useRef();
+  const [services, setServices] = useState([]);
 
   const letterVariants = {
     hidden: { opacity: 0, x: -20 },
@@ -95,6 +70,26 @@ const Servicios = () => {
       }
     }, 400); // Dale tiempo al collapse a abrirse
   };
+
+  //CARGAR SERVICIOS DESDE BD
+  useEffect(() => {
+    const cargarDatos = async () => {
+      const timestamp = new Date().getTime(); // Evita cache
+      const urlConCacheBust = `/database/Servicios.xlsx?t=${timestamp}`;
+
+      const datos = await cargarServicios(urlConCacheBust);
+      const serviciosConIconos = datos.map((s) => ({
+        ...s,
+        icon: iconMap[s.iconName] || null,
+      }));
+      console.log("Servicios final:", serviciosConIconos);
+      setServices(serviciosConIconos);
+    };
+
+    cargarDatos();
+  }, []);
+
+
 
   return (
     <Container
@@ -293,7 +288,7 @@ const Servicios = () => {
                       </CardContent>
 
                       <Collapse in={expandedIndex === index} timeout={{ enter: 500, exit: 300 }} sx={{ transition: 'height 0.5s ease' }}>
-                        {index === 0 || index === 1 || index === 2 || index === 3 ? (
+                        {service.sections && Array.isArray(service.sections) ? (
                           <Box
                             sx={{
                               px: 2,
@@ -303,180 +298,76 @@ const Servicios = () => {
                               gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))'
                             }}
                           >
-                            {(index === 0
-                              ? [
-                                {
-                                  title: 'Sistemas personalizados',
-                                  description: 'Diseño y desarrollo a medida de plataformas adaptadas a tus procesos.',
-                                  image: '/servicio1.jpg',
-                                  items: [
-                                    'Interfaces visuales modernas y fáciles de usar.',
-                                    'Sistemas internos seguros y eficientes para manejar datos.',
-                                    'Conexión con otras plataformas o sistemas que ya usas.',
-                                    'Control total de usuarios, permisos y accesos.',
-                                    'Paneles de administración intuitivos.',
-                                  ]
-                                },
-                                {
-                                  title: 'Backend y API',
-                                  description: 'Desarrollo de backend sólido y APIs seguras.',
-                                  image: '/servicio2.jpg',
-                                  items: [
-                                    'Desarrollo de APIs REST con C#, Python y Node.js.',
-                                    'Integración con bases de datos SQL Server, MySQL, MongoDB y Oracle.',
-                                    'Autenticación segura con JWT y OAuth 2.0.',
-                                    'Documentación de endpoints con Swagger / OpenAPI.',
-                                    'Uso de Blazor y React como frontends conectados a APIs robustas.',
-                                    'Diseño de arquitecturas escalables y mantenibles.'
-                                  ]
-                                }
-                              ]
-                              : index === 1
-                                ? [
-                                  {
-                                    title: 'Actualizaciones constantes',
-                                    description: 'Refactorización de código y mejoras incrementales.',
-                                    image: '/servicio3.webp',
-                                    items: [
-                                      'Actualización de librerías.',
-                                      'Optimización de rendimiento.',
-                                      'Revisión técnica periódica.',
-                                      'Mejoras visuales y funcionales basadas en feedback de usuarios.',
-                                      'Adaptación a nuevas tendencias tecnológicas y estándares de desarrollo.'
-
-                                    ]
-                                  },
-                                  {
-                                    title: 'Atención a incidentes',
-                                    description: 'Soporte técnico con SLA y monitoreo activo.',
-                                    image: '/servicio4.jpg',
-                                    items: [
-                                      'Resolución rápida de errores técnicos.',
-                                      'Prevención proactiva de incidentes.',
-                                      'Monitoreo con Grafana, Sentry o Prometheus.',
-                                      'Informes de estabilidad y rendimiento.',
-                                      'Soporte con SLA y canales directos.'
-                                    ]
-                                  }
-                                ]
-                                : index === 2
-                                  ? [
-                                    {
-                                      title: 'Soluciones Personalizadas',
-                                      description: 'Desarrollo específico para cada industria.',
-                                      image: '/servicio5.jpg',
-                                      items: [
-                                        'Levantamiento y análisis de necesidades reales del negocio.',
-                                        'Diseño de arquitectura tecnológica adaptada al proyecto.',
-                                        'Automatización de procesos internos para mayor eficiencia.',
-                                        'Integración con sistemas existentes (ERP, CRM, etc.).'
-                                      ]
-                                    },
-                                    {
-                                      title: 'Escalabilidad y crecimiento',
-                                      description: 'Diseñados para crecer con tu negocio.',
-                                      image: '/servicio6.avif',
-                                      items: [
-                                        'Estructura modular que permite agregar nuevas funciones fácilmente.',
-                                        'Soporte para trabajar en distintos ambientes (desarrollo, pruebas y producción).',
-                                        'Automatización de despliegues para actualizaciones rápidas y seguras.',
-                                        'Preparado para manejar mayor cantidad de usuarios o datos sin perder rendimiento.'
-                                      ]
+                            {service.sections.map((section, sIdx) => (
+                              <Box
+                                key={sIdx}
+                                sx={{
+                                  width: '100%',
+                                  height: 360,
+                                  borderRadius: 2,
+                                  overflow: 'hidden',
+                                  position: 'relative',
+                                  color: 'white',
+                                  backgroundImage: `url(${section.image})`,
+                                  backgroundSize: 'cover',
+                                  backgroundPosition: 'center',
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  justifyContent: 'flex-start',
+                                  alignItems: 'center'
+                                }}
+                              >
+                                <Box
+                                  sx={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    width: '100%',
+                                    height: '100%',
+                                    background: 'linear-gradient(180deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0))',
+                                    zIndex: 1
+                                  }}
+                                />
+                                <Box sx={{ zIndex: 2, px: 2, textAlign: 'center', mt: 3, fontFamily: 'Roboto,Arial,sans-serif' }}>
+                                  <Typography variant="h6" fontWeight={600} sx={{ mb: 1 }}>
+                                    {section.title}
+                                  </Typography>
+                                  <Typography variant="body2" sx={{ mb: 1, color: 'white' }}>
+                                    {section.description}
+                                  </Typography>
+                                  <Box
+                                    sx={
+                                      section.items.length > 5
+                                        ? {
+                                          display: 'grid',
+                                          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                                          gap: 1,
+                                          justifyContent: 'center',
+                                          marginTop: '20px'
+                                        }
+                                        : { marginTop: '20px' }
                                     }
-                                  ]
-                                  : [
-                                    {
-                                      title: 'Catálogo y Gestión de Productos',
-                                      description: 'Administra tus productos con facilidad.',
-                                      image: '/servicio7.jpg',
-                                      items: [
-                                        'Carga masiva de productos desde archivos Excel o CSV.',
-                                        'Control automático de stock, precios y disponibilidad.',
-                                        'Descripciones optimizadas para buscadores (SEO).',
-                                        'Clasificación por categorías, filtros y etiquetas personalizadas.'
-                                      ]
-                                    },
-                                    {
-                                      title: 'Integración de medios de pago',
-                                      description: 'Pagos seguros y rápidos.',
-                                      image: '/servicio8.jpg',
-                                      items: [
-                                        'Webpay, PayPal, MercadoPago, OneClick.',
-                                        'Boletas electrónicas automáticas.',
-                                        'Facturas electrónicas.',
-                                        'Envíos e integración logística.'
-                                      ]
-                                    }
-                                  ]).map((section, sIdx) => (
-                                    <Box
-                                      key={sIdx}
-                                      sx={{
-                                        width: '100%',
-                                        height: 360,
-                                        borderRadius: 2,
-                                        overflow: 'hidden',
-                                        position: 'relative',
-                                        color: 'white',
-                                        backgroundImage: `url(${section.image})`,
-                                        backgroundSize: 'cover',
-                                        backgroundPosition: 'center',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        justifyContent: 'flex-start',
-                                        alignItems: 'center'
-                                      }}
-                                    >
-                                      <Box
-                                        sx={{
-                                          position: 'absolute',
-                                          top: 0,
-                                          left: 0,
-                                          width: '100%',
-                                          height: '100%',
-                                          background: 'linear-gradient(180deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0))',
-                                          zIndex: 1
-                                        }}
-                                      />
-                                      <Box sx={{ zIndex: 2, px: 2, textAlign: 'center', mt: 3, fontFamily: 'Roboto,Arial,sans-serif' }}>
-                                        <Typography variant="h6" fontWeight={600} sx={{ mb: 1 }}>
-                                          {section.title}
-                                        </Typography>
-                                        <Typography variant="body2" sx={{ mb: 1, color: 'white' }}>
-                                          {section.description}
-                                        </Typography>
-                                        <Box
-                                          sx={
-                                            section.items.length > 5
-                                              ? {
-                                                display: 'grid',
-                                                gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-                                                gap: 1,
-                                                justifyContent: 'center',
-                                                marginTop: '20px'
-                                              }
-                                              : { marginTop: '20px' }
-                                          }
+                                  >
+                                    {expandedIndex === index &&
+                                      section.items.map((item, idx) => (
+                                        <motion.div
+                                          key={idx}
+                                          initial={{ opacity: 0, x: 50 }}
+                                          animate={{ opacity: 1, x: 0 }}
+                                          transition={{ delay: idx * 0.1, duration: 0.4 }}
                                         >
-                                          {expandedIndex === index &&
-                                            section.items.map((item, idx) => (
-                                              <motion.div
-                                                key={idx}
-                                                initial={{ opacity: 0, x: 50 }}
-                                                animate={{ opacity: 1, x: 0 }}
-                                                transition={{ delay: idx * 0.1, duration: 0.4 }}
-                                              >
-                                                <Box sx={{ display: 'flex', alignItems: 'start', gap: 1, mb: 1 }}>
-                                                  <CheckIcon fontSize="small" sx={{ color: '#7fe084' }} />
-                                                  <Typography variant="body2" color="white" sx={{ lineHeight: 1.4 }}>
-                                                    {item}
-                                                  </Typography>
-                                                </Box>
-                                              </motion.div>
-                                            ))}
-                                        </Box>
-                                      </Box>
-                                    </Box>
-                                  ))}
+                                          <Box sx={{ display: 'flex', alignItems: 'start', gap: 1, mb: 1, width: '100%', }}>
+                                            <CheckIcon fontSize="small" sx={{ color: '#7fe084' }} />
+                                            <Typography variant="body2" color="white" sx={{ lineHeight: 1.4, textAlign: 'left', width: '100%', }}>
+                                              {item}
+                                            </Typography>
+                                          </Box>
+                                        </motion.div>
+                                      ))}
+                                  </Box>
+                                </Box>
+                              </Box>
+                            ))}
                           </Box>
                         ) : (
                           <Box

@@ -147,7 +147,7 @@ const Footer = () => {
 
               <Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <img src="https://www.connectic.cl/wp-content/uploads/2021/04/location.png" alt="Ubicación" width={16} />
-                Dirección #321, Santiago.
+                Dardignac #38, Santiago.
               </Typography>
             </Box>
 

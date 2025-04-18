@@ -188,7 +188,7 @@ function App() {
 
       {/* Pantalla de carga */}
       <AnimatePresence>
-        {!showApp && location.pathname !== "/dashboard" && location.pathname !== "/administracion" && (
+        {!showApp && location.pathname !== "/dashboard" && location.pathname !== "/administracion" && location.pathname !== "/configurar-servicios" && (
           <>
             <motion.div
               key="cargando"
@@ -292,10 +292,10 @@ function App() {
         )}
 
         {/* Footer (excepto en administración) */}
-        {location.pathname !== "/administracion" && location.pathname !== "/dashboard" && <Footer />}
+        {location.pathname !== "/administracion" && location.pathname !== "/dashboard" && location.pathname !== "/configurar-servicios" && <Footer />}
 
         {/* Botón WhatsApp */}
-        {location.pathname !== "/administracion" && location.pathname !== "/dashboard" && (
+        {location.pathname !== "/administracion" && location.pathname !== "/dashboard" && location.pathname !== "/configurar-servicios" && (
           <Box
             sx={{
               position: "fixed",
