@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Box, Typography, Button, TextField, Grid, Paper, IconButton, Container, Collapse, Card, CardContent,
-  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Tabs, Tab, Snackbar, Alert
+  Box, Typography, Button, TextField, Grid, Paper, IconButton, Container, Collapse, Card, CardContent, useTheme,
+  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Tabs, Tab, Snackbar, Alert, useMediaQuery
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { cargarServicios } from "../helpers/HelperServicios";
@@ -12,6 +12,9 @@ import AddIcon from '@mui/icons-material/Add';
 import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
 import { motion } from 'framer-motion';
 import UpdateIcon from '@mui/icons-material/Update';
+import ViewCarouselIcon from "@mui/icons-material/ViewCarousel";
+import BarChartIcon from "@mui/icons-material/BarChart";
+import HomeRepairServiceIcon from "@mui/icons-material/HomeRepairService";
 
 const ConfigurarServicios = () => {
   const [services, setServices] = useState([]);
@@ -20,6 +23,11 @@ const ConfigurarServicios = () => {
   const [servicioAEliminar, setServicioAEliminar] = useState(null);
   const [tabIndex, setTabIndex] = useState(0);
   const [snackbar, setSnackbar] = useState({ open: false, message: "" });
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const cardSize = isMobile ? "300px" : "340px";
+  const smallCardSize = isMobile ? "140px" : "165px";
 
   const [nuevoServicio, setNuevoServicio] = useState({
     title: '',
@@ -34,8 +42,15 @@ const ConfigurarServicios = () => {
   const containerRef = React.useRef();
 
   useEffect(() => {
-    const credenciales = localStorage.getItem("credenciales");
-    if (!credenciales) {
+    const credenciales = (() => {
+      try {
+        return JSON.parse(localStorage.getItem("credenciales"));
+      } catch {
+        return null;
+      }
+    })();
+
+    if (!credenciales || !credenciales.email || !credenciales.password) {
       navigate("/administracion", { replace: true });
       return;
     }
@@ -45,8 +60,10 @@ const ConfigurarServicios = () => {
       const data = await cargarServicios(`/database/Servicios.xlsx?t=${timestamp}`);
       setServices(data);
     };
+
     cargar();
   }, [navigate]);
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -270,6 +287,170 @@ const ConfigurarServicios = () => {
             </Grid>
           </Grid>
         </Box>
+        {/* Menú elegante con hover */}
+        <motion.div
+          initial={{ y: 100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.6, delay: 1, ease: "easeOut" }}
+          style={{
+            position: "fixed", // ✅ para que quede fijo incluso con scroll
+            bottom: 0,         // ✅ pegado al borde inferior
+            left: 0,
+            width: "100%",     // ✅ ocupa todo el ancho disponible
+            display: "flex",
+            justifyContent: "center", // ✅ centrado horizontal
+            zIndex: 10,
+            pointerEvents: "auto", // 👈 asegura interacción
+          }}
+        >
+          <Box
+            sx={{
+              width: cardSize,              // 📐 tu ancho ya definido
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "flex-end",
+              pt: 1,
+              gap: 0,
+              position: "relative",
+            }}
+          >
+            {/* Catálogo (sin hover) */}
+            <Box
+              sx={{
+                flex: 1,
+                height: 65,
+                backgroundColor: "white",
+                border: "2px solid black",
+                borderRadius: "12px 12px 0 0",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginRight: "-10%",
+                zIndex: 1,
+                cursor: "not-allowed",
+                boxShadow: "inset -2px 0px 3px rgba(0,0,0,0.05)"
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  transform: "translateX(-20%)",
+                  textAlign: "center",
+                }}
+              >
+                <ViewCarouselIcon sx={{ fontSize: 26, color: "grey.500" }} />
+                <Typography
+                  variant="caption"
+                  fontSize={11}
+                  color="grey.500"
+                  sx={{ mt: 0.2 }}
+                >
+                  Catálogo
+                </Typography>
+              </Box>
+            </Box>
+
+            {/* Visitas (activo con hover suave aunque no clickable) */}
+            <Box
+              sx={{
+                flex: 1.3,
+                height: 108,
+                backgroundColor: "#ffffff",
+                border: "2px solid black",
+                borderRadius: "16px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                zIndex: 2,
+                boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+                marginBottom: "-10px",
+                cursor: "pointer",
+                transition: "transform 0.2s ease-in-out",
+                "&:hover": {
+                  transform: "scale(1.05)",
+                  backgroundColor: "#f7f7f7",
+                  boxShadow: "0 6px 14px rgba(0,0,0,0.2)", // más suave y visible
+                }
+
+              }}
+            >
+              {/* 👇 animación conjunta */}
+              <motion.div
+                initial={{ scale: 1 }}
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{
+                  delay: 1.4,
+                  duration: 1,
+                  ease: "easeInOut",
+                }}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                <HomeRepairServiceIcon sx={{ fontSize: 45, color: "success.main" }} />
+                <Typography
+                  variant="caption"
+                  fontWeight="bold"
+                  fontSize={15}
+                  color="success.main"
+                >
+                  Servicios
+                </Typography>
+              </motion.div>
+            </Box>
+
+
+            {/* Servicios (hover activo) */}
+            <Box
+              sx={{
+                flex: 1,
+                height: 65,
+                backgroundColor: "white",
+                border: "2px solid black",
+                borderRadius: "12px 12px 0 0",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                boxShadow: "inset 2px 0px 3px rgba(0,0,0,0.05)",
+                marginLeft: "-10%",
+                zIndex: 1,
+                transition: "all 0.2s ease-in-out",
+                "&:hover": {
+                  transform: "scale(1.05)",
+                  backgroundColor: "#f7f7f7",
+                  boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+                },
+
+              }}
+              onClick={() => navigate("/dashboard")}
+
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  transform: "translateX(20%)",
+                  textAlign: "center",
+                }}
+              >
+                <BarChartIcon sx={{ fontSize: 26, color: "primary.main", transition: "transform 0.3s ease, color 0.3s ease" }} />
+                <Typography variant="caption" fontSize={11}>
+                  Visitas
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
+        </motion.div>
       </Box>
 
       <Dialog open={servicioAEliminar !== null} onClose={() => setServicioAEliminar(null)}>
