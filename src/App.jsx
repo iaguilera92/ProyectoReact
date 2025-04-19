@@ -145,41 +145,45 @@ function App() {
 
 
   //LIMPIAR CACHE
+  // LIMPIAR CACHE (también aplica si entras por /administracion directamente)
   useEffect(() => {
-    fetch("/version.json", { cache: "no-store" })
-      .then((res) => res.json())
-      .then((data) => {
+    const checkVersionAndClearCache = async () => {
+      try {
+        const response = await fetch("/version.json", { cache: "no-store" });
+        const data = await response.json();
         const storedVersion = localStorage.getItem("app_version");
         const currentVersion = data.version;
 
         if (!storedVersion) {
           localStorage.setItem("app_version", currentVersion);
-          return; // No mostramos snackbar, solo almacenamos
+          return;
         }
 
         if (storedVersion !== currentVersion) {
           console.log("🆕 Nueva versión detectada. Limpiando caché...");
           console.log("🗂️ Versión anterior:", storedVersion);
           console.log("📄 Versión nueva:", currentVersion);
-
-          //localStorage.setItem("app_version", "0.0.1");
           setSnackbarVersion({ open: true, version: currentVersion });
 
-          setTimeout(() => {
-            caches.keys().then((names) => {
-              for (let name of names) caches.delete(name);
-            });
+          setTimeout(async () => {
+            const cacheNames = await caches.keys();
+            await Promise.all(cacheNames.map(name => caches.delete(name)));
+            console.log("✅ Caches eliminados:", cacheNames);
+
             localStorage.setItem("app_version", currentVersion);
-            window.location.reload();
-          }, 1500); // Espera para mostrar el mensaje
+            window.location.replace(window.location.pathname); // fuerza recarga sin cache
+          }, 1500);
         } else {
           console.log("✅ App actualizada. Versión:", currentVersion);
         }
-      })
-      .catch((err) =>
-        console.warn("⚠️ No se pudo verificar la versión:", err)
-      );
+      } catch (err) {
+        console.warn("⚠️ No se pudo verificar la versión:", err);
+      }
+    };
+
+    checkVersionAndClearCache();
   }, []);
+
 
 
   return (

@@ -6,7 +6,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { useInView } from 'react-intersection-observer';  // Importa el hook
 import Public from '@mui/icons-material/Public';
 import GroupAdd from '@mui/icons-material/GroupAdd';
-import Campaign from '@mui/icons-material/Campaign';
+import Verified from '@mui/icons-material/Verified'
 import DashboardCustomize from '@mui/icons-material/DashboardCustomize';
 import { useOutletContext } from "react-router-dom";
 
@@ -68,7 +68,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [showArrow, setShowArrow] = useState(true);
-
+  const [animationKey, setAnimationKey] = useState(0);
   const [swiperInstance, setSwiperInstance] = useState(null);
   const { ref: swiperRef, inView: swiperInView } = useInView({
     threshold: 0.2,
@@ -106,6 +106,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
       setShouldAnimate(false);
       const timeout = setTimeout(() => {
         setShouldAnimate(true);
+        setAnimationKey((prev) => prev + 1); // 🔁 fuerza reanimación
       }, 50);
       return () => clearTimeout(timeout);
     }
@@ -228,7 +229,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
         <Grid container spacing={3} sx={{ mt: 2 }}>
 
           {/* Columna de los íconos */}
-          <Grid item xs={12} md={6} ref={ref}>
+          <Grid item xs={12} md={6}>
             {[
               {
                 icon: <Public sx={{ color: "white", fontSize: "2.2rem" }} />,
@@ -243,9 +244,9 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                 hideLine: false,
               },
               {
-                icon: <Campaign sx={{ color: "white", fontSize: "2.2rem" }} />,
-                text: "Aumenta el alcance de tus proyectos.",
-                desc: "Difunde tus servicios a un público más amplio y segmentado.",
+                icon: <Verified sx={{ color: "white", fontSize: "2.2rem" }} />,
+                text: "Gana la confianza de tus clientes.",
+                desc: "Refleja confianza mostrando tu negocio de forma clara y profesional.",
                 hideLine: false,
               },
               {
@@ -254,110 +255,119 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                 desc: "Toma decisiones con herramientas de monitoreo y gestión digital.",
                 hideLine: true,
               },
-            ]
-              .map((item, index) => {
-                return (
-                  <motion.div
-                    key={shouldAnimate ? `animated-${index}` : `static-${index}`}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={shouldAnimate ? { opacity: 1, y: 0 } : {}}
-                    transition={{
-                      delay: 0.5 * index, // Círculo aparece primero
-                      duration: 0.5,      // Un poco más corto
+            ].map((item, index) => {
+              const { ref: itemRef, inView: itemInView } = useInView({
+                threshold: 0.43,
+                triggerOnce: true,
+              });
+
+              return (
+                <motion.div
+                  key={`animated-${index}-${animationKey}`} // 👈 clave dinámica
+                  ref={itemRef}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={itemInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{
+                    delay: 0.2 * index,
+                    duration: 0.5,
+                  }}
+                >
+                  <ListItem
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      zIndex: 2,
+                      paddingLeft: isMobile ? "0" : "16px",
+                      paddingRight: isMobile ? "0" : "16px",
                     }}
                   >
-                    <ListItem sx={{ display: "flex", alignItems: "center", zIndex: 2, paddingLeft: isMobile ? "0" : "16px", paddingRight: isMobile ? "0" : "16px" }}>
-                      <ListItemIcon sx={{ zIndex: 2 }}>
+                    <ListItemIcon sx={{ zIndex: 2 }}>
+                      <Box
+                        sx={{
+                          position: "relative",
+                          width: 100,
+                          height: 85,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        {!item.hideLine && (
+                          <motion.div
+                            initial={{ height: 0 }}
+                            animate={itemInView ? { height: 40 } : { height: 0 }}
+                            transition={{
+                              delay: 0.2 * index,
+                              duration: 1,
+                              ease: "easeInOut",
+                            }}
+                            style={{
+                              position: "absolute",
+                              top: "80%",
+                              left: "50%",
+                              transform: "translateX(-50%)",
+                              width: "2px",
+                              backgroundImage:
+                                "linear-gradient(white 40%, rgba(255,255,255,0) 0%)",
+                              backgroundPosition: "left",
+                              backgroundSize: "2px 6px",
+                              backgroundRepeat: "repeat-y",
+                              zIndex: 1,
+                            }}
+                          />
+                        )}
+
                         <Box
                           sx={{
-                            position: "relative",
-                            width: 100,
-                            height: 85, // antes era 100
+                            width: 70,
+                            height: 70,
+                            borderRadius: "50%",
+                            border: "2px solid white",
+                            backgroundColor: "#072138",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
+                            position: "relative",
+                            zIndex: 2,
                           }}
                         >
-                          {/* LÍNEA QUE SUBE DESDE EL CÍRCULO ACTUAL */}
-                          {!item.hideLine && (
-                            <motion.div
-                              initial={{ height: 0 }}
-                              animate={shouldAnimate ? { height: 40 } : { height: 0 }}
-                              transition={{
-                                delay: 0.5 * index,
-                                duration: 1,
-                                ease: "easeInOut",
-                              }}
-                              style={{
-                                position: "absolute",
-                                top: "80%",
-                                left: "50%",
-                                transform: "translateX(-50%)",
-                                width: "2px",
-                                backgroundImage: "linear-gradient(white 40%, rgba(255,255,255,0) 0%)",
-                                backgroundPosition: "left",
-                                backgroundSize: "2px 6px", // grosor y separación
-                                backgroundRepeat: "repeat-y",
-                                zIndex: 1,
-                              }}
-                            />
-
-                          )}
-
-
-                          {/* CÍRCULO CON ÍCONO */}
-                          <Box
-                            sx={{
-                              width: 70,
-                              height: 70,
+                          {item.icon}
+                          <motion.div
+                            style={{
+                              position: "absolute",
+                              top: 0,
+                              left: 0,
+                              width: "100%",
+                              height: "100%",
                               borderRadius: "50%",
-                              border: "2px solid white",
-                              backgroundColor: "#072138",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              position: "relative",
-                              zIndex: 2,
+                              backgroundColor: "rgba(255, 255, 255, 0.2)",
+                              zIndex: 1,
+                              animation: "pulsacion 1s ease-in-out 0.1s infinite",
                             }}
-                          >
-                            {item.icon}
-
-                            {/* Efecto de pulsación */}
-                            <motion.div
-                              style={{
-                                position: "absolute",
-                                top: 0,
-                                left: 0,
-                                width: "100%",
-                                height: "100%",
-                                borderRadius: "50%",
-                                backgroundColor: "rgba(255, 255, 255, 0.2)",
-                                zIndex: 1,
-                                animation: "pulsacion 1s ease-in-out 0.1s infinite",
-                              }}
-                            />
-                          </Box>
+                          />
                         </Box>
-                      </ListItemIcon>
+                      </Box>
+                    </ListItemIcon>
 
-                      <ListItemText
-                        sx={{
-                          fontFamily: "'Montserrat', Helvetica, Arial, sans-serif !important",
-                          "& .MuiListItemText-primary": {
-                            fontSize: isMobile ? "0.99rem" : "1.2rem",
-                          },
-                          "& .MuiListItemText-secondary": {
-                            color: "white",
-                          },
-                        }}
-                        primary={item.text}
-                        secondary={item.desc}
-                      />
-                    </ListItem>
-                  </motion.div>
-                );
-              })}
+                    <ListItemText
+                      sx={{
+                        fontFamily: "'Montserrat', Helvetica, Arial, sans-serif !important",
+                        "& .MuiListItemText-primary": {
+                          fontSize: isMobile ? "0.99rem" : "1.2rem",
+                        },
+                        "& .MuiListItemText-secondary": {
+                          color: "white",
+                        },
+                      }}
+                      primary={item.text}
+                      secondary={item.desc}
+                    />
+                  </ListItem>
+                </motion.div>
+              );
+            })}
           </Grid>
+
 
           {/* Columna de los descriptores */}
           <Grid item xs={12} md={6}>

@@ -6,31 +6,12 @@ import { useInView } from "react-intersection-observer";
 import { motion } from "framer-motion";
 
 const data = [
-  {
-    count: 20,
-    text: "Proyectos terminados en distintas empresas",
-    image:
-      "ProyectoTerminado.mp4",
-  },
-  {
-    count: 45,
-    text: "Proyectos a Pymes e Independientes",
-    image:
-      "ProyectoPymes.mp4",
-  },
-  {
-    count: 6,
-    text: "Años de Experiencia como desarrolladores",
-    image:
-      "Experience.mp4",
-  },
-  {
-    count: 8,
-    text: "Tazas de café en el día ☕",
-    image:
-      "Cafe.mp4",
-  },
+  { count: 20, text: "Proyectos terminados en distintas empresas", image: "ProyectoTerminado.mp4" },
+  { count: 45, text: "Proyectos a Pymes e Independientes", image: "ProyectoPymes.mp4" },
+  { count: 6, text: "Años de Experiencia como desarrolladores", image: "Experience.mp4" },
+  { count: 8, text: "Tazas de café en el día ☕", image: "Cafe.mp4" },
 ];
+const images = ["servicios.png", "computador.png"];
 
 const Areas = () => {
   const [currentImage, setCurrentImage] = useState(0);
@@ -75,13 +56,6 @@ const Areas = () => {
     ));
   };
 
-  // IMAGEN Y EFECTOS
-  const images = [
-    "https://www.hpr.cl/images/servicios/servicios.png",
-    "https://www.connectic.cl/wp-content/uploads/2024/07/Daco_5762223-400x316.png"
-  ];
-
-
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImage((prevImage) => (prevImage + 1) % images.length); // Cambia la imagen cada vez
@@ -99,6 +73,7 @@ const Areas = () => {
       return () => window.removeEventListener("scroll", handleScroll);
     }
   }, [isMobile]);
+
 
   return (
 
