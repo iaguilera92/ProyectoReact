@@ -73,22 +73,31 @@ const Servicios = () => {
 
   //CARGAR SERVICIOS DESDE BD
   useEffect(() => {
+    let cancelado = false;
+
     const cargarDatos = async () => {
-      const timestamp = new Date().getTime(); // Evita cache
-      const urlConCacheBust = `/database/Servicios.xlsx?t=${timestamp}`;
+      if (cancelado) return;
+      const timestamp = new Date().getTime();
+      const urlConCacheBust = `https://plataformas-web-buckets.s3.us-east-2.amazonaws.com/Servicios.xlsx?t=${timestamp}`;
 
       const datos = await cargarServicios(urlConCacheBust);
-      const serviciosConIconos = datos.map((s) => ({
-        ...s,
-        icon: iconMap[s.iconName] || null,
-      }));
+      const serviciosConIconos = datos
+        .map((s) => ({
+          ...s,
+          icon: iconMap[s.iconName] || null,
+        }))
+        .sort((a, b) => (a.Orden || 0) - (b.Orden || 0)); // ✅ orden por 'Orden'
+
       console.log("Servicios final:", serviciosConIconos);
       setServices(serviciosConIconos);
     };
 
     cargarDatos();
-  }, []);
 
+    return () => {
+      cancelado = true;
+    };
+  }, []);
 
 
   return (

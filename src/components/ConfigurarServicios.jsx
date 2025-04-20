@@ -15,6 +15,7 @@ import UpdateIcon from '@mui/icons-material/Update';
 import ViewCarouselIcon from "@mui/icons-material/ViewCarousel";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import HomeRepairServiceIcon from "@mui/icons-material/HomeRepairService";
+import RestoreIcon from '@mui/icons-material/Restore';
 
 const ConfigurarServicios = () => {
   const [services, setServices] = useState([]);
@@ -35,11 +36,13 @@ const ConfigurarServicios = () => {
     img: '',
     background: '',
     iconName: '',
+    orden: '',
     sections: [],
   });
 
   const navigate = useNavigate();
   const containerRef = React.useRef();
+  const [itemAEliminar, setItemAEliminar] = useState(null);
 
   useEffect(() => {
     const credenciales = (() => {
@@ -57,13 +60,12 @@ const ConfigurarServicios = () => {
 
     const cargar = async () => {
       const timestamp = new Date().getTime();
-      const data = await cargarServicios(`/database/Servicios.xlsx?t=${timestamp}`);
+      const data = await cargarServicios(`https://plataformas-web-buckets.s3.us-east-2.amazonaws.com/Servicios.xlsx?t=${timestamp}`);
       setServices(data);
     };
 
     cargar();
   }, [navigate]);
-
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -93,7 +95,7 @@ const ConfigurarServicios = () => {
     }
   };
 
-  const handleGuardar = () => {
+  const handleGuardar = async () => {
     if (selected === null) {
       setSnackbar({ open: true, message: 'En construcción...' });
       return;
@@ -102,10 +104,57 @@ const ConfigurarServicios = () => {
     const actualizados = [...services];
     actualizados[selected] = nuevoServicio;
     setServices(actualizados);
-    setNuevoServicio({ title: '', description: '', img: '', background: '', iconName: '', sections: [] });
+
+    const isLocal = window.location.hostname === "localhost";
+    const url = isLocal
+      ? "http://localhost:9999/.netlify/functions/actualizarServicio"
+      : "/.netlify/functions/actualizarServicio";
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ servicio: nuevoServicio }),
+      });
+
+      if (!response.ok) throw new Error("Error en la respuesta del servidor");
+
+      const resultText = await response.text();
+      const result = resultText ? JSON.parse(resultText) : { message: 'Servicio actualizado' };
+
+      setSnackbar({ open: true, message: result.message || 'Servicio actualizado' });
+    } catch (error) {
+      console.error("❌ Error al actualizar Excel:", error);
+      setSnackbar({ open: true, message: 'Error al actualizar Excel' });
+    }
+
+    setNuevoServicio({ title: '', description: '', img: '', background: '', iconName: '', orden: '', sections: [] });
     setSelected(null);
     setMostrarFormulario(null);
   };
+
+  //RESTAURAR SERVICIOS
+  const handleRestaurarServicios = async () => {
+    const isLocal = window.location.hostname === "localhost";
+    const url = isLocal
+      ? "http://localhost:9999/.netlify/functions/restaurarServicios"
+      : "/.netlify/functions/restaurarServicios";
+
+    try {
+      const response = await fetch(url, { method: "POST" });
+
+      if (!response.ok) throw new Error("Error al restaurar Excel desde local");
+
+      const resultText = await response.text();
+      const result = resultText ? JSON.parse(resultText) : { message: 'Excel restaurado' };
+
+      setSnackbar({ open: true, message: result.message || 'Excel restaurado' });
+    } catch (error) {
+      console.error("❌ Error al restaurar Excel:", error);
+      setSnackbar({ open: true, message: 'Error al restaurar el Excel' });
+    }
+  };
+
 
   const handleCancelar = () => {
     setMostrarFormulario(null);
@@ -121,6 +170,13 @@ const ConfigurarServicios = () => {
     }),
   };
 
+  useEffect(() => {
+    document.body.style.overflowX = "hidden";
+    return () => {
+      document.body.style.overflowX = "auto";
+    };
+  }, []);
+
   return (
     <Container
       maxWidth={false}
@@ -128,6 +184,7 @@ const ConfigurarServicios = () => {
       sx={{
         minHeight: '100vh',
         width: '100vw',
+        overflowX: 'hidden', // 👈 Agregado aquí
         py: 1,
         px: 0,
         pb: 3.5,
@@ -138,27 +195,70 @@ const ConfigurarServicios = () => {
         backgroundPosition: 'center',
       }}
     >
+
       <Box ref={containerRef} sx={{ pt: 12, pb: 4, px: { xs: 1, md: 4 } }}>
-        <Box p={3}>
+        <Box mb={4} px={2} sx={{ width: '100%', overflowX: 'hidden' }}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <Box display="flex" alignItems="center" gap={1} mb={2}>
-                <SettingsSuggestIcon sx={{ color: 'white', fontSize: 22 }} />
-                <Typography variant="h6" sx={{ color: 'white', fontWeight: 700, fontFamily: 'Roboto, Arial, sans-serif' }}>
-                  {"Servicios actuales".split("").map((char, i) => (
-                    <motion.span
-                      key={i}
-                      custom={i}
-                      variants={letterVariants}
-                      initial="hidden"
-                      animate="visible"
-                      style={{ display: 'inline-block' }}
-                    >
-                      {char === " " ? "\u00A0" : char}
-                    </motion.span>
-                  ))}
-                </Typography>
+
+
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+                gap={1}
+                mb={2}
+              >
+                <Box display="flex" alignItems="center" gap={1}>
+                  <SettingsSuggestIcon sx={{ color: 'white', fontSize: 22 }} />
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      color: 'white',
+                      fontWeight: 700,
+                      fontFamily: 'Roboto, Arial, sans-serif',
+                      fontSize: { xs: '1rem', sm: '1.25rem' }, // Tamaño de fuente responsivo
+                    }}
+                  >
+                    {"Servicios actuales".split("").map((char, i) => (
+                      <motion.span
+                        key={i}
+                        custom={i}
+                        variants={letterVariants}
+                        initial="hidden"
+                        animate="visible"
+                        style={{ display: 'inline-block' }}
+                      >
+                        {char === " " ? "\u00A0" : char}
+                      </motion.span>
+                    ))}
+                  </Typography>
+                </Box>
+
+                <Button
+                  onClick={handleRestaurarServicios}
+                  variant="outlined"
+                  color="inherit"
+                  startIcon={<UpdateIcon />}
+                  sx={{
+                    color: 'white',
+                    borderColor: 'white',
+                    fontSize: { xs: '0.75rem', sm: '0.875rem' }, // Tamaño de fuente responsivo
+                    padding: { xs: '4px 8px', sm: '6px 12px' }, // Padding responsivo
+                    minWidth: 'auto', // Evita ancho mínimo fijo
+                    '&:hover': {
+                      backgroundColor: '#ffffff22',
+                      borderColor: '#ffffffcc',
+                    },
+                  }}
+                >
+                  Restaurar
+                </Button>
               </Box>
+
+
+
+
               {services.map((s, idx) => (
                 <motion.div
                   key={idx}
@@ -188,7 +288,15 @@ const ConfigurarServicios = () => {
                     </CardContent>
 
                     <Collapse in={mostrarFormulario === idx} timeout={500} unmountOnExit>
-                      <Box sx={{ p: 3, background: '#fff', borderTop: '1px solid rgba(0,0,0,0.1)' }}>
+                      <Box
+                        sx={{
+                          p: 3,
+                          background: '#fff',
+                          borderTop: '1px solid rgba(0,0,0,0.1)',
+                          width: '100%',
+                          overflowX: 'hidden'
+                        }}
+                      >
                         <Tabs value={tabIndex} onChange={(e, newValue) => setTabIndex(newValue)} sx={{ mb: 2 }}>
                           <Tab label="General" />
                           <Tab label="Secciones" />
@@ -197,7 +305,57 @@ const ConfigurarServicios = () => {
                         {tabIndex === 0 && (
                           <Box>
                             <Typography variant="h6" gutterBottom sx={{ color: '#000', fontFamily: 'Roboto, Arial, sans-serif' }}>Editar Servicio</Typography>
-                            <TextField fullWidth label="Título" name="title" value={nuevoServicio.title} onChange={handleInputChange} margin="normal" />
+                            <Box display="flex" gap={2}>
+                              <TextField
+                                label="Título"
+                                name="title"
+                                value={nuevoServicio.title}
+                                onChange={handleInputChange}
+                                margin="normal"
+                                fullWidth
+                                sx={{ flex: 4 }}
+                              />
+                              <TextField
+                                label="Orden"
+                                name="orden"
+                                value={nuevoServicio.orden}
+                                onChange={(e) => {
+                                  const value = e.target.value.slice(0, 2); // Máximo 2 caracteres
+                                  const num = parseInt(value);
+                                  const max = services.length;
+
+                                  // Solo permitir números válidos dentro del rango
+                                  if (!isNaN(num) && num >= 1 && num <= max) {
+                                    setNuevoServicio((prev) => ({ ...prev, orden: value }));
+                                  } else if (value === "") {
+                                    // Permitir borrado
+                                    setNuevoServicio((prev) => ({ ...prev, orden: "" }));
+                                  }
+                                }}
+                                margin="normal"
+                                type="number"
+                                sx={{ flex: 1 }}
+                                inputProps={{
+                                  maxLength: 2,
+                                  min: 1,
+                                  max: services.length,
+                                }}
+                                error={
+                                  !nuevoServicio.orden ||
+                                  isNaN(parseInt(nuevoServicio.orden)) ||
+                                  parseInt(nuevoServicio.orden) < 1 ||
+                                  parseInt(nuevoServicio.orden) > services.length
+                                }
+                                helperText={
+                                  !nuevoServicio.orden
+                                    ? "Requerido"
+                                    : parseInt(nuevoServicio.orden) > services.length
+                                      ? `Máx permitido: ${services.length}`
+                                      : ""
+                                }
+                              />
+                            </Box>
+
                             <TextField fullWidth label="Descripción" name="description" value={nuevoServicio.description} onChange={handleInputChange} margin="normal" />
                             <TextField fullWidth label="Imagen" name="img" value={nuevoServicio.img} onChange={handleInputChange} margin="normal" />
                             <TextField fullWidth label="Fondo (background)" name="background" value={nuevoServicio.background} onChange={handleInputChange} margin="normal" />
@@ -211,7 +369,19 @@ const ConfigurarServicios = () => {
                               Secciones del servicio
                             </Typography>
                             {nuevoServicio.sections.map((section, idx) => (
-                              <Paper key={idx} sx={{ p: 2, mb: 2, backgroundColor: 'white' }}>
+                              <Paper
+                                key={idx}
+                                sx={{
+                                  p: 2,
+                                  mb: 2,
+                                  backgroundColor: 'white',
+                                  width: '100%',
+                                  maxWidth: '100%', // 👈 Fuerza que no se pase del ancho
+                                  overflowX: 'hidden', // 👈 Importante también aquí
+                                  boxSizing: 'border-box', // 👈 Previene desbordes por padding
+                                }}
+                              >
+
                                 <TextField
                                   fullWidth
                                   label="Título de la sección"
@@ -240,13 +410,35 @@ const ConfigurarServicios = () => {
                                   sx={{ mb: 2 }}
                                 />
 
-                                {section.items && section.items.length > 0 && (
-                                  <ul style={{ paddingLeft: 20, marginTop: 4 }}>
-                                    {section.items.map((item, i) => (
-                                      <li key={i} style={{ marginBottom: 4 }}>{item}</li>
-                                    ))}
-                                  </ul>
-                                )}
+                                {section.items.map((item, i) => (
+                                  <Grid container spacing={0} alignItems="center" key={i} mb={1}>
+                                    <Grid item xs>
+                                      <TextField
+                                        fullWidth
+                                        label={`Item ${i + 1}`}
+                                        value={item}
+                                        onChange={(e) => {
+                                          const updatedSections = nuevoServicio.sections.map((s, secIndex) => {
+                                            if (secIndex === idx) {
+                                              const updatedItems = [...s.items];
+                                              updatedItems[i] = e.target.value;
+                                              return { ...s, items: updatedItems };
+                                            }
+                                            return s;
+                                          });
+                                          setNuevoServicio((prev) => ({ ...prev, sections: updatedSections }));
+                                        }}
+                                      />
+                                    </Grid>
+                                    <Grid item>
+                                      <IconButton onClick={() => setItemAEliminar({ sectionIdx: idx, itemIdx: i })}>
+                                        <DeleteIcon color="error" />
+                                      </IconButton>
+                                    </Grid>
+                                  </Grid>
+                                ))}
+
+
                               </Paper>
                             ))}
 
@@ -273,12 +465,17 @@ const ConfigurarServicios = () => {
                   variant="contained"
                   startIcon={<AddIcon />}
                   onClick={() => {
+                    if (services.length >= 6) {
+                      setSnackbar({ open: true, message: 'Solo se permiten hasta 6 servicios principales.' });
+                      return;
+                    }
                     setSelected(null);
                     setNuevoServicio({ title: '', description: '', img: '', background: '', iconName: '', sections: [] });
                     setMostrarFormulario(services.length);
                     setTabIndex(0);
-                    setSnackbar({ open: true, message: 'En construcción...' }); // 👈 agregado aquí
+                    setSnackbar({ open: true, message: 'En construcción...' }); // Si lo deseas mantener
                   }}
+
                 >
                   Agregar Servicio
                 </Button>
@@ -465,6 +662,45 @@ const ConfigurarServicios = () => {
           <Button onClick={confirmarEliminar} color="error">Eliminar</Button>
         </DialogActions>
       </Dialog>
+
+      <Dialog
+        open={itemAEliminar !== null}
+        onClose={() => setItemAEliminar(null)}
+      >
+        <DialogTitle>Eliminar item</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            ¿Estás seguro que deseas eliminar este item de la sección?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setItemAEliminar(null)}>Cancelar</Button>
+          <Button
+            color="error"
+            onClick={() => {
+              const { sectionIdx, itemIdx } = itemAEliminar;
+              const updatedSections = nuevoServicio.sections.map((s, idx) => {
+                if (idx === sectionIdx) {
+                  const updatedItems = [...s.items];
+                  updatedItems.splice(itemIdx, 1);
+                  return { ...s, items: updatedItems };
+                }
+                return s;
+              });
+
+              setNuevoServicio(prev => ({
+                ...prev,
+                sections: updatedSections,
+              }));
+              setSnackbar({ open: true, message: "Item eliminado correctamente!" });
+              setItemAEliminar(null);
+            }}
+          >
+            Eliminar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
 
       <Snackbar
         open={snackbar.open}

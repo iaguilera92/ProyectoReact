@@ -2,3 +2,10 @@
   framework = "vite"
   command = "npm run dev"
   targetPort = 5173
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Headers = "Content-Type"
+    Access-Control-Allow-Methods = "GET, POST, OPTIONS"

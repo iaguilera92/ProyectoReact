@@ -17,6 +17,7 @@
     "@google-analytics/data": "^5.1.0",
     "@mui/icons-material": "^6.4.5",
     "@mui/material": "^6.4.5",
+    "aws-sdk": "^2.1692.0",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^3.0.2",
     "dotenv": "^16.5.0",

@@ -1,9 +1,3 @@
-//INSTALAR EN CONSOLA:
-// npm install react-ga4
-// npm install googleapis
-//LUEGO PARA NETLIFY, Consumir API GOOGLE:
-// npm install netlify-cli -g
-// netlify functions:create getAnalyticsStats
 export const MEASUREMENT_ID = "G-BXGJZQS44R";
 
 export const initGoogleAnalytics = () => {
