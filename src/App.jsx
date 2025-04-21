@@ -6,7 +6,7 @@ import "@fontsource/poppins";
 const Areas = lazy(() => import("./components/Areas"));
 const Informations = lazy(() => import("./components/Informations"));
 const Contacto = lazy(() => import("./components/Contacto"));
-const Evidencias = lazy(() => import("./components/Evidencias"));
+const Evidencias = lazy(() => import("./components/Evidencias2"));
 const Footer = lazy(() => import("./components/Footer"));
 const Navbar = lazy(() => import("./components/Navbar"));
 
