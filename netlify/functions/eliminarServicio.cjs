@@ -40,9 +40,9 @@ exports.handler = async function (event) {
         };
     }
 
-    const { id } = JSON.parse(event.body || "{}");
+    const { IdServicio } = JSON.parse(event.body || "{}");
 
-    if (!id) {
+    if (!IdServicio) {
         return {
             statusCode: 400,
             headers,
@@ -51,25 +51,37 @@ exports.handler = async function (event) {
     }
 
     try {
-        console.log("🗑️ Eliminando servicio con Id:", id);
 
-        // Leer Excel desde S3
         const file = await s3.getObject({ Bucket: BUCKET_NAME, Key: FILE_KEY }).promise();
+        console.log("📥 Archivo Excel descargado");
+
         const workbook = xlsx.read(file.Body);
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
         const data = xlsx.utils.sheet_to_json(sheet);
 
-        // Filtrar eliminando por IdServicio
-        const actualizados = data.filter(row => row.IdServicio !== id);
+        console.log(`📊 Total de filas en Excel: ${data.length}`);
 
-        // Crear nuevo Excel
+        if (!IdServicio) {
+            return {
+                statusCode: 400,
+                headers,
+                body: JSON.stringify({ message: "Falta el campo IdServicio" }),
+            };
+        }
+
+        console.log("🗑️ Eliminando servicio con IdServicio:", IdServicio);
+
+        const actualizados = data.filter(row => row.IdServicio !== IdServicio); // ✅ correcto
+
+
+        console.log(`🧹 Filas después de eliminar: ${actualizados.length}`);
+
         const newSheet = xlsx.utils.json_to_sheet(actualizados);
         const newWorkbook = xlsx.utils.book_new();
         xlsx.utils.book_append_sheet(newWorkbook, newSheet, sheetName);
         const buffer = xlsx.write(newWorkbook, { bookType: "xlsx", type: "buffer" });
 
-        // Subir archivo actualizado
         await s3.putObject({
             Bucket: BUCKET_NAME,
             Key: FILE_KEY,
@@ -77,7 +89,7 @@ exports.handler = async function (event) {
             ContentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         }).promise();
 
-        console.log("✅ Servicio eliminado correctamente");
+        console.log("✅ Excel actualizado y subido");
 
         return {
             statusCode: 200,
@@ -89,7 +101,8 @@ exports.handler = async function (event) {
         return {
             statusCode: 500,
             headers,
-            body: JSON.stringify({ message: "Error al eliminar servicio" }),
+            body: JSON.stringify({ message: "Error al eliminar servicio", error: error.message }),
         };
     }
+
 };

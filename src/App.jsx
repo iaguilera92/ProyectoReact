@@ -205,8 +205,6 @@ function App() {
   }, []);
 
 
-
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -215,31 +213,12 @@ function App() {
       <AnimatePresence>
         {!showApp && location.pathname !== "/dashboard" && location.pathname !== "/administracion" && location.pathname !== "/configurar-servicios" && (
           <>
-            <motion.div
-              key="cargando"
-              initial={{ opacity: 1 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.8 }}
-              style={{
-                position: "fixed",
-                top: 0,
-                left: 0,
-                width: "100vw",
-                height: "100vh",
-                zIndex: 9999,
-              }}
-            >
+            <motion.div key="cargando" initial={{ opacity: 1 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.8 }} style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", zIndex: 9999, }}>
               <Cargando />
             </motion.div>
 
             {/* Snackbar como overlay global */}
-            <Snackbar
-              open={snackbarVersion.open}
-              autoHideDuration={1400}
-              anchorOrigin={{ vertical: "top", horizontal: "center" }}
-              sx={{ zIndex: 20000 }}
-            >
+            <Snackbar open={snackbarVersion.open} autoHideDuration={1400} anchorOrigin={{ vertical: "top", horizontal: "center" }} sx={{ zIndex: 20000 }}>
               <Alert
                 severity="info"
                 icon={false}
@@ -267,12 +246,7 @@ function App() {
       </AnimatePresence>
 
       {/* Contenido principal, oculto mientras se carga */}
-      <Box
-        sx={{
-          visibility: showApp ? "visible" : "hidden",
-          pointerEvents: showApp ? "auto" : "none",
-        }}
-      >
+      <Box sx={{ visibility: showApp ? "visible" : "hidden", pointerEvents: showApp ? "auto" : "none", }}>
         {/* Navbar solo si no estás en /administracion */}
         {location.pathname !== "/administracion" && (
           <Suspense fallback={null}>
@@ -282,8 +256,6 @@ function App() {
 
         {/* Rutas principales con contexto */}
         <Outlet context={{ setVideoReady, contactoRef, informationsRef, triggerInformations, hasSeenInformations }} />
-
-
 
         {/* Secciones visibles solo en la página de inicio */}
         {["/", ""].includes(location.pathname) && (
@@ -321,31 +293,10 @@ function App() {
 
         {/* Botón WhatsApp */}
         {location.pathname !== "/administracion" && location.pathname !== "/dashboard" && location.pathname !== "/configurar-servicios" && (
-          <Box
-            sx={{
-              position: "fixed",
-              bottom: "40px",
-              right: "40px",
-              zIndex: 100,
-              transition: "bottom 0.3s ease",
-            }}
-          >
-            <IconButton
-              onClick={() => {
-                window.open("https://api.whatsapp.com/send?phone=56992914526", "_blank");
-                setHasInteracted(true);
-              }}
-              sx={{
-                width: 60,
-                height: 60,
-                backgroundColor: "#25d366",
-                color: "#FFF",
-                borderRadius: "50%",
-                boxShadow: "2px 2px 3px #999",
-                "&:hover": { backgroundColor: "#1ebe5d" },
-                zIndex: 101,
-              }}
-            >
+          <Box sx={{ position: "fixed", bottom: "40px", right: "40px", zIndex: 100, transition: "bottom 0.3s ease", }}>
+            <IconButton onClick={() => { window.open("https://api.whatsapp.com/send?phone=56992914526", "_blank"); setHasInteracted(true); }} sx={{
+              width: 60, height: 60, backgroundColor: "#25d366", color: "#FFF", borderRadius: "50%", boxShadow: "2px 2px 3px #999", "&:hover": { backgroundColor: "#1ebe5d" }, zIndex: 101
+            }}>
               <WhatsAppIcon sx={{ fontSize: 30 }} />
             </IconButton>
 
@@ -377,8 +328,7 @@ function App() {
 
         {/* Botón scroll arriba */}
         {showArrow && (
-          <IconButton
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          <IconButton onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             sx={{
               position: "fixed",
               bottom: "120px",

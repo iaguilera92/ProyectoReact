@@ -20,6 +20,7 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { motion } from 'framer-motion';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { cargarServicios } from "../helpers/HelperServicios";
+import BuildCircleIcon from '@mui/icons-material/BuildCircle';
 
 // Mapear nombres de iconos a los componentes reales
 const iconMap = {
@@ -27,6 +28,7 @@ const iconMap = {
   UpdateIcon: <UpdateIcon fontSize="small" />,
   ExtensionIcon: <ExtensionIcon fontSize="small" />,
   ShoppingCartIcon: <ShoppingCartIcon fontSize="small" />,
+  BuildCircleIcon: <BuildCircleIcon fontSize="small" />,
 };
 
 const Servicios = () => {

@@ -9,7 +9,7 @@ const Administracion = lazy(() => import("./components/Administracion"));
 const Catalogo = lazy(() => import("./components/Catalogo"));
 const Home = lazy(() => import("./components/Home"));
 const Dashboard = lazy(() => import("./components/Dashboard"));
-const ConfigurarServicios = lazy(() => import("./components/ConfigurarServicios"));
+const ConfigurarServicios = lazy(() => import("./components/configuraciones/ConfigurarServicios"));
 
 // ✅ HOC para envolver cualquier componente con Suspense
 const withSuspense = (Component) => (
@@ -34,11 +34,7 @@ function HomeWrapper() {
     const { contactoRef, informationsRef, setVideoReady } = useOutletContext();
     return (
         <Suspense fallback={null}>
-            <Home
-                contactoRef={contactoRef}
-                informationsRef={informationsRef}
-                setVideoReady={setVideoReady}
-            />
+            <Home contactoRef={contactoRef} informationsRef={informationsRef} setVideoReady={setVideoReady} />
         </Suspense>
     );
 }
