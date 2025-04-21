@@ -145,11 +145,17 @@ function App() {
 
 
   //LIMPIAR CACHE
-  // LIMPIAR CACHE (también aplica si entras por /administracion directamente)
   useEffect(() => {
     const checkVersionAndClearCache = async () => {
       try {
-        const response = await fetch("/version.json", { cache: "no-store" });
+        const response = await fetch("/version.json", {
+          cache: "no-store",
+          headers: {
+            "Cache-Control": "no-store",
+            "Pragma": "no-cache"
+          }
+        });
+
         const data = await response.json();
         const storedVersion = localStorage.getItem("app_version");
         const currentVersion = data.version;
@@ -163,15 +169,29 @@ function App() {
           console.log("🆕 Nueva versión detectada. Limpiando caché...");
           console.log("🗂️ Versión anterior:", storedVersion);
           console.log("📄 Versión nueva:", currentVersion);
-          setSnackbarVersion({ open: true, version: currentVersion });
+
+          setSnackbarVersion({ open: true, version: currentVersion }); // tu Snackbar, si usas uno
 
           setTimeout(async () => {
+            // 🧹 Eliminar todas las caches
             const cacheNames = await caches.keys();
             await Promise.all(cacheNames.map(name => caches.delete(name)));
-            console.log("✅ Caches eliminados:", cacheNames);
+            console.log("✅ Caches eliminadas:", cacheNames);
 
+            // 🧹 Eliminar todos los Service Workers
+            if ("serviceWorker" in navigator) {
+              const registrations = await navigator.serviceWorker.getRegistrations();
+              for (const registration of registrations) {
+                await registration.unregister();
+                console.log("🧹 Service Worker eliminado");
+              }
+            }
+
+            // 💾 Actualizar versión guardada
             localStorage.setItem("app_version", currentVersion);
-            window.location.replace(window.location.pathname); // fuerza recarga sin cache
+
+            // 🔁 Recarga completa desde el servidor (no solo pathname)
+            window.location.reload(true); // o usa window.location.href = "/"
           }, 1500);
         } else {
           console.log("✅ App actualizada. Versión:", currentVersion);
@@ -183,6 +203,7 @@ function App() {
 
     checkVersionAndClearCache();
   }, []);
+
 
 
 
