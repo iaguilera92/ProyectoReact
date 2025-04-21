@@ -1,12 +1,22 @@
 const AWS = require("aws-sdk");
 const xlsx = require("xlsx");
-const path = require("path");
-const fs = require("fs");
+require("dotenv").config(); // para entorno local
+
 const BUCKET_NAME = process.env.BUCKET_NAME;
-const REGION = process.env.AWS_REGION || "us-east-1";
+const REGION = process.env.MY_AWS_REGION || "us-east-1";
 const FILE_KEY = "Servicios.xlsx";
 
-AWS.config.update({ region: REGION });
+// ✅ Configuración de credenciales según entorno
+if (process.env.MY_AWS_ACCESS_KEY_ID && process.env.MY_AWS_SECRET_ACCESS_KEY) {
+    AWS.config.update({
+        accessKeyId: process.env.MY_AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.MY_AWS_SECRET_ACCESS_KEY,
+        region: REGION,
+    });
+} else {
+    AWS.config.update({ region: REGION }); // producción
+}
+
 const s3 = new AWS.S3();
 
 const headers = {
@@ -16,6 +26,8 @@ const headers = {
 };
 
 exports.handler = async function (event) {
+    console.log("📥 Petición recibida en eliminarServicio.cjs");
+
     if (event.httpMethod === "OPTIONS") {
         return { statusCode: 200, headers, body: "OK" };
     }
@@ -28,9 +40,9 @@ exports.handler = async function (event) {
         };
     }
 
-    const { IdServicio } = JSON.parse(event.body || "{}");
+    const { id } = JSON.parse(event.body || "{}");
 
-    if (!IdServicio) {
+    if (!id) {
         return {
             statusCode: 400,
             headers,
@@ -39,7 +51,9 @@ exports.handler = async function (event) {
     }
 
     try {
-        // Descargar archivo desde S3
+        console.log("🗑️ Eliminando servicio con Id:", id);
+
+        // Leer Excel desde S3
         const file = await s3.getObject({ Bucket: BUCKET_NAME, Key: FILE_KEY }).promise();
         const workbook = xlsx.read(file.Body);
         const sheetName = workbook.SheetNames[0];
@@ -47,7 +61,7 @@ exports.handler = async function (event) {
         const data = xlsx.utils.sheet_to_json(sheet);
 
         // Filtrar eliminando por IdServicio
-        const actualizados = data.filter(row => row.IdServicio !== IdServicio);
+        const actualizados = data.filter(row => row.IdServicio !== id);
 
         // Crear nuevo Excel
         const newSheet = xlsx.utils.json_to_sheet(actualizados);
@@ -56,15 +70,14 @@ exports.handler = async function (event) {
         const buffer = xlsx.write(newWorkbook, { bookType: "xlsx", type: "buffer" });
 
         // Subir archivo actualizado
-        await s3
-            .putObject({
-                Bucket: BUCKET_NAME,
-                Key: FILE_KEY,
-                Body: buffer,
-                ContentType:
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            })
-            .promise();
+        await s3.putObject({
+            Bucket: BUCKET_NAME,
+            Key: FILE_KEY,
+            Body: buffer,
+            ContentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        }).promise();
+
+        console.log("✅ Servicio eliminado correctamente");
 
         return {
             statusCode: 200,

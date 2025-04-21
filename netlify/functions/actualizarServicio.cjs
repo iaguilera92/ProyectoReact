@@ -1,12 +1,21 @@
 const AWS = require("aws-sdk");
 const XLSX = require("xlsx");
-require('dotenv').config();
+require("dotenv").config(); // para local
 
 const BUCKET_NAME = process.env.BUCKET_NAME;
-const REGION = process.env.AWS_REGION || "us-east-1";
+const REGION = process.env.MY_AWS_REGION || "us-east-1";
 const FILE_KEY = "Servicios.xlsx";
 
-AWS.config.update({ region: REGION });
+if (process.env.MY_AWS_ACCESS_KEY_ID && process.env.MY_AWS_SECRET_ACCESS_KEY) {
+    AWS.config.update({
+        accessKeyId: process.env.MY_AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.MY_AWS_SECRET_ACCESS_KEY,
+        region: REGION,
+    });
+} else {
+    AWS.config.update({ region: REGION }); // producción
+}
+
 const s3 = new AWS.S3();
 
 const corsHeaders = {
@@ -16,7 +25,7 @@ const corsHeaders = {
 };
 
 exports.handler = async (event) => {
-    console.log("📥 Petición recibida en actualizarServicio.js");
+    console.log("📥 Petición recibida en actualizarServicio.cjs");
 
     if (event.httpMethod === "OPTIONS") {
         return { statusCode: 200, headers: corsHeaders, body: "OK" };
@@ -52,34 +61,58 @@ exports.handler = async (event) => {
 
         console.log("✅ Servicio recibido:", servicio.title, "-", idServicio);
 
+        // Leer Excel desde S3
         const s3Data = await s3.getObject({ Bucket: BUCKET_NAME, Key: FILE_KEY }).promise();
         const workbook = XLSX.read(s3Data.Body, { type: "buffer" });
         const hoja = workbook.Sheets[workbook.SheetNames[0]];
         const datos = XLSX.utils.sheet_to_json(hoja);
 
         // 🔁 Filtrar todas las filas que no correspondan al IdServicio
-        const filtrados = datos.filter(row => row["IdServicio"] !== idServicio);
+        let actualizados = datos.filter(row => row["IdServicio"] !== idServicio);
 
-        const nuevosRows = servicio.sections.map(section => ({
-            "IdServicio": idServicio,
-            "Orden": servicio.orden || 0,
-            "Service Title": servicio.title,
-            "Service Image": servicio.img,
-            "Service Link": servicio.link || "",
-            "Service Description": servicio.description,
-            "Service Background": servicio.background,
-            "Service Icon": servicio.iconName,
-            "Section Title": section.title,
-            "Section Description": section.description,
-            "Section Image": section.image || "",
-            "Section Items": section.items?.join("; ") || "",
-        }));
+        // ✅ Si es una actualización normal (no solo eliminar item)
+        if (!servicio.eliminarItem) {
+            const nuevosRows = servicio.sections.map(section => ({
+                "IdServicio": idServicio,
+                "Orden": servicio.orden || 0,
+                "Service Title": servicio.title,
+                "Service Image": servicio.img,
+                "Service Link": servicio.link || "",
+                "Service Description": servicio.description,
+                "Service Background": servicio.background,
+                "Service Icon": servicio.iconName,
+                "Section Title": section.title,
+                "Section Description": section.description,
+                "Section Image": section.image || "",
+                "Section Items": section.items?.join("; ") || "",
+            }));
 
+            actualizados = [...actualizados, ...nuevosRows];
+        }
 
-        const actualizados = [...filtrados, ...nuevosRows];
+        // ✅ Si solo se está eliminando un ítem
+        if (servicio.eliminarItem) {
+            const itemAEliminar = servicio.eliminarItem.trim().toLowerCase();
+            console.log(`🗑️ Eliminando item "${itemAEliminar}" del servicio ${idServicio}`);
+
+            actualizados = actualizados.map(row => {
+                if (row["IdServicio"] === idServicio && row["Section Items"]) {
+                    const items = row["Section Items"]
+                        .split(";")
+                        .map(i => i.trim())
+                        .filter(i => i.toLowerCase() !== itemAEliminar);
+                    return {
+                        ...row,
+                        "Section Items": items.join("; "),
+                    };
+                }
+                return row;
+            });
+        }
+
+        // Escribir nuevamente el Excel
         const nuevaHoja = XLSX.utils.json_to_sheet(actualizados);
         workbook.Sheets[workbook.SheetNames[0]] = nuevaHoja;
-
         const buffer = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" });
 
         await s3.putObject({
@@ -89,52 +122,16 @@ exports.handler = async (event) => {
             ContentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         }).promise();
 
-        if (servicio.eliminarItem && servicio.IdServicio) {
-            const itemAEliminar = servicio.eliminarItem.trim().toLowerCase();
-            console.log(`🗑️ Eliminando item "${itemAEliminar}" del servicio ${servicio.IdServicio}`);
+        const msg = servicio.eliminarItem
+            ? "Ítem eliminado exitosamente."
+            : "Servicio actualizado exitosamente por IdServicio.";
 
-            // Buscar y modificar solo las filas del servicio específico
-            const modificados = datos.map(row => {
-                if (row["IdServicio"] === servicio.IdServicio && row["Section Items"]) {
-                    const items = row["Section Items"]
-                        .split(";")
-                        .map(i => i.trim())
-                        .filter(i => i.toLowerCase() !== itemAEliminar);
-                    return {
-                        ...row,
-                        "Section Items": items.join("; ")
-                    };
-                }
-                return row;
-            });
-
-            const nuevaHoja = XLSX.utils.json_to_sheet(modificados);
-            workbook.Sheets[workbook.SheetNames[0]] = nuevaHoja;
-
-            const buffer = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" });
-
-            await s3.putObject({
-                Bucket: BUCKET_NAME,
-                Key: FILE_KEY,
-                Body: buffer,
-                ContentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            }).promise();
-
-            console.log("✅ Ítem eliminado correctamente del Excel");
-
-            return {
-                statusCode: 200,
-                headers: corsHeaders,
-                body: JSON.stringify({ message: "Ítem eliminado exitosamente." }),
-            };
-        }
-
-        console.log("✅ Excel actualizado correctamente por IdServicio");
+        console.log("✅", msg);
 
         return {
             statusCode: 200,
             headers: corsHeaders,
-            body: JSON.stringify({ message: "Servicio actualizado exitosamente por IdServicio." }),
+            body: JSON.stringify({ message: msg }),
         };
     } catch (error) {
         console.error("❌ Error al actualizar:", error);

@@ -1,14 +1,25 @@
+require("dotenv").config(); // 👈 Importante para leer .env
+
 const fs = require("fs");
 const path = require("path");
 const AWS = require("aws-sdk");
 
 const BUCKET_NAME = process.env.BUCKET_NAME;
-const REGION = process.env.AWS_REGION || "us-east-1";
+const REGION = process.env.MY_AWS_REGION || "us-east-1";
 const FILE_KEY = "Servicios.xlsx";
 const LOCAL_PATH = path.resolve(__dirname, "Servicios.xlsx");
 
+// 👉 Solo usar accessKey y secretKey si están disponibles (por seguridad)
+if (process.env.MY_AWS_ACCESS_KEY_ID && process.env.MY_AWS_SECRET_ACCESS_KEY) {
+    AWS.config.update({
+        accessKeyId: process.env.MY_AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.MY_AWS_SECRET_ACCESS_KEY,
+        region: REGION,
+    });
+} else {
+    AWS.config.update({ region: REGION });
+}
 
-AWS.config.update({ region: REGION });
 const s3 = new AWS.S3();
 
 const headers = {
@@ -17,7 +28,7 @@ const headers = {
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
 };
 
-exports.handler = async function (event, context) {
+exports.handler = async function (event) {
     console.log("📥 Petición recibida en restaurarServicios.cjs");
 
     if (event.httpMethod === "OPTIONS") {
@@ -65,7 +76,7 @@ exports.handler = async function (event, context) {
             body: JSON.stringify({ message: "Se han restaurado los servicios correctamente!" }),
         };
     } catch (error) {
-        console.error("Error al restaurar servicios:", error);
+        console.error("❌ Error al restaurar servicios:", error);
         return {
             statusCode: 500,
             headers,
