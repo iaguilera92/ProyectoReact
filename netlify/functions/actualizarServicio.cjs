@@ -1,5 +1,6 @@
 const AWS = require("aws-sdk");
 const XLSX = require("xlsx");
+require('dotenv').config();
 
 const BUCKET_NAME = process.env.BUCKET_NAME;
 const REGION = process.env.AWS_REGION || "us-east-1";
@@ -61,6 +62,7 @@ exports.handler = async (event) => {
 
         const nuevosRows = servicio.sections.map(section => ({
             "IdServicio": idServicio,
+            "Orden": servicio.orden || 0,
             "Service Title": servicio.title,
             "Service Image": servicio.img,
             "Service Link": servicio.link || "",
@@ -72,6 +74,7 @@ exports.handler = async (event) => {
             "Section Image": section.image || "",
             "Section Items": section.items?.join("; ") || "",
         }));
+
 
         const actualizados = [...filtrados, ...nuevosRows];
         const nuevaHoja = XLSX.utils.json_to_sheet(actualizados);
@@ -85,6 +88,46 @@ exports.handler = async (event) => {
             Body: buffer,
             ContentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         }).promise();
+
+        if (servicio.eliminarItem && servicio.IdServicio) {
+            const itemAEliminar = servicio.eliminarItem.trim().toLowerCase();
+            console.log(`🗑️ Eliminando item "${itemAEliminar}" del servicio ${servicio.IdServicio}`);
+
+            // Buscar y modificar solo las filas del servicio específico
+            const modificados = datos.map(row => {
+                if (row["IdServicio"] === servicio.IdServicio && row["Section Items"]) {
+                    const items = row["Section Items"]
+                        .split(";")
+                        .map(i => i.trim())
+                        .filter(i => i.toLowerCase() !== itemAEliminar);
+                    return {
+                        ...row,
+                        "Section Items": items.join("; ")
+                    };
+                }
+                return row;
+            });
+
+            const nuevaHoja = XLSX.utils.json_to_sheet(modificados);
+            workbook.Sheets[workbook.SheetNames[0]] = nuevaHoja;
+
+            const buffer = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" });
+
+            await s3.putObject({
+                Bucket: BUCKET_NAME,
+                Key: FILE_KEY,
+                Body: buffer,
+                ContentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            }).promise();
+
+            console.log("✅ Ítem eliminado correctamente del Excel");
+
+            return {
+                statusCode: 200,
+                headers: corsHeaders,
+                body: JSON.stringify({ message: "Ítem eliminado exitosamente." }),
+            };
+        }
 
         console.log("✅ Excel actualizado correctamente por IdServicio");
 

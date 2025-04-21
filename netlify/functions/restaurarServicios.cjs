@@ -5,7 +5,8 @@ const AWS = require("aws-sdk");
 const BUCKET_NAME = process.env.BUCKET_NAME;
 const REGION = process.env.AWS_REGION || "us-east-1";
 const FILE_KEY = "Servicios.xlsx";
-const LOCAL_PATH = path.resolve(__dirname, "../../public/database/Servicios.xlsx");
+const LOCAL_PATH = path.resolve(__dirname, "Servicios.xlsx");
+
 
 AWS.config.update({ region: REGION });
 const s3 = new AWS.S3();
@@ -61,7 +62,7 @@ exports.handler = async function (event, context) {
         return {
             statusCode: 200,
             headers,
-            body: JSON.stringify({ message: "Restauración exitosa" }),
+            body: JSON.stringify({ message: "Se han restaurado los servicios correctamente!" }),
         };
     } catch (error) {
         console.error("Error al restaurar servicios:", error);

@@ -10,11 +10,12 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import UpdateIcon from '@mui/icons-material/Update';
 import ViewCarouselIcon from "@mui/icons-material/ViewCarousel";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import HomeRepairServiceIcon from "@mui/icons-material/HomeRepairService";
+import CircularProgress from '@mui/material/CircularProgress';
 import RestoreIcon from '@mui/icons-material/Restore';
 
 const ConfigurarServicios = () => {
@@ -29,7 +30,7 @@ const ConfigurarServicios = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const cardSize = isMobile ? "300px" : "340px";
   const smallCardSize = isMobile ? "140px" : "165px";
-
+  const [eliminando, setEliminando] = useState(false);
   const [nuevoServicio, setNuevoServicio] = useState({
     title: '',
     description: '',
@@ -43,6 +44,16 @@ const ConfigurarServicios = () => {
   const navigate = useNavigate();
   const containerRef = React.useRef();
   const [itemAEliminar, setItemAEliminar] = useState(null);
+  const [ocultarServicios, setOcultarServicios] = useState(false);
+  const [restoreConfirmOpen, setRestoreConfirmOpen] = useState(false);
+  const [restaurando, setRestaurando] = useState(false);
+
+  const recargarServicios = async () => {
+    const timestamp = new Date().getTime();
+    const data = await cargarServicios(`https://plataformas-web-buckets.s3.us-east-2.amazonaws.com/Servicios.xlsx?t=${timestamp}`);
+    setServices(data);
+    setOcultarServicios(false); // volvemos a mostrar las cards
+  };
 
   useEffect(() => {
     const credenciales = (() => {
@@ -58,14 +69,9 @@ const ConfigurarServicios = () => {
       return;
     }
 
-    const cargar = async () => {
-      const timestamp = new Date().getTime();
-      const data = await cargarServicios(`https://plataformas-web-buckets.s3.us-east-2.amazonaws.com/Servicios.xlsx?t=${timestamp}`);
-      setServices(data);
-    };
-
-    cargar();
+    recargarServicios();
   }, [navigate]);
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -83,15 +89,35 @@ const ConfigurarServicios = () => {
     setServicioAEliminar(index);
   };
 
-  const confirmarEliminar = () => {
-    const actualizados = [...services];
-    actualizados.splice(servicioAEliminar, 1);
-    setServices(actualizados);
-    setServicioAEliminar(null);
-    setSnackbar({ open: true, message: 'Eliminado correctamente!' });
-    if (selected === servicioAEliminar) {
-      setSelected(null);
-      setMostrarFormulario(null);
+  const confirmarEliminar = async () => {
+    if (eliminando || servicioAEliminar === null) return;
+    setEliminando(true);
+
+    try {
+      const idAEliminar = services[servicioAEliminar]?.IdServicio;
+
+      const isLocal = window.location.hostname === "localhost";
+      const url = isLocal
+        ? "http://localhost:9999/.netlify/functions/eliminarServicio"
+        : "/.netlify/functions/eliminarServicio";
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ IdServicio: idAEliminar })
+      });
+
+      if (!response.ok) throw new Error("Error al eliminar");
+
+      // Filtrar desde el front también por seguridad
+      setServices(prev => prev.filter(s => s.IdServicio !== idAEliminar));
+      setSnackbar({ open: true, message: 'Servicio eliminado correctamente!' });
+      setServicioAEliminar(null);
+    } catch (error) {
+      console.error("❌ Error al eliminar servicio:", error);
+      setSnackbar({ open: true, message: 'Error al eliminar servicio' });
+    } finally {
+      setEliminando(false);
     }
   };
 
@@ -100,6 +126,7 @@ const ConfigurarServicios = () => {
       setSnackbar({ open: true, message: 'En construcción...' });
       return;
     }
+    delete nuevoServicio.esNuevo;
 
     const actualizados = [...services];
     actualizados[selected] = nuevoServicio;
@@ -134,32 +161,57 @@ const ConfigurarServicios = () => {
   };
 
   //RESTAURAR SERVICIOS
-  const handleRestaurarServicios = async () => {
-    const isLocal = window.location.hostname === "localhost";
-    const url = isLocal
-      ? "http://localhost:9999/.netlify/functions/restaurarServicios"
-      : "/.netlify/functions/restaurarServicios";
-
+  const handleConfirmarRestaurar = async () => {
+    setRestaurando(true);
     try {
+      const isLocal = window.location.hostname === "localhost";
+      const url = isLocal
+        ? "http://localhost:9999/.netlify/functions/restaurarServicios"
+        : "/.netlify/functions/restaurarServicios";
+
       const response = await fetch(url, { method: "POST" });
 
-      if (!response.ok) throw new Error("Error al restaurar Excel desde local");
+      if (!response.ok) throw new Error("Error al restaurar Excel");
 
       const resultText = await response.text();
       const result = resultText ? JSON.parse(resultText) : { message: 'Excel restaurado' };
 
       setSnackbar({ open: true, message: result.message || 'Excel restaurado' });
+
+      await recargarServicios();
+
+      // 👇 Cierra el diálogo y finaliza loading con delay
+      setTimeout(() => {
+        setRestoreConfirmOpen(false);
+        setRestaurando(false);
+      }, 300);
+
     } catch (error) {
       console.error("❌ Error al restaurar Excel:", error);
-      setSnackbar({ open: true, message: 'Error al restaurar el Excel' });
+      setSnackbar({ open: true, message: 'Error al restaurar Excel' });
+
+      // 👇 Solo en caso de error, cerramos sin animación
+      setMostrarConfirmarRestaurar(false);
+      setRestaurando(false);
     }
   };
 
 
-  const handleCancelar = () => {
+
+
+  const handleCancelar = async () => {
+    // Si se estaba agregando uno nuevo (y no tiene título aún), lo removemos
+    if (selected !== null && services[selected]?.esNuevo) {
+      setMostrarFormulario(null);
+      setSelected(null);
+      await recargarServicios(); // 🌀 recarga los servicios como si refrescaras
+      return;
+    }
+
     setMostrarFormulario(null);
     setSelected(null);
   };
+
 
   const letterVariants = {
     hidden: { opacity: 0, x: -20 },
@@ -236,7 +288,7 @@ const ConfigurarServicios = () => {
                 </Box>
 
                 <Button
-                  onClick={handleRestaurarServicios}
+                  onClick={() => setRestoreConfirmOpen(true)}
                   variant="outlined"
                   color="inherit"
                   startIcon={<UpdateIcon />}
@@ -259,227 +311,322 @@ const ConfigurarServicios = () => {
 
 
 
-              {services.map((s, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, x: 200 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: idx * 0.1, duration: 0.5 }}
-                >
-                  <Card sx={{ mb: 2, overflow: 'hidden', background: s.background || '#fff', transition: 'all 0.4s ease' }}>
-                    <CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'white', fontFamily: 'Roboto, Arial, sans-serif' }}>
-                      <Box>
-                        <Typography variant="subtitle1" fontWeight={600} sx={{ color: 'white' }}>{s.title}</Typography>
-                        <Typography variant="body2" sx={{ color: 'white', opacity: 0.85 }}>{s.description}</Typography>
-                      </Box>
-                      <Box>
-                        <IconButton
-                          onClick={() => mostrarFormulario === idx ? handleCancelar() : handleEditar(idx)}
+              <AnimatePresence>
+                {services.map((s, idx) => {
+                  const mostrarSoloNuevo = s.esNuevo || !ocultarServicios;
+                  if (!mostrarSoloNuevo) return null; // 👈 control desde el render, no desde CSS
+
+                  return (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, y: 40 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -60 }}
+                      transition={{ duration: 0.5, ease: 'easeInOut' }}
+                    >
+                      <Card sx={{ mb: 2, overflow: 'hidden', background: s.background || '#fff', transition: 'all 0.4s ease' }}>
+                        <CardContent
                           sx={{
-                            transition: 'transform 0.3s ease',
-                            transform: mostrarFormulario === idx ? 'rotate(180deg)' : 'none',
-                            color: mostrarFormulario === idx ? '#dc3545' : 'inherit'
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            color: 'white',
+                            fontFamily: 'Roboto, Arial, sans-serif'
                           }}
                         >
-                          {mostrarFormulario === idx ? <CloseIcon /> : <EditIcon />}
-                        </IconButton>
-                        <IconButton onClick={() => handleEliminar(idx)} sx={{ color: 'white' }}><DeleteIcon /></IconButton>
-                      </Box>
-                    </CardContent>
-
-                    <Collapse in={mostrarFormulario === idx} timeout={500} unmountOnExit>
-                      <Box
-                        sx={{
-                          p: 3,
-                          background: '#fff',
-                          borderTop: '1px solid rgba(0,0,0,0.1)',
-                          width: '100%',
-                          overflowX: 'hidden'
-                        }}
-                      >
-                        <Tabs value={tabIndex} onChange={(e, newValue) => setTabIndex(newValue)} sx={{ mb: 2 }}>
-                          <Tab label="General" />
-                          <Tab label="Secciones" />
-                        </Tabs>
-
-                        {tabIndex === 0 && (
                           <Box>
-                            <Typography variant="h6" gutterBottom sx={{ color: '#000', fontFamily: 'Roboto, Arial, sans-serif' }}>Editar Servicio</Typography>
-                            <Box display="flex" gap={2}>
-                              <TextField
-                                label="Título"
-                                name="title"
-                                value={nuevoServicio.title}
-                                onChange={handleInputChange}
-                                margin="normal"
-                                fullWidth
-                                sx={{ flex: 4 }}
-                              />
-                              <TextField
-                                label="Orden"
-                                name="orden"
-                                value={nuevoServicio.orden}
-                                onChange={(e) => {
-                                  const value = e.target.value.slice(0, 2); // Máximo 2 caracteres
-                                  const num = parseInt(value);
-                                  const max = services.length;
-
-                                  // Solo permitir números válidos dentro del rango
-                                  if (!isNaN(num) && num >= 1 && num <= max) {
-                                    setNuevoServicio((prev) => ({ ...prev, orden: value }));
-                                  } else if (value === "") {
-                                    // Permitir borrado
-                                    setNuevoServicio((prev) => ({ ...prev, orden: "" }));
-                                  }
-                                }}
-                                margin="normal"
-                                type="number"
-                                sx={{ flex: 1 }}
-                                inputProps={{
-                                  maxLength: 2,
-                                  min: 1,
-                                  max: services.length,
-                                }}
-                                error={
-                                  !nuevoServicio.orden ||
-                                  isNaN(parseInt(nuevoServicio.orden)) ||
-                                  parseInt(nuevoServicio.orden) < 1 ||
-                                  parseInt(nuevoServicio.orden) > services.length
-                                }
-                                helperText={
-                                  !nuevoServicio.orden
-                                    ? "Requerido"
-                                    : parseInt(nuevoServicio.orden) > services.length
-                                      ? `Máx permitido: ${services.length}`
-                                      : ""
-                                }
-                              />
-                            </Box>
-
-                            <TextField fullWidth label="Descripción" name="description" value={nuevoServicio.description} onChange={handleInputChange} margin="normal" />
-                            <TextField fullWidth label="Imagen" name="img" value={nuevoServicio.img} onChange={handleInputChange} margin="normal" />
-                            <TextField fullWidth label="Fondo (background)" name="background" value={nuevoServicio.background} onChange={handleInputChange} margin="normal" />
-                            <TextField fullWidth label="Nombre del icono" name="iconName" value={nuevoServicio.iconName} onChange={handleInputChange} margin="normal" />
+                            {s.esNuevo ? (
+                              <Box display="flex" alignItems="center" gap={1}>
+                                <SettingsSuggestIcon sx={{ color: 'black' }} />
+                                <Typography
+                                  variant="subtitle1"
+                                  fontWeight={600}
+                                  sx={{ color: 'black' }}
+                                >
+                                  Nuevo Servicio para Plataformas web
+                                </Typography>
+                              </Box>
+                            ) : (
+                              <>
+                                <Typography
+                                  variant="subtitle1"
+                                  fontWeight={600}
+                                  sx={{ color: 'white' }}
+                                >
+                                  {s.title}
+                                </Typography>
+                                <Typography variant="body2" sx={{ color: 'white', opacity: 0.85 }}>
+                                  {s.description}
+                                </Typography>
+                              </>
+                            )}
                           </Box>
-                        )}
 
-                        {tabIndex === 1 && (
                           <Box>
-                            <Typography variant="h6" gutterBottom sx={{ color: '#000' }}>
-                              Secciones del servicio
-                            </Typography>
-                            {nuevoServicio.sections.map((section, idx) => (
-                              <Paper
-                                key={idx}
-                                sx={{
-                                  p: 2,
-                                  mb: 2,
-                                  backgroundColor: 'white',
-                                  width: '100%',
-                                  maxWidth: '100%', // 👈 Fuerza que no se pase del ancho
-                                  overflowX: 'hidden', // 👈 Importante también aquí
-                                  boxSizing: 'border-box', // 👈 Previene desbordes por padding
-                                }}
-                              >
+                            <IconButton
+                              onClick={() => mostrarFormulario === idx ? handleCancelar() : handleEditar(idx)}
+                              sx={{
+                                transition: 'transform 0.3s ease',
+                                transform: mostrarFormulario === idx ? 'rotate(180deg)' : 'none',
+                                color: mostrarFormulario === idx ? '#dc3545' : 'inherit'
+                              }}
+                            >
+                              {mostrarFormulario === idx ? <CloseIcon /> : <EditIcon />}
+                            </IconButton>
+                            {!s.esNuevo && (
+                              <IconButton onClick={() => handleEliminar(idx)} sx={{ color: 'white' }}>
+                                <DeleteIcon />
+                              </IconButton>
+                            )}
+                          </Box>
+                        </CardContent>
 
-                                <TextField
-                                  fullWidth
-                                  label="Título de la sección"
-                                  value={section.title}
-                                  onChange={(e) => {
-                                    const updatedSections = nuevoServicio.sections.map((section, i) =>
-                                      i === idx ? { ...section, description: e.target.value } : section
-                                    );
-                                    setNuevoServicio(prev => ({ ...prev, sections: updatedSections }));
-                                  }}
-                                  sx={{ mb: 1 }}
-                                />
 
-                                <TextField
-                                  fullWidth
-                                  label="Descripción de la sección"
-                                  value={section.description}
-                                  onChange={(e) => {
-                                    const updatedSections = nuevoServicio.sections.map((s, i) =>
-                                      i === idx ? { ...s, description: e.target.value } : s
-                                    );
-                                    setNuevoServicio(prev => ({ ...prev, sections: updatedSections }));
-                                  }}
-                                  multiline
-                                  rows={2}
-                                  sx={{ mb: 2 }}
-                                />
+                        <Collapse in={mostrarFormulario === idx} timeout={500} unmountOnExit>
+                          <Box
+                            sx={{
+                              p: 3,
+                              background: '#fff',
+                              borderTop: '1px solid rgba(0,0,0,0.1)',
+                              width: '100%',
+                              overflowX: 'hidden'
+                            }}
+                          >
 
-                                {section.items.map((item, i) => (
-                                  <Grid container spacing={0} alignItems="center" key={i} mb={1}>
-                                    <Grid item xs>
-                                      <TextField
-                                        fullWidth
-                                        label={`Item ${i + 1}`}
-                                        value={item}
-                                        onChange={(e) => {
-                                          const updatedSections = nuevoServicio.sections.map((s, secIndex) => {
-                                            if (secIndex === idx) {
-                                              const updatedItems = [...s.items];
-                                              updatedItems[i] = e.target.value;
-                                              return { ...s, items: updatedItems };
-                                            }
-                                            return s;
-                                          });
-                                          setNuevoServicio((prev) => ({ ...prev, sections: updatedSections }));
-                                        }}
-                                      />
-                                    </Grid>
-                                    <Grid item>
-                                      <IconButton onClick={() => setItemAEliminar({ sectionIdx: idx, itemIdx: i })}>
-                                        <DeleteIcon color="error" />
-                                      </IconButton>
-                                    </Grid>
-                                  </Grid>
+                            <Tabs value={tabIndex} onChange={(e, newValue) => setTabIndex(newValue)} sx={{ mb: 2 }}>
+                              <Tab label="General" />
+                              <Tab label="Secciones" />
+                            </Tabs>
+
+                            {tabIndex === 0 && (
+                              <Box>
+                                <Typography variant="h6" gutterBottom sx={{ color: '#000', fontFamily: 'Roboto, Arial, sans-serif' }}>Editar Servicio</Typography>
+                                <Box display="flex" gap={2}>
+                                  <TextField
+                                    label="Título"
+                                    name="title"
+                                    value={nuevoServicio.title}
+                                    onChange={handleInputChange}
+                                    margin="normal"
+                                    fullWidth
+                                    sx={{ flex: isMobile ? 3 : 4 }}
+                                  />
+                                  <TextField
+                                    label="Orden"
+                                    name="orden"
+                                    value={nuevoServicio.orden}
+                                    onChange={(e) => {
+                                      const value = e.target.value.slice(0, 2); // Máximo 2 caracteres
+                                      const num = parseInt(value);
+                                      const max = services.length;
+
+                                      // Solo permitir números válidos dentro del rango
+                                      if (!isNaN(num) && num >= 1 && num <= max) {
+                                        setNuevoServicio((prev) => ({ ...prev, orden: value }));
+                                      } else if (value === "") {
+                                        // Permitir borrado
+                                        setNuevoServicio((prev) => ({ ...prev, orden: "" }));
+                                      }
+                                    }}
+                                    margin="normal"
+                                    type="number"
+                                    sx={{ flex: 1 }}
+                                    inputProps={{
+                                      maxLength: 2,
+                                      min: 1,
+                                      max: services.length,
+                                    }}
+                                    error={
+                                      !nuevoServicio.orden ||
+                                      isNaN(parseInt(nuevoServicio.orden)) ||
+                                      parseInt(nuevoServicio.orden) < 1 ||
+                                      parseInt(nuevoServicio.orden) > services.length
+                                    }
+                                    helperText={
+                                      !nuevoServicio.orden
+                                        ? "Requerido"
+                                        : parseInt(nuevoServicio.orden) > services.length
+                                          ? `Máx permitido: ${services.length}`
+                                          : ""
+                                    }
+                                  />
+                                </Box>
+
+                                <TextField fullWidth label="Descripción" name="description" value={nuevoServicio.description} onChange={handleInputChange} margin="normal" />
+                                <TextField fullWidth label="Imagen" name="img" value={nuevoServicio.img} onChange={handleInputChange} margin="normal" />
+                                <TextField fullWidth label="Fondo (background)" name="background" value={nuevoServicio.background} onChange={handleInputChange} margin="normal" />
+                                <TextField fullWidth label="Nombre del icono" name="iconName" value={nuevoServicio.iconName} onChange={handleInputChange} margin="normal" />
+                              </Box>
+                            )}
+
+                            {tabIndex === 1 && (
+                              <Box>
+                                <Typography variant="h6" gutterBottom sx={{ color: '#000' }}>
+                                  Secciones del servicio
+                                </Typography>
+                                {nuevoServicio.sections.map((section, idx) => (
+                                  <Paper
+                                    key={idx}
+                                    sx={{
+                                      p: 2,
+                                      mb: 2,
+                                      backgroundColor: 'white',
+                                      width: '100%',
+                                      maxWidth: '100%', // 👈 Fuerza que no se pase del ancho
+                                      overflowX: 'hidden', // 👈 Importante también aquí
+                                      boxSizing: 'border-box', // 👈 Previene desbordes por padding
+                                    }}
+                                  >
+
+                                    <TextField
+                                      fullWidth
+                                      label="Título de la sección"
+                                      value={section.title}
+                                      onChange={(e) => {
+                                        const updatedSections = nuevoServicio.sections.map((section, i) =>
+                                          i === idx ? { ...section, description: e.target.value } : section
+                                        );
+                                        setNuevoServicio(prev => ({ ...prev, sections: updatedSections }));
+                                      }}
+                                      sx={{ mb: 1 }}
+                                    />
+
+                                    <TextField
+                                      fullWidth
+                                      label="Descripción de la sección"
+                                      value={section.description}
+                                      onChange={(e) => {
+                                        const updatedSections = nuevoServicio.sections.map((s, i) =>
+                                          i === idx ? { ...s, description: e.target.value } : s
+                                        );
+                                        setNuevoServicio(prev => ({ ...prev, sections: updatedSections }));
+                                      }}
+                                      multiline
+                                      rows={2}
+                                      sx={{ mb: 2 }}
+                                    />
+
+                                    {section.items.map((item, i) => (
+                                      <Grid container spacing={0} alignItems="center" key={i} mb={1}>
+                                        <Grid item xs>
+                                          <TextField
+                                            fullWidth
+                                            label={`Item ${i + 1}`}
+                                            value={item}
+                                            onChange={(e) => {
+                                              const updatedSections = nuevoServicio.sections.map((s, secIndex) => {
+                                                if (secIndex === idx) {
+                                                  const updatedItems = [...s.items];
+                                                  updatedItems[i] = e.target.value;
+                                                  return { ...s, items: updatedItems };
+                                                }
+                                                return s;
+                                              });
+                                              setNuevoServicio((prev) => ({ ...prev, sections: updatedSections }));
+                                            }}
+                                          />
+                                        </Grid>
+                                        <Grid item>
+                                          <IconButton onClick={() => setItemAEliminar({ sectionIdx: idx, itemIdx: i })}>
+                                            <DeleteIcon color="error" />
+                                          </IconButton>
+                                        </Grid>
+
+                                        {/* Solo mostrar el botón si es el último ítem */}
+                                        {i === section.items.length - 1 && (
+                                          <Grid item xs={12} textAlign="right" mt={1} mr={5}>
+                                            <Button
+                                              size="small"
+                                              variant="outlined"
+                                              startIcon={<AddIcon />}
+                                              onClick={() => {
+                                                const updatedSections = nuevoServicio.sections.map((s, secIdx) => {
+                                                  if (secIdx === idx) {
+                                                    return { ...s, items: [...s.items, ""] };
+                                                  }
+                                                  return s;
+                                                });
+                                                setNuevoServicio(prev => ({ ...prev, sections: updatedSections }));
+                                              }}
+                                            >
+                                              Agregar Item
+                                            </Button>
+                                          </Grid>
+                                        )}
+                                      </Grid>
+                                    ))}
+
+
+
+                                  </Paper>
                                 ))}
 
 
-                              </Paper>
-                            ))}
+                              </Box>
+                            )}
 
-
+                            <Box display="flex" justifyContent="center" gap={2} mt={3}>
+                              <Button variant="contained" onClick={handleGuardar} color="primary" startIcon={selected !== null ? <UpdateIcon /> : <AddIcon />} sx={{ flex: 1, maxWidth: 400 }}>
+                                {selected !== null ? 'Actualizar' : 'Agregar'}
+                              </Button>
+                              <Button variant="contained" onClick={handleCancelar} sx={{ flex: 1, maxWidth: 400, backgroundColor: '#dc3545', '&:hover': { backgroundColor: '#c82333' } }}>
+                                Cancelar
+                              </Button>
+                            </Box>
                           </Box>
-                        )}
+                        </Collapse>
+                      </Card>
+                    </motion.div>
+                  )
+                }
+                )}
+              </AnimatePresence>
+              {!ocultarServicios && (
+                <Box textAlign="right" mt={4}>
+                  <Button
+                    variant="contained"
+                    startIcon={<AddIcon />}
+                    onClick={() => {
+                      if (services.length >= 6) {
+                        setSnackbar({ open: true, message: 'Solo se permiten hasta 6 servicios principales.' });
+                        return;
+                      }
 
-                        <Box display="flex" justifyContent="center" gap={2} mt={3}>
-                          <Button variant="contained" onClick={handleGuardar} color="primary" startIcon={selected !== null ? <UpdateIcon /> : <AddIcon />} sx={{ flex: 1, maxWidth: 400 }}>
-                            {selected !== null ? 'Actualizar' : 'Agregar'}
-                          </Button>
-                          <Button variant="contained" onClick={handleCancelar} sx={{ flex: 1, maxWidth: 400, backgroundColor: '#dc3545', '&:hover': { backgroundColor: '#c82333' } }}>
-                            Cancelar
-                          </Button>
-                        </Box>
-                      </Box>
-                    </Collapse>
-                  </Card>
-                </motion.div>
-              ))}
+                      setOcultarServicios(true); // 🚫 Oculta las cards y el botón
 
-              <Box textAlign="right" mt={4}>
-                <Button
-                  variant="contained"
-                  startIcon={<AddIcon />}
-                  onClick={() => {
-                    if (services.length >= 6) {
-                      setSnackbar({ open: true, message: 'Solo se permiten hasta 6 servicios principales.' });
-                      return;
-                    }
-                    setSelected(null);
-                    setNuevoServicio({ title: '', description: '', img: '', background: '', iconName: '', sections: [] });
-                    setMostrarFormulario(services.length);
-                    setTabIndex(0);
-                    setSnackbar({ open: true, message: 'En construcción...' }); // Si lo deseas mantener
-                  }}
+                      setTimeout(() => {
+                        const nuevo = {
+                          title: '',
+                          description: '',
+                          img: '',
+                          background: '',
+                          iconName: '',
+                          orden: (services.length + 1).toString(),
+                          sections: [
+                            {
+                              title: '',
+                              description: '',
+                              image: '',
+                              items: ['']
+                            }
+                          ],
+                          esNuevo: true
+                        };
 
-                >
-                  Agregar Servicio
-                </Button>
-              </Box>
+                        setServices((prev) => [...prev, nuevo]);
+                        setNuevoServicio(nuevo);
+                        setSelected(services.length);
+                        setMostrarFormulario(services.length);
+                        setTabIndex(0);
+                      }, 500);
+                    }}
+                  >
+                    Agregar Servicio
+                  </Button>
+                </Box>
+              )}
+
+
 
             </Grid>
           </Grid>
@@ -497,7 +644,7 @@ const ConfigurarServicios = () => {
             display: "flex",
             justifyContent: "center", // ✅ centrado horizontal
             zIndex: 10,
-            pointerEvents: "auto", // 👈 asegura interacción
+            pointerEvents: "none", // ⛔ evita bloquear clics fuera del menú
           }}
         >
           <Box
@@ -509,6 +656,7 @@ const ConfigurarServicios = () => {
               pt: 1,
               gap: 0,
               position: "relative",
+              pointerEvents: "auto", // ✅ este sí recibe interacción
             }}
           >
             {/* Catálogo (sin hover) */}
@@ -649,17 +797,56 @@ const ConfigurarServicios = () => {
           </Box>
         </motion.div>
       </Box>
+      <Dialog
+        open={servicioAEliminar !== null}
+        onClose={() => !eliminando && setServicioAEliminar(null)}
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            p: 2,
+            backgroundColor: '#1e1e1e',
+            color: 'white',
+            maxWidth: 420,
+          },
+        }}
+      >
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <DeleteIcon color="error" />
+          <Typography variant="h6" sx={{ fontWeight: 600 }}>
+            Confirmar eliminación
+          </Typography>
+        </DialogTitle>
 
-      <Dialog open={servicioAEliminar !== null} onClose={() => setServicioAEliminar(null)}>
-        <DialogTitle>Eliminar servicio</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            ¿Estás seguro que deseas eliminar el servicio "{servicioAEliminar !== null && services[servicioAEliminar]?.title}"?
+          <DialogContentText sx={{ color: 'grey.300', fontSize: 15 }}>
+            Estás seguro de eliminar el servicio
+            <strong> "{servicioAEliminar !== null && services[servicioAEliminar]?.title}"</strong>.
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setServicioAEliminar(null)}>Cancelar</Button>
-          <Button onClick={confirmarEliminar} color="error">Eliminar</Button>
+
+        <DialogActions sx={{ justifyContent: 'space-between', mt: 2 }}>
+          <Button
+            variant="outlined"
+            disabled={eliminando}
+            onClick={() => setServicioAEliminar(null)}
+            sx={{
+              borderColor: 'grey.500',
+              color: 'grey.300',
+              '&:hover': { borderColor: 'white', color: 'white' },
+            }}
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            disabled={eliminando}
+            onClick={confirmarEliminar}
+            startIcon={eliminando ? <CircularProgress size={18} color="inherit" /> : <DeleteIcon />}
+            sx={{ boxShadow: '0px 2px 6px rgba(255,0,0,0.4)' }}
+          >
+            {eliminando ? "Eliminando..." : "Eliminar"}
+          </Button>
         </DialogActions>
       </Dialog>
 
@@ -671,6 +858,7 @@ const ConfigurarServicios = () => {
         <DialogContent>
           <DialogContentText>
             ¿Estás seguro que deseas eliminar este item de la sección?
+            RECUERDA ACTUALIZAR DESPÚES.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -701,6 +889,58 @@ const ConfigurarServicios = () => {
         </DialogActions>
       </Dialog>
 
+      <Dialog
+        open={restoreConfirmOpen}
+        onClose={() => !restaurando && setRestoreConfirmOpen(false)}
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            p: 2,
+            backgroundColor: '#1e1e1e',
+            color: 'white',
+            maxWidth: 420,
+          },
+        }}
+      >
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <RestoreIcon color="info" />
+          <Typography variant="h6" sx={{ fontWeight: 600 }}>
+            Confirmar restauración
+          </Typography>
+        </DialogTitle>
+
+        <DialogContent>
+          <DialogContentText sx={{ color: 'grey.300', fontSize: 15 }}>
+            Estás a punto de <strong>restaurar el archivo original de servicios</strong> desde la versión local.
+            Esta acción <u>sobrescribirá</u> los datos actuales en la nube. ¿Deseas continuar?
+          </DialogContentText>
+        </DialogContent>
+
+        <DialogActions sx={{ justifyContent: 'space-between', mt: 2 }}>
+          <Button
+            variant="outlined"
+            disabled={restaurando}
+            onClick={() => setRestoreConfirmOpen(false)}
+            sx={{
+              borderColor: 'grey.500',
+              color: 'grey.300',
+              '&:hover': { borderColor: 'white', color: 'white' },
+            }}
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant="contained"
+            color="info"
+            disabled={restaurando}
+            onClick={handleConfirmarRestaurar}
+            startIcon={restaurando ? <CircularProgress size={18} color="inherit" /> : <RestoreIcon />}
+            sx={{ boxShadow: '0px 2px 6px rgba(0,123,255,0.4)' }}
+          >
+            {restaurando ? "Restaurando..." : "Restaurar"}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Snackbar
         open={snackbar.open}
