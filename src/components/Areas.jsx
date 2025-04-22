@@ -18,10 +18,21 @@ const Areas = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [delayed, setDelayed] = useState(false);
-  const { ref, inView } = useInView({ triggerOnce: true });
+  const { ref, inView } = useInView({ threshold: 0.15, triggerOnce: false, });
   const [rotationActive, setRotationActive] = useState(false);
   const [currentRotation, setCurrentRotation] = useState(0);
   const [scrollY, setScrollY] = useState(0);
+  const [hasAnimated, setHasAnimated] = useState(false);
+
+  //EVITAR ANIMACIÓN DUPLICADA
+  useEffect(() => {
+    if (inView && !hasAnimated) {
+      const timer = setTimeout(() => {
+        setHasAnimated(true); //
+      }, 2600);
+      return () => clearTimeout(timer);
+    }
+  }, [inView, hasAnimated]);
 
   useEffect(() => {
     // Solo se activa el retraso cuando el item está en vista
@@ -125,7 +136,7 @@ const Areas = () => {
                       transformStyle: "preserve-3d",
                       transition: "transform 2.6s",
                       transitionDelay: inView ? "0.8s" : "0s",
-                      transform: inView ? "rotateY(180deg)" : "rotateY(0deg)",
+                      transform: inView || hasAnimated ? "rotateY(180deg)" : "rotateY(0deg)",
                       position: "relative",
                     }}
                   >

@@ -12,6 +12,7 @@ function Home({ contactoRef, informationsRef, setVideoReady }) {
             <Hero scrollToContacto={contactoRef} setVideoReady={setVideoReady} />
             <Box>
                 <Features
+                    isAppReady={setVideoReady}
                     scrollToInformations={informationsRef}
                     triggerInformations={triggerInformations}
                     hasSeenInformations={hasSeenInformations}

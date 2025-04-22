@@ -1,18 +1,16 @@
 import { Box, Typography, Container, Grid, Button, ListItem, ListItemIcon, ListItemText, useMediaQuery, useTheme, IconButton } from "@mui/material";
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FaCode } from "react-icons/fa";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { useInView } from 'react-intersection-observer';  // Importa el hook
+import { useInView } from 'react-intersection-observer';
 import Public from '@mui/icons-material/Public';
 import GroupAdd from '@mui/icons-material/GroupAdd';
 import Verified from '@mui/icons-material/Verified'
 import DashboardCustomize from '@mui/icons-material/DashboardCustomize';
 import { useOutletContext } from "react-router-dom";
-
-
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import "./css/Informations.css"; // Importamos el CSS
+import "./css/Informations.css";
 import "swiper/css";
 
 const promotions = [
@@ -60,30 +58,19 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
 
   // Controla la vista del componente
   const [isGrabbing, setIsGrabbing] = useState(false);
-  const { ref, inView } = useInView({
-    threshold: 0.25, // Se activa cuando el 20% del componente es visible
-    triggerOnce: true, // La animación ocurre solo una vez
-  });
+  const { ref, inView } = useInView({ threshold: 0.15, triggerOnce: false, });
+
   const [shouldAnimate, setShouldAnimate] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [showArrow, setShowArrow] = useState(true);
   const [animationKey, setAnimationKey] = useState(0);
   const [swiperInstance, setSwiperInstance] = useState(null);
-  const { ref: swiperRef, inView: swiperInView } = useInView({
-    threshold: 0.2,
-    triggerOnce: true,
-  });
+  const { ref: swiperRef, inView: swiperInView } = useInView({ threshold: 0.2, triggerOnce: true, });
 
   //CANCELAR PRIMERA ANIMACIÓN
   const [hasAnimated, setHasAnimated] = useState(false);
-
-  useEffect(() => {
-    if (inView) {
-      setShouldAnimate(true); // 🔹 Activa la animación cuando el componente es visible
-    }
-  }, [inView]);
-
+  const [hasAnimated2, setHasAnimated2] = useState(false);
 
   useEffect(() => {
     if (inView) {
@@ -100,18 +87,15 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
   }, [swiperInView, swiperInstance, hasAnimated]);
 
 
-  // Lógica para reiniciar la animación
+  //EVITAR ANIMACIÓN DUPLICADA
   useEffect(() => {
-    if (triggerInformations) {
-      setShouldAnimate(false);
-      const timeout = setTimeout(() => {
-        setShouldAnimate(true);
-        setAnimationKey((prev) => prev + 1); // 🔁 fuerza reanimación
-      }, 50);
-      return () => clearTimeout(timeout);
+    if (inView && !hasAnimated2) {
+      const timer = setTimeout(() => {
+        setHasAnimated2(true);
+      }, 2000);
+      return () => clearTimeout(timer);
     }
-  }, [triggerInformations]);
-
+  }, [inView, hasAnimated2]);
 
   return (
     <Box
@@ -135,10 +119,9 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
 
       <Container sx={{ textAlign: "center", color: "white", maxWidth: "1400px !important", paddingLeft: isMobile ? "0" : "24px", paddingRight: isMobile ? "0" : "24px" }}>
 
-        <Box sx={{ position: "relative", textAlign: "center", mb: 2 }}>
+        <Box sx={{ position: "relative", textAlign: "center", mb: 2 }} ref={ref}>
 
           <Box
-            ref={ref} // 🔹 Conecta el detector de scroll
             sx={{
               width: 25,
               height: 25,
@@ -154,9 +137,9 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
           >
             <motion.div
               initial={{ rotate: 0 }}
-              animate={shouldAnimate ? { rotate: 360 } : {}} // 🔹 Solo se activa cuando `shouldAnimate` es `true`
+              animate={inView || hasAnimated2 ? { rotate: 360 } : {}} // 🔹 Solo se activa cuando `shouldAnimate` es `true`
               transition={{
-                duration: 0.8,
+                duration: 0.3,
                 delay: 0.3,
                 repeat: 1, // Se repite una vez más (total: dos veces)
                 ease: "linear", // Movimiento fluido
@@ -174,9 +157,9 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
           </Box>
 
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={shouldAnimate ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
+            initial={{ opacity: 0, y: 80 }} // ⬇️ Aparece más abajo
+            animate={inView || hasAnimated2 ? { opacity: 1, y: 0 } : { opacity: 0, y: 80 }}
+            transition={{ duration: 1, ease: 'easeOut' }}
           >
             <Typography
               variant="h3"
@@ -213,7 +196,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
           {/* Línea debajo del título con animación (con retraso de 2 segundos) */}
           <motion.hr
             initial={{ opacity: 0 }} // Comienza invisible
-            animate={shouldAnimate ? { opacity: 1 } : {}} // Aparece completamente
+            animate={inView || hasAnimated2 ? { opacity: 1 } : {}} // Aparece completamente
             transition={{ duration: 0.8, delay: 1 }} // Aparece después de 1s y dura 1s
             style={{
               position: "absolute",

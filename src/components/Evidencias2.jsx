@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Box, Typography, CardMedia, useTheme, useMediaQuery, keyframes } from '@mui/material';
 import { motion } from 'framer-motion';
 import { useInView } from "react-intersection-observer";
@@ -22,6 +22,16 @@ const SeccionDestacada = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const videosRef = useRef([]);
+    const { ref, inView } = useInView({ threshold: 0.15, triggerOnce: false, });
+    const [hasAnimated, setHasAnimated] = useState(false);
+
+
+    //EVITAR ANIMACIÓN DUPLICADA
+    useEffect(() => {
+        if (inView && !hasAnimated) {
+            setHasAnimated(true);
+        }
+    }, [inView, hasAnimated]);
 
     const handleVideoClick = (e) => {
         const video = e.target;
@@ -34,17 +44,12 @@ const SeccionDestacada = () => {
     };
 
 
-    const { ref, inView } = useInView({
-        triggerOnce: true,
-        threshold: 0.3,
-    });
-
     const renderScrollRow = (delay = '0s') => (
         <Box
             sx={{
                 width: '200%',
                 display: 'flex',
-                animation: `${scrollLeft} 60s linear infinite`,
+                animation: `${scrollLeft} 80s linear infinite`,
                 animationDelay: delay,
                 pl: '60px',
                 gap: '20px',
@@ -103,7 +108,7 @@ const SeccionDestacada = () => {
                         overflow: 'visible',
                     }}
                 >
-                    {renderScrollRow('-24s')}
+                    {renderScrollRow('-25s')}
                 </Box>
 
                 <Box
@@ -168,7 +173,7 @@ const SeccionDestacada = () => {
                             {/* Barra | café al inicio */}
                             <motion.span
                                 initial={{ opacity: 0, x: -20 }}
-                                animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+                                animate={inView || hasAnimated ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
                                 transition={{ delay: 0.3 }}
                                 style={{
                                     color: "#8B4513",           // Café
@@ -192,7 +197,7 @@ const SeccionDestacada = () => {
                                     custom={i}
                                     variants={letterVariants}
                                     initial="hidden"
-                                    animate={inView ? "visible" : "hidden"}
+                                    animate={inView || hasAnimated ? "visible" : "hidden"}
                                     style={{
                                         display: "inline-block",
                                         whiteSpace: "pre",

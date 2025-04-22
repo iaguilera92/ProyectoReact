@@ -11,6 +11,7 @@ import {
   useTheme,
   useMediaQuery,
 } from "@mui/material";
+import React, { useState, useEffect } from "react";
 import { styled } from "@mui/system";
 import { motion } from "framer-motion";
 import { FaHubspot } from "react-icons/fa";
@@ -41,16 +42,6 @@ const features = [
     //link: "https://www.plataformas.web.cl/",
   },
 ];
-
-// Animación de aparición desde la derecha con efecto de cascada
-const cardAnimation = {
-  hidden: { opacity: 0, x: 150 },
-  visible: (index) => ({
-    opacity: 1,
-    x: 0,
-    transition: { duration: 0.8, delay: index * 0.3, ease: "easeOut" },
-  }),
-};
 
 // StyledCardActionArea: al hacer hover, el overlay se despliega y la imagen hace zoom
 const StyledCardActionArea = styled(CardActionArea)({
@@ -91,22 +82,37 @@ const AdditionalContent = styled(Box)({
   transition: "opacity 0.3s ease",
 });
 
-function Features({ scrollToInformations, triggerInformations, hasSeenInformations }) {
+function Features({ isAppReady, scrollToInformations, triggerInformations, hasSeenInformations }) {
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const { ref, inView } = useInView({ triggerOnce: false, threshold: 0.1 });
+  const [hasAnimated, setHasAnimated] = useState(false);
 
-
-  const { ref, inView } = useInView({
-    triggerOnce: true,  // Esto asegura que se dispare solo una vez cuando el botón entre en vista
-    threshold: 0.8,     // Ajusta este valor si quieres que se active antes o después
-  });
+  //EVITAR ANIMACIÓN DUPLICADA
+  useEffect(() => {
+    if (inView && !hasAnimated) {
+      const timer = setTimeout(() => {
+        setHasAnimated(true); //
+      }, 2600);
+      return () => clearTimeout(timer);
+    }
+  }, [inView, hasAnimated]);
 
   const handleContactClick = (title) => {
     const mensaje = `¡Hola! Me interesó ${encodeURIComponent(title)} ¿Me comentas?`;
     window.open(`https://api.whatsapp.com/send?phone=56992914526&text=${mensaje}`, "_blank");
   };
 
+  //APARICIÓN
+  const cardAnimation = {
+    hidden: { opacity: 0, x: 150 },
+    visible: (index) => ({
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.8, delay: 1.7 + index * 0.3, ease: "easeOut" },
+    }),
+  };
 
   return (
     <Box
@@ -120,183 +126,177 @@ function Features({ scrollToInformations, triggerInformations, hasSeenInformatio
         color: "white",  // Ajusta el color del texto para que sea visible sobre el fondo
       }}
     >
-      <Container
-        sx={{
-          py: 0,
-          maxWidth: "1500px !important",
-          backgroundPosition: "bottom center",
-          backgroundRepeat: "no-repeat",
-          // filter: "blur(20px)", // Descomenta si deseas aplicar el desenfoque
-        }}
-      >
-        <Grid container spacing={2}>
-          {features.map((feature, index) => (
-            <Grid item xs={12} md={4} key={feature.id}>
-              <motion.div
-                initial="hidden"
-                animate="visible"
-                variants={cardAnimation}
-                custom={index}
-              >
-                <Card sx={{ position: "relative", overflow: "hidden" }}>
-                  <StyledCardActionArea href={feature.link} target="_self">
-                    <CardMedia
-                      className="card-media"
-                      component="img"
-                      image={feature.image}
-                      alt={feature.title}
-                      sx={{
-                        height: isMobile ? 205 : 250,
-                        transition: "transform 1s",
-                      }}
-                    />
-                    <Overlay className="overlay">
-                      <Typography
-                        variant="h6"
+      <Container sx={{ py: 0, maxWidth: "1500px !important", overflowX: "hidden", }}>
+        <Box ref={ref}>
+          <Grid container spacing={2}>
+            {features.map((feature, index) => (
+              <Grid item xs={12} md={4} key={feature.id}>
+                <motion.div
+                  initial="hidden"
+                  animate={isAppReady && inView || hasAnimated ? "visible" : "hidden"}
+                  variants={cardAnimation}
+                  custom={index}
+                >
+                  <Card sx={{ position: "relative", overflow: "hidden" }}>
+                    <StyledCardActionArea href={feature.link} target="_self">
+                      <CardMedia
+                        className="card-media"
+                        component="img"
+                        image={feature.image}
+                        alt={feature.title}
                         sx={{
-                          fontWeight: "bold",
-                          marginTop: isMobile ? "20px" : "30px",
-                          mb: 1,
-                          textAlign: "left",
-                          width: "100%",
-                          marginLeft: "9px",
-                          fontSize: "1.4rem",
+                          height: isMobile ? 205 : 250,
+                          transition: "transform 1s",
                         }}
-                      >
-                        {feature.title}
-                      </Typography>
-
-                      <AdditionalContent className="additional">
+                      />
+                      <Overlay className="overlay">
                         <Typography
-                          variant="body2"
-                          sx={{ mb: 1, px: 1, fontSize: "1rem" }}
+                          variant="h6"
+                          sx={{
+                            fontWeight: "bold",
+                            marginTop: isMobile ? "20px" : "30px",
+                            mb: 1,
+                            textAlign: "left",
+                            width: "100%",
+                            marginLeft: "9px",
+                            fontSize: "1.4rem",
+                          }}
                         >
-                          {feature.desc}
+                          {feature.title}
                         </Typography>
 
-                        {/* ✅ Botón personalizado, fuera del <button> de CardActionArea */}
-                        <Box sx={{ textAlign: "center", mt: 2 }}>
-                          <Box
-                            component="span"
-                            role="button"
-                            tabIndex={0}
-                            className="btn-3-features"
-                            sx={{
-                              zIndex: 5,
-                              cursor: "pointer",
-                              display: "inline-block",
-                            }}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              handleContactClick(feature.title);
-                            }}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter" || e.key === " ") {
+                        <AdditionalContent className="additional">
+                          <Typography
+                            variant="body2"
+                            sx={{ mb: 1, px: 1, fontSize: "1rem" }}
+                          >
+                            {feature.desc}
+                          </Typography>
+
+                          {/* ✅ Botón personalizado, fuera del <button> de CardActionArea */}
+                          <Box sx={{ textAlign: "center", mt: 2 }}>
+                            <Box
+                              component="span"
+                              role="button"
+                              tabIndex={0}
+                              className="btn-3-features"
+                              sx={{
+                                zIndex: 5,
+                                cursor: "pointer",
+                                display: "inline-block",
+                              }}
+                              onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
                                 handleContactClick(feature.title);
-                              }
-                            }}
-                          >
-                            <span>Contratar</span>
+                              }}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter" || e.key === " ") {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleContactClick(feature.title);
+                                }
+                              }}
+                            >
+                              <span>Contratar</span>
+                            </Box>
                           </Box>
-                        </Box>
-                      </AdditionalContent>
-                    </Overlay>
-                  </StyledCardActionArea>
-                </Card>
+                        </AdditionalContent>
+                      </Overlay>
+                    </StyledCardActionArea>
+                  </Card>
 
-              </motion.div>
-            </Grid>
-          ))}
-        </Grid>
-        <br />
-        <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
-          <Button
-            onClick={() => {
-              if (scrollToInformations?.current) {
-                // ✅ SOLO activa animación si ya se ha visto la sección al menos una vez
-                if (hasSeenInformations) {
-                  triggerInformations(true);
+                </motion.div>
+              </Grid>
+            ))}
+          </Grid>
+          <br />
+          <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
+            <Button
+              onClick={() => {
+                if (scrollToInformations?.current) {
+                  // ✅ SOLO activa animación si ya se ha visto la sección al menos una vez
+                  if (hasSeenInformations) {
+                    triggerInformations(true);
+                  }
+
+                  // Espera al siguiente "frame" del navegador para asegurar que el DOM esté listo
+                  setTimeout(() => {
+                    requestAnimationFrame(() => {
+                      const offset = -80;
+                      const y = scrollToInformations.current.getBoundingClientRect().top + window.scrollY + offset;
+                      window.scrollTo({ top: y, behavior: 'smooth' });
+                    });
+                  }, 50);
                 }
+              }}
 
-                // Espera al siguiente "frame" del navegador para asegurar que el DOM esté listo
-                setTimeout(() => {
-                  requestAnimationFrame(() => {
-                    const offset = -80;
-                    const y = scrollToInformations.current.getBoundingClientRect().top + window.scrollY + offset;
-                    window.scrollTo({ top: y, behavior: 'smooth' });
-                  });
-                }, 50);
-              }
-            }}
-
-            variant="contained"
-            target="_self"
-            sx={{
-              textTransform: "none",
-              fontWeight: "bold",
-              letterSpacing: "3.1px",
-              fontFamily: "albert sans, sans-serif",
-              border: "1px solid #007de0",
-              fontSize: { xs: "10px", sm: "1.1rem" },
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              position: "relative",
-              overflow: "hidden",
-              width: { xs: "93%", sm: "460px" },
-              maxWidth: "460px",
-              height: "50px",
-              backgroundColor: "#007de0",
-              transition: "width 0.3s ease",
-              "&:hover": {
-                width: { xs: "95%", sm: "470px" },
+              variant="contained"
+              target="_self"
+              sx={{
+                textTransform: "none",
+                fontWeight: "bold",
+                letterSpacing: "3.1px",
+                fontFamily: "albert sans, sans-serif",
+                border: "1px solid #007de0",
+                fontSize: { xs: "10px", sm: "1.1rem" },
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                position: "relative",
+                overflow: "hidden",
+                width: { xs: "93%", sm: "460px" },
+                maxWidth: "460px",
+                height: "50px",
                 backgroundColor: "#007de0",
-              },
-              "&:hover .icon": {
-                opacity: 1,
-                transform: "translateX(-10px)",
-              },
-              "&:hover .letter": {
-                transform: "translateX(15px)",
-              },
-            }}
-            ref={ref} // Se activa el observador para el botón
-          >
-            <Box sx={{ position: "relative", display: "flex", alignItems: "center" }}>
+                transition: "width 0.3s ease",
+                "&:hover": {
+                  width: { xs: "95%", sm: "470px" },
+                  backgroundColor: "#007de0",
+                },
+                "&:hover .icon": {
+                  opacity: 1,
+                  transform: "translateX(-10px)",
+                },
+                "&:hover .letter": {
+                  transform: "translateX(15px)",
+                },
+              }}
+              ref={ref} // Se activa el observador para el botón
+            >
+              <Box sx={{ position: "relative", display: "flex", alignItems: "center" }}>
+                <Box
+                  component="span"
+                  className={`icon ${inView ? "animate" : ""}`} // Activar animación al estar en vista
+                  sx={{
+                    position: "absolute",
+                    left: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    opacity: inView ? 0 : 1,  // Al hacer scroll, se oculta el icono
+                    transform: inView ? "translateX(10px)" : "translateX(0)", // Mover el icono a la derecha
+                    transition: "all 1s ease", // Transición suave
+                    zIndex: 2,
+                  }}
+                >
+                  <FaHubspot style={{ color: "#fff", fontSize: "1.5rem" }} />
+                </Box>
+              </Box>
               <Box
                 component="span"
-                className={`icon ${inView ? "animate" : ""}`} // Activar animación al estar en vista
+                fontSize={isMobile ? "11px" : "15px"}
+                className={`letter ${inView ? "animate" : ""}`} // Activar animación al estar en vista
                 sx={{
-                  position: "absolute",
-                  left: 0,
-                  display: "flex",
-                  alignItems: "center",
-                  opacity: inView ? 0 : 1,  // Al hacer scroll, se oculta el icono
-                  transform: inView ? "translateX(10px)" : "translateX(0)", // Mover el icono a la derecha
+                  ml: 1,
                   transition: "all 1s ease", // Transición suave
-                  zIndex: 2,
+                  transform: inView ? "translateX(0)" : "translateX(15px)", // Inicialmente a la derecha (15px)
                 }}
               >
-                <FaHubspot style={{ color: "#fff", fontSize: "1.5rem" }} />
+                + SOLUCIONES PARA TU EMPRESA
               </Box>
-            </Box>
-            <Box
-              component="span"
-              fontSize={isMobile ? "11px" : "15px"}
-              className={`letter ${inView ? "animate" : ""}`} // Activar animación al estar en vista
-              sx={{
-                ml: 1,
-                transition: "all 1s ease", // Transición suave
-                transform: inView ? "translateX(0)" : "translateX(15px)", // Inicialmente a la derecha (15px)
-              }}
-            >
-              + SOLUCIONES PARA TU EMPRESA
-            </Box>
-          </Button>
+            </Button>
 
+          </Box>
         </Box>
       </Container>
     </Box>
