@@ -116,21 +116,23 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
   return (
     <Box
       sx={{
-        position: "relative", // 🆕 necesario para controlar el zIndex
-        zIndex: 10,            // 🆕 alto para sobresalir
+        position: "relative",
+        zIndex: 10,
         backgroundImage: 'url(fondo-blizz.avif)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed',
         py: 8,
         pt: 5,
-        marginTop: "-90px",
+        marginTop: "0",
         marginBottom: "-10px",
         color: "white",
-        borderRadius: isMobile ? '90px' : '120px',
         overflow: 'hidden',
+        borderBottomLeftRadius: isMobile ? '90px' : '120px',
+        borderBottomRightRadius: isMobile ? '90px' : '120px',
       }}
     >
+
       <Container sx={{ textAlign: "center", color: "white", maxWidth: "1400px !important", paddingLeft: isMobile ? "0" : "24px", paddingRight: isMobile ? "0" : "24px" }}>
 
         <Box sx={{ position: "relative", textAlign: "center", mb: 2 }}>
@@ -177,7 +179,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
             transition={{ duration: 0.8, ease: 'easeOut' }}
           >
             <Typography
-              variant="h4"
+              variant="h3"
               gutterBottom
               sx={{
                 fontFamily: "'Montserrat', Helvetica, Arial, sans-serif !important",

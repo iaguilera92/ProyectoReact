@@ -159,7 +159,26 @@ function Contacto() {
           < Box sx={{ position: "relative", zIndex: 2, paddingTop: "20px", display: "flex", flexDirection: "column", height: "100%" }}>
 
             {!formSubmitted && (
-              <Typography variant={isMobile ? "h4" : "h3"} align="left" gutterBottom sx={{ color: "white", display: "flex" }}>
+              <Typography variant={isMobile ? "h4" : "h4"} align="left" gutterBottom sx={{ color: "white", display: "flex", fontFamily: "'Montserrat', Helvetica, Arial, sans-serif !important" }}>
+                {/* Barra | café al inicio */}
+                <motion.span
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+                  transition={{ delay: 0.3 }}
+                  style={{
+                    color: "green",           // Café
+                    fontWeight: "bold",
+                    marginRight: "1px",         // 🔸 Más pegado a la 'N'
+                    marginTop: "3px",
+                    fontSize: "0.9em",          // 🔸 Un poco más bajo que el texto
+                    lineHeight: 1,              // 🔸 Alineación vertical más precisa
+                    display: "inline-block",
+                    transform: "translateY(2px)" // 🔸 Ligero ajuste vertical si lo ves muy arriba/abajo
+                  }}
+                >
+                  |
+                </motion.span>
+
                 {"Contáctanos".split("").map((char, index) => (
                   <motion.span key={index} custom={index} variants={letterVariants} initial="hidden" animate={inView ? "visible" : "hidden"}>
                     {char}

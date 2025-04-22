@@ -79,6 +79,7 @@ const Areas = () => {
 
     <Box
       sx={{
+        position: 'relative', // 👈 necesario para que el degradado se posicione correctamente
         backgroundImage: isMobile ? 'url(/fondo-areas2.jpg)' : 'url(/fondo-areas1.webp)',
         backgroundRepeat: "no-repeat",
         backgroundSize: isMobile ? "100% 100%" : "100% auto",
@@ -87,10 +88,11 @@ const Areas = () => {
         minHeight: isMobile ? "85vh" : "auto",
         paddingTop: "30px !important",
         padding: { xs: 4, md: 16 },
-        paddingBottom: { xs: 14, md: 16 },
+        paddingBottom: { xs: 10, md: 12 },
+        marginTop: "-120px",
       }}
     >
-      <Grid container spacing={4} alignItems="center">
+      <Grid container spacing={4} alignItems="center" pt={20}>
         <Grid item xs={12} md={6}>
           <Grid container spacing={4}>
             {data.map((item, index) => (
@@ -264,7 +266,20 @@ const Areas = () => {
 
 
       </Grid>
-    </Box>
+      <Box
+        sx={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          width: '100%',
+          height: '120px',
+          background: 'linear-gradient(to bottom, transparent, white)',
+          pointerEvents: 'none',
+          zIndex: 10,
+        }}
+      />
+    </Box >
+
   );
 };
 

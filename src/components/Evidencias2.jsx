@@ -1,10 +1,22 @@
 import React, { useRef } from 'react';
 import { Box, Typography, CardMedia, useTheme, useMediaQuery, keyframes } from '@mui/material';
+import { motion } from 'framer-motion';
+import { useInView } from "react-intersection-observer";
 
 const scrollLeft = keyframes`
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 `;
+const letterVariants = {
+    hidden: { opacity: 0, x: -20 },
+    visible: (i) => ({
+        opacity: 1,
+        x: 0,
+        transition: { delay: 0.4 + i * 0.04 }, // puedes ajustar el tiempo
+    }),
+};
+const textoAnimado = "Nuestros trabajos";
+
 
 const SeccionDestacada = () => {
     const theme = useTheme();
@@ -20,6 +32,12 @@ const SeccionDestacada = () => {
 
         if (video.paused) video.play();
     };
+
+
+    const { ref, inView } = useInView({
+        triggerOnce: true,
+        threshold: 0.3,
+    });
 
     const renderScrollRow = (delay = '0s') => (
         <Box
@@ -85,7 +103,7 @@ const SeccionDestacada = () => {
                         overflow: 'visible',
                     }}
                 >
-                    {renderScrollRow('-18s')}
+                    {renderScrollRow('-24s')}
                 </Box>
 
                 <Box
@@ -126,18 +144,66 @@ const SeccionDestacada = () => {
                         overflowY: 'auto',
                     }}
                 >
-                    <Typography
-                        variant="h4"
-                        fontWeight="bold"
-                        sx={{
-                            color: 'rgb(0 30 43)',
-                            textAlign: 'center',
-                            fontSize: isMobile ? '1.5rem' : '2.5rem',
-                            mb: 2,
-                        }}
-                    >
-                        Han confiado en nosotros
-                    </Typography>
+                    <Box ref={ref}>
+                        <Typography
+                            variant="h4"
+                            gutterBottom
+                            component="div"
+                            sx={{
+                                fontFamily: "'Montserrat', Helvetica, Arial, sans-serif !important",
+                                fontSize: { xs: "1.5rem", md: "2rem" },
+                                paddingLeft: { xs: "100px", md: "30px" },
+                                paddingRight: { xs: "100px", md: "30px" },
+                                letterSpacing: "3px",
+                                my: 0,
+                                display: "flex",
+                                flexWrap: "wrap",
+                                alignItems: "center",
+                                position: "relative",
+                                zIndex: 1,
+                                backgroundColor: "transparent",
+                                color: "black",
+                            }}
+                        >
+                            {/* Barra | café al inicio */}
+                            <motion.span
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+                                transition={{ delay: 0.3 }}
+                                style={{
+                                    color: "#8B4513",           // Café
+                                    fontWeight: "bold",
+                                    marginRight: "1px",         // 🔸 Más pegado a la 'N'
+                                    marginTop: "-4px",
+                                    fontSize: "0.9em",          // 🔸 Un poco más bajo que el texto
+                                    lineHeight: 1,              // 🔸 Alineación vertical más precisa
+                                    display: "inline-block",
+                                    transform: "translateY(2px)" // 🔸 Ligero ajuste vertical si lo ves muy arriba/abajo
+                                }}
+                            >
+                                |
+                            </motion.span>
+
+
+                            {/* Texto animado letra por letra */}
+                            {textoAnimado.split("").map((char, i) => (
+                                <motion.span
+                                    key={i}
+                                    custom={i}
+                                    variants={letterVariants}
+                                    initial="hidden"
+                                    animate={inView ? "visible" : "hidden"}
+                                    style={{
+                                        display: "inline-block",
+                                        whiteSpace: "pre",
+                                    }}
+                                >
+                                    {char}
+                                </motion.span>
+                            ))}
+                        </Typography>
+                    </Box>
+
 
                     {/* Video 1 */}
                     <Box sx={{ width: '100%', maxWidth: 360 }}>
@@ -225,7 +291,7 @@ const SeccionDestacada = () => {
                                 },
                             }}
                         >
-                            www.autoges-web.cl
+                            En desarrollo...
                         </Typography>
                     </Box>
                 </Box>

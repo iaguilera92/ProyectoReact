@@ -261,12 +261,6 @@ function App() {
         {["/", ""].includes(location.pathname) && (
           <>
             <Suspense fallback={null}>
-              <Box id="areas-section">
-                <Areas />
-              </Box>
-            </Suspense>
-
-            <Suspense fallback={null}>
               <div ref={informationsRef}>
                 <Informations
                   informationsRef={informationsRef}
@@ -275,6 +269,13 @@ function App() {
                 />
               </div>
             </Suspense>
+
+            <Suspense fallback={null}>
+              <Box id="areas-section">
+                <Areas />
+              </Box>
+            </Suspense>
+
             <Suspense fallback={null}>
               <Evidencias />
             </Suspense>
