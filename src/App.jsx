@@ -251,7 +251,7 @@ function App() {
         {/* Navbar solo si no estás en /administracion */}
         {location.pathname !== "/administracion" && (
           <Suspense fallback={null}>
-            <Navbar contactoRef={contactoRef} informationsRef={informationsRef} />
+            <Navbar contactoRef={contactoRef} informationsRef={informationsRef} videoReady={videoReady} />
           </Suspense>
         )}
 

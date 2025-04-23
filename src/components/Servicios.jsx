@@ -1,17 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Box,
-  Grid,
-  Card,
-  CardContent,
-  Typography,
-  Collapse,
-  Button,
-  useTheme,
-  Link,
-  Container,
-  useMediaQuery
-} from '@mui/material';
+import { Box, Grid, Card, CardContent, Typography, Collapse, Button, useTheme, Link, Container, useMediaQuery } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import LanguageIcon from '@mui/icons-material/Language';
 import UpdateIcon from '@mui/icons-material/Update';
@@ -103,128 +91,45 @@ const Servicios = () => {
 
 
   return (
-    <Container
-      maxWidth={false}
-      disableGutters
-      sx={{
-        minHeight: '100vh',
-        width: '100%',
-        overflowX: 'hidden',
-        py: 1,
-        px: 0,
-        pb: 3.5,
-        backgroundImage: 'url(fondo-blizz.avif)',
-        backgroundSize: 'cover',
-        backgroundRepeat: 'no-repeat',
-        backgroundAttachment: 'fixed',
-        backgroundPosition: 'center',
-      }}
-    >
+    <Container maxWidth={false} disableGutters sx={{
+      minHeight: '100vh', width: '100%', overflowX: 'hidden', py: 1, px: 0, pb: 3.5,
+      backgroundImage: 'url(fondo-blizz.avif)', backgroundSize: 'cover', backgroundRepeat: 'no-repeat', backgroundAttachment: 'fixed', backgroundPosition: 'center'
+    }}>
 
       <Box ref={containerRef} sx={{ pt: 12, pb: 4, px: { xs: 1, md: 4 } }}>
         <Box textAlign="center" mb={4} px={2}>
-          <Typography
-            variant={isMobile ? "h4" : "h2"}
-            fontWeight={700}
-            sx={{ color: 'white', display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'center' }}
-          >
-            {"Nuestros Servicios".split("").map((char, index) => (
-              <motion.span
-                key={index}
-                custom={index}
-                variants={letterVariants}
-                initial="hidden"
-                animate="visible"
-                style={{ display: 'inline-block' }}
-              >
+          <Typography variant={isMobile ? "h4" : "h2"} fontWeight={700} sx={{ color: 'white', display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'center' }}>
+            {"Nuestros Servicios".split("").map((char, i) => (
+              <motion.span key={i} custom={i} variants={letterVariants} initial="hidden" animate="visible" style={{ display: 'inline-block' }}>
                 {char === " " ? "\u00A0" : char}
               </motion.span>
             ))}
           </Typography>
-
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1, duration: 0.8, ease: 'easeOut' }}
-          >
-            <Typography
-              variant="body1"
-              color="white"
-              sx={{
-                maxWidth: 800,
-                mx: 'auto',
-                fontSize: '1.2rem',
-                fontFamily: '"Segoe UI", sans-serif',
-                lineHeight: 1.6,
-                opacity: 0.9,
-                mt: 1.5,
-              }}
-            >
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1, duration: 0.8, ease: 'easeOut' }}>
+            <Typography variant="body1" color="white" sx={{ maxWidth: 800, mx: 'auto', fontSize: '1.2rem', fontFamily: '"Segoe UI", sans-serif', lineHeight: 1.6, opacity: 0.9, mt: 1.5 }}>
               Equipo de Especialistas para Evaluación, Implementación y Gestión de Proyectos Industriales con un Enfoque Tecnológico.
             </Typography>
           </motion.div>
-
         </Box>
 
-
-        {/* Título con ícono estilo reels */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, mx: 'auto', mb: 2, maxWidth: 1200, px: 0 }}>
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.5, duration: 0.8, ease: 'easeOut' }}
-          >
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1, // Espacio entre imagen y texto
-              }}
-            >
-              <Box
-                component="img"
-                src="/public-service.png" // O usa import si está en assets
-                alt="Servicios icon"
-                sx={{
-                  width: 18,
-                  height: 18,
-                  filter: 'invert(1)',
-                }}
-              />
-              <Box
-                sx={{
-                  fontWeight: 'bold',
-                  fontSize: '0.9rem',
-                  color: 'white',
-                  letterSpacing: 0.5,
-                  fontFamily: '"Segoe UI", sans-serif',
-                }}
-              >
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.5, duration: 0.8, ease: 'easeOut' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box component="img" src="/public-service.png" alt="Servicios icon" sx={{ width: 18, height: 18, filter: 'invert(1)' }} />
+              <Box sx={{ fontWeight: 'bold', fontSize: '0.9rem', color: 'white', letterSpacing: 0.5, fontFamily: '"Segoe UI", sans-serif' }}>
                 Te presentamos nuestros servicios:
               </Box>
             </Box>
           </motion.div>
-
         </Box>
-        <motion.div
-          initial={{ opacity: 0, y: 0 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 2, duration: 0.8, ease: 'easeOut' }}
-        >
+
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2, duration: 0.8, ease: 'easeOut' }}>
           <Grid container spacing={2} justifyContent="center">
             {services.map((service, index) => (
               <Grid item xs={12} key={index}>
-                <motion.div
-                  initial={{ opacity: 0, x: 200 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 2 + index * 0.4, duration: 0.6, ease: 'easeOut' }}
-                  onAnimationComplete={() => {
-                    if (index === services.length - 1) {
-                      setStartSpin(true);
-                    }
-                  }}
-                  style={{ display: 'flex', justifyContent: 'center', width: '100%' }}
-                >
+                <motion.div initial={{ opacity: 0, x: 200 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 2 + index * 0.4, duration: 0.6, ease: 'easeOut' }}
+                  onAnimationComplete={() => index === services.length - 1 && setStartSpin(true)} style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+
                   <Card
                     sx={{
                       display: 'flex',

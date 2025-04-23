@@ -1,15 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-    Box,
-    Typography,
-    Grid,
-    Card,
-    CardMedia,
-    useTheme,
-    useMediaQuery,
-    Snackbar,
-    Alert,
-} from '@mui/material';
+import { Box, Typography, Grid, Card, CardMedia, useTheme, useMediaQuery, Snackbar, Alert, } from '@mui/material';
 import { motion } from 'framer-motion';
 
 const Evidencias = () => {
@@ -19,6 +9,7 @@ const Evidencias = () => {
     const [visible, setVisible] = useState(false);
     const sectionRef = useRef();
     const videosRef = useRef([]);
+    const [scrollY, setScrollY] = useState(0);
 
     const handleSnackbarClose = (_, reason) => {
         if (reason === 'clickaway') return;
@@ -113,12 +104,12 @@ const Evidencias = () => {
                     }}
                 />
                 {/* Contenedor con el texto en movimiento */}
-                <Box sx={{ width: '100%', overflow: 'hidden', position: 'relative' }}>
+                <Box sx={{ width: '100%', overflow: 'hidden', position: 'relative', mt: '-12%' }}>
                     <motion.div
                         initial={{ x: '100%' }}
                         animate={{ x: '-100%' }}
                         transition={{ repeat: Infinity, duration: 8, ease: 'linear' }}
-                        style={{ whiteSpace: 'nowrap', display: 'inline-block' }}
+                        style={{ whiteSpace: 'nowrap', display: 'inline-block', transform: 'translateY(50%)' }}
                     >
                         <Typography
                             sx={{
@@ -350,12 +341,7 @@ const Evidencias = () => {
                 </motion.div>
             </Box>
 
-            <Snackbar
-                open={snackbarOpen}
-                autoHideDuration={4000}
-                onClose={handleSnackbarClose}
-                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-            >
+            <Snackbar open={snackbarOpen} autoHideDuration={4000} onClose={handleSnackbarClose} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}            >
                 <Alert onClose={handleSnackbarClose} severity="info" sx={{ width: '100%' }}>
                     Para ver más trabajos contáctanos vía redes sociales.
                 </Alert>
@@ -372,7 +358,6 @@ const Evidencias = () => {
                     pointerEvents: 'none',  // Evita que interfiera con la interacción de otros elementos
                 }}
             />
-
 
         </Box>
     );

@@ -1,16 +1,4 @@
-
-import {
-  Container,
-  Grid,
-  Card,
-  CardActionArea,
-  CardMedia,
-  Typography,
-  Box,
-  Button,
-  useTheme,
-  useMediaQuery,
-} from "@mui/material";
+import { Container, Grid, Card, CardActionArea, CardMedia, Typography, Box, Button, useTheme, useMediaQuery, } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import { styled } from "@mui/system";
 import { motion } from "framer-motion";
@@ -19,69 +7,31 @@ import { useInView } from "react-intersection-observer";
 import { useNavigate } from "react-router-dom";
 import "./css/Features.css"; // Importamos el CSS
 
-// Datos de ejemplo
+// DATOS
 const features = [
-  {
-    id: 1,
-    title: "Plataformas web",
-    desc: "Diseñamos sitios web modernos, rápidos y adaptables para impulsar tus emprendimientos.",
-    image: "https://www.dsmsolutions.cl/wp-content/uploads/2023/08/bi_dsmsolutions.webp",
-    //link: "https://www.plataformas.web.cl/",
-  },
-  {
-    id: 2,
-    title: "Soporte Evolutivo de Sistemas",
-    desc: "Soporte evolutivo y mantenimiento de sistemas, brindamos soporte TI para el mantenimiento de tus sistemas.",
-    image: "https://www.dsmsolutions.cl/wp-content/uploads/2023/08/plataforma-mycrosoft-dynamics.webp",
-    //link: "https://www.plataformas.web.cl/",
-  },
-  {
-    id: 3,
-    title: "Desarrollo de Sistemas a Medida",
-    desc: "Desarrollo de sistemas a medida, creamos software y sitios web personalizados para tu negocio.",
-    image: "https://www.dsmsolutions.cl/wp-content/uploads/2023/08/desarrollo-software_dsmsolutions.webp",
-    //link: "https://www.plataformas.web.cl/",
-  },
+  { id: 1, title: "Plataformas web", desc: "Diseñamos sitios web modernos, rápidos y adaptables para impulsar tus emprendimientos.", image: "https://www.dsmsolutions.cl/wp-content/uploads/2023/08/bi_dsmsolutions.webp" },
+  { id: 2, title: "Soporte Evolutivo de Sistemas", desc: "Soporte evolutivo y mantenimiento de sistemas, brindamos soporte TI para el mantenimiento de tus sistemas.", image: "https://www.dsmsolutions.cl/wp-content/uploads/2023/08/plataforma-mycrosoft-dynamics.webp" },
+  { id: 3, title: "Desarrollo de Sistemas a Medida", desc: "Desarrollo de sistemas a medida, creamos software y sitios web personalizados para tu negocio.", image: "https://www.dsmsolutions.cl/wp-content/uploads/2023/08/desarrollo-software_dsmsolutions.webp" }
 ];
 
-// StyledCardActionArea: al hacer hover, el overlay se despliega y la imagen hace zoom
+
+// EFECTOS
 const StyledCardActionArea = styled(CardActionArea)({
   position: "relative",
-  "&:hover .overlay": {
-    top: 0,
-    height: "100%",
-    backgroundColor: "rgba(3, 103, 191, 0.8)",
-  },
-  "&:hover .additional": {
-    opacity: 1,
-  },
-  "&:hover .card-media": {
-    transform: "scale(1.3)",
-  },
+  "&:hover .overlay": { top: 0, height: "100%", backgroundColor: "rgba(3, 103, 191, 0.8)" },
+  "&:hover .additional": { opacity: 1 },
+  "&:hover .card-media": { transform: "scale(1.3)" },
 });
 
-// Overlay: inicialmente ocupa la mitad inferior con fondo semitransparente
 const Overlay = styled(Box)(({ theme }) => ({
-  position: "absolute",
-  top: "50%",
-  left: 0,
-  right: 0,
-  height: "75%",
-  backgroundColor: "rgba(3, 103, 191, 0.4)",
-  color: theme.palette.common.white,
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "center",
-  alignItems: "flex-start",
-  padding: theme.spacing(2),
-  transition: "all 0.3s ease",
+  position: "absolute", top: "50%", left: 0, right: 0, height: "75%",
+  backgroundColor: "rgba(3, 103, 191, 0.4)", color: theme.palette.common.white,
+  display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "flex-start",
+  padding: theme.spacing(2), transition: "all 0.3s ease"
 }));
 
-// AdditionalContent: descripción y botón, inicialmente ocultos
-const AdditionalContent = styled(Box)({
-  opacity: 0,
-  transition: "opacity 0.3s ease",
-});
+const AdditionalContent = styled(Box)({ opacity: 0, transition: "opacity 0.3s ease" });
+
 
 function Features({ isAppReady, scrollToInformations, triggerInformations, hasSeenInformations }) {
 
@@ -90,6 +40,7 @@ function Features({ isAppReady, scrollToInformations, triggerInformations, hasSe
   const { ref, inView } = useInView({ triggerOnce: false, threshold: 0.1 });
   const [hasAnimated, setHasAnimated] = useState(false);
   const navigate = useNavigate();
+  const [buttonRef, buttonInView] = useInView({ threshold: 0.9, triggerOnce: true, });
 
   //EVITAR ANIMACIÓN DUPLICADA
   useEffect(() => {
@@ -165,7 +116,7 @@ function Features({ isAppReady, scrollToInformations, triggerInformations, hasSe
                             textAlign: "left",
                             width: "100%",
                             marginLeft: "9px",
-                            fontSize: "1.4rem",
+                            fontSize: isMobile ? "1.15rem" : "1.4rem",
                           }}
                         >
                           {feature.title}
@@ -218,74 +169,83 @@ function Features({ isAppReady, scrollToInformations, triggerInformations, hasSe
           </Grid>
           <br />
           <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
-            <Button
-              onClick={() => { navigate('/servicios'); }}
-              variant="contained"
-              target="_self"
-              sx={{
-                textTransform: "none",
-                fontWeight: "bold",
-                letterSpacing: "3.1px",
-                fontFamily: "albert sans, sans-serif",
-                border: "1px solid #007de0",
-                fontSize: { xs: "10px", sm: "1.1rem" },
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                position: "relative",
-                overflow: "hidden",
-                width: { xs: "93%", sm: "460px" },
-                maxWidth: "460px",
-                height: "50px",
-                backgroundColor: "#007de0",
-                transition: "width 0.3s ease",
-                "&:hover": {
-                  width: { xs: "95%", sm: "470px" },
-                  backgroundColor: "#007de0",
-                },
-                "&:hover .icon": {
-                  opacity: 1,
-                  transform: "translateX(-10px)",
-                },
-                "&:hover .letter": {
-                  transform: "translateX(15px)",
-                },
-              }}
-              ref={ref} // Se activa el observador para el botón
+            <motion.div
+              ref={isMobile ? buttonRef : null}
+              initial={{ opacity: 0, y: 50 }}
+              animate={
+                isMobile
+                  ? (buttonInView ? { opacity: 1, y: 0 } : {})
+                  : (hasAnimated ? { opacity: 1, y: 0 } : {})
+              }
+              transition={{ duration: 0.8, ease: 'easeOut' }}
             >
-              <Box sx={{ position: "relative", display: "flex", alignItems: "center" }}>
+              <Button
+                onClick={() => { navigate('/servicios'); }}
+                variant="contained"
+                target="_self"
+                sx={{
+                  textTransform: "none",
+                  fontWeight: "bold",
+                  letterSpacing: "3.1px",
+                  fontFamily: "albert sans, sans-serif",
+                  border: "1px solid #007de0",
+                  fontSize: { xs: "10px", sm: "1.1rem" },
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  position: "relative",
+                  overflow: "hidden",
+                  width: { xs: "100%", sm: "460px" },
+                  maxWidth: "460px",
+                  height: "50px",
+                  backgroundColor: "#007de0",
+                  transition: "width 0.3s ease",
+                  "&:hover": {
+                    width: { xs: "100%", sm: "470px" },
+                    backgroundColor: "#007de0",
+                  },
+                  "&:hover .icon": {
+                    opacity: 1,
+                    transform: "translateX(-10px)",
+                  },
+                  "&:hover .letter": {
+                    transform: "translateX(15px)",
+                  },
+                }}
+                ref={ref} // Se activa el observador para el botón
+              >
+                <Box sx={{ position: "relative", display: "flex", alignItems: "center" }}>
+                  <Box
+                    component="span"
+                    className={`icon ${hasAnimated ? "animate" : ""}`} // Activar animación al estar en vista
+                    sx={{
+                      position: "absolute",
+                      left: 0,
+                      display: "flex",
+                      alignItems: "center",
+                      opacity: hasAnimated ? 0 : 1,  // Al hacer scroll, se oculta el icono
+                      transform: hasAnimated ? "translateX(10px)" : "translateX(0)", // Mover el icono a la derecha
+                      transition: "all 1s ease", // Transición suave
+                      zIndex: 2,
+                    }}
+                  >
+                    <FaHubspot style={{ color: "#fff", fontSize: "1.5rem" }} />
+                  </Box>
+                </Box>
                 <Box
                   component="span"
-                  className={`icon ${hasAnimated ? "animate" : ""}`} // Activar animación al estar en vista
+                  fontSize={isMobile ? "11px" : "15px"}
+                  className={`letter ${hasAnimated ? "animate" : ""}`} // Activar animación al estar en vista
                   sx={{
-                    position: "absolute",
-                    left: 0,
-                    display: "flex",
-                    alignItems: "center",
-                    opacity: hasAnimated ? 0 : 1,  // Al hacer scroll, se oculta el icono
-                    transform: hasAnimated ? "translateX(10px)" : "translateX(0)", // Mover el icono a la derecha
+                    ml: 1,
                     transition: "all 1s ease", // Transición suave
-                    zIndex: 2,
+                    transform: hasAnimated ? "translateX(0)" : "translateX(15px)", // Inicialmente a la derecha (15px)
                   }}
                 >
-                  <FaHubspot style={{ color: "#fff", fontSize: "1.5rem" }} />
+                  + SOLUCIONES PARA TU EMPRESA
                 </Box>
-              </Box>
-              <Box
-                component="span"
-                fontSize={isMobile ? "11px" : "15px"}
-                className={`letter ${hasAnimated ? "animate" : ""}`} // Activar animación al estar en vista
-                sx={{
-                  ml: 1,
-                  transition: "all 1s ease", // Transición suave
-                  transform: hasAnimated ? "translateX(0)" : "translateX(15px)", // Inicialmente a la derecha (15px)
-                }}
-              >
-                + SOLUCIONES PARA TU EMPRESA
-              </Box>
-            </Button>
-
-
+              </Button>
+            </motion.div>
           </Box>
         </Box>
       </Container>

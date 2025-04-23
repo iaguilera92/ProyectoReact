@@ -6,73 +6,35 @@ import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import { useInView } from "react-intersection-observer";
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'; // Ícono de administración
 import { useNavigate } from "react-router-dom";
-// Animación al entrar en vista
-const growElement = keyframes`
-  0% { transform: scale(0.5); opacity: 0.5; }
-  100% { transform: scale(1); opacity: 1; }
-`;
-// Animación del círculo desapareciendo
-const shrinkCircle = keyframes`
-0% { transform: scale(1); opacity: 1; }
-100% { transform: scale(0); opacity: 0; }
-`;
 
-// Animación del icono creciendo
-const expandIcon = keyframes`
-0% { transform: scale(1); }
-100% { transform: scale(1.5); }
-`;
+// Animaciones de aparición y transformación
+const growElement = keyframes`0% { transform: scale(0.5); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; }`;
+const shrinkCircle = keyframes`0% { transform: scale(1); opacity: 1; } 100% { transform: scale(0); opacity: 0; }`; // Círculo desapareciendo
+const expandIcon = keyframes`0% { transform: scale(1); } 100% { transform: scale(1.5); }`; // Icono creciendo
 
 // Botón social con animaciones
 const SocialButton = ({ href, Icon, bgColor, hoverStyles, isMobile }) => (
-  <Box
-    component="a"
-    href={href}
-    target="_blank"
-    rel="noopener"
-    sx={{
-      width: isMobile ? 60 : 40,
-      height: isMobile ? 60 : 40,
-      borderRadius: "50%",
-      position: "relative",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      overflow: "hidden",
-      "&:hover .circle": {
-        animation: `${shrinkCircle} 900ms forwards`,
-      },
-      "&:hover .icon": {
-        animation: `${expandIcon} 150ms 150ms ease-in forwards`,
-        ...hoverStyles, // Se aplican los estilos únicos de cada red
-      },
-    }}
-  >
+  <Box component="a" href={href} target="_blank" rel="noopener" sx={{
+    width: isMobile ? 60 : 40,
+    height: isMobile ? 60 : 40,
+    borderRadius: "50%", position: "relative", display: "flex",
+    alignItems: "center", justifyContent: "center", overflow: "hidden",
+    "&:hover .circle": { animation: `${shrinkCircle} 900ms forwards` },
+    "&:hover .icon": { animation: `${expandIcon} 150ms 150ms ease-in forwards`, ...hoverStyles }
+  }}>
     {/* Círculo de fondo */}
-    <Box
-      className="circle"
-      sx={{
-        position: "absolute",
-        width: "100%",
-        height: "100%",
-        borderRadius: "50%",
-        background: bgColor,
-        transition: "transform 300ms ease-out",
-      }}
-    />
-
+    <Box className="circle" sx={{
+      position: "absolute", width: "100%", height: "100%", borderRadius: "50%",
+      background: bgColor, transition: "transform 300ms ease-out"
+    }} />
     {/* Icono con color inicial en blanco */}
-    <Icon
-      className="icon"
-      sx={{
-        color: "white",
-        fontSize: isMobile ? 35 : 24,
-        position: "absolute",
-        transition: "color 300ms ease-in, transform 300ms ease-in",
-      }}
-    />
+    <Icon className="icon" sx={{
+      color: "white", fontSize: isMobile ? 35 : 24, position: "absolute",
+      transition: "color 300ms ease-in, transform 300ms ease-in"
+    }} />
   </Box>
 );
+
 
 const Footer = () => {
   const theme = useTheme();
@@ -87,8 +49,6 @@ const Footer = () => {
   // Animaciones al hacer scroll
   const { ref: logoRef, inView: logoInView } = useInView({ triggerOnce: true, threshold: 0.1 });
   const { ref: socialRef, inView: socialInView } = useInView({ triggerOnce: true, threshold: 0.1 });
-  const { ref: contactRef, inView: contactInView } = useInView({ triggerOnce: true, threshold: 0.1 });
-  const { ref: providersRef, inView: providersInView } = useInView({ triggerOnce: true, threshold: 0.1 });
   const [version, setVersion] = useState("");
 
   useEffect(() => {
@@ -212,28 +172,11 @@ const Footer = () => {
             </Box>
 
             {/* 🔹 Columna 3: Proveedores */}
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: 0.5, // menor separación entre imagen y texto
-              }}
-            >
-              <img
-                src="area-clientes.png"
-                width={120}
-                alt="Área Clientes"
-                style={{ marginTop: -35, marginBottom: "10px" }} // Ajusta el valor según necesites
-              />
+            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 0.5 }}>
 
-              <Typography
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 0.5,
-                }}
-              >
+              <img src="area-clientes.png" width={120} alt="Área Clientes" style={{ marginTop: -35, marginBottom: "10px" }} />
+
+              <Typography sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                 <AdminPanelSettingsIcon fontSize="small" />
                 <Link href="administracion" color="inherit" onClick={handleClick}>
                   Administración
@@ -252,43 +195,17 @@ const Footer = () => {
             </Box>
 
             {/* Redes Sociales */}
-            <Box
-              ref={socialRef}
-              sx={{
-                display: "flex",
-                gap: 6,
-                mb: 2,
-                animation: socialInView ? `${growElement} 1s forwards` : "none",
-              }}
-            >
+            <Box ref={socialRef} sx={{ display: "flex", gap: 6, mb: 2, animation: socialInView ? `${growElement} 1s forwards` : "none", }}            >
               <SocialButton href="https://www.instagram.com/plataformas.web/?hl=es-la" Icon={InstagramIcon} bgColor="linear-gradient(45deg, #cf198c, #f41242)" isMobile={isMobile} />
               <SocialButton href="https://www.facebook.com/profile.php?id=100063452866880" Icon={FacebookIcon} bgColor="linear-gradient(45deg, #00B5F5, #002A8F)" isMobile={isMobile} />
               <SocialButton href="https://www.linkedin.com/company/mittarentacar/?viewAsMember=true" Icon={LinkedInIcon} bgColor="linear-gradient(45deg, #00B5F5, #0077b7)" isMobile={isMobile} />
             </Box>
 
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "left",
-                gap: 0.5, // menor separación entre imagen y texto
-              }}
+            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "left", gap: 0.5 }}
             >
-              <img
-                src="area-clientes.png"
-                width={120}
-                alt="Área Clientes"
-                style={{ marginTop: 30, marginRight: 30, marginBottom: "20px" }} // Ajusta el valor según necesites
-              />
+              <img src="area-clientes.png" width={120} alt="Área Clientes" style={{ marginTop: 30, marginRight: 30, marginBottom: "20px" }} />
 
-              <Typography
-                ml={"10px"}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 0,
-                }}
-              >
+              <Typography ml={"10px"} sx={{ display: "flex", alignItems: "center", gap: 0 }}              >
                 <AdminPanelSettingsIcon fontSize="small" />
                 <Link href="administracion" color="inherit" onClick={handleClick}>
                   Administración
@@ -296,7 +213,6 @@ const Footer = () => {
               </Typography>
             </Box>
           </Box>
-
         )}
 
         <Typography variant="body2" align="center" mt={2} sx={{ marginTop: "5vh" }}>

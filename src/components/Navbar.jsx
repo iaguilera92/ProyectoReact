@@ -31,222 +31,93 @@ import ViewCarouselIcon from '@mui/icons-material/ViewCarousel';
 
 
 const socialData = {
-  Instagram: {
-    href: "https://www.instagram.com/plataformas.web/?hl=es-la",
-    Icon: InstagramIcon,
-    bgColor: "linear-gradient(45deg, #cf198c, #f41242)",
-    hoverColor: "#cf198c"
-  },
-  Facebook: {
-    href: "https://www.facebook.com/profile.php?id=100063452866880",
-    Icon: FacebookIcon,
-    bgColor: "linear-gradient(45deg, #00B5F5, #002A8F)",
-    hoverColor: "#0077b7"
-  },
-  LinkedIn: {
-    href: "https://www.linkedin.com/company/plataformas-web/",
-    Icon: LinkedInIcon,
-    bgColor: "linear-gradient(45deg, #00B5F5, #0077b7)",
-    hoverColor: "#0077b7"
-  }
+  Instagram: { href: "https://www.instagram.com/plataformas.web/?hl=es-la", Icon: InstagramIcon, bgColor: "linear-gradient(45deg, #cf198c, #f41242)", hoverColor: "#cf198c" },
+  Facebook: { href: "https://www.facebook.com/profile.php?id=100063452866880", Icon: FacebookIcon, bgColor: "linear-gradient(45deg, #00B5F5, #002A8F)", hoverColor: "#0077b7" },
+  LinkedIn: { href: "https://www.linkedin.com/company/plataformas-web/", Icon: LinkedInIcon, bgColor: "linear-gradient(45deg, #00B5F5, #0077b7)", hoverColor: "#0077b7" }
 };
 
+const shrinkCircle = keyframes`0%{transform:scale(1);opacity:1;}100%{transform:scale(0);opacity:0;}`;
+const expandIcon = keyframes`0%{transform:scale(1);opacity:1;}100%{transform:scale(1.5);opacity:1;}`;
+const rotateTwice = keyframes`from{transform:rotate(0deg);}to{transform:rotate(720deg);}`;
 
-const shrinkCircle = keyframes`
-  0% { transform: scale(1); opacity: 1; }
-  100% { transform: scale(0); opacity: 0; }
-`;
-
-const expandIcon = keyframes`
-  0% { transform: scale(1); opacity: 1; }
-  100% { transform: scale(1.5); opacity: 1; }
-`;
-
-const rotateTwice = keyframes`
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(720deg); /* 2 vueltas */
-  }
-`;
 const menuItemVariants = {
   hidden: { x: 60, opacity: 0 },
-  visible: (i) => ({
-    x: 0,
-    opacity: 1,
-    transition: {
-      duration: 0.5,
-      delay: i * 0.1, // 🪄 Efecto cascada
-      ease: "easeOut",
-    },
-  }),
+  visible: (i) => ({ x: 0, opacity: 1, transition: { duration: 0.5, delay: i * 0.1, ease: "easeOut" } }),
 };
+
 const listVariants = {
   hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.15,
-    },
-  },
+  visible: { transition: { staggerChildren: 0.1, delayChildren: 0.15 } },
 };
+
 const bienvenidaVariants = {
   hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.6,
-      ease: "easeOut",
-      delay: 0.2,
-    },
-  },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut", delay: 0.2 } },
   exit: { opacity: 0, y: 20, transition: { duration: 0.3 } },
 };
 
 const itemVariants = {
   hidden: { opacity: 0, x: 50 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: {
-      duration: 0.5,
-      ease: "easeOut",
-    },
-  },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: "easeOut" } },
   exit: { opacity: 0, x: 40, transition: { duration: 0.3 } },
 };
 
 
+
 const SocialButton = ({ href, Icon, bgColor, hoverStyles }) => (
-  <Box
-    component="a"
-    href={href}
-    target="_blank"
-    rel="noopener"
-    sx={{
-      width: 55,
-      height: 55,
-      borderRadius: "50%",
-      position: "relative",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      overflow: "hidden",
-      "&:hover .circle": {
-        animation: `${shrinkCircle} 300ms forwards`,
-      },
-      "&:hover .icon": {
-        animation: `${expandIcon} 300ms forwards`,
-        ...hoverStyles,
-      },
-    }}
-  >
-    <Box
-      className="circle"
-      sx={{
-        position: "absolute",
-        width: "100%",
-        height: "100%",
-        borderRadius: "50%",
-        background: bgColor,
-        transition: "transform 300ms ease-out",
-      }}
-    />
-    <Icon
-      className="icon"
-      sx={{
-        color: "white",
-        fontSize: 37,
-        position: "absolute",
-        transition: "color 300ms ease-in, transform 300ms ease-in",
-      }}
-    />
+  <Box component="a" href={href} target="_blank" rel="noopener" sx={{
+    width: 55, height: 55, borderRadius: "50%", position: "relative", display: "flex",
+    alignItems: "center", justifyContent: "center", overflow: "hidden",
+    "&:hover .circle": { animation: `${shrinkCircle} 300ms forwards` },
+    "&:hover .icon": { animation: `${expandIcon} 300ms forwards`, ...hoverStyles },
+  }}>
+    <Box className="circle" sx={{
+      position: "absolute", width: "100%", height: "100%", borderRadius: "50%",
+      background: bgColor, transition: "transform 300ms ease-out",
+    }} />
+    <Icon className="icon" sx={{
+      color: "white", fontSize: 37, position: "absolute",
+      transition: "color 300ms ease-in, transform 300ms ease-in",
+    }} />
   </Box>
 );
 
 const menuItems = [
-  { name: "Inicio", icon: <Home /> },
-  { name: "Servicios", icon: <ViewListIcon /> },
-  { name: "Catálogo", icon: <ViewCarouselIcon /> },
-  { name: "Presentación", icon: <SlideshowIcon /> },
-  { name: "Nosotros", icon: <GroupsIcon /> },
-  { name: "Contacto", icon: <Mail /> },
+  { name: "Inicio", icon: <Home /> }, { name: "Servicios", icon: <ViewListIcon /> },
+  { name: "Catálogo", icon: <ViewCarouselIcon /> }, { name: "Presentación", icon: <SlideshowIcon /> },
+  { name: "Nosotros", icon: <GroupsIcon /> }, { name: "Contacto", icon: <Mail /> }
 ];
 
-function Navbar({ contactoRef, informationsRef }) {
-  const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const [openPDF, setOpenPDF] = useState(false);
-  const handleOpenPDF = () => {
-    if (isMobile) {
-      window.open("/plataformasweb-pdf.pdf", "_blank");
-    } else {
-      setOpenPDF(true);
-    }
-  };
+function Navbar({ contactoRef, informationsRef, videoReady }) {
+  const [open, setOpen] = useState(false), [isScrolled, setIsScrolled] = useState(false), [openPDF, setOpenPDF] = useState(false);
+  const theme = useTheme(), isMobile = useMediaQuery(theme.breakpoints.down('sm')), navigate = useNavigate();
+  const pdfSrc = `/plataformasweb-pdf.pdf#zoom=${isMobile ? 100 : 60}`;
+
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+  const scrollToRef = (ref, offset = -80) => ref?.current && window.scrollTo({ top: ref.current.getBoundingClientRect().top + window.scrollY + offset, behavior: 'smooth' });
+  const handleOpenPDF = () => isMobile ? window.open("/plataformasweb-pdf.pdf", "_blank") : setOpenPDF(true);
   const handleClosePDF = () => setOpenPDF(false);
-  const pdfZoom = isMobile ? 100 : 60;
-  const pdfSrc = `/plataformasweb-pdf.pdf#zoom=${pdfZoom}`;
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
-  const scrollToRef = (ref, offset = -80) => {
-    if (ref?.current) {
-      const y = ref.current.getBoundingClientRect().top + window.scrollY + offset;
-      window.scrollTo({ top: y, behavior: 'smooth' });
-    }
-  };
 
   const handleClick = (item) => {
     setOpen(false);
-    switch (item.name) {
-      case "Contacto":
-        scrollToRef(contactoRef);
-        break;
-      case "Inicio":
-        location.pathname !== "/" ? navigate("/") : scrollToTop();
-        break;
-      case "Servicios":
-        navigate("/servicios");
-        break;
-      case "Catálogo":
-        navigate("/catalogo");
-        break;
-      case "Nosotros":
-        navigate("/nosotros");
-        break;
-      case "Presentación":
-        handleOpenPDF();
-        break;
-      default:
-        break;
-    }
+    const actions = {
+      Contacto: () => scrollToRef(contactoRef),
+      Inicio: () => location.pathname !== "/" ? navigate("/") : scrollToTop(),
+      Servicios: () => navigate("/servicios"),
+      Catálogo: () => navigate("/catalogo"),
+      Nosotros: () => navigate("/nosotros"),
+      Presentación: handleOpenPDF
+    };
+    actions[item.name]?.();
   };
 
-  const LogoInicio = () => {
-    navigate("/");
-    scrollToTop();
-  };
+  useEffect(() => {
+    const onScroll = () => setIsScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  };
+  const LogoInicio = () => (navigate("/"), scrollToTop());
 
   return (
     <>
@@ -284,55 +155,48 @@ function Navbar({ contactoRef, informationsRef }) {
                   justifyContent: { xs: "center", md: "flex-start" },
                 }}
               >
-                <motion.div
-                  initial={{ x: -200, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ duration: 1, ease: "easeOut" }}
-                  style={{ cursor: "pointer" }}
-                >
-                  <img
-                    src="/logo-plataformas-web.png"
-                    alt="Logo"
-                    style={{ height: "55px", marginTop: "10px", marginRight: isMobile ? "0" : "0", cursor: "pointer" }}
-                    onClick={LogoInicio}
-                  />
-                </motion.div>
+                {videoReady && (
+                  <motion.div
+                    key="logo-anim"
+                    initial={{ x: -200, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ duration: 1, delay: 1 }} // ⏱️ Aquí el delay de 1 segundo
+                    style={{ cursor: "pointer" }}
+                  >
+                    <img src="/logo-plataformas-web.png" alt="Logo" style={{ height: "55px", marginTop: "10px" }} onClick={LogoInicio} />
+
+                  </motion.div>
+                )}
               </Box>
 
               <Box sx={{ flexGrow: 1 }} />
 
               <Box sx={{ display: { xs: "none", md: "flex" }, gap: 1 }}>
                 {menuItems.map((item, index) => (
-                  <motion.div
+                  <Button
                     key={item.name}
+                    component={motion.button}
                     custom={index}
                     initial="hidden"
                     animate="visible"
                     variants={menuItemVariants}
+                    onClick={() => handleClick(item)}
+                    sx={{
+                      color: "white",
+                      fontFamily: "Poppins, sans-serif",
+                      padding: "10px 14px",
+                      background: "transparent",
+                      border: "none",
+                      "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" }
+                    }}
                   >
-
-                    <Button
-                      color="inherit"
-                      sx={{
-                        color: "white",
-                        fontFamily: "Poppins, sans-serif",
-                        padding: "10px 14px", // 👈 más angosto
-                        "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" },
-                      }}
-                      onClick={() => handleClick(item)}
-                    >
-                      {item.name}
-                    </Button>
-                  </motion.div>
+                    {item.name}
+                  </Button>
                 ))}
+
               </Box>
 
-              <IconButton
-                color="inherit"
-                edge="end"
-                onClick={() => setOpen(!open)}
-                sx={{ display: { xs: "block", md: "none" } }}
-              >
+              <IconButton color="inherit" edge="end" onClick={() => setOpen(!open)} sx={{ display: { xs: "block", md: "none" } }}>
                 <motion.div
                   initial={{ x: 200, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
@@ -360,11 +224,9 @@ function Navbar({ contactoRef, informationsRef }) {
             width: { xs: '80vw', sm: '60vw', md: '50vw' },
             maxWidth: '700px',
             minWidth: '300px',
-            background: `
-        linear-gradient(135deg, rgba(18, 22, 35, 0.92), rgba(24, 29, 47, 0.95)),
-        radial-gradient(circle at 25% 20%, rgba(63,141,245,0.3) 0%, transparent 40%),
-        radial-gradient(circle at 80% 80%, rgba(160,64,255,0.15) 0%, transparent 50%)
-      `,
+            background: `linear-gradient(135deg, rgba(18, 22, 35, 0.92), rgba(24, 29, 47, 0.95)),
+                        radial-gradient(circle at 25% 20%, rgba(63,141,245,0.3) 0%, transparent 40%),
+                        radial-gradient(circle at 80% 80%, rgba(160,64,255,0.15) 0%, transparent 50%)`,
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
             color: '#ffffff',
@@ -399,32 +261,39 @@ function Navbar({ contactoRef, informationsRef }) {
                 style={{ listStyle: "none", padding: 0, margin: 0, width: "100%" }}
               >
                 {menuItems.map((item, index) => (
-                  <motion.li key={item.name} variants={itemVariants}>
-                    <ListItem disablePadding>
-                      <ListItemButton
-                        onClick={() => handleClick(item)}
-                        sx={{
-                          px: 2,
-                          py: 0.5,
-                          borderBottom: "1px solid rgba(255,255,255,0.1)",
-                          borderTop: index === 0 ? "1px solid rgba(255,255,255,0.2)" : "none",
-                          "&:hover": { backgroundColor: "rgba(255,255,255,0.05)" },
-                        }}
-                      >
-                        <ListItemText
-                          primary={
-                            <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                              <Box sx={{ color: "#7ab7ff", fontSize: "1.7rem", marginBottom: "-5px" }}>{item.icon}</Box>
-                              <span style={{ color: "#fff", fontWeight: "500", fontSize: "1.05rem" }}>
-                                {item.name}
-                              </span>
+                  <ListItem
+                    key={item.name}
+                    component={motion.li}
+                    variants={itemVariants}
+                    disablePadding
+                  >
+                    <ListItemButton
+                      onClick={() => handleClick(item)}
+                      sx={{
+                        px: 2,
+                        py: 0.5,
+                        borderBottom: "1px solid rgba(255,255,255,0.1)",
+                        borderTop: index === 0 ? "1px solid rgba(255,255,255,0.2)" : "none",
+                        "&:hover": { backgroundColor: "rgba(255,255,255,0.05)" },
+                      }}
+                    >
+                      <ListItemText
+                        primary={
+                          <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                            <Box sx={{ color: "#7ab7ff", fontSize: "1.7rem", marginBottom: "-5px" }}>
+                              {item.icon}
                             </Box>
-                          }
-                        />
-                      </ListItemButton>
-                    </ListItem>
-                  </motion.li>
+                            <span style={{ color: "#fff", fontWeight: "500", fontSize: "1.05rem" }}>
+                              {item.name}
+                            </span>
+                          </Box>
+                        }
+                      />
+                    </ListItemButton>
+                  </ListItem>
                 ))}
+
+
               </motion.ul>
             )}
           </AnimatePresence>
@@ -510,7 +379,7 @@ function Navbar({ contactoRef, informationsRef }) {
                     }
                     onClick={() => {
                       if (informationsRef?.current) {
-                        const offset = -80; // 📏 Ajusta este valor según tu diseño (por ejemplo, altura del navbar)
+                        const offset = -80;
                         const y = informationsRef.current.getBoundingClientRect().top + window.scrollY + offset;
                         window.scrollTo({ top: y, behavior: 'smooth' });
                         setOpen(false);
@@ -542,8 +411,6 @@ function Navbar({ contactoRef, informationsRef }) {
                   >
                     Empezar ahora
                   </Button>
-
-
 
                 </Box>
               </motion.div>
@@ -633,7 +500,6 @@ function Navbar({ contactoRef, informationsRef }) {
             backgroundColor: "rgba(0,0,0,0.7)"
           }
         }}
-        // 👇 Agregá esto para evitar que se desplace el layout
         disableScrollLock
       >
 
@@ -650,38 +516,15 @@ function Navbar({ contactoRef, informationsRef }) {
           }}
         >
           Presentación Plataformas.web - PDF
-          <IconButton
-            aria-label="close"
-            onClick={handleClosePDF}
-            sx={{
-              position: "absolute",
-              right: 12,
-              top: 12,
-              color: "#1a237e"
-            }}
-          >
+          <IconButton aria-label="close" onClick={handleClosePDF} sx={{ position: "absolute", right: 12, top: 12, color: "#1a237e" }}>
             <CloseIcon />
           </IconButton>
         </DialogTitle>
 
         <DialogContent sx={{ p: 0 }}>
-          <Box
-            sx={{
-              height: { xs: "75vh", sm: "80vh", md: "85vh" },
-              width: "100%",
-              backgroundColor: "#000",
-            }}
-          >
-            <iframe
-              src={pdfSrc}
-              title="Presentación Plataformas web"
-              width="100%"
-              height="100%"
-              style={{
-                border: 'none',
-              }}
-            />
+          <Box sx={{ height: { xs: "75vh", sm: "80vh", md: "85vh" }, width: "100%", backgroundColor: "#000", }}>
 
+            <iframe src={pdfSrc} title="Presentación Plataformas web" width="100%" height="100%" style={{ border: 'none' }} />
           </Box>
         </DialogContent>
       </Dialog>
