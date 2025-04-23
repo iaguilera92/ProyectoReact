@@ -245,6 +245,8 @@ function Contacto() {
                               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                               subdomains={['a', 'b']} // solo dos subdominios
                               maxZoom={17}
+                              noWrap={true}
+                              updateWhenIdle={true}
                             />
                             <Marker
                               position={finalPosition}
