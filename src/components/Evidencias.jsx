@@ -116,7 +116,7 @@ const Evidencias = () => {
             <Box
                 sx={{
                     position: 'relative',
-                    backgroundImage: `linear-gradient(to bottom, rgba(10,10,10,0) 50%, #0a0a0a 100%), url('/fondo-blanco2.webp')`,
+                    backgroundImage: `url('/fondo-blanco2.webp')`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat',
@@ -157,9 +157,10 @@ const Evidencias = () => {
                     transition={{ duration: 1 }}
                     style={{ position: 'relative', zIndex: 6 }}
                 >
-                    <Box sx={{ position: 'relative', zIndex: 1 }}>
+                    <Box sx={{ position: 'relative' }}>
                         <Box
                             sx={{
+                                zIndex: 3,
                                 background: "#241a1a",
                                 borderRadius: 4,
                                 p: { xs: 2, sm: 4 },
@@ -179,7 +180,7 @@ const Evidencias = () => {
                                     fontFamily: '"Poppins", sans-serif'
                                 }}
                             >
-                                Han confiado en nosotros
+                                Nuestros trabajos
                             </Typography>
 
                             <Grid container spacing={3} justifyContent="center">
@@ -335,6 +336,20 @@ const Evidencias = () => {
                     Para ver más trabajos contáctanos vía redes sociales.
                 </Alert>
             </Snackbar>
+            <Box
+                sx={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '10%',
+                    background: 'linear-gradient(to bottom, transparent, rgb(0 30 43 / 1))',
+                    zIndex: 2,  // Asegúrate de que este valor esté por encima de la sección decorativa pero debajo de otros elementos.
+                    pointerEvents: 'none',  // Evita que interfiera con la interacción de otros elementos
+                }}
+            />
+
+
         </Box>
     );
 };

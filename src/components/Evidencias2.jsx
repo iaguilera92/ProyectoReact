@@ -136,9 +136,9 @@ const SeccionDestacada = () => {
             >
                 {/* Panel blanco con título y videos */}
                 <Box
+                    ref={ref}
                     sx={{
                         width: '45%',
-                        backgroundColor: 'white',
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
@@ -148,14 +148,16 @@ const SeccionDestacada = () => {
                         gap: 2,
                         overflowY: 'auto',
                     }}
+                    style={{ backgroundColor: 'white', color: 'black' }}
                 >
-                    <Box ref={ref}>
+
+                    <Box>
                         <Typography
                             variant="h4"
                             gutterBottom
                             component="div"
                             sx={{
-                                fontFamily: "'Montserrat', Helvetica, Arial, sans-serif !important",
+                                fontFamily: "'Montserrat', Helvetica, Arial, sans-serif",
                                 fontSize: { xs: "1.5rem", md: "2rem" },
                                 paddingLeft: { xs: "100px", md: "30px" },
                                 paddingRight: { xs: "100px", md: "30px" },
@@ -167,9 +169,10 @@ const SeccionDestacada = () => {
                                 position: "relative",
                                 zIndex: 1,
                                 backgroundColor: "transparent",
-                                color: "black",
                             }}
+                            style={{ color: 'black' }}
                         >
+
                             {/* Barra | café al inicio */}
                             <motion.span
                                 initial={{ opacity: 0, x: -20 }}
@@ -211,94 +214,106 @@ const SeccionDestacada = () => {
 
 
                     {/* Video 1 */}
-                    <Box sx={{ width: '100%', maxWidth: 360 }}>
-                        <CardMedia
-                            component="video"
-                            ref={(el) => (videosRef.current[0] = el)}
-                            src={`/evidencia1.mp4`}
-                            playsInline
-                            muted
-                            loop
-                            preload="auto"
-                            controls={false}
-                            disablePictureInPicture
-                            controlsList="nodownload nofullscreen noremoteplayback"
-                            onClick={handleVideoClick}
-                            sx={{
-                                height: 'auto',
-                                width: '100%',
-                                objectFit: 'contain',
-                                cursor: 'pointer',
-                                borderRadius: 2,
-                            }}
-                        />
-                        <Typography
-                            variant="body2"
-                            align="center"
-                            component="a"
-                            href="https://www.autoges-web.cl"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            sx={{
-                                display: 'block',
-                                mt: 1,
-                                color: '#00bcd4',
-                                fontFamily: 'Poppins, sans-serif',
-                                textDecoration: 'none',
-                                '&:hover': {
-                                    textDecoration: 'underline',
-                                    color: '#26c6da',
-                                },
-                            }}
-                        >
-                            www.autoges-web.cl
-                        </Typography>
-                    </Box>
+                    <motion.div
+                        initial={{ opacity: 0, x: 100 }}
+                        animate={inView || hasAnimated ? { opacity: 1, x: 0 } : { opacity: 0, x: 100 }}
+                        transition={{ duration: 1, ease: 'easeOut' }}
+                    >
+                        <Box sx={{ width: '100%', maxWidth: 360 }}>
+                            <CardMedia
+                                component="video"
+                                ref={(el) => (videosRef.current[0] = el)}
+                                src={`/evidencia1.mp4`}
+                                playsInline
+                                muted
+                                loop
+                                preload="auto"
+                                controls={false}
+                                disablePictureInPicture
+                                controlsList="nodownload nofullscreen noremoteplayback"
+                                onClick={handleVideoClick}
+                                sx={{
+                                    height: 'auto',
+                                    width: '100%',
+                                    objectFit: 'contain',
+                                    cursor: 'pointer',
+                                    borderRadius: 2,
+                                }}
+                            />
+                            <Typography
+                                variant="body2"
+                                align="center"
+                                component="a"
+                                href="https://www.autoges-web.cl"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                sx={{
+                                    display: 'block',
+                                    mt: 1,
+                                    color: '#00bcd4',
+                                    fontFamily: 'Poppins, sans-serif',
+                                    textDecoration: 'none',
+                                    '&:hover': {
+                                        textDecoration: 'underline',
+                                        color: '#26c6da',
+                                    },
+                                }}
+                            >
+                                www.autoges-web.cl
+                            </Typography>
+                        </Box>
+                    </motion.div>
 
                     {/* Video 2 */}
-                    <Box sx={{ width: '100%', maxWidth: 360 }}>
-                        <CardMedia
-                            component="video"
-                            ref={(el) => (videosRef.current[1] = el)}
-                            src={`/evidencia3.mp4`}
-                            playsInline
-                            muted
-                            loop
-                            preload="auto"
-                            controls={false}
-                            disablePictureInPicture
-                            controlsList="nodownload nofullscreen noremoteplayback"
-                            onClick={handleVideoClick}
-                            sx={{
-                                height: 'auto',
-                                width: '100%',
-                                objectFit: 'contain',
-                                cursor: 'pointer',
-                                borderRadius: 2,
-                            }}
-                        />
-                        <Typography
-                            variant="body2"
-                            align="center"
-                            component="a"
-                            href="https://www.autoges-web.cl"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            sx={{
-                                display: 'block',
-                                mt: 1,
-                                color: '#00bcd4',
-                                fontFamily: 'Poppins, sans-serif',
-                                textDecoration: 'none',
-                                '&:hover': {
-                                    textDecoration: 'underline',
-                                    color: '#26c6da',
-                                },
-                            }}
-                        >
-                            En desarrollo...
-                        </Typography>
-                    </Box>
+                    <motion.div
+                        initial={{ opacity: 0, x: 100 }}
+                        animate={inView || hasAnimated ? { opacity: 1, x: 0 } : { opacity: 0, x: 100 }}
+                        transition={{ duration: 1, ease: 'easeOut' }}
+                    >
+                        <Box sx={{ width: '100%', maxWidth: 360 }}>
+                            <CardMedia
+                                component="video"
+                                ref={(el) => (videosRef.current[1] = el)}
+                                src={`/evidencia3.mp4`}
+                                playsInline
+                                muted
+                                loop
+                                preload="auto"
+                                controls={false}
+                                disablePictureInPicture
+                                controlsList="nodownload nofullscreen noremoteplayback"
+                                onClick={handleVideoClick}
+                                sx={{
+                                    height: 'auto',
+                                    width: '100%',
+                                    objectFit: 'contain',
+                                    cursor: 'pointer',
+                                    borderRadius: 2,
+                                }}
+                            />
+                            <Typography
+                                variant="body2"
+                                align="center"
+                                component="a"
+                                href="https://www.autoges-web.cl"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                sx={{
+                                    display: 'block',
+                                    mt: 1,
+                                    color: '#00bcd4',
+                                    fontFamily: 'Poppins, sans-serif',
+                                    textDecoration: 'none',
+                                    '&:hover': {
+                                        textDecoration: 'underline',
+                                        color: '#26c6da',
+                                    },
+                                }}
+                            >
+                                En desarrollo...
+                            </Typography>
+                        </Box>
+                    </motion.div>
                 </Box>
 
                 {/* Imagen mongodb.svg al lado derecho */}

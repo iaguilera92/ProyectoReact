@@ -227,9 +227,8 @@ function Contacto() {
                       <Box sx={{ flexGrow: 1, height: "100%" }}>
                         <Box sx={{ width: "100%", height: isMobile ? "40vh" : "100%", overflow: "hidden" }}>
                           <MapContainer
-                            preferCanvas={true}
                             center={finalPosition}
-                            zoom={initialZoom}
+                            zoom={16}
                             style={{
                               width: "100%",
                               height: isMobile ? "40vh" : "100%",
@@ -238,18 +237,14 @@ function Contacto() {
                             scrollWheelZoom={false}
                             touchZoom={false}
                             doubleClickZoom={false}
-                            zoomSnap={isMobile ? 0.25 : 1}
-                            zoomDelta={isMobile ? 0.5 : 1}
+                            zoomControl={false}
+                            whenCreated={() => setMapLoaded(true)}
                           >
                             <TileLayer
-                              url={isMobile ? "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"}
-                              attribution='&copy; <a href="https://carto.com/">CartoDB</a> contributors'
-                              subdomains={['a', 'b', 'c', 'd']}
+                              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                              subdomains={['a', 'b']} // solo dos subdominios
                               maxZoom={17}
-                              tileSize={256}
-                              updateWhenIdle={true}
-                              updateWhenZooming={false}
-                              keepBuffer={2}
                             />
                             <Marker
                               position={finalPosition}
@@ -258,7 +253,6 @@ function Contacto() {
                                 iconSize: [160, 160],
                                 iconAnchor: [80, 80],
                                 popupAnchor: [0, -80],
-                                className: ""
                               })}
                             />
                             <ZoomEffect zoom={finalZoom} />

@@ -35,7 +35,7 @@ const Nosotros = () => {
       disableGutters
       sx={{
         minHeight: '100vh',
-        width: '100vw',
+        width: '100%',
         py: 14,
         px: 0,
         pb: 3.5,
@@ -152,6 +152,7 @@ const Nosotros = () => {
         <Container
           maxWidth="lg"
           sx={{
+            width: '100%',
             px: 2,
             position: 'relative',
             zIndex: 2,

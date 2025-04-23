@@ -96,7 +96,7 @@ function App() {
     }
   }, [location.pathname]);
 
-  // ⏳ CARGANDO CON LÓGICA CORRECTA
+  // ⏳ CARGANDO
   useEffect(() => {
 
     if (["/dashboard", "/administracion"].includes(location.pathname)) {

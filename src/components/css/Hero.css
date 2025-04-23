@@ -109,7 +109,7 @@
   line-height: 35px;
   padding: 0;
   border: none;
-  color: white;
+  color: white !important;
   font-size: 16px;
   font-weight: bold;
   font-family: "Poppins", sans-serif;
@@ -117,6 +117,7 @@
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;
+  filter: none !important;
 }
 
 /* Texto dentro del botón en estado features */
@@ -127,7 +128,7 @@
   height: 100%;
   text-align: center;
   line-height: 35px;
-  color: white;
+  color: white !important;
 }
 
 /* Bordes en su estado features (completamente visibles) */
@@ -135,7 +136,7 @@
 .btn-3-features::after {
   content: "";
   position: absolute;
-  background: white;
+  background: white !important;
   transition: all 0.3s ease;
 }
 
@@ -160,8 +161,9 @@
 .btn-3-features span::after {
   content: "";
   position: absolute;
-  background: white;
+  background: white !important;
   transition: all 0.3s ease;
+
 }
 
 /* Borde lateral izquierdo completamente expandido */

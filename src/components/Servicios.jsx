@@ -108,7 +108,8 @@ const Servicios = () => {
       disableGutters
       sx={{
         minHeight: '100vh',
-        width: '100vw',
+        width: '100%',
+        overflowX: 'hidden',
         py: 1,
         px: 0,
         pb: 3.5,
@@ -119,6 +120,7 @@ const Servicios = () => {
         backgroundPosition: 'center',
       }}
     >
+
       <Box ref={containerRef} sx={{ pt: 12, pb: 4, px: { xs: 1, md: 4 } }}>
         <Box textAlign="center" mb={4} px={2}>
           <Typography

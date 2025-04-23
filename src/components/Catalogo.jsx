@@ -177,10 +177,11 @@ const Catalogo = () => {
           maxWidth={false}
           disableGutters
           sx={{
+            overflowX: 'hidden',
             minHeight: '100vh',
-            width: '100vw',
+            width: '100%', // ✅ CAMBIO AQUÍ
             py: 14,
-            px: 1.2,
+            px: 1.2, // Puedes mantener esto ahora sin problema
             position: 'relative',
             overflow: 'hidden',
             backgroundImage: isMobile
@@ -192,6 +193,7 @@ const Catalogo = () => {
             backgroundPosition: 'center',
           }}
         >
+
 
           {
             isMobile ? (

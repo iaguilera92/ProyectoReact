@@ -16,6 +16,7 @@ import { styled } from "@mui/system";
 import { motion } from "framer-motion";
 import { FaHubspot } from "react-icons/fa";
 import { useInView } from "react-intersection-observer";
+import { useNavigate } from "react-router-dom";
 import "./css/Features.css"; // Importamos el CSS
 
 // Datos de ejemplo
@@ -88,16 +89,21 @@ function Features({ isAppReady, scrollToInformations, triggerInformations, hasSe
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { ref, inView } = useInView({ triggerOnce: false, threshold: 0.1 });
   const [hasAnimated, setHasAnimated] = useState(false);
+  const navigate = useNavigate();
 
   //EVITAR ANIMACIÓN DUPLICADA
   useEffect(() => {
-    if (inView && !hasAnimated) {
-      const timer = setTimeout(() => {
-        setHasAnimated(true); //
-      }, 2600);
-      return () => clearTimeout(timer);
+    let timer;
+
+    if (isAppReady && inView && !hasAnimated) {
+      timer = setTimeout(() => {
+        setHasAnimated(true);
+      }, 1500);
     }
-  }, [inView, hasAnimated]);
+
+    return () => clearTimeout(timer);
+  }, [isAppReady, inView, hasAnimated]);
+
 
   const handleContactClick = (title) => {
     const mensaje = `¡Hola! Me interesó ${encodeURIComponent(title)} ¿Me comentas?`;
@@ -110,7 +116,7 @@ function Features({ isAppReady, scrollToInformations, triggerInformations, hasSe
     visible: (index) => ({
       opacity: 1,
       x: 0,
-      transition: { duration: 0.8, delay: 1.7 + index * 0.3, ease: "easeOut" },
+      transition: { duration: 0.8, delay: 1 + index * 0.3, ease: "easeOut" },
     }),
   };
 
@@ -133,7 +139,7 @@ function Features({ isAppReady, scrollToInformations, triggerInformations, hasSe
               <Grid item xs={12} md={4} key={feature.id}>
                 <motion.div
                   initial="hidden"
-                  animate={isAppReady && inView || hasAnimated ? "visible" : "hidden"}
+                  animate={hasAnimated ? "visible" : "hidden"}
                   variants={cardAnimation}
                   custom={index}
                 >
@@ -213,24 +219,7 @@ function Features({ isAppReady, scrollToInformations, triggerInformations, hasSe
           <br />
           <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
             <Button
-              onClick={() => {
-                if (scrollToInformations?.current) {
-                  // ✅ SOLO activa animación si ya se ha visto la sección al menos una vez
-                  if (hasSeenInformations) {
-                    triggerInformations(true);
-                  }
-
-                  // Espera al siguiente "frame" del navegador para asegurar que el DOM esté listo
-                  setTimeout(() => {
-                    requestAnimationFrame(() => {
-                      const offset = -80;
-                      const y = scrollToInformations.current.getBoundingClientRect().top + window.scrollY + offset;
-                      window.scrollTo({ top: y, behavior: 'smooth' });
-                    });
-                  }, 50);
-                }
-              }}
-
+              onClick={() => { navigate('/servicios'); }}
               variant="contained"
               target="_self"
               sx={{
@@ -267,14 +256,14 @@ function Features({ isAppReady, scrollToInformations, triggerInformations, hasSe
               <Box sx={{ position: "relative", display: "flex", alignItems: "center" }}>
                 <Box
                   component="span"
-                  className={`icon ${inView ? "animate" : ""}`} // Activar animación al estar en vista
+                  className={`icon ${hasAnimated ? "animate" : ""}`} // Activar animación al estar en vista
                   sx={{
                     position: "absolute",
                     left: 0,
                     display: "flex",
                     alignItems: "center",
-                    opacity: inView ? 0 : 1,  // Al hacer scroll, se oculta el icono
-                    transform: inView ? "translateX(10px)" : "translateX(0)", // Mover el icono a la derecha
+                    opacity: hasAnimated ? 0 : 1,  // Al hacer scroll, se oculta el icono
+                    transform: hasAnimated ? "translateX(10px)" : "translateX(0)", // Mover el icono a la derecha
                     transition: "all 1s ease", // Transición suave
                     zIndex: 2,
                   }}
@@ -285,16 +274,17 @@ function Features({ isAppReady, scrollToInformations, triggerInformations, hasSe
               <Box
                 component="span"
                 fontSize={isMobile ? "11px" : "15px"}
-                className={`letter ${inView ? "animate" : ""}`} // Activar animación al estar en vista
+                className={`letter ${hasAnimated ? "animate" : ""}`} // Activar animación al estar en vista
                 sx={{
                   ml: 1,
                   transition: "all 1s ease", // Transición suave
-                  transform: inView ? "translateX(0)" : "translateX(15px)", // Inicialmente a la derecha (15px)
+                  transform: hasAnimated ? "translateX(0)" : "translateX(15px)", // Inicialmente a la derecha (15px)
                 }}
               >
                 + SOLUCIONES PARA TU EMPRESA
               </Box>
             </Button>
+
 
           </Box>
         </Box>
