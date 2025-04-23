@@ -99,7 +99,7 @@ const Areas = () => {
         minHeight: isMobile ? "85vh" : "auto",
         paddingTop: "30px !important",
         padding: { xs: 4, md: 16 },
-        paddingBottom: { xs: 10, md: 12 },
+        paddingBottom: { xs: 14, md: 12 },
         marginTop: "-120px",
       }}
     >
@@ -277,18 +277,21 @@ const Areas = () => {
 
 
       </Grid>
-      <Box
-        sx={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          width: '100%',
-          height: '120px',
-          background: 'linear-gradient(to bottom, transparent, white)',
-          pointerEvents: 'none',
-          zIndex: 10,
-        }}
-      />
+      {!isMobile && (
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            width: '100%',
+            height: '120px',
+            background: 'linear-gradient(to bottom, transparent, white)',
+            pointerEvents: 'none',
+            zIndex: 10,
+          }}
+        />
+      )}
+
     </Box >
 
   );

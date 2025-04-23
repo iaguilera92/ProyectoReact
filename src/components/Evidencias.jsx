@@ -70,6 +70,15 @@ const Evidencias = () => {
         }
     };
 
+    useEffect(() => {
+        if (isMobile) {
+            const handleScroll = () => setScrollY(window.scrollY);
+            window.addEventListener("scroll", handleScroll);
+            return () => window.removeEventListener("scroll", handleScroll);
+        }
+    }, [isMobile]);
+
+
     return (
         <Box sx={{ width: '100%', position: 'relative', mt: '-80px' }}>
             {/* Sección 1 */}
@@ -82,13 +91,28 @@ const Evidencias = () => {
                     alignItems: 'flex-start',
                     justifyContent: 'center',
                     pt: { xs: 11, sm: 10 },
-                    backgroundImage: `url('https://entel.cdn.modyo.com/uploads/019e0744-4f00-4bab-bcca-b6e5c3ae083b/original/bg-secondary-desk-xxl_Eq.webp')`,
-                    backgroundAttachment: isMobile ? 'scroll' : 'fixed',
+                    backgroundImage: `url('fondo-telefono.webp')`, // Imagen de fondo
                     backgroundSize: 'cover',
+                    // Efecto Parallax con scroll
+                    backgroundPosition: isMobile
+                        ? 'center'
+                        : `center ${scrollY * 0.3}px`, // Desplaza la imagen al hacer scroll
+                    backgroundAttachment: 'scroll', // No fijar el fondo, simular el parallax con el scroll
                     backgroundRepeat: 'no-repeat',
-                    backgroundPosition: 'center',
                 }}
             >
+                {/* Box para el degradado */}
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        height: '15%', // Aumenté el 10% a 15% para hacerlo más visible
+                        background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent)', // Aumenté la opacidad para hacerlo más notorio
+                    }}
+                />
+                {/* Contenedor con el texto en movimiento */}
                 <Box sx={{ width: '100%', overflow: 'hidden', position: 'relative' }}>
                     <motion.div
                         initial={{ x: '100%' }}
@@ -106,7 +130,7 @@ const Evidencias = () => {
                                 px: 4,
                             }}
                         >
-                            Conoce cómo ayudamos a otras empresas a crecer.
+                            Conoce cómo ayudamos a otras empresas a <span style={{ color: '#ffe037' }}>crecer.</span>
                         </Typography>
                     </motion.div>
                 </Box>
