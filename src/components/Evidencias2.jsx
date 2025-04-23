@@ -22,7 +22,9 @@ const SeccionDestacada = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const videosRef = useRef([]);
-    const { ref, inView } = useInView({ threshold: 0.15, triggerOnce: false, });
+    const { ref, inView } = useInView({
+        threshold: 0.5, triggerOnce: true, rootMargin: '0px 0px -30% 0px' // 👈 esto fuerza que el componente tenga que entrar más al viewport para activarse
+    });
     const [hasAnimated, setHasAnimated] = useState(false);
 
 
@@ -66,7 +68,11 @@ const SeccionDestacada = () => {
             ))}
         </Box>
     );
-
+    useEffect(() => {
+        if (inView && !hasAnimated) {
+            setHasAnimated(true);
+        }
+    }, [inView, hasAnimated]);
     return (
         <Box
             sx={{
@@ -136,7 +142,6 @@ const SeccionDestacada = () => {
             >
                 {/* Panel blanco con título y videos */}
                 <Box
-                    ref={ref}
                     sx={{
                         width: '45%',
                         display: 'flex',
@@ -153,6 +158,7 @@ const SeccionDestacada = () => {
 
                     <Box>
                         <Typography
+                            ref={ref}
                             variant="h4"
                             gutterBottom
                             component="div"
