@@ -13,7 +13,29 @@ const MenuInferior = ({ cardSize, modo = "servicios" }) => {
     const IconoCentral = isDashboard ? BarChartIcon : HomeRepairServiceIcon;
     const colorCentral = isDashboard ? "success.main" : "success.main";
     const textoCentral = isDashboard ? "Visitas" : "Servicios";
+    const goWithCleanCache = async (rutaDestino) => {
+        try {
+            // 🧹 Eliminar todas las caches
+            const cacheNames = await caches.keys();
+            await Promise.all(cacheNames.map(name => caches.delete(name)));
+            console.log("✅ Caches eliminadas:", cacheNames);
 
+            // 🧹 Eliminar Service Workers
+            if ("serviceWorker" in navigator) {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                for (const registration of registrations) {
+                    await registration.unregister();
+                    console.log("🧹 Service Worker eliminado");
+                }
+            }
+
+            // 🔁 Redirigir limpiamente
+            window.location.href = rutaDestino;
+        } catch (err) {
+            console.warn("⚠️ Error al limpiar cache:", err);
+            window.location.href = rutaDestino;
+        }
+    };
     const ladoIzquierdo = (
         <Box
             sx={{
@@ -110,7 +132,8 @@ const MenuInferior = ({ cardSize, modo = "servicios" }) => {
                     boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
                 },
             }}
-            onClick={() => navigate(isDashboard ? "/configurar-servicios" : "/dashboard")}
+            onClick={() => goWithCleanCache(isDashboard ? "/configurar-servicios" : "/dashboard")}
+
         >
             <Box
                 sx={{

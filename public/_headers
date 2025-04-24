@@ -2,7 +2,8 @@
   Cache-Control: public, max-age=31536000, immutable
 
 /version.json
-  Cache-Control: no-cache
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+  Pragma: no-cache
 
   
 /*

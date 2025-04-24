@@ -525,7 +525,20 @@ const ConfigurarServicios = () => {
                                           />
                                         </Grid>
                                         <Grid item>
-                                          <IconButton onClick={() => setItemAEliminar({ sectionIdx: idx, itemIdx: i })}>
+                                          <IconButton
+                                            onClick={() => {
+                                              const updatedSections = nuevoServicio.sections.map((s, secIndex) => {
+                                                if (secIndex === idx) {
+                                                  const updatedItems = [...s.items];
+                                                  updatedItems.splice(i, 1); // 👈 elimina el item directamente
+                                                  return { ...s, items: updatedItems };
+                                                }
+                                                return s;
+                                              });
+                                              setNuevoServicio(prev => ({ ...prev, sections: updatedSections }));
+                                              setSnackbar({ open: true, message: "Item eliminado correctamente!" });
+                                            }}
+                                          >
                                             <DeleteIcon color="error" />
                                           </IconButton>
                                         </Grid>

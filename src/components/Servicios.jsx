@@ -98,7 +98,7 @@ const Servicios = () => {
 
       <Box ref={containerRef} sx={{ pt: 12, pb: 4, px: { xs: 1, md: 4 } }}>
         <Box textAlign="center" mb={4} px={2}>
-          <Typography variant={isMobile ? "h4" : "h2"} fontWeight={700} sx={{ color: 'white', display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'center' }}>
+          <Typography variant={isMobile ? "h4" : "h3"} fontWeight={700} sx={{ color: 'white', display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'center' }}>
             {"Nuestros Servicios".split("").map((char, i) => (
               <motion.span key={i} custom={i} variants={letterVariants} initial="hidden" animate="visible" style={{ display: 'inline-block' }}>
                 {char === " " ? "\u00A0" : char}
