@@ -93,6 +93,15 @@ const ConfigurarServicios = () => {
   const handleGuardar = async () => {
     if (selected === null) return setSnackbar({ open: true, message: 'En construcción...' });
     const servicio = { ...nuevoServicio };
+
+    // ✅ Validación solo si es nuevo
+    if (services[selected]?.esNuevo) {
+      if (!servicio.title || !servicio.description || !servicio.orden || isNaN(servicio.orden)) {
+        setSnackbar({ open: true, message: 'Por favor completa todos los campos obligatorios.' });
+        return;
+      }
+    }
+
     if (services[selected]?.esNuevo) servicio.IdServicio = crypto.randomUUID();
     delete servicio.esNuevo;
     const actualizados = [...services];

@@ -81,9 +81,10 @@ function Features({ isAppReady, scrollToInformations, triggerInformations, hasSe
         py: 4,
         paddingBottom: "15px",
         color: "white",  // Ajusta el color del texto para que sea visible sobre el fondo
+        overflowY: 'visible'
       }}
     >
-      <Container sx={{ py: 0, maxWidth: "1500px !important", overflowX: "hidden", }}>
+      <Container sx={{ py: 0, maxWidth: "1500px !important", overflow: 'visible' }}>
         <Box ref={ref}>
           <Grid container spacing={2}>
             {features.map((feature, index) => (
