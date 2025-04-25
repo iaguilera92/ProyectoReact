@@ -159,28 +159,48 @@ function Contacto() {
           < Box sx={{ position: "relative", zIndex: 2, paddingTop: "20px", display: "flex", flexDirection: "column", height: "100%" }}>
 
             {!formSubmitted && (
-              <Typography variant={isMobile ? "h4" : "h4"} align="left" gutterBottom sx={{ color: "white", display: "flex", fontFamily: "'Montserrat', Helvetica, Arial, sans-serif !important" }}>
-                {/* Barra | café al inicio */}
+              <Typography
+                variant={isMobile ? "h4" : "h4"}
+                align="left"
+                gutterBottom
+                sx={{
+                  color: "white",
+                  display: "flex",
+                  alignItems: "center", // 🔹 asegura que todos los elementos hijos estén alineados verticalmente
+                  fontFamily: "'Montserrat', Helvetica, Arial, sans-serif !important",
+                  lineHeight: 1.2,
+                }}
+              >
+                {/* Barra | verde al inicio */}
                 <motion.span
                   initial={{ opacity: 0, x: -20 }}
                   animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
                   transition={{ delay: 0.3 }}
                   style={{
-                    color: "green",           // Café
+                    color: "green",
                     fontWeight: "bold",
-                    marginRight: "1px",         // 🔸 Más pegado a la 'N'
-                    marginTop: "3px",
-                    fontSize: "0.9em",          // 🔸 Un poco más bajo que el texto
-                    lineHeight: 1,              // 🔸 Alineación vertical más precisa
+                    fontSize: isMobile ? "1.3rem" : "1.3rem",
                     display: "inline-block",
-                    transform: "translateY(2px)" // 🔸 Ligero ajuste vertical si lo ves muy arriba/abajo
+                    verticalAlign: "middle", // ✅ mantiene alineado con el texto
+                    marginRight: "2px",
+                    marginBottom: isMobile ? "3px" : "5px"
                   }}
                 >
                   |
                 </motion.span>
 
                 {"Contáctanos".split("").map((char, index) => (
-                  <motion.span key={index} custom={index} variants={letterVariants} initial="hidden" animate={inView ? "visible" : "hidden"}>
+                  <motion.span
+                    key={index}
+                    custom={index}
+                    variants={letterVariants}
+                    initial="hidden"
+                    animate={inView ? "visible" : "hidden"}
+                    style={{
+                      display: "inline-block",
+                      whiteSpace: "pre",
+                    }}
+                  >
                     {char}
                   </motion.span>
                 ))}
