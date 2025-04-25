@@ -1,6 +1,6 @@
 // src/router.jsx
 import { lazy, Suspense } from "react";
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import { createBrowserRouter, Navigate, useOutletContext } from "react-router-dom";
 import App from "./App";
 const Servicios = lazy(() => import("./components/Servicios"));
 const Nosotros = lazy(() => import("./components/Nosotros"));
@@ -28,8 +28,6 @@ const ProtectedRoute = ({ children }) => {
     return isAuthenticated() ? children : <Navigate to="/administracion" replace />;
 };
 
-// 👇 Wrapper para pasar los refs desde el contexto de App
-import { useOutletContext } from "react-router-dom";
 function HomeWrapper() {
     const { contactoRef, informationsRef, setVideoReady } = useOutletContext();
     return (
@@ -45,7 +43,7 @@ const router = createBrowserRouter(
             path: "/",
             element: <App />,
             children: [
-                { path: "", element: withSuspense(HomeWrapper) },
+                { path: "", element: <HomeWrapper /> },
                 { path: "servicios", element: withSuspense(Servicios) },
                 { path: "nosotros", element: withSuspense(Nosotros) },
                 { path: "contacto", element: withSuspense(Contacto) },

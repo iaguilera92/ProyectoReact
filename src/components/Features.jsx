@@ -33,7 +33,7 @@ const Overlay = styled(Box)(({ theme }) => ({
 const AdditionalContent = styled(Box)({ opacity: 0, transition: "opacity 0.3s ease" });
 
 
-function Features({ isAppReady, scrollToInformations, triggerInformations, hasSeenInformations }) {
+function Features({ videoReady }) {
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -45,16 +45,15 @@ function Features({ isAppReady, scrollToInformations, triggerInformations, hasSe
   //EVITAR ANIMACIÓN DUPLICADA
   useEffect(() => {
     let timer;
-
-    if (isAppReady && inView && !hasAnimated) {
-      timer = setTimeout(() => {
-        setHasAnimated(true);
-      }, 1500);
+    if (inView && !hasAnimated) {
+      if (videoReady) {
+        timer = setTimeout(() => {
+          setHasAnimated(true);
+        }, 0);
+      }
     }
-
     return () => clearTimeout(timer);
-  }, [isAppReady, inView, hasAnimated]);
-
+  }, [videoReady, inView, hasAnimated]);
 
   const handleContactClick = (title) => {
     const mensaje = `¡Hola! Me interesó ${encodeURIComponent(title)} ¿Me comentas?`;
@@ -84,7 +83,7 @@ function Features({ isAppReady, scrollToInformations, triggerInformations, hasSe
         overflowY: 'visible'
       }}
     >
-      <Container sx={{ py: 0, maxWidth: "1500px !important", overflow: 'visible' }}>
+      <Container sx={{ py: 0, maxWidth: "1500px !important", overflow: 'hidden' }}>
         <Box ref={ref}>
           <Grid container spacing={2}>
             {features.map((feature, index) => (

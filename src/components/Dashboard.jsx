@@ -131,7 +131,7 @@ const Dashboard = () => {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                backgroundImage: "url(/fondo-administracion.jpg)",
+                backgroundImage: 'url(fondo-blizz.avif)',
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat",

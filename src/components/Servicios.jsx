@@ -78,7 +78,6 @@ const Servicios = () => {
         }))
         .sort((a, b) => (a.Orden || 0) - (b.Orden || 0)); // ✅ orden por 'Orden'
 
-      console.log("Servicios final:", serviciosConIconos);
       setServices(serviciosConIconos);
     };
 

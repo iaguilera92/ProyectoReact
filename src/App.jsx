@@ -30,7 +30,6 @@ function App() {
   const location = useLocation();
   const [videoReady, setVideoReady] = useState(false);
   const isHome = ["/", "/inicio", ""].includes(location.pathname);
-  const isCompletelyReady = !isLoading && (isHome ? videoReady : true);
   const [showApp, setShowApp] = useState(false);
   const [snackbarVersion, setSnackbarVersion] = useState({ open: false, version: "", });
 
@@ -256,7 +255,7 @@ function App() {
         )}
 
         {/* Rutas principales con contexto */}
-        <Outlet context={{ setVideoReady, contactoRef, informationsRef, triggerInformations, hasSeenInformations }} />
+        <Outlet context={{ showApp, contactoRef }} />
 
         {/* Secciones visibles solo en la página de inicio */}
         {["/", ""].includes(location.pathname) && (

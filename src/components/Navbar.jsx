@@ -28,6 +28,7 @@ import { useNavigate } from "react-router-dom";
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 import CloseIcon from "@mui/icons-material/Close";
 import ViewCarouselIcon from '@mui/icons-material/ViewCarousel';
+import { useLocation } from 'react-router-dom';
 
 
 const socialData = {
@@ -92,6 +93,19 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
   const [open, setOpen] = useState(false), [isScrolled, setIsScrolled] = useState(false), [openPDF, setOpenPDF] = useState(false);
   const theme = useTheme(), isMobile = useMediaQuery(theme.breakpoints.down('sm')), navigate = useNavigate();
   const pdfSrc = `/plataformasweb-pdf.pdf#zoom=${isMobile ? 100 : 60}`;
+  const location = useLocation();
+  const mostrarAnimacion = videoReady || (location.pathname !== '/' && location.pathname !== '');
+  const [animacionMostrada, setAnimacionMostrada] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!mostrarAnimacion && !animacionMostrada) {
+        setAnimacionMostrada(true); // Forzar SIEMPRE a los 5s
+      }
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, []);
+
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
   const scrollToRef = (ref, offset = -80) => ref?.current && window.scrollTo({ top: ref.current.getBoundingClientRect().top + window.scrollY + offset, behavior: 'smooth' });
@@ -155,18 +169,26 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
                   justifyContent: { xs: "center", md: "flex-start" },
                 }}
               >
-                {videoReady && (
-                  <motion.div
-                    key="logo-anim"
-                    initial={{ x: -200, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ duration: 1, delay: 1 }} // ⏱️ Aquí el delay de 1 segundo
-                    style={{ cursor: "pointer" }}
-                  >
-                    <img src="/logo-plataformas-web.png" alt="Logo" style={{ height: "55px", marginTop: "10px" }} onClick={LogoInicio} />
+                <AnimatePresence mode="wait">
+                  {(mostrarAnimacion || animacionMostrada) && (
+                    <motion.div
+                      key={(mostrarAnimacion ? "mostrar" : "forzado")}
+                      initial={{ x: -200, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{
+                        duration: 1,
+                        delay: mostrarAnimacion ? 1 : 0, // ✅ delay según si fue forzado o no
+                      }}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <img src="/logo-plataformas-web.png" alt="Logo" style={{ height: "55px", marginTop: "10px" }} onClick={LogoInicio} />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
-                  </motion.div>
-                )}
+
+
               </Box>
 
               <Box sx={{ flexGrow: 1 }} />

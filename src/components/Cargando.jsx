@@ -1,8 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box } from '@mui/material';
 import { motion } from 'framer-motion';
 
 const Cargando = () => {
+    const [glow, setGlow] = useState(false);
+    const [showElectricEffect, setShowElectricEffect] = useState(false);
+
+    useEffect(() => {
+        const timerGlow = setTimeout(() => {
+            setGlow(true);
+            setShowElectricEffect(true);
+
+            // ⏳ Después de 1 segundo, quitar el rayo
+            setTimeout(() => {
+                setShowElectricEffect(false);
+            }, 1000);
+        }, 1200);
+
+        return () => clearTimeout(timerGlow);
+    }, []);
+
     return (
         <Box
             sx={{
@@ -28,21 +45,80 @@ const Cargando = () => {
                     transform: 'translateY(-40%)',
                 }}
             >
-                {/* Logo animado con glow */}
-                <motion.img
-                    src="/logo-plataformas-web.png"
-                    alt="Cargando..."
-                    width={260}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 1.3, ease: 'easeOut' }}
-                    style={{
-                        marginBottom: '28px',
-                        filter: 'drop-shadow(0 0 6px #00ffff88)',
+                {/* Imágenes + Efecto */}
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0px',
+                        marginBottom: '20px',
+                        position: 'relative',
                     }}
-                />
+                >
+                    {/* ⚡ Efecto de electricidad atrás */}
+                    {showElectricEffect && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: [0, 1, 0] }}
+                            transition={{ duration: 1, ease: "easeInOut" }}
+                            style={{
+                                position: 'absolute',
+                                top: '50%',
+                                left: '50%',
+                                transform: 'translate(-50%, -50%)',
+                                width: '120px',
+                                height: '60px',
+                                borderRadius: '50%',
+                                background: 'radial-gradient(circle, rgba(0,255,255,0.7) 0%, rgba(0,125,224,0.4) 40%, transparent 70%)',
+                                boxShadow: `
+        0 0 12px #00fff0,
+        0 0 24px #00ccff,
+        0 0 36px #007de0
+      `,
+                                filter: 'blur(6px)',
+                                pointerEvents: 'none',
+                                zIndex: 0,
+                            }}
+                        />
+                    )}
 
-                {/* Contenedor de barra con borde brillante */}
+
+                    {/* Logo Izquierdo */}
+                    <motion.img
+                        src="/logo-plataformas-1.png"
+                        alt="Logo izquierda"
+                        initial={{ x: -80, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        transition={{ duration: 1.2, ease: 'easeOut' }}
+                        style={{
+                            width: 130,
+                            height: 'auto',
+                            display: 'block',
+                            position: 'relative',
+                            zIndex: 2,
+                            filter: glow ? 'drop-shadow(0 0 6px #00e0ff88)' : 'none',
+                        }}
+                    />
+
+                    {/* Logo Derecho */}
+                    <motion.img
+                        src="/logo-plataformas-2.png"
+                        alt="Logo derecha"
+                        initial={{ x: 80, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        transition={{ duration: 1.2, ease: 'easeOut' }}
+                        style={{
+                            width: 130,
+                            height: 'auto',
+                            display: 'block',
+                            position: 'relative',
+                            zIndex: 2,
+                            filter: glow ? 'drop-shadow(0 0 6px #00e0ff88)' : 'none',
+                        }}
+                    />
+                </Box>
+
+                {/* Barra de carga con glow continuo */}
                 <Box
                     sx={{
                         width: '260px',
