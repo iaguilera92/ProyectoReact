@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Box, Typography, Grid, Card, CardMedia, useTheme, useMediaQuery, Snackbar, Alert, } from '@mui/material';
 import { motion } from 'framer-motion';
+import { useInView } from "react-intersection-observer";
 
 const Evidencias = () => {
     const theme = useTheme();
@@ -10,7 +11,18 @@ const Evidencias = () => {
     const sectionRef = useRef();
     const videosRef = useRef([]);
     const [scrollY, setScrollY] = useState(0);
+    const { ref, inView } = useInView({ threshold: 0.3, triggerOnce: true, rootMargin: '0px 0px -30% 0px' });
+    const [hasAnimated, setHasAnimated] = useState(false);
 
+    const letterVariants = {
+        hidden: { opacity: 0, x: -20 },
+        visible: (i) => ({
+            opacity: 1,
+            x: 0,
+            transition: { delay: 0.4 + i * 0.04 }, // puedes ajustar el tiempo
+        }),
+    };
+    const textoAnimado = "Nuestros trabajos";
     const handleSnackbarClose = (_, reason) => {
         if (reason === 'clickaway') return;
         setSnackbarOpen(false);
@@ -108,7 +120,7 @@ const Evidencias = () => {
                     <motion.div
                         initial={{ x: '100%' }}
                         animate={{ x: '-100%' }}
-                        transition={{ repeat: Infinity, duration: 8, ease: 'linear' }}
+                        transition={{ repeat: Infinity, duration: 7, ease: 'linear' }}
                         style={{ whiteSpace: 'nowrap', display: 'inline-block', transform: 'translateY(50%)' }}
                     >
                         <Typography
@@ -146,6 +158,7 @@ const Evidencias = () => {
             >
                 {/* Clip decorativo */}
                 <Box
+                    ref={ref}
                     sx={{
                         position: 'absolute',
                         top: isMobile ? '-9vh' : '-99px',
@@ -154,7 +167,7 @@ const Evidencias = () => {
                         height: 100,
                         zIndex: 1,
                         clipPath: isMobile
-                            ? "polygon(0 0, 50% 50%, 100% 0, 100% 100%, 0 100%)"
+                            ? "polygon(0 0, 50% 40%, 100% 0, 100% 100%, 0 100%)"
                             : "polygon(0 0, 50% 70%, 100% 0, 100% 100%, 0 100%)",
                         backgroundImage: `url('/fondo-blanco2.webp')`,
                         backgroundSize: 'cover',
@@ -185,17 +198,60 @@ const Evidencias = () => {
                             }}
                         >
                             <Typography
-                                variant="h5"
-                                align="center"
+                                variant="h4"
+                                gutterBottom
+                                component="div"
                                 sx={{
+                                    fontFamily: '"Poppins", sans-serif',
+                                    fontSize: { xs: "1.5rem", md: "2rem" },
+                                    paddingX: { xs: "10px", md: "30px" }, // 👈 mejor usar paddingX para izquierda y derecha
+                                    paddingY: { xs: "10px", md: "20px" }, // 👈 también puedes darle arriba/abajo si quieres más aire
+                                    letterSpacing: "3px",
+                                    my: 0,
+                                    display: "flex",
+                                    flexWrap: "wrap",
+                                    justifyContent: "center", // 👈 ahora el contenido dentro queda al centro
+                                    alignItems: "center",
+                                    backgroundColor: "transparent",
                                     color: "lightgray",
-                                    fontWeight: 600,
-                                    fontSize: { xs: "1.5rem", sm: "2rem" },
-                                    mb: 3,
-                                    fontFamily: '"Poppins", sans-serif'
+                                    textAlign: "center", // 👈 adicional para asegurar texto centrado
                                 }}
                             >
-                                Nuestros trabajos
+                                {/* Barra | café al inicio */}
+                                <motion.span
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={inView || hasAnimated ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+                                    transition={{ delay: 0.3 }}
+                                    style={{
+                                        color: "#8B4513",
+                                        fontWeight: "bold",
+                                        marginRight: "4px",
+                                        marginTop: "-4px",
+                                        fontSize: "0.9em",
+                                        lineHeight: 1,
+                                        display: "inline-block",
+                                        transform: "translateY(2px)",
+                                    }}
+                                >
+                                    |
+                                </motion.span>
+
+                                {/* Texto animado letra por letra */}
+                                {textoAnimado.split("").map((char, i) => (
+                                    <motion.span
+                                        key={i}
+                                        custom={i}
+                                        variants={letterVariants}
+                                        initial="hidden"
+                                        animate={inView || hasAnimated ? "visible" : "hidden"}
+                                        style={{
+                                            display: "inline-block",
+                                            whiteSpace: "pre",
+                                        }}
+                                    >
+                                        {char}
+                                    </motion.span>
+                                ))}
                             </Typography>
 
                             <Grid container spacing={3} justifyContent="center">
@@ -338,8 +394,8 @@ const Evidencias = () => {
 
                         </Box>
                     </Box>
-                </motion.div>
-            </Box>
+                </motion.div >
+            </Box >
 
             <Snackbar open={snackbarOpen} autoHideDuration={4000} onClose={handleSnackbarClose} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}            >
                 <Alert onClose={handleSnackbarClose} severity="info" sx={{ width: '100%' }}>
@@ -359,7 +415,7 @@ const Evidencias = () => {
                 }}
             />
 
-        </Box>
+        </Box >
     );
 };
 

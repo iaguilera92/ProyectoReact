@@ -22,9 +22,7 @@ const SeccionDestacada = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const videosRef = useRef([]);
-    const { ref, inView } = useInView({
-        threshold: 0.3, triggerOnce: true, rootMargin: '0px 0px -30% 0px' // 👈 esto fuerza que el componente tenga que entrar más al viewport para activarse
-    });
+    const { ref, inView } = useInView({ threshold: 0.3, triggerOnce: true, rootMargin: '0px 0px -30% 0px' });
     const [hasAnimated, setHasAnimated] = useState(false);
 
 

@@ -386,20 +386,39 @@ const ContactoForm = ({ setSnackbar }) => {
                                     textAlign: "left"
                                 }}
                             >
-                                <Box sx={{ display: "flex", alignItems: "flex-start" }}>
+
+                                <Box sx={{ display: "flex", alignItems: "center" }}>
+                                    {/* Imagen */}
                                     <img
-                                        src="soporte-tecnico.png"
+                                        src="soporte-tecnico-1.png"
                                         alt="Servicio al cliente"
                                         loading="lazy"
                                         style={{
                                             marginLeft: 4,
-                                            width: "130px",
-                                            marginBottom: "5px",
+                                            width: "30px",
                                             objectFit: "contain",
-                                            borderRadius: 0
+                                            borderRadius: 0,
+                                            alignSelf: "center", // 👈 Asegura que se centre como el texto
                                         }}
                                     />
+
+                                    {/* Texto al lado */}
+                                    <Typography
+                                        sx={{
+                                            fontFamily: "'Poppins', 'Roboto', 'Segoe UI', sans-serif",
+                                            fontWeight: 700,
+                                            fontSize: { xs: "1.1rem", sm: "1.1rem", md: "1.2rem" },
+                                            color: "#1f4f4f",
+                                            textShadow: "0px 0px 2px rgba(0,0,0,0.3)",
+                                            letterSpacing: "1px",
+                                            ml: 1,
+                                            lineHeight: 1.2, // 👈 Ajusta el centro del texto para que no se despegue
+                                        }}
+                                    >
+                                        Soporte técnico
+                                    </Typography>
                                 </Box>
+
                                 <Box sx={{ textAlign: "left", alignItems: "flex-start" }}>
                                     <Typography
                                         variant="body1"
@@ -449,20 +468,38 @@ const ContactoForm = ({ setSnackbar }) => {
                                     textAlign: "left"
                                 }}
                             >
-                                <Box sx={{ width: "auto", display: "flex", justifyContent: "flex-start" }}>
+                                <Box sx={{ display: "flex", alignItems: "center" }}>
+                                    {/* Imagen */}
                                     <img
                                         src="whatsapp-logo.png"
-                                        alt="WhatsApp"
+                                        alt="whatsapp"
                                         loading="lazy"
                                         style={{
                                             marginLeft: 4,
-                                            width: "130px",
-                                            marginBottom: "8px",
+                                            width: "30px",
                                             objectFit: "contain",
-                                            borderRadius: "0"
+                                            borderRadius: 0,
+                                            alignSelf: "center", // 👈 Asegura que se centre como el texto
                                         }}
                                     />
+
+                                    {/* Texto al lado */}
+                                    <Typography
+                                        sx={{
+                                            fontFamily: "'Poppins', 'Roboto', 'Segoe UI', sans-serif",
+                                            fontWeight: 700,
+                                            fontSize: { xs: "1.1rem", sm: "1.1rem", md: "1.2rem" },
+                                            color: "#1f4f4f",
+                                            textShadow: "0px 0px 2px rgba(0,0,0,0.3)",
+                                            letterSpacing: "1px",
+                                            ml: 1,
+                                            lineHeight: 1.2, // 👈 Ajusta el centro del texto para que no se despegue
+                                        }}
+                                    >
+                                        WhatsApp
+                                    </Typography>
                                 </Box>
+
                                 <Box>
                                     <Typography
                                         variant="body1"

@@ -40,7 +40,8 @@ function Features({ videoReady }) {
   const { ref, inView } = useInView({ triggerOnce: false, threshold: 0.1 });
   const [hasAnimated, setHasAnimated] = useState(false);
   const navigate = useNavigate();
-  const [buttonRef, buttonInView] = useInView({ threshold: 0.9, triggerOnce: true, });
+  const [buttonRef, buttonInView] = useInView({ triggerOnce: true, rootMargin: '0px 0px -20% 0px' });
+
 
   //EVITAR ANIMACIÓN DUPLICADA
   useEffect(() => {
@@ -170,15 +171,21 @@ function Features({ videoReady }) {
           <br />
           <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
             <motion.div
-              ref={isMobile ? buttonRef : null}
+              ref={buttonRef}
               initial={{ opacity: 0, y: 50 }}
               animate={
                 isMobile
-                  ? (buttonInView ? { opacity: 1, y: 0 } : {})
-                  : (hasAnimated ? { opacity: 1, y: 0 } : {})
+                  ? (buttonInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 })
+                  : (hasAnimated ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 })
               }
               transition={{ duration: 0.8, ease: 'easeOut' }}
+              style={{
+                minHeight: "60px",
+                display: "flex",
+                justifyContent: "center",
+              }}
             >
+
               <Button
                 onClick={() => { navigate('/servicios'); }}
                 variant="contained"
@@ -212,7 +219,6 @@ function Features({ videoReady }) {
                     transform: "translateX(15px)",
                   },
                 }}
-                ref={ref} // Se activa el observador para el botón
               >
                 <Box sx={{ position: "relative", display: "flex", alignItems: "center" }}>
                   <Box
@@ -248,8 +254,8 @@ function Features({ videoReady }) {
             </motion.div>
           </Box>
         </Box>
-      </Container>
-    </Box>
+      </Container >
+    </Box >
   );
 }
 

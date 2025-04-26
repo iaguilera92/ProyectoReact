@@ -11,7 +11,6 @@ const Cargando = () => {
             setGlow(true);
             setShowElectricEffect(true);
 
-            // ⏳ Después de 1 segundo, quitar el rayo
             setTimeout(() => {
                 setShowElectricEffect(false);
             }, 1000);
@@ -23,29 +22,43 @@ const Cargando = () => {
     return (
         <Box
             sx={{
-                backgroundImage: 'url(fondo-blizz.avif)',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
+                position: 'relative',
+                width: '100%',
                 height: '100vh',
                 overflow: 'hidden',
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
                 bgcolor: 'rgba(0, 0, 0, 0.85)',
-                position: 'relative',
                 zIndex: 9999,
             }}
         >
+            {/* Fondo separado */}
             <Box
                 sx={{
+                    position: 'absolute',
+                    inset: 0,
+                    backgroundImage: 'url(fondo-blizz.png)',
+                    backgroundSize: 'cover',
+                    backgroundPosition: { xs: '25% 20%', md: 'center 20%' },
+                    backgroundRepeat: 'no-repeat',
+                    filter: 'brightness(0.7) contrast(1.2)',
+                    zIndex: 0,
+                }}
+            />
+
+            {/* Contenido */}
+            <Box
+                sx={{
+                    position: 'relative',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     transform: 'translateY(-40%)',
+                    zIndex: 1, // 👈 Este es el contenido sobre el fondo
                 }}
             >
-                {/* Imágenes + Efecto */}
+                {/* Imágenes + Efecto eléctrico */}
                 <Box
                     sx={{
                         display: 'flex',
@@ -55,7 +68,7 @@ const Cargando = () => {
                         position: 'relative',
                     }}
                 >
-                    {/* ⚡ Efecto de electricidad atrás */}
+                    {/* ⚡ Rayo eléctrico */}
                     {showElectricEffect && (
                         <motion.div
                             initial={{ opacity: 0 }}
@@ -70,18 +83,13 @@ const Cargando = () => {
                                 height: '60px',
                                 borderRadius: '50%',
                                 background: 'radial-gradient(circle, rgba(0,255,255,0.7) 0%, rgba(0,125,224,0.4) 40%, transparent 70%)',
-                                boxShadow: `
-        0 0 12px #00fff0,
-        0 0 24px #00ccff,
-        0 0 36px #007de0
-      `,
+                                boxShadow: `0 0 12px #00fff0, 0 0 24px #00ccff, 0 0 36px #007de0`,
                                 filter: 'blur(6px)',
                                 pointerEvents: 'none',
                                 zIndex: 0,
                             }}
                         />
                     )}
-
 
                     {/* Logo Izquierdo */}
                     <motion.img
@@ -118,7 +126,7 @@ const Cargando = () => {
                     />
                 </Box>
 
-                {/* Barra de carga con glow continuo */}
+                {/* Barra de carga */}
                 <Box
                     sx={{
                         width: '260px',
