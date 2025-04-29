@@ -9,6 +9,7 @@ import GroupAdd from '@mui/icons-material/GroupAdd';
 import Verified from '@mui/icons-material/Verified'
 import DashboardCustomize from '@mui/icons-material/DashboardCustomize';
 import { useOutletContext } from "react-router-dom";
+import CheckIcon from '@mui/icons-material/Check';
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import "./css/Informations.css";
 import "swiper/css";
@@ -18,18 +19,26 @@ const promotions = [
     title: "Sitios web",
     description: "Diseño y desarrollo de sitios web modernos y rápidos para todos los dispositivos.",
     image: "/Informations-1.jpg",
+    price: "$99.990",
+    extraPrices: [
+      { label: "Dominio anual", price: "$10.000" },
+      { label: "Hosting mensual", price: "$10.000" }
+    ],
     bgColor: "linear-gradient(180deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3))",
     textColor: "white",
     descriptors: [
-      "Aumenta el alcance de tu negocio.",
-      "Optimizado para móviles.",
-      "Carga rápida y Landing page a medida."
+      "Diseñamos o renovamos tu sitio web.",
+      "Tendras tu propio .cl",
+      "Administramos y mantenemos tu sitio activo.",
+      "Garantizamos la calidad y el soporte."
     ]
   },
   {
     title: "Tienda online",
     description: "Tienda online, pagos seguros y seguimiento de pedidos. Compra rápido y sin complicaciones.",
     image: "/Informations-2.jpg",
+    price: null,   // <-- sin precio aún
+    extraPrices: [],
     bgColor: "linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.2))",
     textColor: "white",
     descriptors: [
@@ -42,6 +51,8 @@ const promotions = [
     title: "Sistemas a la medida",
     description: "Desarrollo de sistemas a la medida, eficientes, escalables y adaptados a tus necesidades.",
     image: "/Informations-3.jpg",
+    price: null,   // <-- sin precio aún
+    extraPrices: [],
     bgColor: "linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.2))",
     textColor: "white",
     descriptors: [
@@ -51,6 +62,7 @@ const promotions = [
     ]
   }
 ];
+
 
 
 
@@ -66,6 +78,8 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
   const [showArrow, setShowArrow] = useState(true);
   const [animationKey, setAnimationKey] = useState(0);
   const [swiperInstance, setSwiperInstance] = useState(null);
+  const [showPopularBadge, setShowPopularBadge] = useState(false);
+
   const { ref: swiperRef, inView: swiperInView } = useInView({ threshold: 0.2, triggerOnce: true, });
 
   //CANCELAR PRIMERA ANIMACIÓN
@@ -86,13 +100,22 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
     }
   }, [swiperInView, swiperInstance, hasAnimated]);
 
+  useEffect(() => {
+    if (hasAnimated) {
+      const timeout = setTimeout(() => {
+        setShowPopularBadge(true);
+      }, 2000); // Delay de 3 segundos después que el swiper terminó su animación
+      return () => clearTimeout(timeout);
+    }
+  }, [hasAnimated]);
+
 
   //EVITAR ANIMACIÓN DUPLICADA
   useEffect(() => {
     if (inView && !hasAnimated2) {
       const timer = setTimeout(() => {
         setHasAnimated2(true);
-      }, 2000);
+      }, 1500);
       return () => clearTimeout(timer);
     }
   }, [inView, hasAnimated2]);
@@ -106,7 +129,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed',
-        py: 8,
+        py: isMobile ? 8 : 3,
         pt: 5,
         marginTop: "0",
         marginBottom: "-10px",
@@ -354,110 +377,137 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
           </Grid>
 
 
-          {/* Columna de los descriptores */}
           <Grid item xs={12} md={6}>
-            <Box ref={swiperRef} sx={{ display: isMobile ? "block" : "block", position: "relative", px: 1, pt: 3, pb: 1.5 }}>
+            <Box ref={swiperRef} sx={{ display: isMobile ? "block" : "block", position: "relative", px: 1, pt: 2, pb: 1, overflow: "hidden" }}>
               <Swiper
-                spaceBetween={20}
-                slidesPerView={1.2}
+                style={{ overflow: "visible" }}
+                spaceBetween={isMobile ? 15 : 18}
+                slidesPerView={isMobile ? 1.07 : 1.2}
                 onSwiper={setSwiperInstance}
-                initialSlide={promotions.length - 1} // Comienza en el último
+                initialSlide={promotions.length - 1}
                 centeredSlides={false}
                 pagination={{ clickable: true }}
-                onSlideChange={(swiper) => {
-                  const index = swiper.activeIndex;
-                  setShowArrow(index !== 2);
-                }}
+                onSlideChange={(swiper) => setShowArrow(swiper.activeIndex !== 2)}
               >
                 {promotions.map((promo, index) => (
                   <SwiperSlide key={index}>
-                    <Box
-                      sx={{
-                        cursor: isGrabbing ? 'grabbing' : 'grab', // 👈 cambia el cursor
-                        width: "100%%",
-                        height: "360px",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "flex-start",
-                        backgroundImage: `url(${promo.image})`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                        borderRadius: "16px",
-                        position: "relative",
-                        overflow: "hidden",
-                        color: "white",
-                        p: 0.5,
+                    <Box sx={{ position: "relative", width: "100%", display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                      {promo.title === "Sitios web" && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 50 }}
+                          animate={showPopularBadge ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+                          transition={{ duration: 0.8, ease: "easeOut" }}
+                          style={{
+                            position: "absolute",
+                            top: "-16px",
+                            left: 8,
+                            background: "linear-gradient(#f14c2e, #d8452e)",
+                            color: "white",
+                            borderTopLeftRadius: "8px",
+                            borderTopRightRadius: "8px",
+                            borderBottomLeftRadius: 0,
+                            borderBottomRightRadius: 0,
+                            padding: "6px 16px",
+                            fontSize: "0.75rem",
+                            fontWeight: 600,
+                            height: "35px",
+                            minWidth: "120px",
+                            textAlign: "center",
+                            zIndex: 1
+                          }}
+                        >
+                          Popular
+                        </motion.div>
+                      )}
 
-                      }}
-                      onPointerDown={() => setIsGrabbing(true)}
-                      onPointerUp={() => setIsGrabbing(false)}
-                      onPointerLeave={() => setIsGrabbing(false)}
-                    >
-                      <Box
-                        sx={{
-                          position: "absolute",
-                          top: 0,
-                          left: 0,
-                          width: "100%",
-                          height: "100%",
-                          background: "linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0))",
-                          zIndex: 2
-                        }}
-                      />
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          textAlign: 'center',
-                          mb: 2,
-                          transition: 'cursor 0.2s ease'
-                        }}
-                      >
-                        {/* Contenido */}
-                        <Box sx={{ zIndex: 2, textAlign: "center", padding: 0 }}>
-                          <Typography variant="h6" sx={{ mt: 4, fontWeight: "bold", fontSize: "20px", fontFamily: "inherit" }}>
-                            {promo.title}
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{
-                              fontSize: {
-                                xs: '0.85rem',
-                                sm: '0.95rem'
-                              },
-                              maxWidth: 400,
-                              color: 'white'
-                            }}
-                          >
-                            {promo.description}
-                          </Typography>
 
-                          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.2, mt: 1, ml: 0 }}>
-                            {promo.descriptors?.map((text, index) => (
-                              <Box key={index} sx={{ display: 'flex', alignItems: 'center' }}>
-                                <Box
-                                  sx={{
-                                    width: 16,
-                                    height: 16,
-                                    borderRadius: '50%',
-                                    bgcolor: 'black',
-                                    color: 'white',
-                                    fontSize: 10,
-                                    fontWeight: 'bold',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    mr: 0.5
-                                  }}
-                                >
-                                  {index + 1}
+                      <Box sx={{
+                        width: "100%", height: "435px", mt: 1.4, display: "flex",
+                        flexDirection: "column", borderRadius: "16px", overflow: "hidden",
+                        boxShadow: "0 8px 30px rgba(0,0,0,0.2)", position: "relative",
+                        bgcolor: "white", zIndex: 2
+                      }}>
+                        <Box sx={{
+                          position: "absolute", inset: 0, backgroundImage: `url(${promo.image})`,
+                          backgroundSize: "cover", backgroundPosition: "center",
+                          "&::after": { content: '""', position: "absolute", inset: 0, background: promo.bgColor || "linear-gradient(180deg, rgba(0,0,0,0.7), rgba(0,0,0,0.3))" }, zIndex: 0
+                        }} />
+
+                        <Box sx={{
+                          position: "relative", zIndex: 2, p: 2, pt: 3, display: "flex",
+                          flexDirection: "column", alignItems: "center", justifyContent: "flex-start", flexGrow: 1
+                        }}>
+                          <Box sx={{ width: isMobile ? "100%" : "80%", display: "flex", flexDirection: "column", alignItems: "flex-start", mb: 2 }}>
+                            <Typography variant="h6" sx={{ fontWeight: "bold", fontSize: "1.2rem", textAlign: "left", color: promo.textColor || "white", mb: 1 }}>{promo.title}</Typography>
+                            <Typography variant="body2" sx={{ textAlign: "left", fontSize: "0.9rem", color: "#ddd" }}>{promo.description}</Typography>
+                          </Box>
+
+                          <Box sx={{
+                            backgroundColor: "#edf4ff", borderRadius: "12px", py: promo.price ? 1.3 : 1.5, px: 3, mb: 1,
+                            width: "100%", textAlign: "center", display: "flex", flexDirection: "column",
+                            alignItems: "center", justifyContent: "center", height: "110px"
+                          }}>
+                            {promo.price ? (
+                              <>
+                                <Typography variant="caption" sx={{ color: "gray", fontSize: "0.7rem", mb: 0.2 }}>Precio desarrollo</Typography>
+                                <Box sx={{ display: "flex", alignItems: "baseline", justifyContent: "center" }}>
+                                  <Typography variant="h4" sx={{ fontWeight: "bold", color: "black", fontSize: "2rem" }}>{promo.price}</Typography>
+                                  <Typography variant="caption" sx={{ fontSize: "0.9rem", color: "black", ml: 0.2 }}>/CLP</Typography>
                                 </Box>
-                                <Typography variant="caption" sx={{ fontSize: '0.82rem', color: 'white' }}>
-                                  {text}
+                                <Typography variant="caption" sx={{ color: "gray", fontSize: "0.65rem", mt: 0.1 }}>
+                                  antes{" "}
+                                  <Box component="span" sx={{ textDecoration: "line-through", color: "gray" }}>$140.000</Box>
                                 </Typography>
+                                <Box component="button" sx={{
+                                  backgroundColor: "#007de0", color: "white", border: "none", borderRadius: "8px",
+                                  width: "80%", py: 1, fontWeight: "bold", fontSize: "0.9rem", cursor: "pointer",
+                                  transition: "background-color 0.3s", mt: 0.5,
+                                  "&:hover": { backgroundColor: "#005bb5" }
+                                }}>Cotizar</Box>
+                              </>
+                            ) : (
+                              <>
+                                <Typography variant="h6" sx={{ fontWeight: "bold", color: "black", fontSize: "1.5rem", mt: 3 }}>Por definir</Typography>
+                                <Box component="button" sx={{
+                                  backgroundColor: "#007de0", color: "white", border: "none", borderRadius: "8px",
+                                  width: "80%", py: 1, fontWeight: "bold", fontSize: "0.9rem", cursor: "pointer",
+                                  transition: "background-color 0.3s", mt: 3.5,
+                                  "&:hover": { backgroundColor: "#005bb5" }
+                                }}>Cotizar</Box>
+                              </>
+                            )}
+                          </Box>
+
+                          <Box sx={{
+                            width: isMobile ? "100%" : "80%", mt: 0.5,
+                            display: "flex", flexDirection: "column", alignItems: "flex-start"
+                          }}>
+                            {promo.descriptors.map((desc, idx) => (
+                              <Typography key={idx} variant="caption" sx={{
+                                display: "flex", alignItems: "center", mb: 0.3,
+                                fontSize: "0.8rem", color: "#eee"
+                              }}>
+                                <Box sx={{
+                                  width: 15, height: 15, bgcolor: "white", borderRadius: "50%",
+                                  display: "flex", alignItems: "center", justifyContent: "center", mr: 0, flexShrink: 0
+                                }}>
+                                  <CheckIcon sx={{ fontSize: 13, color: "black" }} />
+                                </Box>&nbsp;{desc}
+                              </Typography>
+                            ))}
+                          </Box>
+
+                          <Box sx={{
+                            width: "80%", mt: 0.4, display: "flex",
+                            justifyContent: "space-between", gap: 2
+                          }}>
+                            {["Dominio anual", "Hosting mensual"].map((text, idx) => (
+                              <Box key={idx} sx={{
+                                flex: 1, border: "1px solid white", borderRadius: "8px", p: 1,
+                                textAlign: "center", display: "flex", flexDirection: "column", justifyContent: "center"
+                              }}>
+                                <Typography variant="h5" sx={{ fontWeight: "bold", color: "white", fontSize: "1.4rem" }}>$10.000</Typography>
+                                <Typography variant="caption" sx={{ color: "#ddd", fontSize: "0.7rem" }}>{text}</Typography>
                               </Box>
                             ))}
                           </Box>
@@ -470,40 +520,21 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
 
               {showArrow && (
                 <motion.div
-                  animate={{
-                    x: [0, 5, 0], // Flota hacia la derecha y vuelve
-                  }}
-                  transition={{
-                    duration: 1.5,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                  style={{
-                    position: "absolute",
-                    top: -12,
-                    right: 10,
-                    zIndex: 10,
-                  }}
+                  animate={{ x: [0, 5, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                  style={{ position: "absolute", top: -4, right: 10, zIndex: 10 }}
                 >
-                  <IconButton
-                    sx={{
-                      color: "white",
-                      transition: "opacity 0.3s ease-in-out",
-                      backgroundColor: "transparent",
-                      boxShadow: "none",
-                      padding: 0,
-                      "&:hover": {
-                        backgroundColor: "transparent",
-                      },
-                    }}
-                  >
+                  <IconButton sx={{
+                    color: "white", transition: "opacity 0.3s ease-in-out",
+                    backgroundColor: "transparent", boxShadow: "none", padding: 0,
+                    "&:hover": { backgroundColor: "transparent" }
+                  }}>
                     <ArrowForwardIcon fontSize="large" sx={{ fontSize: "23px" }} />
                   </IconButton>
                 </motion.div>
               )}
             </Box>
           </Grid>
-
 
 
 
