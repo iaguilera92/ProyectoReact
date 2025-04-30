@@ -411,7 +411,7 @@ const ContactoForm = ({ setSnackbar }) => {
                                             color: "#1f4f4f",
                                             textShadow: "0px 0px 2px rgba(0,0,0,0.3)",
                                             letterSpacing: "1px",
-                                            ml: 1,
+                                            ml: 0.5,
                                             lineHeight: 1.2, // 👈 Ajusta el centro del texto para que no se despegue
                                         }}
                                     >
@@ -471,7 +471,7 @@ const ContactoForm = ({ setSnackbar }) => {
                                 <Box sx={{ display: "flex", alignItems: "center" }}>
                                     {/* Imagen */}
                                     <img
-                                        src="whatsapp-logo.png"
+                                        src="whatsapp-logo-icon.webp"
                                         alt="whatsapp"
                                         loading="lazy"
                                         style={{
@@ -492,7 +492,7 @@ const ContactoForm = ({ setSnackbar }) => {
                                             color: "#1f4f4f",
                                             textShadow: "0px 0px 2px rgba(0,0,0,0.3)",
                                             letterSpacing: "1px",
-                                            ml: 1,
+                                            ml: 0.5,
                                             lineHeight: 1.2, // 👈 Ajusta el centro del texto para que no se despegue
                                         }}
                                     >

@@ -63,7 +63,7 @@ function App() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setOpenBubble(true);
-    }, 2000);
+    }, 5000);
     return () => clearTimeout(timer);
   }, []);
 
