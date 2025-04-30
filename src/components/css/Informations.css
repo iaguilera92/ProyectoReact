@@ -72,3 +72,13 @@
     /* La línea se extiende hasta el 50% del contenedor */
   }
 }
+
+@keyframes strikeAnim {
+  from {
+    width: 0%;
+  }
+
+  to {
+    width: 100%;
+  }
+}

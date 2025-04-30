@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import "./css/Hero.css"; // Asegúrate de importar el CSS
 import CircularProgress from "@mui/material/CircularProgress";
 
-function Hero({ scrollToContacto, setVideoReady }) {
+function Hero({ informationsRef, setVideoReady }) {
 
   const [currentText, setCurrentText] = useState(0);
   const [openAlert, setOpenAlert] = useState(false);
@@ -268,11 +268,15 @@ function Hero({ scrollToContacto, setVideoReady }) {
                       <button className="btn-3"
                         onClick={() => {
                           setOpenAlert(true);
-                          const offset = -80; // Ajusta esto según la altura de tu navbar
-                          const y = scrollToContacto.current.getBoundingClientRect().top + window.scrollY + offset;
+
+                          const isMobile = window.innerWidth < 768;
+                          const offset = isMobile ? 490 : -50; // más abajo en mobile
+
+                          const y = informationsRef.current.getBoundingClientRect().top + window.scrollY + offset;
                           window.scrollTo({ top: y, behavior: 'smooth' });
-                        }}>
-                        <span>Contactar</span>
+                        }}
+                      >
+                        <span>Precios</span>
                       </button>
                     </Box>
                   </motion.div>

@@ -29,10 +29,10 @@ const ProtectedRoute = ({ children }) => {
 };
 
 function HomeWrapper() {
-    const { contactoRef, informationsRef, setVideoReady } = useOutletContext();
+    const { informationsRef, setVideoReady } = useOutletContext();
     return (
         <Suspense fallback={null}>
-            <Home contactoRef={contactoRef} informationsRef={informationsRef} setVideoReady={setVideoReady} />
+            <Home informationsRef={informationsRef} setVideoReady={setVideoReady} />
         </Suspense>
     );
 }

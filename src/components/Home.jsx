@@ -5,11 +5,11 @@ import Hero from "./Hero";
 import Features from "./Features";
 import { useOutletContext } from "react-router-dom";
 
-function Home({ contactoRef, setVideoReady }) {
+function Home({ informationsRef, setVideoReady }) {
     const { showApp } = useOutletContext();
     return (
         <Box>
-            <Hero scrollToContacto={contactoRef} setVideoReady={setVideoReady} />
+            <Hero informationsRef={informationsRef} setVideoReady={setVideoReady} />
             <Box>
                 <Features videoReady={showApp} />
             </Box>

@@ -255,7 +255,7 @@ function App() {
         )}
 
         {/* Rutas principales con contexto */}
-        <Outlet context={{ showApp, contactoRef }} />
+        <Outlet context={{ showApp, informationsRef }} />
 
         {/* Secciones visibles solo en la página de inicio */}
         {["/", ""].includes(location.pathname) && (
