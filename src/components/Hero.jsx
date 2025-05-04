@@ -276,7 +276,7 @@ function Hero({ informationsRef, setVideoReady }) {
                           window.scrollTo({ top: y, behavior: 'smooth' });
                         }}
                       >
-                        <span>Precios</span>
+                        <span>Nuestros Precios</span>
                       </button>
                     </Box>
                   </motion.div>

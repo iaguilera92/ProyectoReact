@@ -96,17 +96,17 @@ const Footer = () => {
               </Typography>
 
               <Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <img src="https://www.connectic.cl/wp-content/uploads/2021/04/telephone.png" alt="Teléfono" width={16} />
+                <img src="telefono-icon.png" alt="Teléfono" width={16} />
                 <Link href="tel:+56999999999" color="inherit">+56 987654321</Link>
               </Typography>
 
               <Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <img src="https://www.connectic.cl/wp-content/uploads/2021/04/correo-1.png" alt="Correo" width={16} />
+                <img src="mail-icon.png" alt="Correo" width={16} />
                 <Link href="mailto:aguileraignacio1992@gmail.com" color="inherit">aguileraignacio1992@gmail.com</Link>
               </Typography>
 
               <Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <img src="https://www.connectic.cl/wp-content/uploads/2021/04/location.png" alt="Ubicación" width={16} />
+                <img src="location-icon.png" alt="Ubicación" width={16} />
                 Dardignac #38, Santiago.
               </Typography>
             </Box>
@@ -216,7 +216,7 @@ const Footer = () => {
         )}
 
         <Typography variant="body2" align="center" mt={2} sx={{ marginTop: "5vh" }}>
-          @Plataformas web React 2025 {version && `- v${version}`}
+          @Plataformas web 2025 {version && `- v${version}`}
         </Typography>
       </Container>
     </Box>
