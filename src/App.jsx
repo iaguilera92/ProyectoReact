@@ -294,7 +294,7 @@ function App() {
 
         {/* Botón WhatsApp */}
         {location.pathname !== "/administracion" && location.pathname !== "/dashboard" && location.pathname !== "/configurar-servicios" && (
-          <Box sx={{ position: "fixed", bottom: "40px", right: "40px", zIndex: 100, transition: "bottom 0.3s ease", }}>
+          <Box sx={{ position: "fixed", bottom: "40px", right: "20px", zIndex: 100, transition: "bottom 0.3s ease", }}>
             <IconButton onClick={() => { window.open("https://api.whatsapp.com/send?phone=56992914526", "_blank"); setHasInteracted(true); }} sx={{
               width: 60, height: 60, backgroundColor: "#25d366", color: "#FFF", borderRadius: "50%", boxShadow: "2px 2px 3px #999", "&:hover": { backgroundColor: "#1ebe5d" }, zIndex: 101
             }}>
@@ -307,7 +307,7 @@ function App() {
                 sx={{
                   position: "fixed",
                   bottom: 110,
-                  right: 40,
+                  right: 20,
                   backgroundColor: "#fff",
                   color: "#000",
                   boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
@@ -333,7 +333,7 @@ function App() {
             sx={{
               position: "fixed",
               bottom: "120px",
-              right: "40px",
+              right: "20px",
               backgroundColor: "#fff",
               color: "#000",
               borderRadius: "50%",
