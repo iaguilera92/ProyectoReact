@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box } from '@mui/material';
 import { motion } from 'framer-motion';
+import "./css/Cargando.css";
 
 const Cargando = () => {
     const [glow, setGlow] = useState(false);
@@ -33,6 +34,14 @@ const Cargando = () => {
                 zIndex: 9999,
             }}
         >
+            <Box
+                sx={{
+                    position: 'absolute',
+                    inset: 0,
+                    backgroundColor: 'rgb(0 7 41)',
+                    zIndex: 0,
+                }}
+            />
             {/* Fondo separado */}
             <Box
                 sx={{
@@ -43,7 +52,9 @@ const Cargando = () => {
                     backgroundPosition: { xs: '25% 20%', md: 'center 20%' },
                     backgroundRepeat: 'no-repeat',
                     filter: 'brightness(0.7) contrast(1.2)',
-                    zIndex: 0,
+                    zIndex: 1,
+                    opacity: 0, // Puedes animar esto si quieres aparición progresiva
+                    animation: 'fadeInBg 2s ease-in forwards', // ejemplo animación
                 }}
             />
 
@@ -63,9 +74,11 @@ const Cargando = () => {
                     sx={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '0px',
+                        gap: 0,
+                        marginLeft: '-1px', // o prueba con -2 si es necesario
                         marginBottom: '20px',
                         position: 'relative',
+                        lineHeight: 0,
                     }}
                 >
                     {/* ⚡ Rayo eléctrico */}
@@ -105,6 +118,7 @@ const Cargando = () => {
                             position: 'relative',
                             zIndex: 2,
                             filter: glow ? 'drop-shadow(0 0 6px #00e0ff88)' : 'none',
+                            verticalAlign: 'top',
                         }}
                     />
 
@@ -122,6 +136,7 @@ const Cargando = () => {
                             position: 'relative',
                             zIndex: 2,
                             filter: glow ? 'drop-shadow(0 0 6px #00e0ff88)' : 'none',
+                            verticalAlign: 'top',
                         }}
                     />
                 </Box>

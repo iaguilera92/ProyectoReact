@@ -143,7 +143,7 @@ const Evidencias = () => {
             <Box
                 sx={{
                     position: 'relative',
-                    backgroundImage: `url('/fondo-blanco2.webp')`,
+                    backgroundImage: `url('/fondo-blizz-2.webp')`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat',
@@ -169,7 +169,7 @@ const Evidencias = () => {
                         clipPath: isMobile
                             ? "polygon(0 0, 50% 40%, 100% 0, 100% 100%, 0 100%)"
                             : "polygon(0 0, 50% 70%, 100% 0, 100% 100%, 0 100%)",
-                        backgroundImage: `url('/fondo-blanco2.webp')`,
+                        backgroundImage: `url('/fondo-blizz-2.webp')`,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat',
@@ -363,15 +363,26 @@ const Evidencias = () => {
                                                 <Typography
                                                     variant="body2"
                                                     align="center"
+                                                    component="a"
+                                                    href="https://www.ivelpink.cl"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
                                                     sx={{
+                                                        display: 'block',
                                                         mt: 1,
-                                                        color: 'gray',
-                                                        fontStyle: 'italic',
+                                                        color: '#00bcd4', // celeste tipo cyan claro
                                                         fontFamily: 'Poppins, sans-serif',
+                                                        textDecoration: 'none',
+                                                        textAlign: 'center',
+                                                        '&:hover': {
+                                                            textDecoration: 'underline',
+                                                            color: '#26c6da', // un tono más claro al pasar el mouse
+                                                        },
                                                     }}
                                                 >
-                                                    Resolución Teléfono
+                                                    www.ivelpink.cl
                                                 </Typography>
+
                                             )}
                                             {i === 2 && (
                                                 <Typography

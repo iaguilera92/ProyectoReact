@@ -47,13 +47,13 @@ const promotions = [
     descriptors: [
       "eCommerce con diseño profesional.",
       "Carrito de compras y gestión de stock.",
-      "Panel de administración para seguimiento de pedidos.",
-      "Integración con WebPay u otros métodos de pago."
+      "Panel de administración para seguimiento.",
+      "Integración con WebPay y más métodos de pago."
     ]
   },
   {
     title: "Sistemas a la medida",
-    description: "Desarrollo de sistemas adaptados a tu negocio.",
+    description: "Desarrollo adaptados para tu negocio.",
     image: "/Informations-3.jpg",
     price: null,
     extraPrices: [
@@ -63,7 +63,7 @@ const promotions = [
     bgColor: "linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.2))",
     textColor: "white",
     descriptors: [
-      "Desarrollo de sistemas web o apps personalizadas.",
+      "Desarrollo de sistemas web o apps.",
       "Panel de administración y base de datos incluida.",
       "Adaptación total a tus procesos y necesidades.",
       "Soporte técnico y mantenimiento continuo."
