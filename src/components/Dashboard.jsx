@@ -72,7 +72,13 @@ const Dashboard = () => {
     const [mostrarContadorInt, setMostrarContadorInt] = useState(false);
     const [snackbarServicios, setSnackbarServicios] = useState(false);
     const location = useLocation();
-    const usuario = location.state?.usuario;
+    const [usuario, setUsuario] = useState(null);
+    useEffect(() => {
+        const usuarioGuardado = JSON.parse(sessionStorage.getItem("usuario"));
+        if (usuarioGuardado) {
+            setUsuario(usuarioGuardado);
+        }
+    }, []);
     //GOOGLE ANALYTICS
     const [visitasTotales, setVisitasTotales] = useState(0);
     const [visitasChile, setVisitasChile] = useState(0);
