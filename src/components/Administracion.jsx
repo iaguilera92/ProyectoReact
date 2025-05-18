@@ -30,11 +30,17 @@ const Administracion = () => {
     e.preventDefault();
     const usuarioValido = await validarCredenciales(email, password);
     if (usuarioValido) {
+
+      //VARIABLE DE SESIÓN
+      sessionStorage.setItem("credenciales", JSON.stringify({ email, password }));
+
+      // Solo guarda en localStorage si marcó "recordarme"
       if (recordarme) {
         localStorage.setItem("credenciales", JSON.stringify({ email, password }));
       } else {
         localStorage.removeItem("credenciales");
       }
+
 
       // 🧠 Guardar datos en sessionStorage antes de redirigir
       sessionStorage.setItem("snackbar", JSON.stringify({
@@ -44,8 +50,8 @@ const Administracion = () => {
       }));
       sessionStorage.setItem("usuario", JSON.stringify(usuarioValido));
 
-      // 🚀 Redirige limpiando caché
-      window.location.href = "/dashboard";
+      navigate("/dashboard", { replace: true });
+
     }
     else {
       setSnackbar({ open: true, type: "error", message: "Usuario o contraseña incorrectos" });

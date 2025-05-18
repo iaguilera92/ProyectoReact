@@ -38,16 +38,20 @@ const ConfigurarServicios = () => {
   const containerRef = useRef();
 
   useEffect(() => {
-    const credenciales = (() => {
-      try {
-        return JSON.parse(localStorage.getItem("credenciales"));
-      } catch {
-        return null;
-      }
-    })();
-    if (!credenciales?.email || !credenciales?.password) navigate("/administracion", { replace: true });
-    else recargarServicios();
+    try {
+      const raw = sessionStorage.getItem("credenciales") || localStorage.getItem("credenciales");
+      if (!raw) throw new Error("Sin credenciales");
+
+      const credenciales = JSON.parse(raw);
+      if (!credenciales.email || !credenciales.password) throw new Error("Campos incompletos");
+
+      recargarServicios();
+    } catch (e) {
+      console.warn("🔒 Redirigiendo por falta de credenciales:", e.message);
+      navigate("/administracion", { replace: true });
+    }
   }, [navigate]);
+
 
   const recargarServicios = async () => {
     const timestamp = Date.now();
