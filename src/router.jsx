@@ -20,13 +20,15 @@ const withSuspense = (Component) => (
 
 // ✅ Función para proteger rutas con autenticación
 const isAuthenticated = () => {
-    const creds = localStorage.getItem("credenciales");
+    const creds = sessionStorage.getItem("credenciales");
     return creds !== null;
 };
+
 
 const ProtectedRoute = ({ children }) => {
     return isAuthenticated() ? children : <Navigate to="/administracion" replace />;
 };
+
 
 function HomeWrapper() {
     const { informationsRef, setVideoReady } = useOutletContext();
