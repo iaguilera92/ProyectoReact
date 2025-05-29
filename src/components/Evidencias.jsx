@@ -14,6 +14,10 @@ const Evidencias = () => {
     const { ref, inView } = useInView({ threshold: 0.3, triggerOnce: true, rootMargin: '0px 0px -30% 0px' });
     const [hasAnimated, setHasAnimated] = useState(false);
 
+    const evidenciaIndices = isMobile
+        ? [[1, 2], [0], [3]] //mobile
+        : [[0], [1], [2], [3]]; //desktop
+
     const letterVariants = {
         hidden: { opacity: 0, x: -20 },
         visible: (i) => ({
@@ -254,151 +258,161 @@ const Evidencias = () => {
                                 ))}
                             </Typography>
 
-                            <Grid container spacing={3} justifyContent="center">
-                                {[1, 2, 3].map((n, i) => (
-                                    <Grid item xs={12} sm={6} md={4} key={n}>
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 30 }}
-                                            whileInView={{ opacity: 1, y: 0 }}
-                                            transition={{ duration: 0.6, delay: i * 0.2 }}
-                                        >
-                                            <Card
-                                                sx={{
-                                                    bgcolor: '#ffffff',
-                                                    borderRadius: 4,
-                                                    overflow: 'hidden',
-                                                    position: 'relative',
-                                                    '&::after': {
-                                                        content: '""',
-                                                        position: 'absolute',
-                                                        bottom: -20,
-                                                        left: '10%',
-                                                        width: '80%',
-                                                        height: '30px',
-                                                        background: 'rgba(0, 0, 0, 0.45)',
-                                                        filter: 'blur(12px)',
-                                                        borderRadius: '50%',
-                                                        zIndex: 0,
-                                                    },
-                                                }}
+                            <Grid container spacing={3} justifyContent="center" mt={0.3}>
+                                {evidenciaIndices.map((group, groupIdx) => (
+                                    <Grid container item spacing={3} xs={12} key={`group-${groupIdx}`} justifyContent="center">
+                                        {group.map((n, i) => (
+                                            <Grid
+                                                item
+                                                xs={n === 1 || n === 2 ? 6 : 12} // ocupan media fila en mobile
+                                                sm={6}
+                                                md={4}
+                                                key={n}
                                             >
-                                                <Box
-                                                    sx={{
-                                                        width: '100%',
-                                                        height: 250,
-                                                        backgroundColor: '#000',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                        overflow: 'hidden',
-                                                    }}
+                                                <motion.div
+                                                    initial={{ opacity: 0, y: 30 }}
+                                                    whileInView={{ opacity: 1, y: 0 }}
+                                                    transition={{ duration: 0.6, delay: (groupIdx * 2 + i) * 0.2 }}
                                                 >
-                                                    <CardMedia
-                                                        component="video"
-                                                        ref={(el) => (videosRef.current[i] = el)}
-                                                        src={`/evidencia${n}.mp4`}
-                                                        playsInline
-                                                        muted
-                                                        loop
-                                                        preload="auto"
-                                                        controls={false}
-                                                        disablePictureInPicture
-                                                        controlsList="nodownload nofullscreen noremoteplayback"
-                                                        onClick={(e) => {
-                                                            const video = e.target;
-
-                                                            // Intentar pantalla completa en todos los dispositivos
-                                                            if (video.requestFullscreen) {
-                                                                video.requestFullscreen();
-                                                            } else if (video.webkitEnterFullscreen) {
-                                                                video.webkitEnterFullscreen(); // Safari iOS
-                                                            } else if (video.webkitRequestFullscreen) {
-                                                                video.webkitRequestFullscreen(); // Chrome
-                                                            } else if (video.msRequestFullscreen) {
-                                                                video.msRequestFullscreen(); // IE / Edge
-                                                            }
-
-                                                            // Reproducir manualmente si está pausado
-                                                            if (video.paused) video.play();
-                                                        }}
+                                                    <Card
                                                         sx={{
-                                                            height: '100%',
-                                                            width: i === 1 ? 'auto' : '100%',
-                                                            objectFit: i === 1 ? 'contain' : 'contain',
-                                                            cursor: 'pointer',
-                                                            zIndex: 1,
+                                                            bgcolor: '#ffffff',
+                                                            borderRadius: 4,
+                                                            overflow: 'hidden',
+                                                            position: 'relative',
+                                                            '&::after': {
+                                                                content: '""',
+                                                                position: 'absolute',
+                                                                bottom: -20,
+                                                                left: '10%',
+                                                                width: '80%',
+                                                                height: '30px',
+                                                                background: 'rgba(0, 0, 0, 0.45)',
+                                                                filter: 'blur(12px)',
+                                                                borderRadius: '50%',
+                                                                zIndex: 0,
+                                                            },
                                                         }}
-                                                    />
+                                                    >
+                                                        <Box
+                                                            sx={{
+                                                                width: '100%',
+                                                                height: 250,
+                                                                backgroundColor: '#000',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                overflow: 'hidden',
+                                                            }}
+                                                        >
+                                                            <CardMedia
+                                                                component="video"
+                                                                ref={(el) => (videosRef.current[n] = el)}
+                                                                src={`/evidencia${n + 1}.mp4`}
+                                                                playsInline
+                                                                muted
+                                                                loop
+                                                                preload="auto"
+                                                                controls={false}
+                                                                disablePictureInPicture
+                                                                controlsList="nodownload nofullscreen noremoteplayback"
+                                                                onClick={(e) => {
+                                                                    const video = e.target;
 
-                                                </Box>
-                                            </Card>
+                                                                    const requestFullscreen =
+                                                                        video.requestFullscreen ||
+                                                                        video.webkitEnterFullscreen ||
+                                                                        video.webkitRequestFullscreen ||
+                                                                        video.msRequestFullscreen;
 
-                                            {i === 0 && (
-                                                <Typography
-                                                    variant="body2"
-                                                    align="center"
-                                                    component="a"
-                                                    href="https://www.autoges-web.cl"
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    sx={{
-                                                        display: 'block',
-                                                        mt: 1,
-                                                        color: '#00bcd4', // celeste tipo cyan claro
-                                                        fontFamily: 'Poppins, sans-serif',
-                                                        textDecoration: 'none',
-                                                        textAlign: 'center',
-                                                        '&:hover': {
-                                                            textDecoration: 'underline',
-                                                            color: '#26c6da', // un tono más claro al pasar el mouse
-                                                        },
-                                                    }}
-                                                >
-                                                    www.autoges-web.cl
-                                                </Typography>
+                                                                    if (requestFullscreen) {
+                                                                        requestFullscreen.call(video);
 
-                                            )}
-                                            {/* 👇 Texto "En desarrollo..." solo para evidencia3 */}
-                                            {i === 1 && (
-                                                <Typography
-                                                    variant="body2"
-                                                    align="center"
-                                                    component="a"
-                                                    href="https://www.ivelpink.cl"
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    sx={{
-                                                        display: 'block',
-                                                        mt: 1,
-                                                        color: '#00bcd4', // celeste tipo cyan claro
-                                                        fontFamily: 'Poppins, sans-serif',
-                                                        textDecoration: 'none',
-                                                        textAlign: 'center',
-                                                        '&:hover': {
-                                                            textDecoration: 'underline',
-                                                            color: '#26c6da', // un tono más claro al pasar el mouse
-                                                        },
-                                                    }}
-                                                >
-                                                    www.ivelpink.cl
-                                                </Typography>
+                                                                        // Opcional: cambiar estilo cuando entra en fullscreen
+                                                                        const handleFullscreenChange = () => {
+                                                                            const isFullscreen =
+                                                                                document.fullscreenElement === video ||
+                                                                                document.webkitFullscreenElement === video ||
+                                                                                document.msFullscreenElement === video;
 
-                                            )}
-                                            {i === 2 && (
-                                                <Typography
-                                                    variant="body2"
-                                                    align="center"
-                                                    sx={{
-                                                        mt: 1,
-                                                        color: 'gray',
-                                                        fontStyle: 'italic',
-                                                        fontFamily: 'Poppins, sans-serif',
-                                                    }}
-                                                >
-                                                    En desarrollo...
-                                                </Typography>
-                                            )}
-                                        </motion.div>
+                                                                            video.style.objectFit = isFullscreen ? 'contain' : 'cover';
+                                                                        };
+
+                                                                        document.addEventListener('fullscreenchange', handleFullscreenChange);
+                                                                        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+                                                                        document.addEventListener('msfullscreenchange', handleFullscreenChange);
+                                                                    }
+
+                                                                    if (video.paused) video.play();
+                                                                }}
+
+                                                                sx={{
+                                                                    height: '100%',
+                                                                    width: '100%',
+                                                                    objectFit: 'cover',
+                                                                    cursor: 'pointer',
+                                                                    zIndex: 1,
+                                                                }}
+                                                            />
+
+                                                        </Box>
+
+                                                        {/* Descriptor dentro del Card */}
+                                                        {(n === 1 || n === 2 || n === 0) && (
+                                                            <Typography
+                                                                variant="body2"
+                                                                align="center"
+                                                                component="a"
+                                                                href={
+                                                                    n === 0
+                                                                        ? 'https://www.autoges-web.cl'
+                                                                        : n === 1
+                                                                            ? 'https://www.ivelpink.cl'
+                                                                            : 'https://www.ingsnt.cl'
+                                                                }
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                sx={{
+                                                                    display: 'block',
+                                                                    mt: 1.5,
+                                                                    mb: 1.5,
+                                                                    color: '#00bcd4',
+                                                                    fontFamily: 'Poppins, sans-serif',
+                                                                    textDecoration: 'none',
+                                                                    textAlign: 'center',
+                                                                    '&:hover': {
+                                                                        textDecoration: 'underline',
+                                                                        color: '#26c6da',
+                                                                    },
+                                                                }}
+                                                            >
+                                                                {n === 0
+                                                                    ? 'www.autoges-web.cl'
+                                                                    : n === 1
+                                                                        ? 'www.ivelpink.cl'
+                                                                        : 'www.ingsnt.cl'}
+                                                            </Typography>
+                                                        )}
+
+                                                        {n === 3 && (
+                                                            <Typography
+                                                                variant="body2"
+                                                                align="center"
+                                                                sx={{
+                                                                    mt: 1.5,
+                                                                    mb: 1.5,
+                                                                    color: 'gray',
+                                                                    fontStyle: 'italic',
+                                                                    fontFamily: 'Poppins, sans-serif',
+                                                                }}
+                                                            >
+                                                                En desarrollo...
+                                                            </Typography>
+                                                        )}
+                                                    </Card>
+                                                </motion.div>
+                                            </Grid>
+                                        ))}
                                     </Grid>
                                 ))}
                             </Grid>

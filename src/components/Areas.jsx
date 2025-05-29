@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Grid, Typography, Box, useMediaQuery, useTheme } from "@mui/material";
 import "@fontsource/poppins";
 import CountUp from "react-countup";
@@ -85,6 +85,15 @@ const Areas = () => {
     }
   }, [isMobile]);
 
+  const videosRef = useRef([]);
+  const inViewStates = data.map(() => useInView({ threshold: 0.3, triggerOnce: true }));
+  useEffect(() => {
+    data.forEach((_, index) => {
+      if (inView && videosRef.current[index]) {
+        videosRef.current[index].play().catch(() => { });
+      }
+    });
+  }, [inView]);
 
   return (
 
@@ -196,23 +205,19 @@ const Areas = () => {
                     </Box>
 
                     {/* Cara delantera: Imagen */}
-                    <Box
-                      component="video"
+                    <video
+                      ref={(el) => (videosRef.current[index] = el)}
                       src={item.image}
-                      autoPlay
                       muted
                       playsInline
-                      onEnded={(e) => {
-                        e.target.pause(); // ✅ Detiene el video al finalizar
-                      }}
-                      sx={{
+                      style={{
                         position: "absolute",
                         backfaceVisibility: "hidden",
                         width: "100%",
                         height: "100%",
                         objectFit: "cover",
-                        borderRadius: 2,
-                        boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)"
+                        borderRadius: 8,
+                        boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
                       }}
                     />
 

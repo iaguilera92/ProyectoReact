@@ -43,6 +43,18 @@ const SeccionDestacada = () => {
         if (video.paused) video.play();
     };
 
+    useEffect(() => {
+        if (inView && !hasAnimated) {
+            setHasAnimated(true);
+
+            // Reproduce todos los videos una vez visibles
+            videosRef.current.forEach((video) => {
+                if (video && typeof video.play === 'function') {
+                    video.play().catch(() => { }); // evita error si autoplay bloqueado
+                }
+            });
+        }
+    }, [inView, hasAnimated]);
 
     const renderScrollRow = (delay = '0s') => (
         <Box
@@ -217,7 +229,7 @@ const SeccionDestacada = () => {
                     </Box>
 
 
-                    {/* Video 1 */}
+                    {/* Video 1 - primera fila */}
                     <motion.div
                         initial={{ opacity: 0, x: 100 }}
                         animate={inView || hasAnimated ? { opacity: 1, x: 0 } : { opacity: 0, x: 100 }}
@@ -268,56 +280,60 @@ const SeccionDestacada = () => {
                         </Box>
                     </motion.div>
 
-                    {/* Video 2 */}
-                    <motion.div
-                        initial={{ opacity: 0, x: 100 }}
-                        animate={inView || hasAnimated ? { opacity: 1, x: 0 } : { opacity: 0, x: 100 }}
-                        transition={{ duration: 1, ease: 'easeOut' }}
-                    >
-                        <Box sx={{ width: '100%', maxWidth: 400 }}>
-                            <CardMedia
-                                component="video"
-                                ref={(el) => (videosRef.current[1] = el)}
-                                src={`/evidencia3.mp4`}
-                                playsInline
-                                muted
-                                loop
-                                preload="auto"
-                                controls={false}
-                                disablePictureInPicture
-                                controlsList="nodownload nofullscreen noremoteplayback"
-                                onClick={handleVideoClick}
-                                sx={{
-                                    height: 'auto',
-                                    width: '100%',
-                                    objectFit: 'contain',
-                                    cursor: 'pointer',
-                                    borderRadius: 2,
-                                }}
-                            />
-                            <Typography
-                                variant="body2"
-                                align="center"
-                                component="a"
-                                href="https://www.autoges-web.cl"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                sx={{
-                                    display: 'block',
-                                    mt: 1,
-                                    color: '#00bcd4',
-                                    fontFamily: 'Poppins, sans-serif',
-                                    textDecoration: 'none',
-                                    '&:hover': {
-                                        textDecoration: 'underline',
-                                        color: '#26c6da',
-                                    },
-                                }}
+                    {/* Fila de videos 2 y 3 */}
+                    <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mt: 0 }}>
+                        {[2, 3].map((index, i) => (
+                            <motion.div
+                                key={index}
+                                initial={{ opacity: 0, x: 100 }}
+                                animate={inView || hasAnimated ? { opacity: 1, x: 0 } : { opacity: 0, x: 100 }}
+                                transition={{ duration: 1 + i * 0.2, ease: 'easeOut' }}
                             >
-                                En desarrollo...
-                            </Typography>
-                        </Box>
-                    </motion.div>
+                                <Box sx={{ width: '100%', maxWidth: 200 }}>
+                                    <CardMedia
+                                        component="video"
+                                        ref={(el) => (videosRef.current[index - 1] = el)}
+                                        src={`/evidencia${index}.mp4`}
+                                        playsInline
+                                        muted
+                                        loop
+                                        preload="auto"
+                                        controls={false}
+                                        disablePictureInPicture
+                                        controlsList="nodownload nofullscreen noremoteplayback"
+                                        onClick={handleVideoClick}
+                                        sx={{
+                                            height: 220, // Establece altura fija para igualdad
+                                            width: '100%',
+                                            objectFit: 'cover',
+                                            cursor: 'pointer',
+                                            borderRadius: 2,
+                                        }}
+                                    />
+                                    <Typography
+                                        variant="body2"
+                                        align="center"
+                                        sx={{
+                                            display: 'block',
+                                            mt: 1,
+                                            color: '#00bcd4',
+                                            fontFamily: 'Poppins, sans-serif',
+                                            textDecoration: 'none',
+                                            '&:hover': {
+                                                textDecoration: 'underline',
+                                                color: '#26c6da',
+                                            },
+                                        }}
+                                    >
+                                        {index === 2 ? 'www.ivelpink.cl' : 'www.ingsnt.cl'}
+                                    </Typography>
+                                </Box>
+                            </motion.div>
+                        ))}
+                    </Box>
+
+
+
                 </Box>
 
                 {/* Imagen mongodb.svg al lado derecho */}
