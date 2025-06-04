@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Box } from '@mui/material';
+import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { motion } from 'framer-motion';
 import "./css/Cargando.css";
 
 const Cargando = () => {
     const [glow, setGlow] = useState(false);
     const [showElectricEffect, setShowElectricEffect] = useState(false);
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const NUM_COLUMNS = isMobile ? 10 : 16;
+    const [showImage, setShowImage] = useState(false);
+    const [showStrips, setShowStrips] = useState(true);
+
 
     useEffect(() => {
         const timerGlow = setTimeout(() => {
@@ -15,10 +21,26 @@ const Cargando = () => {
             setTimeout(() => {
                 setShowElectricEffect(false);
             }, 1000);
-        }, 1200);
+        }, 2000);
 
         return () => clearTimeout(timerGlow);
     }, []);
+
+    //FONDO TIRAS VERTICALES
+    useEffect(() => {
+        const showImageTimer = setTimeout(() => {
+            setShowImage(true);
+
+            const hideStripsTimer = setTimeout(() => {
+                setShowStrips(false);
+            }, 2000); // duración del fadeIn
+
+            return () => clearTimeout(hideStripsTimer);
+        }, 800); // ⏳ duración de las tiras
+
+        return () => clearTimeout(showImageTimer);
+    }, []);
+
 
     return (
         <Box
@@ -34,15 +56,47 @@ const Cargando = () => {
                 zIndex: 9999,
             }}
         >
-            <Box
-                sx={{
-                    position: 'absolute',
-                    inset: 0,
-                    backgroundColor: 'rgb(0 7 41)',
-                    zIndex: 0,
-                }}
-            />
-            {/* Fondo separado */}
+
+            {/* FONDO */}
+
+            {showStrips && (
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        inset: 0,
+                        display: 'flex',
+                        zIndex: 1, // correcto
+                    }}
+                >
+                    {Array.from({ length: NUM_COLUMNS }).map((_, index) => (
+                        <motion.div
+                            key={index}
+                            initial={{ y: index % 2 === 0 ? '-100%' : '100%' }}
+                            animate={{ y: '0%' }}
+                            transition={{
+                                duration: 0.8,
+                                delay: index * 0,
+                                ease: 'easeInOut',
+                            }}
+                            style={{
+                                width: `${100 / NUM_COLUMNS}%`, // 🚀 sin subpíxeles
+                                height: '100%',
+                                backgroundColor: 'rgb(0 7 41)',
+                                margin: 0,
+                                padding: 0,
+                                border: 'none',
+                                boxShadow: 'none',
+                                backfaceVisibility: 'hidden',
+                                transform: 'translateZ(0)',
+                                willChange: 'transform',
+                            }}
+                        />
+
+                    ))}
+                </Box>
+            )}
+
+
             <Box
                 sx={{
                     position: 'absolute',
@@ -52,11 +106,12 @@ const Cargando = () => {
                     backgroundPosition: { xs: '25% 20%', md: 'center 20%' },
                     backgroundRepeat: 'no-repeat',
                     filter: 'brightness(0.7) contrast(1.2)',
-                    zIndex: 1,
-                    opacity: 0, // Puedes animar esto si quieres aparición progresiva
-                    animation: 'fadeInBg 2s ease-in forwards', // ejemplo animación
+                    zIndex: 2,
+                    opacity: showImage ? 1 : 0,
+                    transition: 'opacity 2s ease-in',
                 }}
             />
+
 
             {/* Contenido */}
             <Box
@@ -66,7 +121,9 @@ const Cargando = () => {
                     flexDirection: 'column',
                     alignItems: 'center',
                     transform: 'translateY(-40%)',
-                    zIndex: 1, // 👈 Este es el contenido sobre el fondo
+                    zIndex: 3,
+                    opacity: showImage ? 1 : 0,
+                    transition: 'opacity 2s ease-in',
                 }}
             >
                 {/* Imágenes + Efecto eléctrico */}
@@ -109,7 +166,7 @@ const Cargando = () => {
                         src="/logo-plataformas-1.png"
                         alt="Logo izquierda"
                         initial={{ x: -80, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
+                        animate={showImage ? { x: 0, opacity: 1 } : { x: -80, opacity: 0 }} // 🚀 controlado por showImage
                         transition={{ duration: 1.2, ease: 'easeOut' }}
                         style={{
                             width: 130,
@@ -122,12 +179,13 @@ const Cargando = () => {
                         }}
                     />
 
+
                     {/* Logo Derecho */}
                     <motion.img
                         src="/logo-plataformas-2.png"
                         alt="Logo derecha"
                         initial={{ x: 80, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
+                        animate={showImage ? { x: 0, opacity: 1 } : { x: 80, opacity: 0 }} // 🚀 controlado por showImage
                         transition={{ duration: 1.2, ease: 'easeOut' }}
                         style={{
                             width: 130,
@@ -139,6 +197,7 @@ const Cargando = () => {
                             verticalAlign: 'top',
                         }}
                     />
+
                 </Box>
 
                 {/* Barra de carga */}

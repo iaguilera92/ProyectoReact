@@ -31,3 +31,9 @@
         opacity: 1;
     }
 }
+
+@keyframes fadeInBg {
+    to {
+        opacity: 1;
+    }
+}
