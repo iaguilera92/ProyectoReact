@@ -427,18 +427,6 @@ const Evidencias = () => {
                     Para ver más trabajos contáctanos vía redes sociales.
                 </Alert>
             </Snackbar>
-            <Box
-                sx={{
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '10%',
-                    background: 'linear-gradient(to bottom, transparent, rgb(0 30 43 / 1))',
-                    zIndex: 2,  // Asegúrate de que este valor esté por encima de la sección decorativa pero debajo de otros elementos.
-                    pointerEvents: 'none',  // Evita que interfiera con la interacción de otros elementos
-                }}
-            />
 
         </Box >
     );

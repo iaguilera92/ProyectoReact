@@ -195,14 +195,13 @@ const Footer = () => {
             </Box>
 
             {/* Redes Sociales */}
-            <Box ref={socialRef} sx={{ display: "flex", gap: 6, mb: 2, animation: socialInView ? `${growElement} 1s forwards` : "none", }}            >
+            <Box ref={socialRef} sx={{ display: "flex", gap: 6, mb: 2, animation: socialInView ? `${growElement} 1s forwards` : "none", }}>
               <SocialButton href="https://www.instagram.com/plataformas.web/?hl=es-la" Icon={InstagramIcon} bgColor="linear-gradient(45deg, #cf198c, #f41242)" isMobile={isMobile} />
               <SocialButton href="https://www.facebook.com/profile.php?id=100063452866880" Icon={FacebookIcon} bgColor="linear-gradient(45deg, #00B5F5, #002A8F)" isMobile={isMobile} />
               <SocialButton href="https://www.linkedin.com/company/mittarentacar/?viewAsMember=true" Icon={LinkedInIcon} bgColor="linear-gradient(45deg, #00B5F5, #0077b7)" isMobile={isMobile} />
             </Box>
+            <Box ref={socialRef} sx={{ display: "flex", flexDirection: "column", alignItems: "left", gap: 0.5, animation: socialInView ? `${growElement} 1s forwards` : "none", }}>
 
-            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "left", gap: 0.5 }}
-            >
               <img src="area-clientes.png" width={120} alt="Área Clientes" style={{ marginTop: 30, marginRight: 30, marginBottom: "20px" }} />
 
               <Typography ml={"10px"} sx={{ display: "flex", alignItems: "center", gap: 0 }}              >
