@@ -13,6 +13,10 @@ const Evidencias = () => {
     const [scrollY, setScrollY] = useState(0);
     const { ref, inView } = useInView({ threshold: 0.3, triggerOnce: true, rootMargin: '0px 0px -30% 0px' });
     const [hasAnimated, setHasAnimated] = useState(false);
+    const { ref: imagenRef, inView: imagenInView } = useInView({
+        threshold: 0.3,
+        triggerOnce: true, // para que solo se dispare una vez
+    });
 
     const evidenciaIndices = isMobile
         ? [[1, 2], [0], [3]] //mobile
@@ -92,19 +96,15 @@ const Evidencias = () => {
             <Box
                 sx={{
                     position: 'relative',
-                    height: isMobile ? '35vh' : '40vh',
+                    height: isMobile ? '55vh' : '40vh',
                     overflow: 'hidden',
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    justifyContent: 'center',
-                    pt: { xs: 11, sm: 10 },
-                    backgroundImage: `url('fondo-telefono.webp')`, // Imagen de fondo
+                    pt: { xs: 8, sm: 10 },
+                    backgroundImage: `url('fondo-telefono.webp')`,
                     backgroundSize: 'cover',
-                    // Efecto Parallax con scroll
                     backgroundPosition: isMobile
                         ? 'center'
-                        : `center ${scrollY * 0.3}px`, // Desplaza la imagen al hacer scroll
-                    backgroundAttachment: 'scroll', // No fijar el fondo, simular el parallax con el scroll
+                        : `center ${scrollY * 0.3}px`,
+                    backgroundAttachment: 'scroll',
                     backgroundRepeat: 'no-repeat',
                 }}
             >
@@ -115,17 +115,30 @@ const Evidencias = () => {
                         top: 0,
                         left: 0,
                         right: 0,
-                        height: '15%', // Aumenté el 10% a 15% para hacerlo más visible
-                        background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent)', // Aumenté la opacidad para hacerlo más notorio
+                        height: '2%',
+                        background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent)',
                     }}
                 />
                 {/* Contenedor con el texto en movimiento */}
-                <Box sx={{ width: '100%', overflow: 'hidden', position: 'relative', mt: '-12%' }}>
+                <Box
+                    sx={{
+                        width: '100%',
+                        overflow: 'hidden',
+                        position: 'absolute', // 👈 así lo pegas
+                        top: '10px', // 👈 queda pegadito arriba
+                        left: 0,
+                        right: 0,
+                        zIndex: 2,
+                    }}
+                >
                     <motion.div
-                        initial={{ x: '100%' }}
+                        initial={{ x: '100vw' }}
                         animate={{ x: '-100%' }}
-                        transition={{ repeat: Infinity, duration: 7, ease: 'linear' }}
-                        style={{ whiteSpace: 'nowrap', display: 'inline-block', transform: 'translateY(50%)' }}
+                        transition={{ repeat: Infinity, duration: 4, ease: 'linear' }}
+                        style={{
+                            display: 'inline-block',
+                            whiteSpace: 'nowrap',
+                        }}
                     >
                         <Typography
                             sx={{
@@ -133,15 +146,76 @@ const Evidencias = () => {
                                 fontWeight: 600,
                                 color: 'white',
                                 fontFamily: `'Montserrat', 'Segoe UI', sans-serif`,
-                                textShadow: '1px 1px 4px rgba(0,0,0,0.4)',
+                                textShadow: '1px 1px 4px rgba(0,0,0,0.2)',
                                 px: 4,
                             }}
                         >
-                            Conoce cómo ayudamos a otras empresas a <span style={{ color: '#ffe037' }}>crecer.</span>
+                            Conoce cómo ayudamos a otras empresas a{' '}
+                            <span style={{ color: '#ffe037' }}>crecer.</span>
                         </Typography>
                     </motion.div>
                 </Box>
+
+                {/* Imagen que entra desde la derecha */}
+                <Box
+                    ref={imagenRef}
+                    sx={{
+                        width: '100%',
+                        maxWidth: '250px',
+                        left: '8%',
+                        margin: '0 auto',
+                        position: 'relative',
+                        aspectRatio: '572 / 788',
+                        mt: '40px', // 👈 le agregamos margen arriba (ajusta el valor)
+                    }}
+                >
+                    {/* Video detrás - ENTRADA SINCRONIZADA */}
+                    <motion.video
+                        src="/video-plataformas-web.mp4"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        initial={{ x: 300, opacity: 0 }}
+                        animate={imagenInView ? { x: '0%', opacity: 1 } : { x: 300, opacity: 0 }}
+                        transition={{ duration: 1, ease: 'easeOut' }}
+                        style={{
+                            position: 'absolute',
+                            top: '5%',
+                            left: '12%',
+                            width: '54.4%',
+                            height: '81.7%',
+                            objectFit: 'cover',
+                            borderRadius: '10px',
+                            zIndex: 0,
+                            backgroundColor: 'black',
+                        }}
+                    />
+
+                    {/* Imagen PNG encima - ENTRADA SINCRONIZADA */}
+                    <motion.img
+                        src="/mano-celular.png"
+                        alt="Decorativo"
+                        initial={{ x: 300, opacity: 0 }}
+                        animate={imagenInView ? { x: '0%', opacity: 1 } : { x: 300, opacity: 0 }}
+                        transition={{ duration: 1, ease: 'easeOut' }}
+                        style={{
+                            width: '100%',
+                            height: 'auto',
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            zIndex: 1,
+                            pointerEvents: 'none',
+                        }}
+                    />
+                </Box>
+
+
             </Box>
+
+
+
 
             {/* Sección 2 */}
             <Box
@@ -155,7 +229,7 @@ const Evidencias = () => {
                     pb: 4,
                     px: { xs: 2, sm: 4 },
                     zIndex: 2,
-                    mt: -8,
+                    mt: 0,
                     boxShadow: '0px -4px 20px rgba(0,0,0,0.05)',
                     borderTop: '1px solid #e0e0e0',
                 }}
