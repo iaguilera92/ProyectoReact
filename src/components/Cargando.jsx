@@ -9,6 +9,7 @@ const Cargando = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const NUM_COLUMNS = isMobile ? 10 : 16;
+    const COLUMN_WIDTH_PX = isMobile ? 50 : undefined;
     const [showImage, setShowImage] = useState(false);
     const [showStrips, setShowStrips] = useState(true);
 
@@ -68,31 +69,34 @@ const Cargando = () => {
                         zIndex: 1, // correcto
                     }}
                 >
+
                     {Array.from({ length: NUM_COLUMNS }).map((_, index) => (
                         <motion.div
                             key={index}
-                            initial={{ y: index % 2 === 0 ? '-100%' : '100%' }}
-                            animate={{ y: '0%' }}
+                            initial={{ translateY: index % 2 === 0 ? '-100%' : '100%' }}
+                            animate={{ translateY: '0%' }}
                             transition={{
                                 duration: 0.8,
                                 delay: index * 0,
                                 ease: 'easeInOut',
                             }}
                             style={{
-                                width: `${100 / NUM_COLUMNS}%`, // 🚀 sin subpíxeles
+                                flex: isMobile ? '0 0 auto' : '1',
+                                width: isMobile ? `${COLUMN_WIDTH_PX}px` : 'auto',
                                 height: '100%',
                                 backgroundColor: 'rgb(0 7 41)',
                                 margin: 0,
                                 padding: 0,
                                 border: 'none',
-                                boxShadow: 'none',
+                                boxSizing: 'border-box',
+                                position: 'relative',
+                                zIndex: 0,
+                                transformOrigin: 'left center',
                                 backfaceVisibility: 'hidden',
-                                transform: 'translateZ(0)',
-                                willChange: 'transform',
                             }}
                         />
-
                     ))}
+
                 </Box>
             )}
 
