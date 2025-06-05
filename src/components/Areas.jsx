@@ -23,6 +23,12 @@ const Areas = () => {
   const [currentRotation, setCurrentRotation] = useState(0);
   const [scrollY, setScrollY] = useState(0);
   const [hasAnimated, setHasAnimated] = useState(false);
+  const videosRef = useRef([]);
+  const inViewStates = data.map(() => useInView({ threshold: 0.3, triggerOnce: true }));
+  const { ref: refGrid, inView: inViewGrid } = useInView({ threshold: 0.3, triggerOnce: false });
+
+  const [hasEntered, setHasEntered] = useState(false);
+
 
   //EVITAR ANIMACIÓN DUPLICADA
   useEffect(() => {
@@ -44,6 +50,12 @@ const Areas = () => {
       return () => clearTimeout(timer); // Limpia el temporizador al desmontarse
     }
   }, [inView]);
+
+  useEffect(() => {
+    if (inViewGrid && !hasEntered) {
+      setHasEntered(true);
+    }
+  }, [inViewGrid, hasEntered]);
 
   // Función para dividir el texto en palabras
   const splitTextIntoWords = (text) => {
@@ -85,8 +97,6 @@ const Areas = () => {
     }
   }, [isMobile]);
 
-  const videosRef = useRef([]);
-  const inViewStates = data.map(() => useInView({ threshold: 0.3, triggerOnce: true }));
   useEffect(() => {
     data.forEach((_, index) => {
       if (inView && videosRef.current[index]) {
@@ -114,118 +124,137 @@ const Areas = () => {
     >
       <Grid container spacing={4} alignItems="center" pt={20}>
         <Grid item xs={12} md={6}>
-          <Grid container spacing={4}>
-            {data.map((item, index) => (
-              <Grid item xs={6} sm={6} md={6} key={index}>
-                <Box
-                  sx={{
-                    textAlign: "center",
-                    color: "white",
-                    borderRadius: 2,
-                    width: "100%",
-                    height: 150,
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    fontFamily: "'Poppins', sans-serif",
-                    perspective: "1000px",
-                    cursor: "pointer",
-                    position: "relative",
-                  }}
-                  ref={ref}
-                >
-                  {/* Caja para rotación 3D */}
-                  <Box
-                    sx={{
-                      width: "100%",
-                      height: "100%",
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      transformStyle: "preserve-3d",
-                      transition: "transform 2.6s",
-                      transitionDelay: inView ? "0.8s" : "0s",
-                      transform: inView || hasAnimated ? "rotateY(180deg)" : "rotateY(0deg)",
-                      position: "relative",
+          <motion.div
+            ref={refGrid}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: inViewGrid ? 1 : 1 }}
+          >
+            <Grid container spacing={4}>
+              {data.map((item, index) => (
+                <Grid item xs={6} sm={6} md={6} key={index}>
+                  <motion.div
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{
+                      scale: hasEntered ? 1 : 0,
+                      opacity: hasEntered ? 1 : 0,
+                    }}
+                    transition={{
+                      duration: 0.6,
+                      ease: "easeOut",
+                      delay: 0.1 * index,
                     }}
                   >
-                    {/* Cara trasera: Información */}
                     <Box
                       sx={{
-                        position: "absolute",
-                        backfaceVisibility: "hidden",
-                        width: isMobile ? "115%" : "100%",
-                        height: "100%",
+                        textAlign: "center",
+                        color: "white",
+                        borderRadius: 2,
+                        width: "100%",
+                        height: 150,
                         display: "flex",
                         justifyContent: "center",
                         alignItems: "center",
-                        flexDirection: "column",
-                        backgroundColor: "rgba(24, 26, 27, 0.9)",
-                        borderRadius: 2,
-                        boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
-                        zIndex: 2,
-                        transform: "rotateY(180deg)",
+                        fontFamily: "'Poppins', sans-serif",
+                        perspective: "1000px",
+                        cursor: "pointer",
+                        position: "relative",
                       }}
+                      ref={ref}
                     >
-                      {/* Contenedor fijo para evitar que se mueva el contador */}
+                      {/* Caja para rotación 3D */}
                       <Box
                         sx={{
-                          minWidth: "100px", // Asegura que el ancho no cambie
+                          width: "100%",
+                          height: "100%",
                           display: "flex",
-                          flexDirection: "column",
+                          justifyContent: "center",
                           alignItems: "center",
+                          transformStyle: "preserve-3d",
+                          transition: "transform 2.6s",
+                          transitionDelay: inView ? "0.8s" : "0s",
+                          transform: inView || hasAnimated ? "rotateY(180deg)" : "rotateY(0deg)",
+                          position: "relative",
                         }}
                       >
-                        {/* Contador con retraso de 0.8 segundos */}
-                        <Typography
-                          variant="h3"
-                          gutterBottom
-                          sx={{
-                            fontFamily: "'Saira', Sans-serif",
-                            fontWeight: "700",
-                            minWidth: "80px",
-                            textAlign: "center",
-                            marginBottom: "0.15em",
-                            fontSize: isMobile ? "2.6rem" : "2.2rem", // Aumentado el tamaño
-                          }}
-                        >
-                          +{delayed ? <CountUp start={0} end={item.count} duration={3.1} /> : "0"}
-                        </Typography>
+                        {/* Cara trasera: Información */}
                         <Box
                           sx={{
-                            textAlign: "center",
-                            maxWidth: isMobile ? "100%" : "90%",
-                            fontSize: isMobile ? "0.93rem" : "1.1rem", // Reducir tamaño del texto en móviles
-                            fontFamily: "'Oswald', sans-serif", // Fuente agregada
+                            position: "absolute",
+                            backfaceVisibility: "hidden",
+                            width: isMobile ? "115%" : "100%",
+                            height: "100%",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            flexDirection: "column",
+                            backgroundColor: "rgba(24, 26, 27, 0.9)",
+                            borderRadius: 2,
+                            boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
+                            zIndex: 2,
+                            transform: "rotateY(180deg)",
                           }}
                         >
-                          {splitTextIntoWords(item.text)}
+                          {/* Contenedor fijo para evitar que se mueva el contador */}
+                          <Box
+                            sx={{
+                              minWidth: "100px", // Asegura que el ancho no cambie
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "center",
+                            }}
+                          >
+                            {/* Contador con retraso de 0.8 segundos */}
+                            <Typography
+                              variant="h3"
+                              gutterBottom
+                              sx={{
+                                fontFamily: "'Saira', Sans-serif",
+                                fontWeight: "700",
+                                minWidth: "80px",
+                                textAlign: "center",
+                                marginBottom: "0.15em",
+                                fontSize: isMobile ? "2.6rem" : "2.2rem", // Aumentado el tamaño
+                              }}
+                            >
+                              +{delayed ? <CountUp start={0} end={item.count} duration={3.1} /> : "0"}
+                            </Typography>
+                            <Box
+                              sx={{
+                                textAlign: "center",
+                                maxWidth: isMobile ? "100%" : "90%",
+                                fontSize: isMobile ? "0.93rem" : "1.1rem", // Reducir tamaño del texto en móviles
+                                fontFamily: "'Oswald', sans-serif", // Fuente agregada
+                              }}
+                            >
+                              {splitTextIntoWords(item.text)}
+                            </Box>
+                          </Box>
                         </Box>
+
+                        {/* Cara delantera: Imagen */}
+                        <video
+                          ref={(el) => (videosRef.current[index] = el)}
+                          src={item.image}
+                          muted
+                          playsInline
+                          style={{
+                            position: "absolute",
+                            backfaceVisibility: "hidden",
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                            borderRadius: 8,
+                            boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
+                          }}
+                        />
+
                       </Box>
                     </Box>
-
-                    {/* Cara delantera: Imagen */}
-                    <video
-                      ref={(el) => (videosRef.current[index] = el)}
-                      src={item.image}
-                      muted
-                      playsInline
-                      style={{
-                        position: "absolute",
-                        backfaceVisibility: "hidden",
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        borderRadius: 8,
-                        boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
-                      }}
-                    />
-
-                  </Box>
-                </Box>
-              </Grid>
-            ))}
-          </Grid>
+                  </motion.div>
+                </Grid>
+              ))}
+            </Grid>
+          </motion.div>
         </Grid>
 
         <Grid item xs={12} md={6} display="flex" justifyContent="center">
