@@ -96,16 +96,14 @@ const Evidencias = () => {
             <Box
                 sx={{
                     position: 'relative',
-                    height: isMobile ? '55vh' : '40vh',
-                    overflow: 'hidden',
+                    height: isMobile ? '60vh' : '40vh',
                     pt: { xs: 8, sm: 10 },
                     backgroundImage: `url('fondo-telefono.webp')`,
                     backgroundSize: 'cover',
-                    backgroundPosition: isMobile
-                        ? 'center'
-                        : `center ${scrollY * 0.3}px`,
+                    backgroundPosition: 'center',
                     backgroundAttachment: 'scroll',
                     backgroundRepeat: 'no-repeat',
+                    zIndex: 1, // importante para layering
                 }}
             >
                 {/* Box para el degradado */}
@@ -119,13 +117,14 @@ const Evidencias = () => {
                         background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent)',
                     }}
                 />
+
                 {/* Contenedor con el texto en movimiento */}
                 <Box
                     sx={{
                         width: '100%',
                         overflow: 'hidden',
-                        position: 'absolute', // 👈 así lo pegas
-                        top: '10px', // 👈 queda pegadito arriba
+                        position: 'absolute',
+                        top: '10px',
                         left: 0,
                         right: 0,
                         zIndex: 2,
@@ -156,20 +155,22 @@ const Evidencias = () => {
                     </motion.div>
                 </Box>
 
-                {/* Imagen que entra desde la derecha */}
+                {/* Imagen + video */}
                 <Box
                     ref={imagenRef}
                     sx={{
+                        position: 'absolute', // 🚀 clave!
+                        bottom: '5%', // 🚀 hace que sobresalga un 10% en Sección 2
+                        left: '27%',
+                        transform: 'translateX(0%)',
                         width: '100%',
                         maxWidth: '250px',
-                        left: '8%',
-                        margin: '0 auto',
-                        position: 'relative',
                         aspectRatio: '572 / 788',
-                        mt: '40px', // 👈 le agregamos margen arriba (ajusta el valor)
+                        zIndex: 3,
+                        pointerEvents: 'none', // para que no bloquee clics
                     }}
                 >
-                    {/* Video detrás - ENTRADA SINCRONIZADA */}
+                    {/* Video detrás */}
                     <motion.video
                         src="/video-plataformas-web.mp4"
                         autoPlay
@@ -192,7 +193,7 @@ const Evidencias = () => {
                         }}
                     />
 
-                    {/* Imagen PNG encima - ENTRADA SINCRONIZADA */}
+                    {/* Imagen PNG encima */}
                     <motion.img
                         src="/mano-celular.png"
                         alt="Decorativo"
@@ -210,9 +211,8 @@ const Evidencias = () => {
                         }}
                     />
                 </Box>
-
-
             </Box>
+
 
 
 
