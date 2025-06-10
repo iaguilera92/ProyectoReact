@@ -28,13 +28,22 @@ exports.handler = async function (event, context) {
         keyFilename: path.join(__dirname, "credentials.json"),
       });
 
-    console.log("▶️ Ejecutando runReport por país...");
+    console.log("▶️ Ejecutando runReport por país (screenPageViews)...");
 
     const [resPais] = await client.runReport({
       property: "properties/485494483",
-      dateRanges: [{ startDate: "30daysAgo", endDate: "today" }],
+      dateRanges: [{ startDate: "2020-01-01", endDate: "today" }],
       dimensions: [{ name: "country" }],
-      metrics: [{ name: "activeUsers" }],
+      metrics: [{ name: "screenPageViews" }],
+      dimensionFilter: {
+        filter: {
+          fieldName: "pageLocation",
+          stringFilter: {
+            matchType: "CONTAINS",
+            value: "plataformas-web.cl",
+          },
+        },
+      },
     });
 
     const visitas = {
@@ -42,24 +51,29 @@ exports.handler = async function (event, context) {
       internacional: 0,
     };
 
-    resPais.rows.forEach((row) => {
+    resPais.rows?.forEach((row) => {
       const country = row.dimensionValues[0].value;
       const value = parseInt(row.metricValues[0].value, 10);
-
-      if (country === "Chile") {
-        visitas.chile += value;
-      } else {
-        visitas.internacional += value;
-      }
+      if (country === "Chile") visitas.chile += value;
+      else visitas.internacional += value;
     });
 
-    console.log("✅ Ejecutando runReport por dispositivo...");
+    console.log("✅ Ejecutando runReport por dispositivo (screenPageViews)...");
 
     const [resDispositivos] = await client.runReport({
       property: "properties/485494483",
-      dateRanges: [{ startDate: "30daysAgo", endDate: "today" }],
+      dateRanges: [{ startDate: "2020-01-01", endDate: "today" }],
       dimensions: [{ name: "deviceCategory" }],
-      metrics: [{ name: "activeUsers" }],
+      metrics: [{ name: "screenPageViews" }],
+      dimensionFilter: {
+        filter: {
+          fieldName: "pageLocation",
+          stringFilter: {
+            matchType: "CONTAINS",
+            value: "plataformas-web.cl",
+          },
+        },
+      },
     });
 
     const dispositivos = {
@@ -68,10 +82,9 @@ exports.handler = async function (event, context) {
       tablet: 0,
     };
 
-    resDispositivos.rows.forEach((row) => {
+    resDispositivos.rows?.forEach((row) => {
       const device = row.dimensionValues[0].value;
       const value = parseInt(row.metricValues[0].value, 10);
-
       if (device === "mobile") dispositivos.mobile += value;
       else if (device === "desktop") dispositivos.desktop += value;
       else if (device === "tablet") dispositivos.tablet += value;
