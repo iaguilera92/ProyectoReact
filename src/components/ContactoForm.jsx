@@ -379,8 +379,9 @@ const ContactoForm = ({ setSnackbar }) => {
                 </Grid>
             </Box>
 
-            <Box sx={{ mt: 2, px: 1 }}>
+            <Box sx={{ mt: 2, px: 1 }} >
                 <MotionBox
+                    ref={ref}
                     initial={{ opacity: 0, y: 50 }}
                     animate={startAnimation ? { opacity: 1, y: 0 } : {}}
                     transition={{ duration: 0.6, ease: "easeOut" }}
