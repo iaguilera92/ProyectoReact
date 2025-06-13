@@ -536,20 +536,22 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                                 <Typography variant="h6" sx={{ fontWeight: "bold", color: "black", fontSize: "1.5rem", mt: 2 }}>
                                   Por definir
                                 </Typography>
-                                <Box component="button" sx={{
-                                  backgroundColor: "#007de0",
-                                  color: "white",
-                                  border: "none",
-                                  borderRadius: "8px",
-                                  width: "80%",
-                                  py: 1,
-                                  fontWeight: "bold",
-                                  fontSize: "0.9rem",
-                                  cursor: "pointer",
-                                  transition: "background-color 0.3s",
-                                  mt: 1.7,
-                                  "&:hover": { backgroundColor: "#005bb5" }
-                                }}>
+                                <Box component="button"
+                                  onClick={() => handleContactClick(promo.title)}
+                                  sx={{
+                                    backgroundColor: "#007de0",
+                                    color: "white",
+                                    border: "none",
+                                    borderRadius: "8px",
+                                    width: "80%",
+                                    py: 1,
+                                    fontWeight: "bold",
+                                    fontSize: "0.9rem",
+                                    cursor: "pointer",
+                                    transition: "background-color 0.3s",
+                                    mt: 1.7,
+                                    "&:hover": { backgroundColor: "#005bb5" }
+                                  }}>
                                   Cotizar
                                 </Box>
                               </>

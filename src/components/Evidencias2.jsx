@@ -313,6 +313,10 @@ const SeccionDestacada = () => {
                                     <Typography
                                         variant="body2"
                                         align="center"
+                                        component="a"
+                                        href={index === 2 ? "https://www.ivelpink.cl" : "https://www.ingsnt.cl"}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
                                         sx={{
                                             display: 'block',
                                             mt: 1,

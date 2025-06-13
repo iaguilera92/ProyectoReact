@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
     TextField,
     Button,
@@ -11,7 +11,7 @@ import {
     Checkbox
 } from "@mui/material";
 import { useInView } from "react-intersection-observer";
-import emailjs from "@emailjs/browser";
+import emailjs from '@emailjs/browser';
 import { motion } from "framer-motion";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
@@ -30,8 +30,9 @@ const ContactoForm = ({ setSnackbar }) => {
     const [enviarCopia, setEnviarCopia] = useState(false);
     const [emailCopia, setEmailCopia] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const formRef = useRef(null);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         const newErrors = {};
@@ -44,49 +45,61 @@ const ContactoForm = ({ setSnackbar }) => {
             setSnackbar({
                 open: true,
                 message: "Por favor, completa todos los campos.",
-                type: "error"
+                type: "error",
             });
             return;
         }
 
-        setErrors({});
-        setIsSubmitting(true); // 👈 Bloquea
+        setIsSubmitting(true);
 
-        emailjs
-            .send(
-                "service_29hsjvu",
-                "template_j4i5shl",
-                {
+        try {
+            const endpoint =
+                window.location.hostname === "localhost"
+                    ? "http://localhost:9999/.netlify/functions/correo"
+                    : "/.netlify/functions/correo";
+
+            const res = await fetch(endpoint, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
                     nombre: name,
                     telefono: phone,
                     mensaje: message,
-                    email: "aguileraignacio1992@gmail.com",
-                    cc: enviarCopia ? emailCopia : ""
-                },
-                "Oa-0XdMQ4lgneSOXx"
-            )
-            .then(() => {
-                setSnackbar({
-                    open: true,
-                    message: "¡Mensaje el correo a Plataformas.web con éxito! 📬",
-                    type: "success"
-                });
-                setName("");
-                setPhone("");
-                setMessage("");
-                setEmailCopia("");
-                setIsSubmitting(false); // ✅ Desbloquea
-            })
-            .catch((error) => {
-                console.error("Error al enviar el correo:", error);
-                setSnackbar({
-                    open: true,
-                    message: "Ocurrió un error al enviar el mensaje 😥",
-                    type: "error"
-                });
-                setIsSubmitting(false); // ✅ Desbloquea
+                    emailCopia: enviarCopia ? emailCopia : "",
+                }),
             });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                console.error("Error en respuesta:", data);
+                throw new Error("Error al enviar mensaje");
+            }
+
+            setSnackbar({
+                open: true,
+                message: "¡Mensaje enviado con éxito! 📬",
+                type: "success",
+            });
+
+            setName("");
+            setPhone("");
+            setMessage("");
+            setEmailCopia("");
+        } catch (err) {
+            console.error("Error al enviar:", err);
+            setSnackbar({
+                open: true,
+                message: "Ocurrió un error al enviar el mensaje 😥",
+                type: "error",
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
     };
+
+
+
 
 
     const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.3 });
@@ -104,7 +117,7 @@ const ContactoForm = ({ setSnackbar }) => {
     return (
         <Box>
             <Box
-                ref={ref}
+                ref={formRef}
                 component="form"
                 onSubmit={handleSubmit}
                 sx={{
@@ -127,6 +140,7 @@ const ContactoForm = ({ setSnackbar }) => {
                 <Grid container spacing={2}>
                     <Grid item xs={12} sm={6}>
                         <TextField
+                            name="nombre" // 👈 Requerido por emailjs.sendForm
                             label="Nombre/Apellido"
                             variant="outlined"
                             fullWidth
@@ -150,10 +164,12 @@ const ContactoForm = ({ setSnackbar }) => {
                                 },
                                 "&.Mui-focused fieldset": {
                                     borderColor: errors.name ? "#ff4d4f" : "#58A6FF"
-                                }, opacity: isSubmitting ? 0.6 : 1,
+                                },
+                                opacity: isSubmitting ? 0.6 : 1,
                                 pointerEvents: isSubmitting ? "none" : "auto"
                             }}
                         />
+
 
                     </Grid>
 
@@ -166,6 +182,7 @@ const ContactoForm = ({ setSnackbar }) => {
                             }}
                         >
                             <TextField
+                                name="telefono" // 👈 Requerido por emailjs.sendForm
                                 label="Teléfono"
                                 variant="outlined"
                                 fullWidth
@@ -233,6 +250,7 @@ const ContactoForm = ({ setSnackbar }) => {
                                 />
                             ) : (
                                 <TextField
+                                    name="reply_to" // 👈 clave para que emailjs lo capture
                                     label="Correo electrónico"
                                     variant="outlined"
                                     disabled={isSubmitting}
@@ -250,7 +268,6 @@ const ContactoForm = ({ setSnackbar }) => {
                                         width: "200px",
                                         backgroundColor: "#161B22",
                                         borderRadius: 2,
-
                                         input: {
                                             color: "#E6EDF3",
                                             fontSize: "0.9rem",
@@ -281,7 +298,8 @@ const ContactoForm = ({ setSnackbar }) => {
                                                 !emailCopia.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/) && emailCopia.length > 0
                                                     ? "#ff4d4f"
                                                     : "#58A6FF"
-                                        }, opacity: isSubmitting ? 0.6 : 1,
+                                        },
+                                        opacity: isSubmitting ? 0.6 : 1,
                                         pointerEvents: isSubmitting ? "none" : "auto"
                                     }}
                                 />
@@ -294,6 +312,7 @@ const ContactoForm = ({ setSnackbar }) => {
 
                     <Grid item xs={12}>
                         <TextField
+                            name="mensaje" // 👈 Requerido por emailjs.sendForm
                             label="Mensaje"
                             variant="outlined"
                             disabled={isSubmitting}
@@ -322,10 +341,12 @@ const ContactoForm = ({ setSnackbar }) => {
                                 },
                                 "&.Mui-focused fieldset": {
                                     borderColor: errors.message ? "#ff4d4f" : "#58A6FF"
-                                }, opacity: isSubmitting ? 0.6 : 1,
+                                },
+                                opacity: isSubmitting ? 0.6 : 1,
                                 pointerEvents: isSubmitting ? "none" : "auto"
                             }}
                         />
+
                     </Grid>
 
                     <Grid item xs={12}>

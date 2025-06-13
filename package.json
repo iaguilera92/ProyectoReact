@@ -21,6 +21,7 @@
     "bcrypt": "^5.1.1",
     "bcryptjs": "^3.0.2",
     "dotenv": "^16.5.0",
+    "emailjs-com": "^3.2.0",
     "framer-motion": "^12.4.7",
     "googleapis": "^148.0.0",
     "leaflet": "^1.9.4",
