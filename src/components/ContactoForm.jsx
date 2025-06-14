@@ -32,7 +32,8 @@ const ContactoForm = ({ setSnackbar }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const formRef = useRef(null);
 
-    const handleSubmit = async (e) => {
+
+    const handleSubmit = (e) => {
         e.preventDefault();
 
         const newErrors = {};
@@ -45,62 +46,54 @@ const ContactoForm = ({ setSnackbar }) => {
             setSnackbar({
                 open: true,
                 message: "Por favor, completa todos los campos.",
-                type: "error",
+                type: "error"
             });
             return;
         }
 
+        setErrors({});
         setIsSubmitting(true);
 
-        try {
-            const endpoint =
-                window.location.hostname === "localhost"
-                    ? "http://localhost:9999/.netlify/functions/correo"
-                    : "/.netlify/functions/correo";
+        const templateParams = {
+            nombre: name,
+            telefono: phone,
+            mensaje: message,
+            email: "aguileraignacio1992@gmail.com",
+        };
 
-            const res = await fetch(endpoint, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    nombre: name,
-                    telefono: phone,
-                    mensaje: message,
-                    emailCopia: enviarCopia ? emailCopia : "",
-                }),
-            });
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                console.error("Error en respuesta:", data);
-                throw new Error("Error al enviar mensaje");
-            }
-
-            setSnackbar({
-                open: true,
-                message: "¡Mensaje enviado con éxito! 📬",
-                type: "success",
-            });
-
-            setName("");
-            setPhone("");
-            setMessage("");
-            setEmailCopia("");
-        } catch (err) {
-            console.error("Error al enviar:", err);
-            setSnackbar({
-                open: true,
-                message: "Ocurrió un error al enviar el mensaje 😥",
-                type: "error",
-            });
-        } finally {
-            setIsSubmitting(false);
+        if (enviarCopia && emailCopia.trim()) {
+            templateParams.cc = emailCopia;
         }
+
+        emailjs
+            .send(
+                "service_29hsjvu",
+                "template_j4i5shl",
+                templateParams,
+                "IHD-e11j3sPmmvBA-"
+            )
+            .then(() => {
+                setSnackbar({
+                    open: true,
+                    message: "¡Mensaje enviado con éxito a plataformas-web.cl! 📬",
+                    type: "success"
+                });
+                setName("");
+                setPhone("");
+                setMessage("");
+                setEmailCopia("");
+                setIsSubmitting(false);
+            })
+            .catch((error) => {
+                console.error("Error al enviar el correo:", error);
+                setSnackbar({
+                    open: true,
+                    message: "Ocurrió un error al enviar el mensaje 😥",
+                    type: "error"
+                });
+                setIsSubmitting(false);
+            });
     };
-
-
-
-
 
     const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.3 });
 
