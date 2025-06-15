@@ -246,7 +246,13 @@ function App() {
       </AnimatePresence>
 
       {/* Contenido principal, oculto mientras se carga */}
-      <Box sx={{ visibility: showApp ? "visible" : "hidden", pointerEvents: showApp ? "auto" : "none", }}>
+      <Box
+        sx={{
+          visibility: showApp ? "visible" : "hidden",
+          pointerEvents: showApp ? "auto" : "none",
+          overflowX: 'hidden',
+        }}
+      >
         {/* Navbar solo si no estás en /administracion */}
         {location.pathname !== "/administracion" && (
           <Suspense fallback={null}>
