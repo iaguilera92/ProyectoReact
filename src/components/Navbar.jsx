@@ -85,7 +85,7 @@ const SocialButton = ({ href, Icon, bgColor, hoverStyles }) => (
 
 const menuItems = [
   { name: "Inicio", icon: <Home /> }, { name: "Servicios", icon: <ViewListIcon /> },
-  { name: "Catálogo", icon: <ViewCarouselIcon /> }, { name: "Presentación", icon: <SlideshowIcon /> },
+  { name: "Presentación", icon: <SlideshowIcon /> }, //{ name: "Catálogo", icon: <ViewCarouselIcon /> }
   { name: "Nosotros", icon: <GroupsIcon /> }, { name: "Contacto", icon: <Mail /> }
 ];
 
@@ -182,7 +182,15 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
                       }}
                       style={{ cursor: "pointer" }}
                     >
-                      <img src="/logo-plataformas-web.png" alt="Logo" style={{ height: "55px", marginTop: "10px" }} onClick={LogoInicio} />
+                      <motion.img
+                        src="/logo-plataformas-web.png"
+                        alt="Logo"
+                        onClick={LogoInicio}
+                        initial={{ scale: 1 }}
+                        animate={{ scale: isScrolled ? 0.8 : 1 }}
+                        transition={{ duration: 0.3, ease: "easeOut" }}
+                        style={{ height: "55px", marginTop: "10px", cursor: "pointer" }}
+                      />
                     </motion.div>
                   )}
                 </AnimatePresence>
