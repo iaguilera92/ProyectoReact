@@ -5,8 +5,9 @@ import { useInView } from "react-intersection-observer";
 
 const scrollLeft = keyframes`
   0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  100% { transform: translateX(-1798px); }
 `;
+
 const letterVariants = {
     hidden: { opacity: 0, x: -20 },
     visible: (i) => ({
@@ -64,30 +65,34 @@ const SeccionDestacada = () => {
     const renderScrollRow = (delay = '0s') => (
         <Box
             sx={{
-                width: '200%',
+                width: '3596px', // (1776 + 22) * 2
+                height: '336px',
                 display: 'flex',
                 animation: `${scrollLeft} 80s linear infinite`,
                 animationDelay: delay,
-                pl: '60px',
-                gap: '20px',
             }}
         >
-            {[1, 2].map((i) => (
-                <Box
-                    key={i}
-                    component="img"
-                    src="/fondo-mongodb.svg"
-                    alt={`fondo-${i}`}
-                    sx={{ width: '100%', objectFit: 'contain' }}
-                />
-            ))}
+            <Box
+                component="img"
+                src="/fondo-mongodb.svg"
+                alt="fondo"
+                sx={{ width: '1776px', height: '336px', objectFit: 'cover', display: 'block', mr: '22px' }}
+            />
+            <Box
+                component="img"
+                src="/fondo-mongodb.svg"
+                alt="fondo"
+                sx={{ width: '1776px', height: '336px', objectFit: 'cover', display: 'block', mr: '22px' }}
+            />
         </Box>
     );
+
     useEffect(() => {
         if (inView && !hasAnimated) {
             setHasAnimated(true);
         }
     }, [inView, hasAnimated]);
+
     return (
         <Box
             sx={{
@@ -104,6 +109,7 @@ const SeccionDestacada = () => {
                     inset: 0,
                     bgcolor: 'rgb(0 30 43)',
                     zIndex: 0,
+                    display: { xs: 'none', md: 'block' }, // Solo desktop
                 }}
             >
                 <Box
@@ -111,27 +117,25 @@ const SeccionDestacada = () => {
                         position: 'absolute',
                         top: 13,
                         left: 0,
-                        height: '60%',
+                        height: '336px',
                         width: '100%',
-                        overflow: 'visible',
+                        overflow: 'hidden',
                     }}
                 >
                     {renderScrollRow('0s')}
                 </Box>
-
                 <Box
                     sx={{
                         position: 'absolute',
-                        bottom: 0,
+                        bottom: -110,
                         left: 0,
-                        height: '36%',
+                        height: '336px',
                         width: '100%',
-                        overflow: 'visible',
+                        overflow: 'hidden',
                     }}
                 >
-                    {renderScrollRow('-25s')}
+                    {renderScrollRow('-20s')}
                 </Box>
-
                 <Box
                     sx={{
                         position: 'absolute',
@@ -168,6 +172,10 @@ const SeccionDestacada = () => {
                         py: 3,
                         gap: 2,
                         overflowY: 'auto',
+                        scrollbarWidth: 'none', // Firefox
+                        '&::-webkit-scrollbar': {
+                            display: 'none', // Chrome, Safari, Edge
+                        },
                     }}
                     style={{ backgroundColor: 'white', color: 'black' }}
                 >
@@ -239,10 +247,10 @@ const SeccionDestacada = () => {
                         sx={{
                             display: 'flex',
                             gap: 2,
-                            flexWrap: 'wrap',
                             justifyContent: 'center',
+                            alignItems: 'flex-end', // Alinea los videos abajo
                             mt: 6,
-                            mr: '10px'
+                            // mr: '10px', // Elimina este margen para que todos estén alineados
                         }}
                     >
                         {videos.map((video, i) => (
@@ -251,8 +259,18 @@ const SeccionDestacada = () => {
                                 initial={{ opacity: 0, x: 100 }}
                                 animate={inView || hasAnimated ? { opacity: 1, x: 0 } : { opacity: 0, x: 100 }}
                                 transition={{ duration: 0.6, delay: i * 0.2 }}
+                                style={{ display: 'flex' }}
                             >
-                                <Box sx={{ width: { xs: 140, sm: 160 }, height: 320 }}>
+                                <Box
+                                    sx={{
+                                        width: 160,
+                                        height: 310,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        justifyContent: 'flex-end', // Alinea el link abajo del video
+                                    }}
+                                >
                                     <CardMedia
                                         component="video"
                                         ref={(el) => (videosRef.current[i] = el)}
@@ -265,13 +283,15 @@ const SeccionDestacada = () => {
                                         disablePictureInPicture
                                         controlsList="nodownload nofullscreen noremoteplayback"
                                         onClick={handleVideoClick}
+                                        onCanPlay={(e) => e.target.play()} // <-- Esto ayuda a iniciar el video apenas pueda
                                         sx={{
                                             width: '100%',
-                                            height: '100%',
+                                            height: 270,
                                             objectFit: 'cover',
                                             cursor: 'pointer',
                                             borderRadius: 2,
                                             display: 'block',
+                                            background: '#000',
                                         }}
                                     />
                                     <Typography
@@ -300,7 +320,26 @@ const SeccionDestacada = () => {
                             </motion.div>
                         ))}
                     </Box>
-
+                    {/* Texto "y más..." un poco más abajo de los videos */}
+                    <Typography
+                        variant="body1"
+                        align="center"
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontStyle: 'italic',
+                            color: '#00bcd4',
+                            fontWeight: 700,
+                            fontFamily: 'Poppins, sans-serif',
+                            fontSize: '1.2rem',
+                            mt: 5, // Más separación respecto a los videos
+                            letterSpacing: 1,
+                            textShadow: '0 1px 8px #b2ebf2',
+                        }}
+                    >
+                        y más...
+                    </Typography>
 
 
                 </Box>

@@ -16,8 +16,8 @@ import "swiper/css";
 
 const promotions = [
   {
-    title: "Sitios web",
-    description: "Diseño y desarrollo de sitios web modernos.",
+    title: "Compra tu Sitio web",
+    description: "El sitio web que tu negocio necesita para destacar.",
     image: "/Informations-1.jpg",
     price: "$99.990",
     extraPrices: [
@@ -415,7 +415,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                       }}
                     >
 
-                      {promo.title === "Sitios web" && (
+                      {promo.title === "Compra tu Sitio web" && (
                         <motion.div
                           initial={{ opacity: 0, y: 50 }}
                           animate={showPopularBadge ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}

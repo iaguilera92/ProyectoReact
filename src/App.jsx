@@ -29,7 +29,7 @@ function App() {
   const informationsRef = useRef(null);
   const location = useLocation();
   const [videoReady, setVideoReady] = useState(false);
-  const isHome = ["/", "/inicio", ""].includes(location.pathname);
+
   const [showApp, setShowApp] = useState(false);
   const [snackbarVersion, setSnackbarVersion] = useState({ open: false, version: "", });
 

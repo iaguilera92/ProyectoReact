@@ -27,7 +27,6 @@ import "@fontsource/poppins";
 import { useNavigate } from "react-router-dom";
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 import CloseIcon from "@mui/icons-material/Close";
-import ViewCarouselIcon from '@mui/icons-material/ViewCarousel';
 import { useLocation } from 'react-router-dom';
 
 

@@ -177,6 +177,9 @@ const Evidencias = () => {
                         loop
                         muted
                         playsInline
+                        preload="auto"
+                        onCanPlay={e => e.target.play()}
+                        onLoadedData={e => e.target.play()}
                         initial={{ x: 300, opacity: 0 }}
                         animate={imagenInView ? { x: '0%', opacity: 1 } : { x: 300, opacity: 0 }}
                         transition={{ duration: 1, ease: 'easeOut' }}
@@ -390,6 +393,8 @@ const Evidencias = () => {
                                                                 controls={false}
                                                                 disablePictureInPicture
                                                                 controlsList="nodownload nofullscreen noremoteplayback"
+                                                                onCanPlay={e => e.target.play()}
+                                                                onLoadedData={e => e.target.play()}
                                                                 onClick={(e) => {
                                                                     const video = e.target;
 

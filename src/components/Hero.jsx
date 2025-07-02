@@ -17,10 +17,11 @@ function Hero({ informationsRef, setVideoReady }) {
   const intervalRef = useRef(null);
 
   const texts = [
-    { title: "SOLUCIONES TECNOLÓGICAS", description: "Soluciones digitales a la medida." },
-    { title: "SOPORTE EVOLUTIVO", description: "Últimas tecnologías para generar sistemas y sitios web." },
-    { title: "PLATAFORMAS TI", description: "Impulsamos tu negocio al siguiente nivel." },
+    { title: "Innovación Tecnológica", description: "Sistemas y sitios web con tecnología de punta." },
+    { title: "Soporte Evolutivo", description: "Soluciones digitales que crecen contigo." },
+    { title: "Plataformas TI", description: "Tecnología para impulsar tu negocio." }
   ];
+
 
   // Activa el botón con un delay de 1s después de cargar la página
   useEffect(() => {
