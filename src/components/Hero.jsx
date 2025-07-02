@@ -286,9 +286,38 @@ function Hero({ informationsRef, setVideoReady }) {
         autoHideDuration={4000}
         onClose={() => setOpenAlert(false)}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        sx={{
+          '& .MuiSnackbarContent-root': {
+            boxShadow: '0 8px 32px 0 rgba(0,0,0,0.25)',
+            borderRadius: 3,
+            p: 0,
+          }
+        }}
       >
-        <Alert onClose={() => setOpenAlert(false)} severity="success" sx={{ width: "100%" }}>
-          Ahora podrás ingresar tu información para contactarnos. Te agradecemos!
+        <Alert
+          onClose={() => setOpenAlert(false)}
+          severity="success"
+          sx={{
+            width: "100%",
+            background: "linear-gradient(90deg, #00c6ff 0%, #0072ff 100%)",
+            color: "white",
+            fontWeight: 700,
+            fontSize: "1.15rem",
+            boxShadow: "0 4px 24px 0 rgba(0,0,0,0.25)",
+            border: "2px solid #00bcd4",
+            display: "flex",
+            alignItems: "center",
+            py: 2,
+          }}
+          iconMapping={{
+            success: <img
+              src="/icon-1.png"
+              alt="icono demo"
+              style={{ width: 36, height: 50, marginRight: 8, verticalAlign: 'middle' }}
+            />
+          }}
+        >
+          Podrás pedir una vista previa personalizada de tu sitio web.
         </Alert>
       </Snackbar>
     </Box>
