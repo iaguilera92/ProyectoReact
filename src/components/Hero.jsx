@@ -299,12 +299,12 @@ function Hero({ informationsRef, setVideoReady }) {
           severity="success"
           sx={{
             width: "100%",
-            background: "linear-gradient(90deg, #00c6ff 0%, #0072ff 100%)",
+            background: "linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)", // Verde degradado
             color: "white",
             fontWeight: 700,
             fontSize: "1.15rem",
             boxShadow: "0 4px 24px 0 rgba(0,0,0,0.25)",
-            border: "2px solid #00bcd4",
+            border: "2px solid #43e97b",
             display: "flex",
             alignItems: "center",
             py: 2,
