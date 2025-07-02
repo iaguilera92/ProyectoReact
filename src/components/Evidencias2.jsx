@@ -16,7 +16,12 @@ const letterVariants = {
     }),
 };
 const textoAnimado = "Nuestros trabajos";
-
+const videos = [
+    { src: '/evidencia1.mp4', url: 'https://www.ivelpink.cl', label: 'www.ivelpink.cl' },
+    { src: '/evidencia2.mp4', url: 'https://www.ingsnt.cl', label: 'www.ingsnt.cl' },
+    { src: '/evidencia3.mp4', url: 'https://www.masautomatizacion.cl', label: 'www.masautomatizacion.cl' },
+    { src: '/evidencia4.mp4', url: 'https://www.sifg.cl', label: 'www.sifg.cl' },
+];
 
 const SeccionDestacada = () => {
     const theme = useTheme();
@@ -230,70 +235,28 @@ const SeccionDestacada = () => {
 
 
                     {/* Video 1 - primera fila */}
-                    <motion.div
-                        initial={{ opacity: 0, x: 100 }}
-                        animate={inView || hasAnimated ? { opacity: 1, x: 0 } : { opacity: 0, x: 100 }}
-                        transition={{ duration: 1, ease: 'easeOut' }}
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            gap: 2,
+                            flexWrap: 'wrap',
+                            justifyContent: 'center',
+                            mt: 6,
+                            mr: '10px'
+                        }}
                     >
-                        <Box sx={{ width: '100%', maxWidth: 400 }}>
-                            <CardMedia
-                                component="video"
-                                ref={(el) => (videosRef.current[0] = el)}
-                                src={`/evidencia1.mp4`}
-                                playsInline
-                                muted
-                                loop
-                                preload="auto"
-                                controls={false}
-                                disablePictureInPicture
-                                controlsList="nodownload nofullscreen noremoteplayback"
-                                onClick={handleVideoClick}
-                                sx={{
-                                    height: 'auto',
-                                    width: '100%',
-                                    objectFit: 'contain',
-                                    cursor: 'pointer',
-                                    borderRadius: 2,
-                                }}
-                            />
-                            <Typography
-                                variant="body2"
-                                align="center"
-                                component="a"
-                                href="https://www.autoges-web.cl"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                sx={{
-                                    display: 'block',
-                                    mt: 1,
-                                    color: '#00bcd4',
-                                    fontFamily: 'Poppins, sans-serif',
-                                    textDecoration: 'none',
-                                    '&:hover': {
-                                        textDecoration: 'underline',
-                                        color: '#26c6da',
-                                    },
-                                }}
-                            >
-                                www.autoges-web.cl
-                            </Typography>
-                        </Box>
-                    </motion.div>
-
-                    {/* Fila de videos 2 y 3 */}
-                    <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mt: 0 }}>
-                        {[2, 3].map((index, i) => (
+                        {videos.map((video, i) => (
                             <motion.div
-                                key={index}
+                                key={i}
                                 initial={{ opacity: 0, x: 100 }}
                                 animate={inView || hasAnimated ? { opacity: 1, x: 0 } : { opacity: 0, x: 100 }}
-                                transition={{ duration: 1 + i * 0.2, ease: 'easeOut' }}
+                                transition={{ duration: 0.6, delay: i * 0.2 }}
                             >
-                                <Box sx={{ width: '100%', maxWidth: 200 }}>
+                                <Box sx={{ width: { xs: 140, sm: 160 }, height: 320 }}>
                                     <CardMedia
                                         component="video"
-                                        ref={(el) => (videosRef.current[index - 1] = el)}
-                                        src={`/evidencia${index}.mp4`}
+                                        ref={(el) => (videosRef.current[i] = el)}
+                                        src={video.src}
                                         playsInline
                                         muted
                                         loop
@@ -303,18 +266,19 @@ const SeccionDestacada = () => {
                                         controlsList="nodownload nofullscreen noremoteplayback"
                                         onClick={handleVideoClick}
                                         sx={{
-                                            height: 220, // Establece altura fija para igualdad
                                             width: '100%',
+                                            height: '100%',
                                             objectFit: 'cover',
                                             cursor: 'pointer',
                                             borderRadius: 2,
+                                            display: 'block',
                                         }}
                                     />
                                     <Typography
                                         variant="body2"
                                         align="center"
                                         component="a"
-                                        href={index === 2 ? "https://www.ivelpink.cl" : "https://www.ingsnt.cl"}
+                                        href={video.url}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         sx={{
@@ -323,13 +287,14 @@ const SeccionDestacada = () => {
                                             color: '#00bcd4',
                                             fontFamily: 'Poppins, sans-serif',
                                             textDecoration: 'none',
+                                            fontSize: '0.75rem',
                                             '&:hover': {
                                                 textDecoration: 'underline',
                                                 color: '#26c6da',
                                             },
                                         }}
                                     >
-                                        {index === 2 ? 'www.ivelpink.cl' : 'www.ingsnt.cl'}
+                                        {video.label}
                                     </Typography>
                                 </Box>
                             </motion.div>
@@ -363,7 +328,7 @@ const SeccionDestacada = () => {
                     />
                 </Box>
             </Box>
-        </Box>
+        </Box >
     );
 };
 

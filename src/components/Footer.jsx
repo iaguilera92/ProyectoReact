@@ -97,7 +97,7 @@ const Footer = () => {
 
               <Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <img src="telefono-icon.png" alt="Teléfono" width={16} />
-                <Link href="tel:+56999999999" color="inherit">+56 987654321</Link>
+                <Link href="tel:+56992914526" color="inherit">+56 992914526</Link>
               </Typography>
 
               <Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -107,7 +107,7 @@ const Footer = () => {
 
               <Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <img src="location-icon.png" alt="Ubicación" width={16} />
-                Dardignac #38, Santiago.
+                Juan Martinez de Rozas #3800, Santiago.
               </Typography>
             </Box>
 
