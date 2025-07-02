@@ -125,7 +125,7 @@ const Cargando = () => {
                     flexDirection: 'column',
                     alignItems: 'center',
                     position: 'absolute',
-                    top: isMobile ? '25%' : '36%',
+                    top: isMobile ? '32%' : '36%',
                     zIndex: 3,
                     opacity: showImage ? 1 : 0,
                     transition: 'opacity 2s ease-in',

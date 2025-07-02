@@ -19,7 +19,7 @@ const Evidencias = () => {
     });
 
     const evidenciaIndices = isMobile
-        ? [[1, 2], [0], [3]] //mobile
+        ? [[0, 1], [2, 3], [4]]  // Mobile: 3 filas (2 + 2 + 1)
         : [[0], [1], [2], [3]]; //desktop
 
     const letterVariants = {
@@ -338,7 +338,7 @@ const Evidencias = () => {
                                         {group.map((n, i) => (
                                             <Grid
                                                 item
-                                                xs={n === 1 || n === 2 ? 6 : 12} // ocupan media fila en mobile
+                                                xs={group.length === 2 ? 6 : 12}
                                                 sm={6}
                                                 md={4}
                                                 key={n}
@@ -432,17 +432,34 @@ const Evidencias = () => {
                                                         </Box>
 
                                                         {/* Descriptor dentro del Card */}
-                                                        {(n === 1 || n === 2 || n === 0) && (
+                                                        {n === 4 ? (
+                                                            <Typography
+                                                                variant="body2"
+                                                                align="center"
+                                                                sx={{
+                                                                    display: 'block',
+                                                                    mt: 1.5,
+                                                                    mb: 1.5,
+                                                                    color: 'gray',
+                                                                    fontFamily: 'Poppins, sans-serif',
+                                                                    textAlign: 'center',
+                                                                    textDecoration: 'line-through',
+                                                                    cursor: 'not-allowed',
+                                                                    pointerEvents: 'none',
+                                                                }}
+                                                            >
+                                                                www.autoges-web.cl
+                                                            </Typography>
+                                                        ) : (
                                                             <Typography
                                                                 variant="body2"
                                                                 align="center"
                                                                 component="a"
                                                                 href={
-                                                                    n === 0
-                                                                        ? 'https://www.autoges-web.cl'
-                                                                        : n === 1
-                                                                            ? 'https://www.ivelpink.cl'
-                                                                            : 'https://www.ingsnt.cl'
+                                                                    n === 0 ? 'https://www.ivelpink.cl'
+                                                                        : n === 1 ? 'https://www.ingsnt.cl'
+                                                                            : n === 2 ? 'https://www.masautomatizacion.cl'
+                                                                                : 'https://www.sifg.cl'
                                                                 }
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
@@ -460,29 +477,15 @@ const Evidencias = () => {
                                                                     },
                                                                 }}
                                                             >
-                                                                {n === 0
-                                                                    ? 'www.autoges-web.cl'
-                                                                    : n === 1
-                                                                        ? 'www.ivelpink.cl'
-                                                                        : 'www.ingsnt.cl'}
+                                                                {
+                                                                    n === 0 ? 'www.ivelpink.cl'
+                                                                        : n === 1 ? 'www.ingsnt.cl'
+                                                                            : n === 2 ? 'masautomatizacion.cl'
+                                                                                : 'www.sifg.cl'
+                                                                }
                                                             </Typography>
                                                         )}
 
-                                                        {n === 3 && (
-                                                            <Typography
-                                                                variant="body2"
-                                                                align="center"
-                                                                sx={{
-                                                                    mt: 1.5,
-                                                                    mb: 1.5,
-                                                                    color: 'gray',
-                                                                    fontStyle: 'italic',
-                                                                    fontFamily: 'Poppins, sans-serif',
-                                                                }}
-                                                            >
-                                                                En desarrollo...
-                                                            </Typography>
-                                                        )}
                                                     </Card>
                                                 </motion.div>
                                             </Grid>

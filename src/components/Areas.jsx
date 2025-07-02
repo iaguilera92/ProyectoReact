@@ -8,8 +8,8 @@ import { motion } from "framer-motion";
 const data = [
   { count: 20, text: "Proyectos terminados en distintas empresas", image: "ProyectoTerminado.mp4" },
   { count: 45, text: "Proyectos a Pymes e Independientes", image: "ProyectoPymes.mp4" },
-  { count: 6, text: "Años de Experiencia como desarrolladores", image: "Experience.mp4" },
-  { count: 8, text: "Tazas de café en el día ☕", image: "Cafe.mp4" },
+  { count: 8, text: "Años de Experiencia como desarrolladores", image: "Experience.mp4" },
+  { count: 7, text: "Tazas de café en el día ☕", image: "Cafe.mp4" },
 ];
 const images = ["servicios.png", "computador.png"];
 
@@ -19,8 +19,6 @@ const Areas = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [delayed, setDelayed] = useState(false);
   const { ref, inView } = useInView({ threshold: 0.15, triggerOnce: false, });
-  const [rotationActive, setRotationActive] = useState(false);
-  const [currentRotation, setCurrentRotation] = useState(0);
   const [scrollY, setScrollY] = useState(0);
   const [hasAnimated, setHasAnimated] = useState(false);
   const videosRef = useRef([]);
