@@ -22,13 +22,6 @@ function Hero({ informationsRef, setVideoReady }) {
     { title: "PLATAFORMAS TI", description: "Impulsamos tu negocio al siguiente nivel." },
   ];
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentText((prev) => (prev + 1) % texts.length);
-    }, 6000);
-    return () => clearInterval(interval);
-  }, []);
-
   // Activa el botón con un delay de 1s después de cargar la página
   useEffect(() => {
     const timer = setTimeout(() => {

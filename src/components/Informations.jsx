@@ -528,7 +528,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                                     "&:hover": { backgroundColor: "#005bb5" }
                                   }}
                                 >
-                                  Cotizar
+                                  Solicitar Demo
                                 </Box>
                               </>
                             ) : (
