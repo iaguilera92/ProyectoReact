@@ -109,7 +109,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
     if (hasAnimated) {
       const timeout = setTimeout(() => {
         setShowPopularBadge(true);
-      }, 2000); // Delay de 3 segundos después que el swiper terminó su animación
+      }, 1800); // Delay de 3 segundos después que el swiper terminó su animación
       return () => clearTimeout(timeout);
     }
   }, [hasAnimated]);
@@ -434,14 +434,59 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                             fontSize: "0.75rem",
                             fontWeight: 600,
                             height: "35px",
-                            minWidth: "120px",
+                            minWidth: "110px",
                             textAlign: "center",
-                            zIndex: 1
+                            zIndex: 1,
+                            display: "flex",
+                            alignItems: "flex-start",
+                            justifyContent: "center",
+                            gap: 6,
+                            boxShadow: "0 0 12px 2px rgba(255, 105, 0, 0.6)", // Naranja brillante
+                            border: "2px solid #ff6a00",
                           }}
                         >
+                          <svg
+                            width="14"
+                            height="18"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                            style={{
+                              animation: 'bounceRotate 1.8s infinite ease-in-out',
+                              marginTop: -2,
+                            }}
+                          >
+                            <path
+                              d="M12 2C10.34 2 9 3.34 9 5v1.1C6.72 6.56 5 8.52 5 11v3l-1 1v1h16v-1l-1-1v-3c0-2.48-1.72-4.44-4-4.9V5c0-1.66-1.34-3-3-3z"
+                              stroke="#ffffff"
+                              strokeWidth="1.5"
+                              fill="none"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                            <circle
+                              cx="12"
+                              cy="19"
+                              r="1.5"
+                              stroke="#ffffff"
+                              strokeWidth="1.5"
+                              fill="none"
+                            />
+                            <style>
+                              {`
+          @keyframes bounceRotate {
+            0% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(-4deg); }
+            100% { transform: scale(1) rotate(0deg); }
+          }
+        `}
+                            </style>
+                          </svg>
                           Popular
                         </motion.div>
                       )}
+
+
 
 
                       <Box sx={{
@@ -465,7 +510,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                             <Typography variant="body2" sx={{ textAlign: "left", fontSize: "0.9rem", color: "#ddd" }}>{promo.description}</Typography>
                           </Box>
 
-                          <Box sx={{ backgroundColor: "#edf4ff", borderRadius: "12px", py: promo.price ? 1.3 : 1.5, px: 3, mb: 0.5, width: "100%", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "90px" }}>
+                          <Box sx={{ fontFamily: "'Inter', sans-serif", backgroundColor: "#edf4ff", borderRadius: "12px", py: promo.price ? 1.3 : 1.5, px: 3, mb: 0.5, width: "100%", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "90px" }}>
                             {promo.price ? (
                               <>
                                 <Typography variant="caption" sx={{ color: "gray", fontSize: "0.7rem", mb: 0.2 }}>
@@ -514,18 +559,21 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                                   component="button"
                                   onClick={() => handleContactClick(promo.title)}
                                   sx={{
-                                    backgroundColor: "#007de0",
+                                    background: "linear-gradient(90deg, #ff6a00 0%, #ee0979 100%)", // Igual que la alerta
                                     color: "white",
-                                    border: "none",
+                                    border: "2px solid #ff6a00",
                                     borderRadius: "8px",
                                     width: "80%",
                                     py: 1,
                                     fontWeight: "bold",
                                     fontSize: "0.9rem",
                                     cursor: "pointer",
-                                    transition: "background-color 0.3s",
+                                    transition: "all 0.3s ease",
                                     mt: 0.5,
-                                    "&:hover": { backgroundColor: "#005bb5" }
+                                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.25)",
+                                    "&:hover": {
+                                      filter: "brightness(1.1)"
+                                    }
                                   }}
                                 >
                                   Solicitar Demo
@@ -641,21 +689,28 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                 ))}
               </Swiper>
 
-              {showArrow && (
+              {showArrow && swiperInstance && (
                 <motion.div
                   animate={{ x: [0, 5, 0] }}
                   transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
                   style={{ position: "absolute", top: -4, right: 10, zIndex: 10 }}
                 >
-                  <IconButton sx={{
-                    color: "white", transition: "opacity 0.3s ease-in-out",
-                    backgroundColor: "transparent", boxShadow: "none", padding: 0,
-                    "&:hover": { backgroundColor: "transparent" }
-                  }}>
+                  <IconButton
+                    onClick={() => swiperInstance.slideNext()} // ✅ mueve a la derecha
+                    sx={{
+                      color: "white",
+                      transition: "opacity 0.3s ease-in-out",
+                      backgroundColor: "transparent",
+                      boxShadow: "none",
+                      padding: 0,
+                      "&:hover": { backgroundColor: "transparent" },
+                    }}
+                  >
                     <ArrowForwardIcon fontSize="large" sx={{ fontSize: "23px" }} />
                   </IconButton>
                 </motion.div>
               )}
+
             </Box>
           </Grid>
 

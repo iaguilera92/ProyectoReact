@@ -17,7 +17,7 @@ function Hero({ informationsRef, setVideoReady }) {
   const intervalRef = useRef(null);
 
   const texts = [
-    { title: "Innovación Tecnológica", description: "Sistemas y sitios web con tecnología de punta." },
+    { title: "Innovación Tecnológica", description: "Sistemas y sitios web con última tecnología." },
     { title: "Soporte Evolutivo", description: "Soluciones digitales que crecen contigo." },
     { title: "Plataformas TI", description: "Tecnología para impulsar tu negocio." }
   ];
@@ -223,67 +223,87 @@ function Hero({ informationsRef, setVideoReady }) {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              height: "150px",
             }}
           >
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentText}
-                initial={{ rotateY: -180, opacity: 0 }}
-                animate={{ rotateY: 0, opacity: 1 }}
-                exit={{ rotateY: 180, opacity: 0 }}
-                transition={{ duration: 1, ease: "easeInOut" }}
-                style={{
-                  position: "absolute",
-                  transformStyle: "preserve-3d",
-                  textAlign: "center",
-                }}
-              >
-                <Typography
-                  variant="h3"
-                  gutterBottom
-                  className="text"
-                  sx={{ fontSize: isMobile ? "1.62rem !important" : "2.5rem !important" }} // Cambia tamaño en móvil
+            {/* Contenedor de texto fijo */}
+            <Box
+              sx={{
+                height: "150px",
+                position: "relative",
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                textAlign: "center",
+              }}
+            >
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentText}
+                  initial={{ rotateY: -180, opacity: 0 }}
+                  animate={{ rotateY: 0, opacity: 1 }}
+                  exit={{ rotateY: 180, opacity: 0 }}
+                  transition={{ duration: 1, ease: "easeInOut" }}
+                  style={{
+                    position: "absolute",
+                    transformStyle: "preserve-3d",
+                    width: "100%",
+                  }}
                 >
-                  {texts[currentText].title}
-                </Typography>
-                <Typography variant="h6" paragraph>
-                  {texts[currentText].description}
-                </Typography>
-
-                {/* Botón con animación después de 1s */}
-                {showButton && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, ease: "easeOut" }}
+                  <Typography
+                    variant="h3"
+                    gutterBottom
+                    className="text"
+                    sx={{
+                      fontSize: isMobile ? "1.62rem !important" : "2.5rem !important",
+                    }}
                   >
-                    <Box sx={{ mt: isMobile ? 4 : 1 }}>
-                      <button className="btn-3"
-                        onClick={() => {
-                          setOpenAlert(true);
+                    {texts[currentText].title}
+                  </Typography>
+                  <Typography variant="h6" paragraph>
+                    {texts[currentText].description}
+                  </Typography>
+                </motion.div>
+              </AnimatePresence>
+            </Box>
 
-                          const isMobile = window.innerWidth < 768;
-                          const offset = isMobile ? 490 : -50; // más abajo en mobile
+            {/* Botón debajo */}
+            {showButton && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: "easeOut", delay: 1 }}
+              >
+                <Box sx={{ mt: isMobile ? -1.5 : 0 }}>
 
-                          const y = informationsRef.current.getBoundingClientRect().top + window.scrollY + offset;
-                          window.scrollTo({ top: y, behavior: 'smooth' });
-                        }}
-                      >
-                        <span>Nuestros Precios</span>
-                      </button>
-                    </Box>
-                  </motion.div>
-                )}
+                  <button
+                    className="btn-3"
+                    onClick={() => {
+                      setOpenAlert(true);
+
+                      const isMobile = window.innerWidth < 768;
+                      const offset = isMobile ? 490 : -50;
+
+                      const y =
+                        informationsRef.current.getBoundingClientRect().top +
+                        window.scrollY +
+                        offset;
+                      window.scrollTo({ top: y, behavior: "smooth" });
+                    }}
+                  >
+                    <span>Nuestros Precios</span>
+                  </button>
+                </Box>
               </motion.div>
-            </AnimatePresence>
+            )}
           </Box>
+
         </Container>
       )}
       {/* Snackbar con alerta animada */}
       <Snackbar
         open={openAlert}
-        autoHideDuration={4000}
+        autoHideDuration={4100}
         onClose={() => setOpenAlert(false)}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         sx={{
@@ -291,7 +311,12 @@ function Hero({ informationsRef, setVideoReady }) {
             boxShadow: '0 8px 32px 0 rgba(0,0,0,0.25)',
             borderRadius: 3,
             p: 0,
-          }
+            animation: 'fadeInUp 0.4s ease-in-out',
+          },
+          '@keyframes fadeInUp': {
+            from: { opacity: 0, transform: 'translateY(20px)' },
+            to: { opacity: 1, transform: 'translateY(0)' },
+          },
         }}
       >
         <Alert
@@ -299,27 +324,72 @@ function Hero({ informationsRef, setVideoReady }) {
           severity="success"
           sx={{
             width: "100%",
-            background: "linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)", // Verde degradado
+            background: "linear-gradient(90deg, #ff6a00 0%, #ee0979 100%)", // Coral + rosado vibrante
             color: "white",
             fontWeight: 700,
-            fontSize: "1.15rem",
-            boxShadow: "0 4px 24px 0 rgba(0,0,0,0.25)",
-            border: "2px solid #43e97b",
+            fontSize: isMobile ? "1.05rem" : "1.2rem",
+            boxShadow: "0 4px 24px rgba(0,0,0,0.25)",
+            border: "2px solid #ff6a00",
             display: "flex",
             alignItems: "center",
             py: 2,
           }}
           iconMapping={{
-            success: <img
-              src="/icon-1.png"
-              alt="icono demo"
-              style={{ width: 36, height: 50, marginRight: 8, verticalAlign: 'middle' }}
-            />
+            success: (
+              <svg
+                width="36"
+                height="50"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                style={{
+                  marginRight: 8,
+                  verticalAlign: 'middle',
+                  animation: 'bounceRotate 1.8s infinite ease-in-out',
+                }}
+              >
+                <defs>
+                  <linearGradient id="bellGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#ff6a00" />
+                    <stop offset="100%" stopColor="#ee0979" />
+                  </linearGradient>
+                </defs>
+                <path
+                  d="M12 2C10.34 2 9 3.34 9 5v1.1C6.72 6.56 5 8.52 5 11v3l-1 1v1h16v-1l-1-1v-3c0-2.48-1.72-4.44-4-4.9V5c0-1.66-1.34-3-3-3z"
+                  stroke="url(#bellGradient)"
+                  strokeWidth="2"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  filter="drop-shadow(0 0 5px rgba(255, 255, 255, 0.4))"
+                />
+                <circle
+                  cx="12"
+                  cy="19"
+                  r="2"
+                  stroke="url(#bellGradient)"
+                  strokeWidth="2"
+                  fill="none"
+                  filter="drop-shadow(0 0 5px rgba(255, 255, 255, 0.4))"
+                />
+                <style>
+                  {`
+                  @keyframes bounceRotate {
+                    0% { transform: scale(1) rotate(0deg); }
+                    50% { transform: scale(1.1) rotate(-4deg); }
+                    100% { transform: scale(1) rotate(0deg); }
+                  }
+                `}
+                </style>
+              </svg>
+
+            )
           }}
         >
-          Podrás pedir una vista previa personalizada de tu sitio web.
+          ¡Descubre cómo se verá tu sitio web! Solicita una vista previa personalizada.
         </Alert>
       </Snackbar>
+
     </Box>
   );
 }
