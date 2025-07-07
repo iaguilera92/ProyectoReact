@@ -19,7 +19,7 @@ const promotions = [
     title: "Compra tu Sitio web",
     description: "El sitio web que tu negocio necesita para destacar.",
     image: "/Informations-1.jpg",
-    price: "$99.990",
+    price: "$150.000",
     extraPrices: [
       { label: "Dominio anual", price: "$10.000" },
       { label: "Hosting mensual", price: "$10.000" }
@@ -477,7 +477,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                                     {!showPopularBadge ? (
                                       <motion.div key="old" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.6 }} style={{ display: "flex", alignItems: "baseline" }}>
                                         <Typography variant="h4" sx={{ fontWeight: "bold", color: "gray", fontSize: "2rem", textDecoration: "line-through", mr: 0.2 }}>
-                                          $140.000
+                                          $200.000
                                         </Typography>
                                         <Typography variant="caption" sx={{ fontSize: "0.9rem", color: "gray" }}>/CLP</Typography>
                                       </motion.div>
