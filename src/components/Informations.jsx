@@ -16,9 +16,9 @@ import "swiper/css";
 
 const promotions = [
   {
-    title: "Compra tu Sitio web",
-    description: "El sitio web que tu negocio necesita para destacar.",
-    image: "/Informations-1.jpg",
+    title: "CREAMOS TU SITIO WEB",
+    description: "Lo que tu emprendimiento necesita.",
+    image: "/promocion-1.jpg",
     price: "$150.000",
     extraPrices: [
       { label: "Dominio anual", price: "$10.000" },
@@ -415,7 +415,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                       }}
                     >
 
-                      {promo.title === "Compra tu Sitio web" && (
+                      {promo.title === "CREAMOS TU SITIO WEB" && (
                         <motion.div
                           initial={{ opacity: 0, y: 50 }}
                           animate={showPopularBadge ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
@@ -487,203 +487,439 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                       )}
 
 
+                      {promo.title === "CREAMOS TU SITIO WEB" ? (
+                        <Box
+                          sx={{
+                            width: "100%",
+                            height: "455px",
+                            py: isMobile ? 0 : 0,
+                            mt: 1.4,
+                            display: "flex",
+                            flexDirection: "column",
+                            borderRadius: "16px",
+                            overflow: "hidden",
+                            boxShadow: "0 8px 30px rgba(0,0,0,0.2)",
+                            position: "relative",
+                            bgcolor: "#111827",
+                            zIndex: 2,
+                          }}
+                        >
+                          {/* Fondo */}
+                          <Box
+                            sx={{
+                              position: "absolute",
+                              inset: 0,
+                              backgroundImage: `url(${promo.image})`,
+                              backgroundSize: "cover",
+                              backgroundPosition: "center %",
+                              "&::after": {
+                                content: '""',
+                                position: "absolute",
+                                inset: 0,
+                                zIndex: 1,
+                              },
+                            }}
+                          />
 
-
-                      <Box sx={{
-                        width: "100%", height: "435px", mt: 1.4, display: "flex",
-                        flexDirection: "column", borderRadius: "16px", overflow: "hidden",
-                        boxShadow: "0 8px 30px rgba(0,0,0,0.2)", position: "relative",
-                        bgcolor: "white", zIndex: 2
-                      }}>
-                        <Box sx={{
-                          position: "absolute", inset: 0, backgroundImage: `url(${promo.image})`,
-                          backgroundSize: "cover", backgroundPosition: "center",
-                          "&::after": { content: '""', position: "absolute", inset: 0, background: promo.bgColor || "linear-gradient(180deg, rgba(0,0,0,0.7), rgba(0,0,0,0.3))" }, zIndex: 0
-                        }} />
-
-                        <Box sx={{
-                          position: "relative", zIndex: 2, p: 2, pt: 3, display: "flex",
-                          flexDirection: "column", alignItems: "center", justifyContent: "flex-start", flexGrow: 1
-                        }}>
-                          <Box sx={{ width: isMobile ? "100%" : "80%", display: "flex", flexDirection: "column", alignItems: "flex-start", mb: 2 }}>
-                            <Typography variant="h6" sx={{ fontWeight: "bold", fontSize: "1.2rem", textAlign: "left", color: promo.textColor || "white", mb: 1 }}>{promo.title}</Typography>
-                            <Typography variant="body2" sx={{ textAlign: "left", fontSize: "0.9rem", color: "#ddd" }}>{promo.description}</Typography>
-                          </Box>
-
-                          <Box sx={{ fontFamily: "'Inter', sans-serif", backgroundColor: "#edf4ff", borderRadius: "12px", py: promo.price ? 1.3 : 1.5, px: 3, mb: 0.5, width: "100%", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "90px" }}>
-                            {promo.price ? (
-                              <>
-                                <Typography variant="caption" sx={{ color: "gray", fontSize: "0.7rem", mb: 0.2 }}>
-                                  Precio desarrollo
-                                </Typography>
-
-                                <Box sx={{ display: "flex", alignItems: "baseline", justifyContent: "center", minHeight: "2.5rem" }}>
-                                  <AnimatePresence mode="wait">
-                                    {!showPopularBadge ? (
-                                      <motion.div key="old" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.6 }} style={{ display: "flex", alignItems: "baseline" }}>
-                                        <Typography variant="h4" sx={{ fontWeight: "bold", color: "gray", fontSize: "2rem", textDecoration: "line-through", mr: 0.2 }}>
-                                          $200.000
-                                        </Typography>
-                                        <Typography variant="caption" sx={{ fontSize: "0.9rem", color: "gray" }}>/CLP</Typography>
-                                      </motion.div>
-                                    ) : (
-                                      <motion.div
-                                        key="new"
-                                        initial={{ opacity: 0, x: 30 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0 }}
-                                        transition={{ duration: 0.6 }}
-                                        style={{ display: "flex", alignItems: "baseline" }}
-                                      >
-                                        <Typography
-                                          variant="h4"
-                                          sx={{
-                                            fontWeight: "bold",
-                                            color: "black",
-                                            fontSize: "2rem",
-                                            mr: 0.2
-                                          }}
-                                        >
-                                          {promo.price}
-                                        </Typography>
-                                        <Typography
-                                          variant="caption"
-                                          sx={{ fontSize: "0.9rem", color: "black" }}
-                                        >/CLP</Typography>
-                                      </motion.div>
-                                    )}
-                                  </AnimatePresence>
-                                </Box>
-
-                                <Box
-                                  component="button"
-                                  onClick={() => handleContactClick(promo.title)}
-                                  sx={{
-                                    background: "linear-gradient(90deg, #ff6a00 0%, #ee0979 100%)", // Igual que la alerta
-                                    color: "white",
-                                    border: "2px solid #ff6a00",
-                                    borderRadius: "8px",
-                                    width: "80%",
-                                    py: 1,
-                                    fontWeight: "bold",
-                                    fontSize: "0.9rem",
-                                    cursor: "pointer",
-                                    transition: "all 0.3s ease",
-                                    mt: 0.5,
-                                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.25)",
-                                    "&:hover": {
-                                      filter: "brightness(1.1)"
-                                    }
-                                  }}
-                                >
-                                  Solicitar Demo
-                                </Box>
-                              </>
-                            ) : (
-                              <>
-                                <Typography variant="h6" sx={{ fontWeight: "bold", color: "black", fontSize: "1.5rem", mt: 2 }}>
-                                  Por definir
-                                </Typography>
-                                <Box component="button"
-                                  onClick={() => handleContactClick(promo.title)}
-                                  sx={{
-                                    backgroundColor: "#007de0",
-                                    color: "white",
-                                    border: "none",
-                                    borderRadius: "8px",
-                                    width: "80%",
-                                    py: 1,
-                                    fontWeight: "bold",
-                                    fontSize: "0.9rem",
-                                    cursor: "pointer",
-                                    transition: "background-color 0.3s",
-                                    mt: 1.7,
-                                    "&:hover": { backgroundColor: "#005bb5" }
-                                  }}>
-                                  Cotizar
-                                </Box>
-                              </>
-                            )}
-                          </Box>
-
-
-                          <Box sx={{
-                            width: isMobile ? "100%" : "80%", mt: 0.5,
-                            display: "flex", flexDirection: "column", alignItems: "flex-start"
-                          }}>
-                            {promo.descriptors.map((desc, idx) => (
-                              <Typography key={idx} variant="caption" sx={{
-                                display: "flex", alignItems: "center", mb: 0.3,
-                                fontSize: "0.8rem", color: "#eee"
-                              }}>
-                                <Box sx={{
-                                  width: 15, height: 15, bgcolor: "white", borderRadius: "50%",
-                                  display: "flex", alignItems: "center", justifyContent: "center", mr: 0, flexShrink: 0
-                                }}>
-                                  <CheckIcon sx={{ fontSize: 13, color: "black" }} />
-                                </Box>&nbsp;{desc}
+                          {/* Contenido */}
+                          <Box
+                            sx={{
+                              position: "relative",
+                              zIndex: 2,
+                              display: "flex",
+                              width: "100%",
+                              px: 2,
+                              py: isMobile ? 18 : 20, // 👈 más padding arriba para empujar hacia abajo
+                              alignItems: "flex-end",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            {/* Texto Izquierdo */}
+                            <Box sx={{ flex: 1, textAlign: "left" }}>
+                              <Typography
+                                variant="h1"
+                                sx={{
+                                  fontWeight: 900,
+                                  fontSize: isMobile ? "2.4rem" : "2.8rem",
+                                  fontFamily: "fantasy",
+                                  letterSpacing: "2px",
+                                  color: "#ffb905",
+                                  textShadow: "2px 2px 5px rgba(0,0,0,0.5)",
+                                  mb: 0,
+                                }}
+                              >
+                                CREAMOS
                               </Typography>
-                            ))}
-                          </Box>
+                              <Typography
+                                variant="h1"
+                                sx={{
+                                  fontWeight: 900,
+                                  fontSize: isMobile ? "1.8rem" : "2.3rem",
+                                  fontFamily: "fantasy",
+                                  letterSpacing: "2px",
+                                  color: "white",
+                                  textShadow: "2px 2px 5px rgba(0,0,0,0.6)",
+                                }}
+                              >
+                                TU SITIO WEB
+                              </Typography>
+                            </Box>
 
-                          <Box sx={{
-                            width: "80%", mt: 0.4, display: "flex",
-                            justifyContent: "space-between", gap: 2
-                          }}>
-                            {promo.extraPrices?.map(({ label, price }, idx) => (
-                              <Box key={idx} sx={{
-                                flex: 1,
-                                border: "1px solid white",
-                                borderRadius: "8px",
-                                p: 1,
-                                textAlign: "center",
+                            <Box
+                              sx={{
                                 display: "flex",
                                 flexDirection: "column",
-                                justifyContent: "center",
-                                position: "relative"
-                              }}>
-                                <Box sx={{
-                                  position: "absolute",
-                                  top: 4,
-                                  right: 5,
-                                  fontSize: "0.49rem",
-                                  color: "#aaa",
-                                  fontWeight: 300,
-                                  lineHeight: 1,
-                                }}>
-                                  Requerido
-                                </Box>
-
-                                <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 0.3 }}>
-                                  <Typography
-                                    variant="h5"
-                                    sx={{
-                                      fontWeight: "bold",
-                                      color: "white",
-                                      fontSize: "1.4rem",
-                                      lineHeight: 1.2,
-                                      mt: 1 // 🔽 Mueve el número más abajo
-                                    }}
-                                  >
-                                    {price || "-"}
-                                  </Typography>
+                                alignItems: "flex-end",
+                                width: "100%",
+                                maxWidth: "320px",
+                                position: "relative",
+                              }}
+                            >
+                              {/* Bloque negro: $99.990 */}
+                              <Box
+                                sx={{
+                                  position: "relative",
+                                  transform: "skewX(-12deg)",
+                                  backgroundColor: "black",
+                                  px: 3,
+                                  py: 2,
+                                  boxShadow: "0 6px 15px rgba(0,0,0,0.35)",
+                                  width: isMobile ? "150px" : "200px",
+                                }}
+                              >
+                                {/* Bloque blanco: PRECIO DESARROLLO */}
+                                <Box
+                                  sx={{
+                                    position: "absolute",
+                                    top: "-20px",
+                                    right: "0px",
+                                    backgroundColor: "white",
+                                    px: 4.3,
+                                    py: 0.6,
+                                    boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+                                    minWidth: isMobile ? "90px" : "150px",
+                                    textAlign: "center",
+                                  }}
+                                >
                                   <Typography
                                     variant="caption"
                                     sx={{
-                                      color: "#ddd",
-                                      fontSize: "0.68rem",
-                                      lineHeight: 1.2
+                                      color: "black",
+                                      fontWeight: 600,
+                                      fontSize: isMobile ? "0.65rem" : "0.8rem",
+                                      fontFamily: "'Poppins', sans-serif",
+                                      transform: "skewX(12deg)",
+                                      m: 0,
+                                      mr: 2
                                     }}
                                   >
-                                    {label}
+                                    PRECIO DESARROLLO
                                   </Typography>
                                 </Box>
+
+                                <Typography
+                                  variant="h3"
+                                  sx={{
+                                    color: "#ffb905",
+                                    fontWeight: "bold",
+                                    fontSize: "2.2rem",
+                                    fontFamily: "fantasy",
+                                    letterSpacing: "1px",
+                                    transform: "skewX(12deg)",
+                                    textAlign: "center",
+                                    mb: 1,
+                                    m: 0,
+                                  }}
+                                >
+                                  $99.990
+                                </Typography>
                               </Box>
-                            ))}
+                            </Box>
+
+
+
+                          </Box>
+                          <Box
+                            sx={{
+                              background: "linear-gradient(90deg, #0f055e, #0050d2)",
+                              borderRadius: "12px",
+                              px: 0,
+                              py: 2,
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                              width: "100%",
+                              maxWidth: 400,
+                              color: "white",
+                              boxShadow: "0 4px 20px rgba(0, 0, 0, 0.3)",
+                            }}
+                          >
+                            {/* DOMINIO */}
+                            <Box sx={{ textAlign: "center", flex: 1 }}>
+                              <Typography variant="caption" sx={{ fontSize: "0.75rem", opacity: 0.9 }}>
+                                DOMINIO .CL
+                              </Typography>
+                              <Typography variant="h6" sx={{ fontSize: "1.5rem", fontWeight: "bold", mt: 0.5 }}>
+                                $10.000
+                              </Typography>
+                              <Typography variant="caption" sx={{ fontSize: "0.75rem", opacity: 0.8 }}>
+                                ANUAL
+                              </Typography>
+                            </Box>
+
+                            {/* Separador */}
+                            <Box
+                              sx={{
+                                width: "1px",
+                                height: "70%",
+                                backgroundColor: "rgba(255, 255, 255, 0.3)",
+                                mx: 2,
+                              }}
+                            />
+
+                            {/* HOSTING */}
+                            <Box sx={{ textAlign: "center", flex: 1 }}>
+                              <Typography variant="caption" sx={{ fontSize: "0.75rem", opacity: 0.9 }}>
+                                HOSTING
+                              </Typography>
+                              <Typography variant="h6" sx={{ fontSize: "1.5rem", fontWeight: "bold", mt: 0.5 }}>
+                                $10.000
+                              </Typography>
+                              <Typography variant="caption" sx={{ fontSize: "0.75rem", opacity: 0.8 }}>
+                                MENSUAL
+                              </Typography>
+                            </Box>
                           </Box>
 
+                          {/* Botón debajo */}
+                          <Box
+                            component="button"
+                            onClick={() => handleContactClick(promo.title)}
+                            sx={{
+                              position: "relative",
+                              zIndex: 2,
+                              alignSelf: "center",
+                              background: "linear-gradient(90deg, #ff6a00 0%, #ee0979 100%)",
+                              color: "white",
+                              border: "2px solid #ff6a00",
+                              borderRadius: "8px",
+                              width: "80%",
+                              py: 0,
+                              fontWeight: "bold",
+                              fontSize: "0.9rem",
+                              cursor: "pointer",
+                              transition: "all 0.3s ease",
+                              mt: 0,
+                              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.25)",
+                              "&:hover": {
+                                filter: "brightness(1.1)",
+                              },
+                            }}
+                          >
+                            Solicitar Demo
+                          </Box>
                         </Box>
-                      </Box>
+
+
+
+                      ) : (
+
+                        <Box sx={{
+                          width: "100%", height: "435px", mt: 1.4, display: "flex",
+                          flexDirection: "column", borderRadius: "16px", overflow: "hidden",
+                          boxShadow: "0 8px 30px rgba(0,0,0,0.2)", position: "relative",
+                          bgcolor: "white", zIndex: 2
+                        }}>
+                          <Box sx={{
+                            position: "absolute", inset: 0, backgroundImage: `url(${promo.image})`,
+                            backgroundSize: "cover", backgroundPosition: "center 20%",
+                            "&::after": { content: '""', position: "absolute", inset: 0, }, zIndex: 0
+                          }} />
+
+                          <Box sx={{
+                            position: "relative", zIndex: 2, p: 2, pt: 3, display: "flex",
+                            flexDirection: "column", alignItems: "center", justifyContent: "flex-start", flexGrow: 1
+                          }}>
+                            <Box sx={{ width: isMobile ? "100%" : "80%", display: "flex", flexDirection: "column", alignItems: "flex-start", mb: 2 }}>
+                              <Typography variant="h6" sx={{ fontWeight: "bold", fontSize: "1.2rem", textAlign: "left", color: promo.textColor || "white", mb: 1 }}>{promo.title}</Typography>
+                              <Typography variant="body2" sx={{ textAlign: "left", fontSize: "0.9rem", color: "#ddd" }}>{promo.description}</Typography>
+                            </Box>
+
+                            <Box sx={{ fontFamily: "'Inter', sans-serif", backgroundColor: "#edf4ff", borderRadius: "12px", py: promo.price ? 1.3 : 1.5, px: 3, mb: 0.5, width: "100%", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "90px" }}>
+                              {promo.price ? (
+                                <>
+                                  <Typography variant="caption" sx={{ color: "gray", fontSize: "0.7rem", mb: 0.2 }}>
+                                    Precio desarrollo
+                                  </Typography>
+
+                                  <Box sx={{ display: "flex", alignItems: "baseline", justifyContent: "center", minHeight: "2.5rem" }}>
+                                    <AnimatePresence mode="wait">
+                                      {!showPopularBadge ? (
+                                        <motion.div key="old" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.6 }} style={{ display: "flex", alignItems: "baseline" }}>
+                                          <Typography variant="h4" sx={{ fontWeight: "bold", color: "gray", fontSize: "2rem", textDecoration: "line-through", mr: 0.2 }}>
+                                            $200.000
+                                          </Typography>
+                                          <Typography variant="caption" sx={{ fontSize: "0.9rem", color: "gray" }}>/CLP</Typography>
+                                        </motion.div>
+                                      ) : (
+                                        <motion.div
+                                          key="new"
+                                          initial={{ opacity: 0, x: 30 }}
+                                          animate={{ opacity: 1, x: 0 }}
+                                          exit={{ opacity: 0 }}
+                                          transition={{ duration: 0.6 }}
+                                          style={{ display: "flex", alignItems: "baseline" }}
+                                        >
+                                          <Typography
+                                            variant="h4"
+                                            sx={{
+                                              fontWeight: "bold",
+                                              color: "black",
+                                              fontSize: "2rem",
+                                              mr: 0.2
+                                            }}
+                                          >
+                                            {promo.price}
+                                          </Typography>
+                                          <Typography
+                                            variant="caption"
+                                            sx={{ fontSize: "0.9rem", color: "black" }}
+                                          >/CLP</Typography>
+                                        </motion.div>
+                                      )}
+                                    </AnimatePresence>
+                                  </Box>
+
+                                  <Box
+                                    component="button"
+                                    onClick={() => handleContactClick(promo.title)}
+                                    sx={{
+                                      background: "linear-gradient(90deg, #ff6a00 0%, #ee0979 100%)", // Igual que la alerta
+                                      color: "white",
+                                      border: "2px solid #ff6a00",
+                                      borderRadius: "8px",
+                                      width: "80%",
+                                      py: 1,
+                                      fontWeight: "bold",
+                                      fontSize: "0.9rem",
+                                      cursor: "pointer",
+                                      transition: "all 0.3s ease",
+                                      mt: 0.5,
+                                      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.25)",
+                                      "&:hover": {
+                                        filter: "brightness(1.1)"
+                                      }
+                                    }}
+                                  >
+                                    Solicitar Demo
+                                  </Box>
+                                </>
+                              ) : (
+                                <>
+                                  <Typography variant="h6" sx={{ fontWeight: "bold", color: "black", fontSize: "1.5rem", mt: 2 }}>
+                                    Por definir
+                                  </Typography>
+                                  <Box component="button"
+                                    onClick={() => handleContactClick(promo.title)}
+                                    sx={{
+                                      backgroundColor: "#007de0",
+                                      color: "white",
+                                      border: "none",
+                                      borderRadius: "8px",
+                                      width: "80%",
+                                      py: 1,
+                                      fontWeight: "bold",
+                                      fontSize: "0.9rem",
+                                      cursor: "pointer",
+                                      transition: "background-color 0.3s",
+                                      mt: 1.7,
+                                      "&:hover": { backgroundColor: "#005bb5" }
+                                    }}>
+                                    Cotizar
+                                  </Box>
+                                </>
+                              )}
+                            </Box>
+
+
+                            <Box sx={{
+                              width: isMobile ? "100%" : "80%", mt: 0.5,
+                              display: "flex", flexDirection: "column", alignItems: "flex-start"
+                            }}>
+                              {promo.descriptors.map((desc, idx) => (
+                                <Typography key={idx} variant="caption" sx={{
+                                  display: "flex", alignItems: "center", mb: 0.3,
+                                  fontSize: "0.8rem", color: "#eee"
+                                }}>
+                                  <Box sx={{
+                                    width: 15, height: 15, bgcolor: "white", borderRadius: "50%",
+                                    display: "flex", alignItems: "center", justifyContent: "center", mr: 0, flexShrink: 0
+                                  }}>
+                                    <CheckIcon sx={{ fontSize: 13, color: "black" }} />
+                                  </Box>&nbsp;{desc}
+                                </Typography>
+                              ))}
+                            </Box>
+
+                            <Box sx={{
+                              width: "80%", mt: 0.4, display: "flex",
+                              justifyContent: "space-between", gap: 2
+                            }}>
+                              {promo.extraPrices?.map(({ label, price }, idx) => (
+                                <Box key={idx} sx={{
+                                  flex: 1,
+                                  border: "1px solid white",
+                                  borderRadius: "8px",
+                                  p: 1,
+                                  textAlign: "center",
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  justifyContent: "center",
+                                  position: "relative"
+                                }}>
+                                  <Box sx={{
+                                    position: "absolute",
+                                    top: 4,
+                                    right: 5,
+                                    fontSize: "0.49rem",
+                                    color: "#aaa",
+                                    fontWeight: 300,
+                                    lineHeight: 1,
+                                  }}>
+                                    Requerido
+                                  </Box>
+
+                                  <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 0.3 }}>
+                                    <Typography
+                                      variant="h5"
+                                      sx={{
+                                        fontWeight: "bold",
+                                        color: "white",
+                                        fontSize: "1.4rem",
+                                        lineHeight: 1.2,
+                                        mt: 1 // 🔽 Mueve el número más abajo
+                                      }}
+                                    >
+                                      {price || "-"}
+                                    </Typography>
+                                    <Typography
+                                      variant="caption"
+                                      sx={{
+                                        color: "#ddd",
+                                        fontSize: "0.68rem",
+                                        lineHeight: 1.2
+                                      }}
+                                    >
+                                      {label}
+                                    </Typography>
+                                  </Box>
+                                </Box>
+                              ))}
+                            </Box>
+                          </Box>
+                        </Box>
+                      )}
+
                     </Box>
                   </SwiperSlide>
                 ))}
@@ -721,7 +957,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
 
 
       </Container>
-    </Box>
+    </Box >
   );
 };
 
