@@ -391,7 +391,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
               <Swiper
                 style={{ overflow: "visible" }}
                 spaceBetween={isMobile ? 15 : 18}
-                slidesPerView={isMobile ? 1.07 : 1.2}
+                slidesPerView={isMobile ? 0.7 : 1.2}
                 onSwiper={setSwiperInstance}
                 initialSlide={promotions.length - 1}
                 centeredSlides={false}
@@ -399,19 +399,21 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                 onSlideChange={(swiper) => setShowArrow(swiper.activeIndex !== 2)}
               >
                 {promotions.map((promo, index) => (
-                  <SwiperSlide key={index}>
+                  <SwiperSlide
+                    key={index}
+                    style={{ width: isMobile ? '345px' : '430px' }}  // aquí controlas ancho de cada slide
+                  >
+                    {/* Aquí dentro Box sin width fijo, solo width 100% para ocupar el slide */}
                     <Box
                       sx={{
                         cursor: 'grab',
-                        '&:active': {
-                          cursor: 'grabbing'
-                        },
-                        height: "400px",
-                        position: "relative",
-                        width: "100%",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "flex-start"
+                        '&:active': { cursor: 'grabbing' },
+                        height: '400px',
+                        width: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'flex-start',
+                        position: 'relative',
                       }}
                     >
 
@@ -490,8 +492,8 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                       {promo.title === "CREAMOS TU SITIO WEB" ? (
                         <Box
                           sx={{
-                            width: "100%",
-                            height: "455px",
+                            width: isMobile ? "350px" : "430px",
+                            height: "420px",
                             py: isMobile ? 0 : 0,
                             mt: 1.4,
                             display: "flex",
@@ -528,12 +530,17 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                               zIndex: 2,
                               display: "flex",
                               width: "100%",
+                              flexDirection: "row",
                               px: 2,
-                              py: isMobile ? 18 : 20, // 👈 más padding arriba para empujar hacia abajo
-                              alignItems: "flex-end",
+                              pt: isMobile ? 12 : 18, // 👈 Espacio superior interno ajustado
+                              pb: 0,
+                              minHeight: isMobile ? "80px" : "80px", // 👈 Suficiente para centrar
+                              alignItems: "flex-start", // sigue pegando arriba, pero con padding controlado
                               justifyContent: "space-between",
                             }}
                           >
+
+
                             {/* Texto Izquierdo */}
                             <Box sx={{ flex: 1, textAlign: "left" }}>
                               <Typography
@@ -545,6 +552,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                                   letterSpacing: "2px",
                                   color: "#ffb905",
                                   textShadow: "2px 2px 5px rgba(0,0,0,0.5)",
+                                  mt: isMobile ? 2.5 : -2,
                                   mb: 0,
                                 }}
                               >
@@ -571,8 +579,9 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                                 flexDirection: "column",
                                 alignItems: "flex-end",
                                 width: "100%",
-                                maxWidth: "320px",
+                                maxWidth: "0px",
                                 position: "relative",
+                                mt: isMobile ? "30px" : "0px"
                               }}
                             >
                               {/* Bloque negro: $99.990 */}
@@ -581,23 +590,23 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                                   position: "relative",
                                   transform: "skewX(-12deg)",
                                   backgroundColor: "black",
-                                  px: 3,
+                                  px: 0,
                                   py: 2,
                                   boxShadow: "0 6px 15px rgba(0,0,0,0.35)",
-                                  width: isMobile ? "150px" : "200px",
+                                  width: isMobile ? "160px" : "200px",
                                 }}
                               >
                                 {/* Bloque blanco: PRECIO DESARROLLO */}
                                 <Box
                                   sx={{
                                     position: "absolute",
-                                    top: "-20px",
+                                    top: "-15px",
                                     right: "0px",
                                     backgroundColor: "white",
-                                    px: 4.3,
-                                    py: 0.6,
+                                    px: 1,
+                                    py: 0,
                                     boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
-                                    minWidth: isMobile ? "90px" : "150px",
+                                    minWidth: isMobile ? "130px" : "150px",
                                     textAlign: "center",
                                   }}
                                 >
@@ -606,7 +615,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                                     sx={{
                                       color: "black",
                                       fontWeight: 600,
-                                      fontSize: isMobile ? "0.65rem" : "0.8rem",
+                                      fontSize: isMobile ? "0.58rem" : "0.8rem",
                                       fontFamily: "'Poppins', sans-serif",
                                       transform: "skewX(12deg)",
                                       m: 0,
@@ -641,29 +650,48 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                           </Box>
                           <Box
                             sx={{
-                              background: "linear-gradient(90deg, #0f055e, #0050d2)",
+                              mt: isMobile ? 4 : 5,
+                              mb: 1,
+                              background: "linear-gradient(180deg, #1E1EBA 0%, #0075FF 100%)",
                               borderRadius: "12px",
-                              px: 0,
-                              py: 2,
+                              px: 2,
+                              py: 0.6,
                               display: "flex",
                               justifyContent: "space-between",
-                              alignItems: "center",
+                              alignItems: "flex-start",
                               width: "100%",
-                              maxWidth: 400,
+                              maxWidth: "300px",
                               color: "white",
-                              boxShadow: "0 4px 20px rgba(0, 0, 0, 0.3)",
+                              boxShadow: "0 3px 12px rgba(0, 0, 0, 0.3)",
+                              position: "relative",
+                              zIndex: 3,
+                              alignSelf: "center",
                             }}
                           >
-                            {/* DOMINIO */}
+                            {/* DOMINIO ANUAL */}
                             <Box sx={{ textAlign: "center", flex: 1 }}>
-                              <Typography variant="caption" sx={{ fontSize: "0.75rem", opacity: 0.9 }}>
-                                DOMINIO .CL
-                              </Typography>
-                              <Typography variant="h6" sx={{ fontSize: "1.5rem", fontWeight: "bold", mt: 0.5 }}>
+                              <Typography
+                                variant="h6"
+                                sx={{
+                                  fontSize: "1.05rem",
+                                  fontWeight: "bold",
+                                  mt: 1.2, // 🔽 más abajo aún
+                                  mb: 0,
+                                  lineHeight: 1,
+                                }}
+                              >
                                 $10.000
                               </Typography>
-                              <Typography variant="caption" sx={{ fontSize: "0.75rem", opacity: 0.8 }}>
-                                ANUAL
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  fontSize: "0.65rem",
+                                  opacity: 0.85,
+                                  mt: 0, // 🔥 súper pegado
+                                  lineHeight: 1,
+                                }}
+                              >
+                                DOMINIO .CL ANUAL
                               </Typography>
                             </Box>
 
@@ -671,22 +699,37 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                             <Box
                               sx={{
                                 width: "1px",
-                                height: "70%",
-                                backgroundColor: "rgba(255, 255, 255, 0.3)",
-                                mx: 2,
+                                height: "34px",
+                                mt: 1,
+                                backgroundColor: "rgba(255, 255, 255, 0.35)",
+                                mx: 1.5,
                               }}
                             />
 
-                            {/* HOSTING */}
+                            {/* HOSTING MENSUAL */}
                             <Box sx={{ textAlign: "center", flex: 1 }}>
-                              <Typography variant="caption" sx={{ fontSize: "0.75rem", opacity: 0.9 }}>
-                                HOSTING
-                              </Typography>
-                              <Typography variant="h6" sx={{ fontSize: "1.5rem", fontWeight: "bold", mt: 0.5 }}>
+                              <Typography
+                                variant="h6"
+                                sx={{
+                                  fontSize: "1.05rem",
+                                  fontWeight: "bold",
+                                  mt: 1.2,
+                                  mb: 0,
+                                  lineHeight: 1,
+                                }}
+                              >
                                 $10.000
                               </Typography>
-                              <Typography variant="caption" sx={{ fontSize: "0.75rem", opacity: 0.8 }}>
-                                MENSUAL
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  fontSize: "0.65rem",
+                                  opacity: 0.85,
+                                  mt: 0,
+                                  lineHeight: 1,
+                                }}
+                              >
+                                HOSTING MENSUAL
                               </Typography>
                             </Box>
                           </Box>
@@ -702,22 +745,26 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                               background: "linear-gradient(90deg, #ff6a00 0%, #ee0979 100%)",
                               color: "white",
                               border: "2px solid #ff6a00",
-                              borderRadius: "8px",
-                              width: "80%",
-                              py: 0,
+                              borderRadius: "10px",
+                              width: isMobile ? "90%" : "310px",
+                              py: 0.7, // 🔼 más altura (antes 0)
                               fontWeight: "bold",
-                              fontSize: "0.9rem",
+                              fontSize: isMobile ? "1rem" : "1.1rem", // 🔼 mejor tamaño
+                              letterSpacing: "0.5px",
                               cursor: "pointer",
                               transition: "all 0.3s ease",
-                              mt: 0,
-                              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.25)",
+                              mt: 1, // 🔼 más separación superior
+                              mb: 1, // 🔼 separación inferior
+                              boxShadow: "0 4px 14px rgba(0, 0, 0, 0.3)",
                               "&:hover": {
-                                filter: "brightness(1.1)",
+                                filter: "brightness(1.08)",
+                                transform: "scale(1.02)", // suave efecto
                               },
                             }}
                           >
-                            Solicitar Demo
+                            Solicitar DEMO
                           </Box>
+
                         </Box>
 
 
