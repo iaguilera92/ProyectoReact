@@ -390,8 +390,8 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
             <Box ref={swiperRef} sx={{ display: isMobile ? "block" : "block", position: "relative", px: 1, pt: 2, pb: 1, overflow: "hidden" }}>
               <Swiper
                 style={{ overflow: "visible" }}
-                spaceBetween={isMobile ? 15 : 18}
-                slidesPerView={isMobile ? 0.7 : 1.2}
+                spaceBetween={isMobile ? 10 : 1}
+                slidesPerView={isMobile ? 1.15 : 1.43}
                 onSwiper={setSwiperInstance}
                 initialSlide={promotions.length - 1}
                 centeredSlides={false}
@@ -548,7 +548,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                                 sx={{
                                   fontWeight: 900,
                                   fontSize: isMobile ? "2.4rem" : "2.8rem",
-                                  fontFamily: "fantasy",
+                                  fontFamily: "'Anton', sans-serif",
                                   letterSpacing: "2px",
                                   color: "#ffb905",
                                   textShadow: "2px 2px 5px rgba(0,0,0,0.5)",
@@ -563,7 +563,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                                 sx={{
                                   fontWeight: 900,
                                   fontSize: isMobile ? "1.8rem" : "2.3rem",
-                                  fontFamily: "fantasy",
+                                  fontFamily: "'Anton', sans-serif",
                                   letterSpacing: "2px",
                                   color: "white",
                                   textShadow: "2px 2px 5px rgba(0,0,0,0.6)",
@@ -632,7 +632,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                                     color: "#ffb905",
                                     fontWeight: "bold",
                                     fontSize: "2.2rem",
-                                    fontFamily: "fantasy",
+                                    fontFamily: "'Anton', sans-serif",
                                     letterSpacing: "1px",
                                     transform: "skewX(12deg)",
                                     textAlign: "center",
@@ -771,16 +771,27 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
 
                       ) : (
 
-                        <Box sx={{
-                          width: "100%", height: "435px", mt: 1.4, display: "flex",
-                          flexDirection: "column", borderRadius: "16px", overflow: "hidden",
-                          boxShadow: "0 8px 30px rgba(0,0,0,0.2)", position: "relative",
-                          bgcolor: "white", zIndex: 2
-                        }}>
+                        <Box
+                          sx={{
+                            width: isMobile ? "350px" : "430px", // Igual que el slide principal
+                            height: "420px",
+                            py: isMobile ? 0 : 0,
+                            mt: 1.4,
+                            display: "flex",
+                            flexDirection: "column",
+                            borderRadius: "16px",
+                            overflow: "hidden",
+                            boxShadow: "0 8px 30px rgba(0,0,0,0.2)",
+                            position: "relative",
+                            bgcolor: "#111827", // Puedes personalizar si quieres otro fondo
+                            zIndex: 2,
+                          }}
+                        >
+
                           <Box sx={{
                             position: "absolute", inset: 0, backgroundImage: `url(${promo.image})`,
                             backgroundSize: "cover", backgroundPosition: "center 20%",
-                            "&::after": { content: '""', position: "absolute", inset: 0, }, zIndex: 0
+                            "&::after": { content: '""', position: "absolute", inset: 0, backgroundColor: "rgba(0, 0, 0, 0.55)" }, zIndex: 0
                           }} />
 
                           <Box sx={{
@@ -909,7 +920,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                             </Box>
 
                             <Box sx={{
-                              width: "80%", mt: 0.4, display: "flex",
+                              width: "80%", mt: 0.4, display: "flex", height: "15%",
                               justifyContent: "space-between", gap: 2
                             }}>
                               {promo.extraPrices?.map(({ label, price }, idx) => (
