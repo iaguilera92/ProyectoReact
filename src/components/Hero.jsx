@@ -327,7 +327,7 @@ function Hero({ informationsRef, setVideoReady }) {
             background: "linear-gradient(90deg, #ff6a00 0%, #ee0979 100%)", // Coral + rosado vibrante
             color: "white",
             fontWeight: 700,
-            fontSize: isMobile ? "1.05rem" : "1.2rem",
+            fontSize: isMobile ? "0.9rem" : "1.2rem",
             boxShadow: "0 4px 24px rgba(0,0,0,0.25)",
             border: "2px solid #ff6a00",
             display: "flex",

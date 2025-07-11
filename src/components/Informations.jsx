@@ -573,94 +573,103 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                               </Typography>
                             </Box>
 
-                            <Box
-                              sx={{
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "flex-end",
-                                width: "100%",
-                                maxWidth: "0px",
-                                position: "relative",
-                                mt: isMobile ? "30px" : "0px"
-                              }}
-                            >
-                              {/* Bloque negro: $99.990 */}
-                              <Box
-                                sx={{
-                                  position: "relative",
-                                  transform: "skewX(-12deg)",
-                                  backgroundColor: "black",
-                                  px: 0,
-                                  py: 2,
-                                  boxShadow: "0 6px 15px rgba(0,0,0,0.35)",
-                                  width: isMobile ? "160px" : "200px",
-                                }}
+                            {showPopularBadge && (
+                              <motion.div
+                                initial={{ opacity: 0, x: 80 }} // 👈 Desde la derecha
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.8, ease: "easeOut" }}
                               >
-                                {/* Bloque blanco: PRECIO DESARROLLO */}
                                 <Box
                                   sx={{
-                                    position: "absolute",
-                                    top: "-15px",
-                                    right: "0px",
-                                    backgroundColor: "white",
-                                    px: 1,
-                                    py: 0,
-                                    boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
-                                    minWidth: isMobile ? "130px" : "150px",
-                                    textAlign: "center",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "flex-end",
+                                    width: "100%",
+                                    maxWidth: "0px",
+                                    position: "relative",
+                                    mt: isMobile ? "30px" : "0px",
                                   }}
                                 >
-                                  <Typography
-                                    variant="caption"
+                                  {/* Bloque negro: $99.990 */}
+                                  <Box
                                     sx={{
-                                      color: "black",
-                                      fontWeight: 600,
-                                      fontSize: isMobile ? "0.58rem" : "0.8rem",
-                                      fontFamily: "'Poppins', sans-serif",
-                                      transform: "skewX(12deg)",
-                                      m: 0,
-                                      mr: 2
+                                      position: "relative",
+                                      transform: "skewX(-12deg)",
+                                      backgroundColor: "black",
+                                      px: 0,
+                                      py: 2,
+                                      boxShadow: "0 6px 15px rgba(0,0,0,0.35)",
+                                      width: isMobile ? "160px" : "200px",
                                     }}
                                   >
-                                    PRECIO DESARROLLO
-                                  </Typography>
-                                </Box>
+                                    {/* Bloque blanco: PRECIO DESARROLLO */}
+                                    <Box
+                                      sx={{
+                                        position: "absolute",
+                                        top: "-15px",
+                                        right: "0px",
+                                        backgroundColor: "white",
+                                        px: 1,
+                                        py: 0,
+                                        boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+                                        minWidth: isMobile ? "130px" : "150px",
+                                        textAlign: "center",
+                                      }}
+                                    >
+                                      <Typography
+                                        variant="caption"
+                                        sx={{
+                                          color: "black",
+                                          fontWeight: 600,
+                                          fontSize: isMobile ? "0.58rem" : "0.8rem",
+                                          fontFamily: "'Poppins', sans-serif",
+                                          transform: "skewX(12deg)",
+                                          m: 0,
+                                          mr: 2,
+                                        }}
+                                      >
+                                        PRECIO DESARROLLO
+                                      </Typography>
+                                    </Box>
 
-                                <Typography
-                                  variant="h3"
-                                  sx={{
-                                    color: "#ffb905",
-                                    fontWeight: "bold",
-                                    fontSize: "2.2rem",
-                                    fontFamily: "'Anton', sans-serif",
-                                    letterSpacing: "1px",
-                                    transform: "skewX(12deg)",
-                                    textAlign: "center",
-                                    mb: 1,
-                                    m: 0,
-                                  }}
-                                >
-                                  $99.990
-                                </Typography>
-                              </Box>
-                            </Box>
+                                    <Typography
+                                      variant="h3"
+                                      sx={{
+                                        color: "#ffb905",
+                                        fontWeight: "bold",
+                                        fontSize: "2.2rem",
+                                        fontFamily: "'Anton', sans-serif",
+                                        letterSpacing: "1px",
+                                        transform: "skewX(12deg)",
+                                        textAlign: "center",
+                                        mb: 1,
+                                        m: 0,
+                                      }}
+                                    >
+                                      $99.990
+                                    </Typography>
+                                  </Box>
+                                </Box>
+                              </motion.div>
+                            )}
+
 
 
 
                           </Box>
                           <Box
                             sx={{
-                              mt: isMobile ? 4 : 5,
+                              mt: isMobile ? 4 : 3,
                               mb: 1,
                               background: "linear-gradient(180deg, #1E1EBA 0%, #0075FF 100%)",
                               borderRadius: "12px",
                               px: 2,
-                              py: 0.6,
+                              py: isMobile ? 1.2 : 1.1,
                               display: "flex",
                               justifyContent: "space-between",
-                              alignItems: "flex-start",
+                              alignItems: "center",
                               width: "100%",
-                              maxWidth: "300px",
+                              maxWidth: "260px", // 👈 más angosto
                               color: "white",
                               boxShadow: "0 3px 12px rgba(0, 0, 0, 0.3)",
                               position: "relative",
@@ -668,30 +677,42 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                               alignSelf: "center",
                             }}
                           >
-                            {/* DOMINIO ANUAL */}
+                            {/* DOMINIO .CL */}
                             <Box sx={{ textAlign: "center", flex: 1 }}>
                               <Typography
-                                variant="h6"
+                                variant="caption"
                                 sx={{
-                                  fontSize: "1.05rem",
+                                  fontFamily: "'Mukta', sans-serif",
+                                  fontWeight: 300,
+                                  fontSize: "0.8rem", // 👈 más grande
+                                  letterSpacing: "0.5px",
+                                  textTransform: "uppercase",
+                                  color: "white",
+                                }}
+                              >
+                                DOMINIO .CL
+                              </Typography>
+                              <Typography
+                                sx={{
+                                  fontFamily: "'Montserrat', sans-serif",
+                                  fontSize: isMobile ? "1.3rem" : "1.4rem", // 👈 levemente más compacto
                                   fontWeight: "bold",
-                                  mt: 1.2, // 🔽 más abajo aún
-                                  mb: 0,
+                                  color: "white",
                                   lineHeight: 1,
                                 }}
                               >
                                 $10.000
                               </Typography>
                               <Typography
-                                variant="caption"
                                 sx={{
-                                  fontSize: "0.65rem",
+                                  fontSize: "0.7rem",
                                   opacity: 0.85,
-                                  mt: 0, // 🔥 súper pegado
-                                  lineHeight: 1,
+                                  color: "white",
+                                  mt: 0.3,
+                                  fontFamily: "'Mukta', sans-serif",
                                 }}
                               >
-                                DOMINIO .CL ANUAL
+                                ANUAL
                               </Typography>
                             </Box>
 
@@ -699,40 +720,53 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                             <Box
                               sx={{
                                 width: "1px",
-                                height: "34px",
-                                mt: 1,
+                                height: isMobile ? "45px" : "55px", // 👈 también más compacto
                                 backgroundColor: "rgba(255, 255, 255, 0.35)",
                                 mx: 1.5,
                               }}
                             />
 
-                            {/* HOSTING MENSUAL */}
+                            {/* HOSTING */}
                             <Box sx={{ textAlign: "center", flex: 1 }}>
                               <Typography
-                                variant="h6"
+                                variant="caption"
                                 sx={{
-                                  fontSize: "1.05rem",
+                                  fontFamily: "'Mukta', sans-serif",
+                                  fontWeight: 300,
+                                  fontSize: "0.8rem", // 👈 más grande
+                                  letterSpacing: "0.5px",
+                                  textTransform: "uppercase",
+                                  color: "white",
+                                }}
+                              >
+                                HOSTING
+                              </Typography>
+                              <Typography
+                                sx={{
+                                  fontFamily: "'Montserrat', sans-serif",
+                                  fontSize: isMobile ? "1.3rem" : "1.4rem",
                                   fontWeight: "bold",
-                                  mt: 1.2,
-                                  mb: 0,
+                                  color: "white",
                                   lineHeight: 1,
                                 }}
                               >
                                 $10.000
                               </Typography>
                               <Typography
-                                variant="caption"
                                 sx={{
-                                  fontSize: "0.65rem",
+                                  fontSize: "0.7rem",
                                   opacity: 0.85,
-                                  mt: 0,
-                                  lineHeight: 1,
+                                  color: "white",
+                                  mt: 0.3,
+                                  fontFamily: "'Mukta', sans-serif",
                                 }}
                               >
-                                HOSTING MENSUAL
+                                MENSUAL
                               </Typography>
                             </Box>
                           </Box>
+
+
 
                           {/* Botón debajo */}
                           <Box
@@ -746,7 +780,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                               color: "white",
                               border: "2px solid #ff6a00",
                               borderRadius: "10px",
-                              width: isMobile ? "90%" : "310px",
+                              width: isMobile ? "275px" : "275px",
                               py: 0.7, // 🔼 más altura (antes 0)
                               fontWeight: "bold",
                               fontSize: isMobile ? "1rem" : "1.1rem", // 🔼 mejor tamaño
