@@ -1,28 +1,27 @@
-import { Box, Typography, Container, Grid, Button, ListItem, ListItemIcon, ListItemText, useMediaQuery, useTheme, IconButton } from "@mui/material";
+import { Box, Typography, Container, Grid, ListItem, ListItemIcon, ListItemText, useMediaQuery, useTheme } from "@mui/material";
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { FaCode } from "react-icons/fa";
-import { Swiper, SwiperSlide } from "swiper/react";
 import { useInView } from 'react-intersection-observer';
 import Public from '@mui/icons-material/Public';
 import GroupAdd from '@mui/icons-material/GroupAdd';
 import Verified from '@mui/icons-material/Verified'
 import DashboardCustomize from '@mui/icons-material/DashboardCustomize';
-import { useOutletContext } from "react-router-dom";
-import CheckIcon from '@mui/icons-material/Check';
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import "./css/Informations.css";
 import "swiper/css";
+import InformationsPromotions from './InformationsPromotions';
 
 const promotions = [
   {
-    title: "CREAMOS TU SITIO WEB",
+    id: 1,
+    title: "CREAMOS",
+    title2: "TU SITIO WEB",
     description: "Lo que tu emprendimiento necesita.",
     image: "/promocion-1.jpg",
     price: "$150.000",
     extraPrices: [
-      { label: "Dominio anual", price: "$10.000" },
-      { label: "Hosting mensual", price: "$10.000" }
+      { label: "DOMINIO .CL", price: "$10.000" },
+      { label: "HOSTING", price: "$10.000" }
     ],
     bgColor: "linear-gradient(180deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3))",
     textColor: "white",
@@ -34,6 +33,7 @@ const promotions = [
     ]
   },
   {
+    id: 2,
     title: "Tienda online",
     description: "Vende tus productos online de forma segura.",
     image: "/Informations-2.jpg",
@@ -52,6 +52,7 @@ const promotions = [
     ]
   },
   {
+    id: 3,
     title: "Sistemas a la medida",
     description: "Desarrollo adaptados para tu negocio.",
     image: "/Informations-3.jpg",
@@ -109,7 +110,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
     if (hasAnimated) {
       const timeout = setTimeout(() => {
         setShowPopularBadge(true);
-      }, 1800); // Delay de 3 segundos después que el swiper terminó su animación
+      }, 1100); // Delay
       return () => clearTimeout(timeout);
     }
   }, [hasAnimated]);
@@ -129,6 +130,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
     const mensaje = `¡Hola! Me interesó la promoción de ${encodeURIComponent(title)} ¿Me comentas?`;
     window.open(`https://api.whatsapp.com/send?phone=56992914526&text=${mensaje}`, "_blank");
   };
+
   return (
     <Box
       sx={{
@@ -386,662 +388,20 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
           </Grid>
 
 
+          {/* Informations Promotions */}
           <Grid item xs={12} md={6}>
-            <Box ref={swiperRef} sx={{ display: isMobile ? "block" : "block", position: "relative", px: 1, pt: 2, pb: 1, overflow: "hidden" }}>
-              <Swiper
-                style={{ overflow: "visible" }}
-                spaceBetween={isMobile ? 10 : 1}
-                slidesPerView={isMobile ? 1.15 : 1.43}
-                onSwiper={setSwiperInstance}
-                initialSlide={promotions.length - 1}
-                centeredSlides={false}
-                pagination={{ clickable: true }}
-                onSlideChange={(swiper) => setShowArrow(swiper.activeIndex !== 2)}
-              >
-                {promotions.map((promo, index) => (
-                  <SwiperSlide
-                    key={index}
-                    style={{ width: isMobile ? '345px' : '430px' }}  // aquí controlas ancho de cada slide
-                  >
-                    {/* Aquí dentro Box sin width fijo, solo width 100% para ocupar el slide */}
-                    <Box
-                      sx={{
-                        cursor: 'grab',
-                        '&:active': { cursor: 'grabbing' },
-                        height: '400px',
-                        width: '100%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'flex-start',
-                        position: 'relative',
-                      }}
-                    >
-
-                      {promo.title === "CREAMOS TU SITIO WEB" && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 50 }}
-                          animate={showPopularBadge ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-                          transition={{ duration: 0.8, ease: "easeOut" }}
-                          style={{
-                            position: "absolute",
-                            top: "-16px",
-                            left: 8,
-                            background: "linear-gradient(#f14c2e, #d8452e)",
-                            color: "white",
-                            borderTopLeftRadius: "8px",
-                            borderTopRightRadius: "8px",
-                            borderBottomLeftRadius: 0,
-                            borderBottomRightRadius: 0,
-                            padding: "6px 16px",
-                            fontSize: "0.75rem",
-                            fontWeight: 600,
-                            height: "35px",
-                            minWidth: "110px",
-                            textAlign: "center",
-                            zIndex: 1,
-                            display: "flex",
-                            alignItems: "flex-start",
-                            justifyContent: "center",
-                            gap: 6,
-                            boxShadow: "0 0 12px 2px rgba(255, 105, 0, 0.6)", // Naranja brillante
-                            border: "2px solid #ff6a00",
-                          }}
-                        >
-                          <svg
-                            width="14"
-                            height="18"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                            style={{
-                              animation: 'bounceRotate 1.8s infinite ease-in-out',
-                              marginTop: -2,
-                            }}
-                          >
-                            <path
-                              d="M12 2C10.34 2 9 3.34 9 5v1.1C6.72 6.56 5 8.52 5 11v3l-1 1v1h16v-1l-1-1v-3c0-2.48-1.72-4.44-4-4.9V5c0-1.66-1.34-3-3-3z"
-                              stroke="#ffffff"
-                              strokeWidth="1.5"
-                              fill="none"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                            <circle
-                              cx="12"
-                              cy="19"
-                              r="1.5"
-                              stroke="#ffffff"
-                              strokeWidth="1.5"
-                              fill="none"
-                            />
-                            <style>
-                              {`
-          @keyframes bounceRotate {
-            0% { transform: scale(1) rotate(0deg); }
-            50% { transform: scale(1.1) rotate(-4deg); }
-            100% { transform: scale(1) rotate(0deg); }
-          }
-        `}
-                            </style>
-                          </svg>
-                          Popular
-                        </motion.div>
-                      )}
-
-
-                      {promo.title === "CREAMOS TU SITIO WEB" ? (
-                        <Box
-                          sx={{
-                            width: isMobile ? "350px" : "430px",
-                            height: "420px",
-                            py: isMobile ? 0 : 0,
-                            mt: 1.4,
-                            display: "flex",
-                            flexDirection: "column",
-                            borderRadius: "16px",
-                            overflow: "hidden",
-                            boxShadow: "0 8px 30px rgba(0,0,0,0.2)",
-                            position: "relative",
-                            bgcolor: "#111827",
-                            zIndex: 2,
-                          }}
-                        >
-                          {/* Fondo */}
-                          <Box
-                            sx={{
-                              position: "absolute",
-                              inset: 0,
-                              backgroundImage: `url(${promo.image})`,
-                              backgroundSize: "cover",
-                              backgroundPosition: "center %",
-                              "&::after": {
-                                content: '""',
-                                position: "absolute",
-                                inset: 0,
-                                zIndex: 1,
-                              },
-                            }}
-                          />
-
-                          {/* Contenido */}
-                          <Box
-                            sx={{
-                              position: "relative",
-                              zIndex: 2,
-                              display: "flex",
-                              width: "100%",
-                              flexDirection: "row",
-                              px: 2,
-                              pt: isMobile ? 12 : 18, // 👈 Espacio superior interno ajustado
-                              pb: 0,
-                              minHeight: isMobile ? "80px" : "80px", // 👈 Suficiente para centrar
-                              alignItems: "flex-start", // sigue pegando arriba, pero con padding controlado
-                              justifyContent: "space-between",
-                            }}
-                          >
-
-
-                            {/* Texto Izquierdo */}
-                            <Box sx={{ flex: 1, textAlign: "left" }}>
-                              <Typography
-                                variant="h1"
-                                sx={{
-                                  fontWeight: 900,
-                                  fontSize: isMobile ? "2.4rem" : "2.8rem",
-                                  fontFamily: "'Anton', sans-serif",
-                                  letterSpacing: "2px",
-                                  color: "#ffb905",
-                                  textShadow: "2px 2px 5px rgba(0,0,0,0.5)",
-                                  mt: isMobile ? 2.5 : -2,
-                                  mb: 0,
-                                }}
-                              >
-                                CREAMOS
-                              </Typography>
-                              <Typography
-                                variant="h1"
-                                sx={{
-                                  fontWeight: 900,
-                                  fontSize: isMobile ? "1.8rem" : "2.3rem",
-                                  fontFamily: "'Anton', sans-serif",
-                                  letterSpacing: "2px",
-                                  color: "white",
-                                  textShadow: "2px 2px 5px rgba(0,0,0,0.6)",
-                                }}
-                              >
-                                TU SITIO WEB
-                              </Typography>
-                            </Box>
-
-                            {showPopularBadge && (
-                              <motion.div
-                                initial={{ opacity: 0, x: 80 }} // 👈 Desde la derecha
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.8, ease: "easeOut" }}
-                              >
-                                <Box
-                                  sx={{
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    alignItems: "flex-end",
-                                    width: "100%",
-                                    maxWidth: "0px",
-                                    position: "relative",
-                                    mt: isMobile ? "30px" : "0px",
-                                  }}
-                                >
-                                  {/* Bloque negro: $99.990 */}
-                                  <Box
-                                    sx={{
-                                      position: "relative",
-                                      transform: "skewX(-12deg)",
-                                      backgroundColor: "black",
-                                      px: 0,
-                                      py: 2,
-                                      boxShadow: "0 6px 15px rgba(0,0,0,0.35)",
-                                      width: isMobile ? "160px" : "200px",
-                                    }}
-                                  >
-                                    {/* Bloque blanco: PRECIO DESARROLLO */}
-                                    <Box
-                                      sx={{
-                                        position: "absolute",
-                                        top: "-15px",
-                                        right: "0px",
-                                        backgroundColor: "white",
-                                        px: 1,
-                                        py: 0,
-                                        boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
-                                        minWidth: isMobile ? "130px" : "150px",
-                                        textAlign: "center",
-                                      }}
-                                    >
-                                      <Typography
-                                        variant="caption"
-                                        sx={{
-                                          color: "black",
-                                          fontWeight: 600,
-                                          fontSize: isMobile ? "0.58rem" : "0.8rem",
-                                          fontFamily: "'Poppins', sans-serif",
-                                          transform: "skewX(12deg)",
-                                          m: 0,
-                                          mr: 2,
-                                        }}
-                                      >
-                                        PRECIO DESARROLLO
-                                      </Typography>
-                                    </Box>
-
-                                    <Typography
-                                      variant="h3"
-                                      sx={{
-                                        color: "#ffb905",
-                                        fontWeight: "bold",
-                                        fontSize: "2.2rem",
-                                        fontFamily: "'Anton', sans-serif",
-                                        letterSpacing: "1px",
-                                        transform: "skewX(12deg)",
-                                        textAlign: "center",
-                                        mb: 1,
-                                        m: 0,
-                                      }}
-                                    >
-                                      $99.990
-                                    </Typography>
-                                  </Box>
-                                </Box>
-                              </motion.div>
-                            )}
-
-
-
-
-                          </Box>
-                          <Box
-                            sx={{
-                              mt: isMobile ? 4 : 3,
-                              mb: 1,
-                              background: "linear-gradient(180deg, #1E1EBA 0%, #0075FF 100%)",
-                              borderRadius: "12px",
-                              px: 2,
-                              py: isMobile ? 1.2 : 1.1,
-                              display: "flex",
-                              justifyContent: "space-between",
-                              alignItems: "center",
-                              width: "100%",
-                              maxWidth: "260px", // 👈 más angosto
-                              color: "white",
-                              boxShadow: "0 3px 12px rgba(0, 0, 0, 0.3)",
-                              position: "relative",
-                              zIndex: 3,
-                              alignSelf: "center",
-                            }}
-                          >
-                            {/* DOMINIO .CL */}
-                            <Box sx={{ textAlign: "center", flex: 1 }}>
-                              <Typography
-                                variant="caption"
-                                sx={{
-                                  fontFamily: "'Mukta', sans-serif",
-                                  fontWeight: 300,
-                                  fontSize: "0.8rem", // 👈 más grande
-                                  letterSpacing: "0.5px",
-                                  textTransform: "uppercase",
-                                  color: "white",
-                                }}
-                              >
-                                DOMINIO .CL
-                              </Typography>
-                              <Typography
-                                sx={{
-                                  fontFamily: "'Montserrat', sans-serif",
-                                  fontSize: isMobile ? "1.3rem" : "1.4rem", // 👈 levemente más compacto
-                                  fontWeight: "bold",
-                                  color: "white",
-                                  lineHeight: 1,
-                                }}
-                              >
-                                $10.000
-                              </Typography>
-                              <Typography
-                                sx={{
-                                  fontSize: "0.7rem",
-                                  opacity: 0.85,
-                                  color: "white",
-                                  mt: 0.3,
-                                  fontFamily: "'Mukta', sans-serif",
-                                }}
-                              >
-                                ANUAL
-                              </Typography>
-                            </Box>
-
-                            {/* Separador */}
-                            <Box
-                              sx={{
-                                width: "1px",
-                                height: isMobile ? "45px" : "55px", // 👈 también más compacto
-                                backgroundColor: "rgba(255, 255, 255, 0.35)",
-                                mx: 1.5,
-                              }}
-                            />
-
-                            {/* HOSTING */}
-                            <Box sx={{ textAlign: "center", flex: 1 }}>
-                              <Typography
-                                variant="caption"
-                                sx={{
-                                  fontFamily: "'Mukta', sans-serif",
-                                  fontWeight: 300,
-                                  fontSize: "0.8rem", // 👈 más grande
-                                  letterSpacing: "0.5px",
-                                  textTransform: "uppercase",
-                                  color: "white",
-                                }}
-                              >
-                                HOSTING
-                              </Typography>
-                              <Typography
-                                sx={{
-                                  fontFamily: "'Montserrat', sans-serif",
-                                  fontSize: isMobile ? "1.3rem" : "1.4rem",
-                                  fontWeight: "bold",
-                                  color: "white",
-                                  lineHeight: 1,
-                                }}
-                              >
-                                $10.000
-                              </Typography>
-                              <Typography
-                                sx={{
-                                  fontSize: "0.7rem",
-                                  opacity: 0.85,
-                                  color: "white",
-                                  mt: 0.3,
-                                  fontFamily: "'Mukta', sans-serif",
-                                }}
-                              >
-                                MENSUAL
-                              </Typography>
-                            </Box>
-                          </Box>
-
-
-
-                          {/* Botón debajo */}
-                          <Box
-                            component="button"
-                            onClick={() => handleContactClick(promo.title)}
-                            sx={{
-                              position: "relative",
-                              zIndex: 2,
-                              alignSelf: "center",
-                              background: "linear-gradient(90deg, #ff6a00 0%, #ee0979 100%)",
-                              color: "white",
-                              border: "2px solid #ff6a00",
-                              borderRadius: "10px",
-                              width: isMobile ? "275px" : "275px",
-                              py: 0.7, // 🔼 más altura (antes 0)
-                              fontWeight: "bold",
-                              fontSize: isMobile ? "1rem" : "1.1rem", // 🔼 mejor tamaño
-                              letterSpacing: "0.5px",
-                              cursor: "pointer",
-                              transition: "all 0.3s ease",
-                              mt: 1, // 🔼 más separación superior
-                              mb: 1, // 🔼 separación inferior
-                              boxShadow: "0 4px 14px rgba(0, 0, 0, 0.3)",
-                              "&:hover": {
-                                filter: "brightness(1.08)",
-                                transform: "scale(1.02)", // suave efecto
-                              },
-                            }}
-                          >
-                            Solicitar DEMO
-                          </Box>
-
-                        </Box>
-
-
-
-                      ) : (
-
-                        <Box
-                          sx={{
-                            width: isMobile ? "350px" : "430px", // Igual que el slide principal
-                            height: "420px",
-                            py: isMobile ? 0 : 0,
-                            mt: 1.4,
-                            display: "flex",
-                            flexDirection: "column",
-                            borderRadius: "16px",
-                            overflow: "hidden",
-                            boxShadow: "0 8px 30px rgba(0,0,0,0.2)",
-                            position: "relative",
-                            bgcolor: "#111827", // Puedes personalizar si quieres otro fondo
-                            zIndex: 2,
-                          }}
-                        >
-
-                          <Box sx={{
-                            position: "absolute", inset: 0, backgroundImage: `url(${promo.image})`,
-                            backgroundSize: "cover", backgroundPosition: "center 20%",
-                            "&::after": { content: '""', position: "absolute", inset: 0, backgroundColor: "rgba(0, 0, 0, 0.55)" }, zIndex: 0
-                          }} />
-
-                          <Box sx={{
-                            position: "relative", zIndex: 2, p: 2, pt: 3, display: "flex",
-                            flexDirection: "column", alignItems: "center", justifyContent: "flex-start", flexGrow: 1
-                          }}>
-                            <Box sx={{ width: isMobile ? "100%" : "80%", display: "flex", flexDirection: "column", alignItems: "flex-start", mb: 2 }}>
-                              <Typography variant="h6" sx={{ fontWeight: "bold", fontSize: "1.2rem", textAlign: "left", color: promo.textColor || "white", mb: 1 }}>{promo.title}</Typography>
-                              <Typography variant="body2" sx={{ textAlign: "left", fontSize: "0.9rem", color: "#ddd" }}>{promo.description}</Typography>
-                            </Box>
-
-                            <Box sx={{ fontFamily: "'Inter', sans-serif", backgroundColor: "#edf4ff", borderRadius: "12px", py: promo.price ? 1.3 : 1.5, px: 3, mb: 0.5, width: "100%", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "90px" }}>
-                              {promo.price ? (
-                                <>
-                                  <Typography variant="caption" sx={{ color: "gray", fontSize: "0.7rem", mb: 0.2 }}>
-                                    Precio desarrollo
-                                  </Typography>
-
-                                  <Box sx={{ display: "flex", alignItems: "baseline", justifyContent: "center", minHeight: "2.5rem" }}>
-                                    <AnimatePresence mode="wait">
-                                      {!showPopularBadge ? (
-                                        <motion.div key="old" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.6 }} style={{ display: "flex", alignItems: "baseline" }}>
-                                          <Typography variant="h4" sx={{ fontWeight: "bold", color: "gray", fontSize: "2rem", textDecoration: "line-through", mr: 0.2 }}>
-                                            $200.000
-                                          </Typography>
-                                          <Typography variant="caption" sx={{ fontSize: "0.9rem", color: "gray" }}>/CLP</Typography>
-                                        </motion.div>
-                                      ) : (
-                                        <motion.div
-                                          key="new"
-                                          initial={{ opacity: 0, x: 30 }}
-                                          animate={{ opacity: 1, x: 0 }}
-                                          exit={{ opacity: 0 }}
-                                          transition={{ duration: 0.6 }}
-                                          style={{ display: "flex", alignItems: "baseline" }}
-                                        >
-                                          <Typography
-                                            variant="h4"
-                                            sx={{
-                                              fontWeight: "bold",
-                                              color: "black",
-                                              fontSize: "2rem",
-                                              mr: 0.2
-                                            }}
-                                          >
-                                            {promo.price}
-                                          </Typography>
-                                          <Typography
-                                            variant="caption"
-                                            sx={{ fontSize: "0.9rem", color: "black" }}
-                                          >/CLP</Typography>
-                                        </motion.div>
-                                      )}
-                                    </AnimatePresence>
-                                  </Box>
-
-                                  <Box
-                                    component="button"
-                                    onClick={() => handleContactClick(promo.title)}
-                                    sx={{
-                                      background: "linear-gradient(90deg, #ff6a00 0%, #ee0979 100%)", // Igual que la alerta
-                                      color: "white",
-                                      border: "2px solid #ff6a00",
-                                      borderRadius: "8px",
-                                      width: "80%",
-                                      py: 1,
-                                      fontWeight: "bold",
-                                      fontSize: "0.9rem",
-                                      cursor: "pointer",
-                                      transition: "all 0.3s ease",
-                                      mt: 0.5,
-                                      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.25)",
-                                      "&:hover": {
-                                        filter: "brightness(1.1)"
-                                      }
-                                    }}
-                                  >
-                                    Solicitar Demo
-                                  </Box>
-                                </>
-                              ) : (
-                                <>
-                                  <Typography variant="h6" sx={{ fontWeight: "bold", color: "black", fontSize: "1.5rem", mt: 2 }}>
-                                    Por definir
-                                  </Typography>
-                                  <Box component="button"
-                                    onClick={() => handleContactClick(promo.title)}
-                                    sx={{
-                                      backgroundColor: "#007de0",
-                                      color: "white",
-                                      border: "none",
-                                      borderRadius: "8px",
-                                      width: "80%",
-                                      py: 1,
-                                      fontWeight: "bold",
-                                      fontSize: "0.9rem",
-                                      cursor: "pointer",
-                                      transition: "background-color 0.3s",
-                                      mt: 1.7,
-                                      "&:hover": { backgroundColor: "#005bb5" }
-                                    }}>
-                                    Cotizar
-                                  </Box>
-                                </>
-                              )}
-                            </Box>
-
-
-                            <Box sx={{
-                              width: isMobile ? "100%" : "80%", mt: 0.5,
-                              display: "flex", flexDirection: "column", alignItems: "flex-start"
-                            }}>
-                              {promo.descriptors.map((desc, idx) => (
-                                <Typography key={idx} variant="caption" sx={{
-                                  display: "flex", alignItems: "center", mb: 0.3,
-                                  fontSize: "0.8rem", color: "#eee"
-                                }}>
-                                  <Box sx={{
-                                    width: 15, height: 15, bgcolor: "white", borderRadius: "50%",
-                                    display: "flex", alignItems: "center", justifyContent: "center", mr: 0, flexShrink: 0
-                                  }}>
-                                    <CheckIcon sx={{ fontSize: 13, color: "black" }} />
-                                  </Box>&nbsp;{desc}
-                                </Typography>
-                              ))}
-                            </Box>
-
-                            <Box sx={{
-                              width: "80%", mt: 0.4, display: "flex", height: "15%",
-                              justifyContent: "space-between", gap: 2
-                            }}>
-                              {promo.extraPrices?.map(({ label, price }, idx) => (
-                                <Box key={idx} sx={{
-                                  flex: 1,
-                                  border: "1px solid white",
-                                  borderRadius: "8px",
-                                  p: 1,
-                                  textAlign: "center",
-                                  display: "flex",
-                                  flexDirection: "column",
-                                  justifyContent: "center",
-                                  position: "relative"
-                                }}>
-                                  <Box sx={{
-                                    position: "absolute",
-                                    top: 4,
-                                    right: 5,
-                                    fontSize: "0.49rem",
-                                    color: "#aaa",
-                                    fontWeight: 300,
-                                    lineHeight: 1,
-                                  }}>
-                                    Requerido
-                                  </Box>
-
-                                  <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 0.3 }}>
-                                    <Typography
-                                      variant="h5"
-                                      sx={{
-                                        fontWeight: "bold",
-                                        color: "white",
-                                        fontSize: "1.4rem",
-                                        lineHeight: 1.2,
-                                        mt: 1 // 🔽 Mueve el número más abajo
-                                      }}
-                                    >
-                                      {price || "-"}
-                                    </Typography>
-                                    <Typography
-                                      variant="caption"
-                                      sx={{
-                                        color: "#ddd",
-                                        fontSize: "0.68rem",
-                                        lineHeight: 1.2
-                                      }}
-                                    >
-                                      {label}
-                                    </Typography>
-                                  </Box>
-                                </Box>
-                              ))}
-                            </Box>
-                          </Box>
-                        </Box>
-                      )}
-
-                    </Box>
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-
-              {showArrow && swiperInstance && (
-                <motion.div
-                  animate={{ x: [0, 5, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                  style={{ position: "absolute", top: -4, right: 10, zIndex: 10 }}
-                >
-                  <IconButton
-                    onClick={() => swiperInstance.slideNext()} // ✅ mueve a la derecha
-                    sx={{
-                      color: "white",
-                      transition: "opacity 0.3s ease-in-out",
-                      backgroundColor: "transparent",
-                      boxShadow: "none",
-                      padding: 0,
-                      "&:hover": { backgroundColor: "transparent" },
-                    }}
-                  >
-                    <ArrowForwardIcon fontSize="large" sx={{ fontSize: "23px" }} />
-                  </IconButton>
-                </motion.div>
-              )}
-
-            </Box>
+            <InformationsPromotions
+              isMobile={isMobile}
+              promotions={promotions}
+              swiperRef={swiperRef}
+              showArrow={showArrow}
+              swiperInstance={swiperInstance}
+              setSwiperInstance={setSwiperInstance}
+              setShowArrow={setShowArrow}
+              handleContactClick={handleContactClick}
+              showPopularBadge={showPopularBadge}
+            />
           </Grid>
-
 
 
         </Grid>
