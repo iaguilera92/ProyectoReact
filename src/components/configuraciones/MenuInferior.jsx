@@ -1,161 +1,110 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
-import ViewCarouselIcon from "@mui/icons-material/ViewCarousel";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import HomeRepairServiceIcon from "@mui/icons-material/HomeRepairService";
-import { useNavigate } from 'react-router-dom';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import { useLocation } from 'react-router-dom';
 
-const MenuInferior = ({ cardSize, modo = "servicios" }) => {
-    const navigate = useNavigate();
-    const isDashboard = modo === "dashboard";
+const MenuInferior = ({ cardSize }) => {
+    const location = useLocation();
+    const pathname = location.pathname;
 
-    const IconoCentral = isDashboard ? BarChartIcon : HomeRepairServiceIcon;
-    const colorCentral = isDashboard ? "success.main" : "success.main";
-    const textoCentral = isDashboard ? "Visitas" : "Servicios";
     const goWithCleanCache = async (rutaDestino) => {
         try {
-            // 🧹 Eliminar todas las caches
             const cacheNames = await caches.keys();
             await Promise.all(cacheNames.map(name => caches.delete(name)));
-            console.log("✅ Caches eliminadas:", cacheNames);
-
-            // 🧹 Eliminar Service Workers
             if ("serviceWorker" in navigator) {
                 const registrations = await navigator.serviceWorker.getRegistrations();
                 for (const registration of registrations) {
                     await registration.unregister();
-                    console.log("🧹 Service Worker eliminado");
                 }
             }
-
-            // 🔁 Redirigir limpiamente
             window.location.href = rutaDestino;
         } catch (err) {
             console.warn("⚠️ Error al limpiar cache:", err);
             window.location.href = rutaDestino;
         }
     };
-    const ladoIzquierdo = (
-        <Box
-            sx={{
-                flex: 1,
-                height: 65,
-                backgroundColor: "white",
-                border: "2px solid black",
-                borderRadius: "12px 12px 0 0",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                marginRight: "-10%",
-                zIndex: 1,
-                cursor: "not-allowed",
-                boxShadow: "inset -2px 0px 3px rgba(0,0,0,0.05)"
-            }}
-        >
-            <Box
-                sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    transform: "translateX(-20%)",
-                    textAlign: "center",
-                }}
-            >
-                <ViewCarouselIcon sx={{ fontSize: 26, color: "grey.500" }} />
-                <Typography variant="caption" fontSize={11} color="grey.500" sx={{ mt: 0.2 }}>
-                    Catálogo
-                </Typography>
-            </Box>
-        </Box>
-    );
 
-    const botonCentral = (
-        <Box
-            sx={{
-                flex: 1.3,
-                height: 108,
-                backgroundColor: "#ffffff",
-                border: "2px solid black",
-                borderRadius: "16px",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                zIndex: 2,
-                boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
-                marginBottom: "-10px",
-                cursor: "pointer",
-                transition: "transform 0.2s ease-in-out",
-                "&:hover": {
-                    transform: "scale(1.05)",
-                    backgroundColor: "#f7f7f7",
-                    boxShadow: "0 6px 14px rgba(0,0,0,0.2)",
-                },
-            }}
-        >
-            <motion.div
-                initial={{ scale: 1 }}
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ delay: 1.4, duration: 1, ease: "easeInOut" }}
-                style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
-            >
-                <IconoCentral sx={{ fontSize: 45, color: colorCentral }} />
-                <Typography variant="caption" fontWeight="bold" fontSize={15} color={colorCentral}>
-                    {textoCentral}
-                </Typography>
-            </motion.div>
-        </Box>
-    );
+    const opciones = {
+        "/clientes": {
+            icono: <AttachMoneyIcon sx={{ fontSize: 45, color: "success.main" }} />,
+            texto: "Clientes",
+        },
+        "/dashboard": {
+            icono: <BarChartIcon sx={{ fontSize: 45, color: "success.main" }} />,
+            texto: "Visitas",
+        },
+        "/configurar-servicios": {
+            icono: <HomeRepairServiceIcon sx={{ fontSize: 45, color: "success.main" }} />,
+            texto: "Servicios",
+        },
+    };
 
-    const botonDerecho = (
-        <Box
-            sx={{
-                flex: 1,
-                height: 65,
-                backgroundColor: "white",
-                border: "2px solid black",
-                borderRadius: "12px 12px 0 0",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                boxShadow: "inset 2px 0px 3px rgba(0,0,0,0.05)",
-                marginLeft: "-10%",
-                zIndex: 1,
-                transition: "all 0.2s ease-in-out",
-                "&:hover": {
-                    transform: "scale(1.05)",
-                    backgroundColor: "#f7f7f7",
-                    boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-                },
-            }}
-            onClick={() => goWithCleanCache(isDashboard ? "/configurar-servicios" : "/dashboard")}
+    const orden = ["/clientes", "/dashboard", "/configurar-servicios"];
+    const rutaCentral = orden.find(r => pathname.startsWith(r)) || "/dashboard";
+    const rutasLaterales = orden.filter(r => r !== rutaCentral);
 
-        >
-            <Box
-                sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    transform: "translateX(20%)",
-                    textAlign: "center",
-                }}
-            >
-                {isDashboard ? (
-                    <HomeRepairServiceIcon sx={{ fontSize: 26, color: "primary.main" }} />
+    const renderBoton = (ruta, esCentral) => {
+        const { icono, texto } = opciones[ruta];
+        const baseStyles = {
+            flex: esCentral ? 1.3 : 1,
+            height: esCentral ? 108 : 65,
+            backgroundColor: "#ffffff",
+            border: "2px solid black",
+            borderRadius: esCentral ? "16px" : "12px 12px 0 0",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: esCentral ? 2 : 1,
+            cursor: "pointer",
+            transition: "all 0.2s ease-in-out",
+            boxShadow: esCentral
+                ? "0 4px 10px rgba(0,0,0,0.15)"
+                : "inset 0px 0px 4px rgba(0,0,0,0.08)",
+            marginBottom: esCentral ? "-10px" : 0,
+            "&:hover": {
+                transform: "scale(1.05)",
+                backgroundColor: "#f7f7f7",
+                boxShadow: "0 6px 14px rgba(0,0,0,0.2)",
+            },
+        };
+
+        return (
+            <Box key={ruta} onClick={() => goWithCleanCache(ruta)} sx={baseStyles}>
+                {esCentral ? (
+                    <motion.div
+                        initial={{ scale: 1 }}
+                        animate={{ scale: [1, 1.2, 1] }}
+                        transition={{ delay: 1.4, duration: 1, ease: "easeInOut" }}
+                        style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+                    >
+                        {icono}
+                        <Typography variant="caption" fontWeight="bold" fontSize={15} color="success.main">
+                            {texto}
+                        </Typography>
+                    </motion.div>
                 ) : (
-                    <BarChartIcon sx={{ fontSize: 26, color: "primary.main" }} />
+                    <Box
+                        sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            textAlign: "center",
+                        }}
+                    >
+                        {React.cloneElement(icono, { sx: { fontSize: 26, color: "primary.main" } })}
+                        <Typography variant="caption" fontSize={11}>
+                            {texto}
+                        </Typography>
+                    </Box>
                 )}
-                <Typography variant="caption" fontSize={11}>
-                    {isDashboard ? "Servicios" : "Visitas"}
-                </Typography>
             </Box>
-        </Box>
-    );
+        );
+    };
 
     return (
         <motion.div
@@ -185,9 +134,9 @@ const MenuInferior = ({ cardSize, modo = "servicios" }) => {
                     pointerEvents: "auto",
                 }}
             >
-                {ladoIzquierdo}
-                {botonCentral}
-                {botonDerecho}
+                {renderBoton(rutasLaterales[0], false)}
+                {renderBoton(rutaCentral, true)}
+                {renderBoton(rutasLaterales[1], false)}
             </Box>
         </motion.div>
     );

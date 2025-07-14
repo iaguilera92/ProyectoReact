@@ -10,7 +10,7 @@ import {
 import { motion } from "framer-motion";
 import ViewCarouselIcon from "@mui/icons-material/ViewCarousel";
 import BarChartIcon from "@mui/icons-material/BarChart";
-import HomeRepairServiceIcon from "@mui/icons-material/HomeRepairService";
+import Face6Icon from '@mui/icons-material/Face6';
 import { useLocation, useNavigate } from "react-router-dom";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
@@ -180,7 +180,7 @@ const Dashboard = () => {
 
                         {/* Si hay usuario, mostramos su nombre animado */}
                         {usuario &&
-                            usuario.nombre.split("").map((char, index) => (
+                            usuario.alias.split("").map((char, index) => (
                                 <motion.span
                                     key={`nombre-${index}`}
                                     custom={index + 10}
@@ -199,7 +199,11 @@ const Dashboard = () => {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 1.4, duration: 0.5 }}
                     >
-                        <AdminPanelSettingsIcon sx={{ fontSize: 26, color: "white" }} />
+                        {usuario?.usuario === "iaguilera" ? (
+                            <Typography sx={{ fontSize: 26 }}>😎</Typography>
+                        ) : (
+                            <AdminPanelSettingsIcon sx={{ fontSize: 26, color: "white" }} />
+                        )}
                     </motion.div>
                 </Box>
             </Grid>

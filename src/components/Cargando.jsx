@@ -120,7 +120,6 @@ const Cargando = () => {
             {/* Contenido */}
             <Box
                 sx={{
-                    position: 'relative',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',

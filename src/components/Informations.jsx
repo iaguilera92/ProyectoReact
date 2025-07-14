@@ -127,7 +127,13 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
   }, [inView, hasAnimated2]);
 
   const handleContactClick = (title) => {
-    const mensaje = `¡Hola! Me interesó la promoción de ${encodeURIComponent(title)} ¿Me comentas?`;
+    let mensaje = '';
+    if (title == "CREAMOS") {
+      mensaje = `¡Hola! Me interesaría una DEMO para mi negocio. ¿Me comentas?`;
+    }
+    else {
+      mensaje = `¡Hola! Me interesó la promoción de ${encodeURIComponent(title)} ¿Me comentas?`;
+    }
     window.open(`https://api.whatsapp.com/send?phone=56992914526&text=${mensaje}`, "_blank");
   };
 

@@ -221,7 +221,7 @@ const InformationsPromotions = ({
                               fontWeight: 900,
                               fontSize: isMobile ? "1.8rem" : "2.3rem",
                               fontFamily: "'Anton', sans-serif",
-                              letterSpacing: "2px",
+                              letterSpacing: "1.1px",
                               color: "white",
                               textShadow: "2px 2px 5px rgba(0,0,0,0.6)",
                             }}
@@ -393,7 +393,7 @@ const InformationsPromotions = ({
                             sx={{
                               fontFamily: "'Mukta', sans-serif",
                               fontWeight: 300,
-                              fontSize: "0.8rem", // 👈 más grande
+                              fontSize: "0.85rem", // 👈 más grande
                               letterSpacing: "0.5px",
                               textTransform: "uppercase",
                               color: "white",
@@ -442,7 +442,7 @@ const InformationsPromotions = ({
                             sx={{
                               fontFamily: "'Mukta', sans-serif",
                               fontWeight: 300,
-                              fontSize: "0.8rem", // 👈 más grande
+                              fontSize: "0.85rem", // 👈 más grande
                               letterSpacing: "0.5px",
                               textTransform: "uppercase",
                               color: "white",
@@ -520,7 +520,7 @@ const InformationsPromotions = ({
                       >
                         <Stack direction="row" alignItems="center" justifyContent="center" spacing={1}>
                           <RocketLaunchIcon sx={{ fontSize: "1.2rem", color: "white" }} />
-                          <span>Solicita DEMO Gratis</span>
+                          <span>Solicitar DEMO Gratis</span>
                         </Stack>
                       </Box>
                     </motion.div>

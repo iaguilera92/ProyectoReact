@@ -101,7 +101,7 @@ const Administracion = () => {
 
   return (
     <Box sx={{
-      height: "100vh", width: "100vw", backgroundImage: "url(/fondo-administracion.jpg)",
+      height: "100vh", width: "100vw", backgroundImage: "url(/fondo-administracion.webp)",
       backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat",
       display: "flex", justifyContent: "center", alignItems: "center", backdropFilter: "blur(4px)",
       position: "relative", overflow: "hidden",
