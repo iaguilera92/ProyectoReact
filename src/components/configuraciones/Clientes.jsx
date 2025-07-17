@@ -76,13 +76,13 @@ const Clientes = () => {
   const [paginaActual, setPaginaActual] = useState(1);
   const clientesPorPagina = 5;
   const [actualizando, setActualizando] = useState(false);
-
   const indiceInicio = (paginaActual - 1) * clientesPorPagina;
   const indiceFin = indiceInicio + clientesPorPagina;
   const clientesPaginados = clientes.slice(indiceInicio, indiceFin);
   const totalPaginas = Math.ceil(clientes.length / clientesPorPagina);
   const [snackbar, setSnackbar] = useState({ open: false, message: "" });
   const [esReversion, setEsReversion] = useState(false);
+  const [mostrarDialogoUltimoDia, setMostrarDialogoUltimoDia] = useState(false);
 
   const totalGanado = clientes.reduce((acc, c) => {
     const valorLimpio = c.valor?.replace(/[$.\s\r\n]/g, "") || "0";
@@ -115,17 +115,7 @@ const Clientes = () => {
     setOpenDialog(true);
   };
 
-
-  const marcarComoPagado = (index) => {
-    setClientes((prev) =>
-      prev.map((c, i) =>
-        i === index ? { ...c, pagado: true } : c
-      )
-    );
-  };
-
   const confirmarPago = async (revertir = false) => {
-    console.log("⚙️ Ejecutando confirmarPago...");
     console.log("➡️ Cliente seleccionado:", clienteSeleccionado);
     if (!clienteSeleccionado || !clienteSeleccionado.idCliente) {
       setSnackbar({ open: true, message: "Debe seleccionar un cliente válido." });
@@ -178,11 +168,17 @@ const Clientes = () => {
     }
   };
 
+  //ÚLTIMO DÍA DEL MES
+  const modoDesarrollo = false;
 
+  useEffect(() => {
+    const hoy = modoDesarrollo ? new Date(2025, 6, 31) : new Date();
+    const esUltimoDia = hoy.getDate() === new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0).getDate();
 
-
-
-
+    if (esUltimoDia) {
+      setMostrarDialogoUltimoDia(true);
+    }
+  }, []);
 
 
   const enviarCorreoCobro = (cliente, mesCapitalizado) => {
@@ -567,7 +563,7 @@ const Clientes = () => {
                               textOverflow: "ellipsis",
                             }}
                           >
-                            ✅ {isMobile ? "Pagado" : "Pago recibido"}
+                            ✅{isMobile ? "Pagado" : "Pago recibido"}
                           </Typography>
 
                           <Button
@@ -577,7 +573,7 @@ const Clientes = () => {
                             onClick={() => abrirDialogoConfirmacion(cliente, true)} // <-- importante
                             sx={{
                               minWidth: 0,
-                              padding: 0.5,
+                              padding: 0,
                               ml: 0,
                               '& .MuiSvgIcon-root': { fontSize: '18px' },
                             }}
@@ -689,6 +685,66 @@ const Clientes = () => {
           >
             {esReversion ? "Revertir pago" : "Confirmar"}
           </Button>
+        </DialogActions>
+      </Dialog>
+      {/* 🔔 Dialogo último día del mes */}
+      <Dialog
+        open={mostrarDialogoUltimoDia}
+        onClose={() => setMostrarDialogoUltimoDia(false)}
+      >
+        <DialogTitle>🔄Actualización de clientes</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Hoy es el <strong>último día del mes</strong>. Se actualizará el listado de clientes.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setMostrarDialogoUltimoDia(false)}>
+            Cancelar
+          </Button>
+          <Button
+            onClick={async () => {
+              setMostrarDialogoUltimoDia(false);
+              setActualizando(true);
+
+              try {
+                const url = `${window.location.hostname === "localhost"
+                  ? "http://localhost:9999"
+                  : ""
+                  }/.netlify/functions/reiniciarPagos`;
+
+                const res = await fetch(url, { method: "POST" });
+                const text = await res.text();
+                const result = JSON.parse(text || "{}");
+
+                if (res.ok) {
+                  const nuevosClientes = await cargarClientesDesdeExcel();
+                  setClientes(nuevosClientes);
+                  setSnackbar({
+                    open: true,
+                    message: result.message || "Listado reiniciado correctamente",
+                  });
+                } else {
+                  setSnackbar({
+                    open: true,
+                    message: result.message || "No se pudo reiniciar el listado",
+                  });
+                }
+              } catch (error) {
+                console.error("❌ Error al reiniciar pagos:", error);
+                setSnackbar({ open: true, message: "Error al reiniciar pagos." });
+              } finally {
+                setActualizando(false);
+              }
+            }}
+            variant="contained"
+            color="primary"
+            autoFocus
+            disabled={actualizando}
+          >
+            Confirmar
+          </Button>
+
         </DialogActions>
       </Dialog>
 
