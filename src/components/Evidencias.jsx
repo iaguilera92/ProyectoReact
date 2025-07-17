@@ -172,7 +172,7 @@ const Evidencias = () => {
                 >
                     {/* Video detrás */}
                     <motion.video
-                        src="/video-plataformas-web.mp4"
+                        src="/video-administracion.mp4"
                         autoPlay
                         loop
                         muted
