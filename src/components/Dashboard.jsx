@@ -179,19 +179,7 @@ const Dashboard = () => {
                         ))}
 
                         {/* Si hay usuario, mostramos su nombre animado */}
-                        {usuario &&
-                            usuario.alias.split("").map((char, index) => (
-                                <motion.span
-                                    key={`nombre-${index}`}
-                                    custom={index + 10}
-                                    variants={letterVariants}
-                                    initial="hidden"
-                                    animate="visible"
-                                    style={{ display: "inline-block" }}
-                                >
-                                    {char === " " ? "\u00A0" : char}
-                                </motion.span>
-                            ))}
+
                     </Typography>
 
                     <motion.div
