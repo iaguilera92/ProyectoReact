@@ -89,6 +89,15 @@ const Evidencias = () => {
         }
     }, [isMobile]);
 
+    const videoRef = useRef(null);
+
+    useEffect(() => {
+        if (imagenInView && videoRef.current) {
+            videoRef.current.play().catch(err => {
+                console.warn('Error al reproducir video:', err);
+            });
+        }
+    }, [imagenInView]);
 
     return (
         <Box sx={{ width: '100%', position: 'relative', mt: '-80px' }}>
@@ -149,8 +158,8 @@ const Evidencias = () => {
                                 px: 4,
                             }}
                         >
-                            Conoce cómo ayudamos a otras empresas a{' '}
-                            <span style={{ color: '#ffe037' }}>crecer.</span>
+                            Control total sobre tu{' '}
+                            <span style={{ color: '#ffe037' }}>negocio.</span>
                         </Typography>
                     </motion.div>
                 </Box>
@@ -172,14 +181,12 @@ const Evidencias = () => {
                 >
                     {/* Video detrás */}
                     <motion.video
+                        ref={videoRef}
                         src="/video-administracion.mp4"
-                        autoPlay
                         loop
                         muted
                         playsInline
                         preload="auto"
-                        onCanPlay={e => e.target.play()}
-                        onLoadedData={e => e.target.play()}
                         initial={{ x: 300, opacity: 0 }}
                         animate={imagenInView ? { x: '0%', opacity: 1 } : { x: 300, opacity: 0 }}
                         transition={{ duration: 1, ease: 'easeOut' }}
