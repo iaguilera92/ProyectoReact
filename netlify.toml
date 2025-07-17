@@ -1,14 +1,22 @@
+[build]
+  functions = "netlify/functions"
+  command = "npm run build"
+
 [dev]
   framework = "vite"
   command = "npm run dev"
   targetPort = 5173
+  autoLaunch = true
 
 [[headers]]
-  for = "/*"
+  for = "/.netlify/functions/*"
   [headers.values]
     Access-Control-Allow-Origin = "*"
     Access-Control-Allow-Headers = "Content-Type"
     Access-Control-Allow-Methods = "GET, POST, OPTIONS"
 
 [functions]
-included_files = ["netlify/functions/Servicios.xlsx"]
+  included_files = [
+    "netlify/functions/Servicios.xlsx",
+    "netlify/functions/Clientes.xlsx"
+  ]

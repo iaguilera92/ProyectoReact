@@ -1,27 +1,39 @@
 import * as XLSX from "xlsx";
 
-// 📦 Cargar clientes desde Excel
 export const cargarClientesDesdeExcel = async () => {
+  const urlExcel = `https://plataformas-web-buckets.s3.us-east-2.amazonaws.com/Clientes.xlsx?t=${Date.now()}`;
+
+
   try {
-    const response = await fetch(`/database/Clientes.xlsx?v=${Date.now()}`);
+    const response = await fetch(urlExcel, {
+      headers: {
+        "Cache-Control": "no-cache",
+        "Pragma": "no-cache",
+        "Expires": "0",
+      },
+    });
+    if (!response.ok) throw new Error("No se pudo obtener el archivo Excel");
+
     const arrayBuffer = await response.arrayBuffer();
-    const workbook = XLSX.read(arrayBuffer, { type: "array" });
-    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    const data = XLSX.utils.sheet_to_json(sheet);
-    return data;
+    const data = new Uint8Array(arrayBuffer);
+    const workbook = XLSX.read(data, { type: "array" });
+
+    const hoja = workbook.Sheets[workbook.SheetNames[0]];
+    const jsonData = XLSX.utils.sheet_to_json(hoja);
+
+    return jsonData.map((c) => ({
+      idCliente: c.idCliente || "",                         // ✅ ID del cliente
+      cliente: c.cliente?.trim() || "",                     // ✅ Nombre del cliente
+      sitioWeb: c.URL?.trim() || "",                        // URL del sitio
+      telefono: c.telefono?.toString() || "",               // Teléfono
+      correo: c.correo?.trim() || "",                       // Email
+      pagado: c.pagado === 1 || c.pagado === "1",           // Boolean pagado
+      valor: c.valor?.toString().replace(/\r?\n|\r/g, "").trim() || "$0", // Monto
+      fechaPago: c.fechaPago || "",                         // Fecha (si aplica)
+      estado: c.estado === 1 || c.estado === "1",           // Boolean activo
+    }));
   } catch (error) {
-    console.error("Error al cargar Clientes.xlsx:", error);
+    console.error("❌ Error al cargar clientes desde el Excel:", error);
     return [];
   }
-};
-
-// 🔍 Buscar cliente por RUT o ID
-export const buscarCliente = async ({ rut, id }) => {
-  const clientes = await cargarClientesDesdeExcel();
-
-  return clientes.find(c => {
-    const rutMatch = rut ? c.rut?.toString().trim() === rut.toString().trim() : true;
-    const idMatch = id ? c.id?.toString().trim() === id.toString().trim() : true;
-    return rutMatch && idMatch;
-  }) || null;
 };

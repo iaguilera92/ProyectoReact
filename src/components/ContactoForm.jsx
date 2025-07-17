@@ -58,7 +58,7 @@ const ContactoForm = ({ setSnackbar }) => {
             nombre: name,
             telefono: phone,
             mensaje: message,
-            email: "aguileraignacio1992@gmail.com",
+            email: "plataformas.web.cl@gmail.com",
         };
 
         if (enviarCopia && emailCopia.trim()) {
