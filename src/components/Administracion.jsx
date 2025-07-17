@@ -108,7 +108,7 @@ const Administracion = () => {
     }}>
       <Paper elevation={3} sx={{
         backgroundColor: "rgba(0,0,0,0.6)", color: "white", p: 4, borderRadius: 3,
-        maxWidth: 350, width: "90%", textAlign: "center", mt: isMobile ? -2 : 0
+        maxWidth: 350, width: "90%", textAlign: "center", mt: isMobile ? -8 : 0
       }}>
         <Box component="img" src="/user.png" alt="Usuario" sx={{
           width: 80, height: 80, borderRadius: "50%", objectFit: "cover",

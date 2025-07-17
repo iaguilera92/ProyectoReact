@@ -236,7 +236,7 @@ const Clientes = () => {
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
         overflow: "hidden",
-        paddingTop: isMobile ? 14 : 11,
+        paddingTop: isMobile ? 12 : 11,
       }}
     >
       <Typography
@@ -397,6 +397,7 @@ const Clientes = () => {
         >
           <Table
             stickyHeader
+            size="small"
             sx={{
               minWidth: isMobile ? 400 : "auto", // ← esto estabiliza el ancho de columnas en mobile
             }}
@@ -497,7 +498,7 @@ const Clientes = () => {
                           color="error"
                           size="small"
                           onClick={() => {
-                            const mensaje = `Buenas! recordar el pago del HOSTING de www.${cliente.sitioWeb} de *${cliente.valor}* del mes de ${mes}.`;
+                            const mensaje = `Buenas! recordar el pago del HOSTING de ${cliente.sitioWeb} de *${cliente.valor}* del mes de ${mes}.`;
                             const numero = cliente.telefono || "56992914526";
                             const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
 

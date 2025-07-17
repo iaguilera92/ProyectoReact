@@ -110,7 +110,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
     if (hasAnimated) {
       const timeout = setTimeout(() => {
         setShowPopularBadge(true);
-      }, 1100); // Delay
+      }, 1000); // Delay
       return () => clearTimeout(timeout);
     }
   }, [hasAnimated]);

@@ -23,8 +23,9 @@ export const cargarClientesDesdeExcel = async () => {
 
     return jsonData.map((c) => ({
       idCliente: c.idCliente || "",                         // ✅ ID del cliente
-      cliente: c.cliente?.trim() || "",                     // ✅ Nombre del cliente
-      sitioWeb: c.URL?.trim() || "",                        // URL del sitio
+      cliente: c.cliente?.trim() || "",
+      sitioWeb: c.sitioWeb?.trim() || "",                        // ✅ Nombre del cliente
+      url: c.url?.trim() || "",                        // URL del sitio
       telefono: c.telefono?.toString() || "",               // Teléfono
       correo: c.correo?.trim() || "",                       // Email
       pagado: c.pagado === 1 || c.pagado === "1",           // Boolean pagado

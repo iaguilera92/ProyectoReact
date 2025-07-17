@@ -98,43 +98,6 @@ const InformationsPromotions = ({
                     border: "2px solid #ff6a00",
                   }}
                 >
-                  <svg
-                    width="14"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    style={{
-                      animation: 'bounceRotate 1.8s infinite ease-in-out',
-                      marginTop: -2,
-                    }}
-                  >
-                    <path
-                      d="M12 2C10.34 2 9 3.34 9 5v1.1C6.72 6.56 5 8.52 5 11v3l-1 1v1h16v-1l-1-1v-3c0-2.48-1.72-4.44-4-4.9V5c0-1.66-1.34-3-3-3z"
-                      stroke="#ffffff"
-                      strokeWidth="1.5"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <circle
-                      cx="12"
-                      cy="19"
-                      r="1.5"
-                      stroke="#ffffff"
-                      strokeWidth="1.5"
-                      fill="none"
-                    />
-                    <style>
-                      {`
-          @keyframes bounceRotate {
-            0% { transform: scale(1) rotate(0deg); }
-            50% { transform: scale(1.1) rotate(-4deg); }
-            100% { transform: scale(1) rotate(0deg); }
-          }
-        `}
-                    </style>
-                  </svg>
                   Popular
                 </motion.div>
               )}
@@ -228,6 +191,25 @@ const InformationsPromotions = ({
                           >
                             {promo.title2}
                           </Typography>
+                          <Typography
+                            variant="subtitle1"
+                            sx={{
+                              fontSize: isMobile ? "0.85rem" : "0.95rem",
+                              fontWeight: 600,
+                              color: "white",
+                              fontFamily: "'Poppins', sans-serif",
+                              letterSpacing: "0.5px",
+                              textShadow: "1px 1px 2px rgba(0,0,0,0.4)",
+                              mt: 0.5
+                            }}
+                          >
+                            LO QUE TU{" "}
+                            <Box component="span" sx={{ textDecoration: "underline" }}>
+                              EMPRENDIMIENTO
+                            </Box>{" "}
+                            NECESITA
+                          </Typography>
+
                         </Box>
                       </motion.div>
                     )}
@@ -365,7 +347,7 @@ const InformationsPromotions = ({
                     >
                       <Box
                         sx={{
-                          mt: isMobile ? 6 : 0,
+                          mt: isMobile ? 4 : 0,
                           mb: 1,
                           background: "linear-gradient(180deg, #1E1EBA 0%, #0075FF 100%)",
                           borderRadius: "12px",
