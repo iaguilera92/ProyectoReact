@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Snackbar, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Paper, Typography, useMediaQuery, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@mui/material";
 import { styled, keyframes } from "@mui/system";
 import { cargarClientesDesdeExcel } from "../../helpers/HelperClientes";
@@ -6,8 +6,8 @@ import MenuInferior from './MenuInferior';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import GroupIcon from "@mui/icons-material/Group";
-import { motion } from "framer-motion";
 import emailjs from "@emailjs/browser";
+import { motion, AnimatePresence, useMotionValue, useTransform, animate } from "framer-motion";
 
 const baseDelay = 1.5; // segundos antes de comenzar la animación
 const letterDelay = 0.04;
@@ -64,6 +64,21 @@ const GreenDot = styled("div")(() => ({
   boxShadow: "0 0 6px rgba(0,255,0,0.5)",
 }));
 
+// Animaciones definidas correctamente
+const greenMoneyPulse = keyframes({
+  "0%": { textShadow: "0 0 4px rgba(0, 200, 83, 0.4)" },
+  "50%": { textShadow: "0 0 16px rgba(0, 200, 83, 1)" },
+  "100%": { textShadow: "0 0 4px rgba(0, 200, 83, 0.4)" },
+});
+
+const revertFlash = keyframes({
+  "0%": { textShadow: "0 0 4px rgba(255,0,0,0.4)" },
+  "50%": { textShadow: "0 0 16px rgba(255,0,0,0.9)" },
+  "100%": { textShadow: "0 0 4px rgba(255,0,0,0.4)" },
+});
+
+
+
 const Clientes = () => {
   const [clientes, setClientes] = useState([]);
   const isMobile = useMediaQuery("(max-width:600px)");
@@ -83,6 +98,9 @@ const Clientes = () => {
   const [snackbar, setSnackbar] = useState({ open: false, message: "" });
   const [esReversion, setEsReversion] = useState(false);
   const [mostrarDialogoUltimoDia, setMostrarDialogoUltimoDia] = useState(false);
+  const [tipoCambioVisual, setTipoCambioVisual] = useState(null);
+  const [iniciarAnimacionContador, setIniciarAnimacionContador] = useState(false);
+  const [totalGanadoAnterior, setTotalGanadoAnterior] = useState(0);
 
   const totalGanado = clientes.reduce((acc, c) => {
     const valorLimpio = c.valor?.replace(/[$.\s\r\n]/g, "") || "0";
@@ -147,7 +165,17 @@ const Clientes = () => {
 
       if (res.ok) {
         const nuevosClientes = await cargarClientesDesdeExcel();
+        setTotalGanadoAnterior(totalGanado);
         setClientes(nuevosClientes);
+
+        setTipoCambioVisual(revertir ? "reversion" : "ganancia");
+        setIniciarAnimacionContador(true); // <-- activa animación
+
+        setTimeout(() => {
+          setTipoCambioVisual(null);
+          setIniciarAnimacionContador(false); // <-- la apagas para permitir futuro reinicio
+        }, 2000);
+
         setSnackbar({
           open: true,
           message: result.message || (revertir ? "Pago revertido correctamente" : "Pago confirmado correctamente"),
@@ -158,6 +186,7 @@ const Clientes = () => {
           message: result.message || "No se pudo actualizar el pago.",
         });
       }
+
     } catch (error) {
       console.error("❌ Error de red/servidor:", error);
       setSnackbar({ open: true, message: "Error de red o del servidor." });
@@ -186,6 +215,7 @@ const Clientes = () => {
       sitioWeb: `www.${cliente.sitioWeb}`,
       nombre: cliente.cliente || cliente.sitioWeb || "Cliente",
       mes: mesCapitalizado,
+      //email: "plataformas.web.cl@gmail.com", // ← destinatario real
       email: cliente.correo || "plataformas.web.cl@gmail.com", // ← destinatario real
       cc: "plataformas.web.cl@gmail.com", // copia interna
     };
@@ -217,6 +247,79 @@ const Clientes = () => {
   useEffect(() => {
     setPaginaActual(1);
   }, [clientes]);
+
+  //TOTAL GANADO
+  const ContadorGanado = ({ valorFinal, valorInicial, tipoCambio }) => {
+    const motionValor = useMotionValue(valorInicial);
+    const [display, setDisplay] = useState(`$${valorFinal.toLocaleString("es-CL")} CLP`);
+    const [mostrarEfecto, setMostrarEfecto] = useState(false);
+    const [zoomActivo, setZoomActivo] = useState(false);
+
+    useEffect(() => {
+      if (!tipoCambio) return;
+
+      setZoomActivo(true); // <-- activa zoom
+
+      motionValor.set(valorInicial);
+
+      const controls = animate(motionValor, valorFinal, {
+        duration: 1.2,
+        ease: "easeOut",
+        onUpdate: (latest) => {
+          setDisplay(`$${Math.round(latest).toLocaleString("es-CL")} CLP`);
+        },
+        onComplete: () => {
+          setMostrarEfecto(true);
+
+          // Después de 2s, apaga el zoom y el efecto
+          setTimeout(() => {
+            setMostrarEfecto(false);
+            setZoomActivo(false); // <-- vuelve a la normalidad
+          }, 2000);
+        },
+      });
+
+      return () => controls.stop();
+    }, [valorFinal, valorInicial, tipoCambio]);
+
+    const esGanancia = tipoCambio === "ganancia";
+    const esReversion = tipoCambio === "reversion";
+
+    return (
+      <Typography
+        variant="h6"
+        fontWeight={700}
+        sx={{
+          fontSize: "1.2rem",
+          lineHeight: 1.2,
+          color: mostrarEfecto
+            ? esGanancia
+              ? "transparent"
+              : esReversion
+                ? "#d32f2f"
+                : "#212121"
+            : "#212121",
+          background:
+            mostrarEfecto && esGanancia
+              ? "linear-gradient(90deg, #69f0ae, #00e676, #00c853)"
+              : "none",
+          WebkitBackgroundClip: mostrarEfecto && esGanancia ? "text" : "unset",
+          WebkitTextFillColor: mostrarEfecto && esGanancia ? "transparent" : "unset",
+          animation: mostrarEfecto
+            ? esGanancia
+              ? `${greenMoneyPulse} 1.2s ease-in-out`
+              : esReversion
+                ? `${revertFlash} 1s ease-in-out`
+                : "none"
+            : "none",
+        }}
+      >
+        {display}
+      </Typography>
+    );
+  };
+
+
 
 
   return (
@@ -310,13 +413,23 @@ const Clientes = () => {
           >
             Ganado en {mesCapitalizado}
           </Typography>
-          <Typography
-            variant="h6"
-            fontWeight={700}
-            sx={{ fontSize: "1rem", lineHeight: 1.2 }}
+
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexGrow: 1,
+              minHeight: "1.2rem",
+            }}
           >
-            ${totalGanado.toLocaleString("es-CL")} CLP
-          </Typography>
+            <ContadorGanado
+              valorFinal={totalGanado}
+              valorInicial={totalGanadoAnterior}
+              tipoCambio={tipoCambioVisual}
+            />
+          </Box>
+
           <Typography
             variant="caption"
             color="text.secondary"
@@ -325,6 +438,8 @@ const Clientes = () => {
             {clientes.filter(c => c.pagado).length} pagado
           </Typography>
         </Box>
+
+
 
         <Box
           sx={{
@@ -473,19 +588,13 @@ const Clientes = () => {
                       </Box>
                     </TableCell>
 
-                    {/* Cobrar */}
-                    <TableCell
-                      align="center"
-                      sx={{
-                        pl: 0.5, // 👈 reducir espacio izquierdo
-                      }}
-                    >
+                    {/* Botón COBRAR */}
+                    <TableCell align="center" sx={{ pl: 0.5, width: isMobile ? 60 : undefined }}>
                       <Box
                         sx={{
                           display: "flex",
                           justifyContent: "center",
                           alignItems: "center",
-                          height: "100%",
                           minHeight: "50px",
                         }}
                       >
@@ -497,31 +606,21 @@ const Clientes = () => {
                             const mensaje = `Buenas! recordar el pago del HOSTING de ${cliente.sitioWeb} de *${cliente.valor}* del mes de ${mes}.`;
                             const numero = cliente.telefono || "56992914526";
                             const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
-
-                            // Abrir WhatsApp
                             window.open(url, "_blank");
-
-                            // Enviar correo
                             enviarCorreoCobro(cliente, mesCapitalizado);
-
-                            // Bloquear este botón por 10 segundos
                             bloquearBotonTemporalmente(index);
                           }}
-
                           disabled={estaAlDia || botonesBloqueados.includes(index)}
-
                           sx={{
+                            minWidth: isMobile ? "auto" : undefined,
+                            px: isMobile ? 1.3 : 2.2,
+                            py: isMobile ? 0.5 : 0.8,
                             fontSize: isMobile ? 0 : "0.8rem",
                             fontWeight: 600,
-                            px: isMobile ? 1.5 : 2.2,
-                            py: isMobile ? 0.7 : 0.8,
                             '&.Mui-disabled': {
                               cursor: 'not-allowed !important',
                               pointerEvents: 'auto',
                               opacity: 0.6,
-                              display: 'inline-flex',
-                              justifyContent: 'center',
-                              alignItems: 'center',
                             },
                           }}
                         >
@@ -530,93 +629,102 @@ const Clientes = () => {
                       </Box>
                     </TableCell>
 
-                    {/* Pago recibido o Pagado */}
-                    <TableCell
-                      align="center"
-                      sx={{
-                        pl: 0.5, // 👈 reducir espacio izquierdo
-                      }}
-                    >
-                      {estaAlDia ? (
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            flexWrap: "nowrap",       // ⛔ evita saltos de línea
-                            gap: 0,
-                            px: 1.5,
-                            py: 0.8,
-                            borderRadius: "8px",
-                            minHeight: "36px",
-                            maxWidth: "100%",         // evita que se desborde
-                            overflow: "hidden",       // oculta si llega a colapsar
-                          }}
-                        >
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "#2e7d32",
-                              fontWeight: 600,
-                              whiteSpace: "nowrap",   // ⛔ evita salto en el texto
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                            }}
-                          >
-                            ✅{isMobile ? "Pagado" : "Pago recibido"}
-                          </Typography>
-
-                          <Button
-                            size="small"
-                            variant="text"
-                            color="warning"
-                            onClick={() => abrirDialogoConfirmacion(cliente, true)} // <-- importante
-                            sx={{
-                              minWidth: 0,
-                              padding: 0,
-                              ml: 0,
-                              '& .MuiSvgIcon-root': { fontSize: '18px' },
-                            }}
-                          >
-                            <span title="Revertir pago">
-                              🔄
-                            </span>
-                          </Button>
-                        </Box>
-
-                      ) : (
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            height: "100%",
-                            minHeight: "36px",
-                            px: 1.2,
-                            py: 0.5,
-                          }}
-                        >
-                          <Button
-                            variant="contained"
-                            color="success"
-                            size="small"
-                            onClick={() => abrirDialogoConfirmacion(cliente)}
-
-
-                            sx={{
-                              px: isMobile ? 1.5 : 2.2,
-                              py: isMobile ? 0.7 : 0.8,
-                              fontSize: isMobile ? 0 : "0.8rem",
-                              fontWeight: 600,
-                              textTransform: "none",
-                            }}
-                          >
-                            {isMobile ? <DoneAllIcon fontSize="small" /> : "Pago recibido"}
-                          </Button>
-
-                        </Box>
-                      )}
+                    {/* Botón PAGO RECIBIDO o Pagado */}
+                    <TableCell align="center" sx={{ pl: 0.5, width: isMobile ? 80 : undefined }}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          minHeight: "50px",
+                        }}
+                      >
+                        <AnimatePresence mode="wait">
+                          {estaAlDia ? (
+                            <motion.div
+                              key="pagado"
+                              initial={{ opacity: 0, scale: 0.9 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0, scale: 0.9 }}
+                              transition={{ duration: 0.3 }}
+                              style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+                            >
+                              {isMobile ? (
+                                <>
+                                  <DoneAllIcon fontSize="small" htmlColor="#2e7d32" />
+                                  <Button
+                                    size="small"
+                                    variant="text"
+                                    color="warning"
+                                    onClick={() => abrirDialogoConfirmacion(cliente, true)}
+                                    sx={{
+                                      minWidth: 0,
+                                      padding: 0,
+                                      ml: 0,
+                                    }}
+                                  >
+                                    🔄
+                                  </Button>
+                                </>
+                              ) : (
+                                <>
+                                  <Typography
+                                    variant="caption"
+                                    sx={{
+                                      color: "#2e7d32",
+                                      fontWeight: 600,
+                                      whiteSpace: "nowrap",
+                                    }}
+                                  >
+                                    ✅Pago recibido
+                                  </Typography>
+                                  <Button
+                                    size="small"
+                                    variant="text"
+                                    color="warning"
+                                    onClick={() => abrirDialogoConfirmacion(cliente, true)}
+                                    sx={{
+                                      minWidth: 0,
+                                      padding: 0,
+                                      ml: 0,
+                                    }}
+                                  >
+                                    🔄
+                                  </Button>
+                                </>
+                              )}
+                            </motion.div>
+                          ) : (
+                            <motion.div
+                              key="pagoRecibido"
+                              initial={{ opacity: 0, scale: 0.9 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0, scale: 0.9 }}
+                              transition={{ duration: 0.3 }}
+                            >
+                              <Button
+                                variant="contained"
+                                color="success"
+                                size="small"
+                                onClick={() => abrirDialogoConfirmacion(cliente)}
+                                sx={{
+                                  minWidth: isMobile ? "auto" : undefined,
+                                  px: isMobile ? 1.2 : 2.2,
+                                  py: isMobile ? 0.5 : 0.8,
+                                  fontSize: isMobile ? 0 : "0.8rem",
+                                  fontWeight: 600,
+                                  textTransform: "none",
+                                }}
+                              >
+                                {isMobile ? <DoneAllIcon fontSize="small" /> : "Pago recibido"}
+                              </Button>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </Box>
                     </TableCell>
+
+
                   </TableRow>
                 );
               })}
