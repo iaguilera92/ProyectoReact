@@ -585,7 +585,7 @@ const InformationsPromotions = ({
                     </Box>
 
                     <Box sx={{
-                      width: "80%", mt: 6.8, display: "flex", height: "15%",
+                      width: "80%", mt: 8.5, display: "flex", height: "15%",
                       justifyContent: "space-between", gap: 2
                     }}>
                       {promo.extraPrices?.map(({ label, price }, idx) => (
@@ -639,7 +639,7 @@ const InformationsPromotions = ({
                         </Box>
                       ))}
                     </Box>
-                    <Box sx={{ fontFamily: "'Inter', sans-serif", py: promo.price ? 1.3 : 1.5, px: 3, mb: 0.5, width: "100%", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "90px" }}>
+                    <Box sx={{ fontFamily: "'Inter', sans-serif", py: 0, px: 3, mb: 0.5, width: "100%", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "90px" }}>
 
                       <Box
                         component="button"
@@ -650,6 +650,7 @@ const InformationsPromotions = ({
                           border: "none",
                           borderRadius: "8px",
                           width: "100%",
+                          maxWidth: "290px",
                           py: 1,
                           fontWeight: "bold",
                           fontSize: "0.9rem",

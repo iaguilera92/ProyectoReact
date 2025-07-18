@@ -322,7 +322,7 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos, onVisualizarMobi
                     onClick={(e) => {
                       e.stopPropagation();
                       const mensaje = `Me interesó el ${producto.NombreProducto}, ¿sigue disponible?`;
-                      const telefono = '56992914526';
+                      const telefono = '56946873014';
                       const urlWhatsapp = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
                       window.open(urlWhatsapp, '_blank');
                     }}
@@ -415,7 +415,7 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos, onVisualizarMobi
                 onClick={(e) => {
                   e.stopPropagation();
                   const mensaje = `Me interesó el ${producto.NombreProducto}, ¿sigue disponible?`;
-                  const telefono = '56992914526';
+                  const telefono = '56946873014';
                   const urlWhatsapp = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
                   window.open(urlWhatsapp, '_blank');
                 }}

@@ -58,7 +58,7 @@ function Features({ videoReady }) {
 
   const handleContactClick = (title) => {
     const mensaje = `¡Hola! Me interesó ${encodeURIComponent(title)} ¿Me comentas?`;
-    window.open(`https://api.whatsapp.com/send?phone=56992914526&text=${mensaje}`, "_blank");
+    window.open(`https://api.whatsapp.com/send?phone=56946873014&text=${mensaje}`, "_blank");
   };
 
   //APARICIÓN

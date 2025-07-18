@@ -442,7 +442,7 @@ const ContactoForm = ({ setSnackbar }) => {
                                         Ponte en contacto con uno de nuestros ejecutivos para asistirte.
                                     </Typography>
                                     <Button
-                                        href="tel:56992914526"
+                                        href="tel:56946873014"
                                         size="small"
                                         variant="text"
                                         sx={{
@@ -523,7 +523,7 @@ const ContactoForm = ({ setSnackbar }) => {
                                         Escríbenos directamente por WhatsApp para resolver tus dudas.
                                     </Typography>
                                     <Button
-                                        href="https://api.whatsapp.com/send?phone=56992914526"
+                                        href="https://api.whatsapp.com/send?phone=56946873014"
                                         target="_blank"
                                         size="small"
                                         variant="text"

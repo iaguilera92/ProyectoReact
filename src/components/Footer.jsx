@@ -97,7 +97,7 @@ const Footer = () => {
 
               <Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <img src="telefono-icon.png" alt="Teléfono" width={16} />
-                <Link href="tel:+56992914526" color="inherit">+56 992914526</Link>
+                <Link href="tel:+56946873014" color="inherit">+56 9 4687 3014</Link>
               </Typography>
 
               <Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>

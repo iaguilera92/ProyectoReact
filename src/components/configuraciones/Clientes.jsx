@@ -600,7 +600,7 @@ const Clientes = () => {
                           size="small"
                           onClick={() => {
                             const mensaje = `Buenas! recordar el pago del HOSTING de ${cliente.sitioWeb} de *${cliente.valor}* del mes de ${mes}.`;
-                            const numero = cliente.telefono || "56992914526";
+                            const numero = cliente.telefono || "56946873014";
                             const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
                             window.open(url, "_blank");
                             enviarCorreoCobro(cliente, mesCapitalizado);
