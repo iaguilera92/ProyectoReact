@@ -95,6 +95,7 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
   const location = useLocation();
   const mostrarAnimacion = videoReady || (location.pathname !== '/' && location.pathname !== '');
   const [animacionMostrada, setAnimacionMostrada] = useState(false);
+  const mostrarLogo = mostrarAnimacion || animacionMostrada;
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -131,6 +132,12 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
   }, []);
 
   const LogoInicio = () => (navigate("/"), scrollToTop());
+
+  useEffect(() => {
+    if (mostrarAnimacion) {
+      setAnimacionMostrada(true);
+    }
+  }, [mostrarAnimacion]);
 
   return (
     <>
@@ -169,15 +176,15 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
                 }}
               >
                 <AnimatePresence mode="wait">
-                  {(mostrarAnimacion || animacionMostrada) && (
+                  {mostrarLogo && (
                     <motion.div
-                      key={(mostrarAnimacion ? "mostrar" : "forzado")}
+                      key={mostrarAnimacion ? "mostrar" : "forzado"}
                       initial={{ x: -200, opacity: 0 }}
                       animate={{ x: 0, opacity: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{
                         duration: 1,
-                        delay: mostrarAnimacion ? 1 : 0, // ✅ delay según si fue forzado o no
+                        delay: mostrarAnimacion ? 1 : 0,
                       }}
                       style={{ cursor: "pointer" }}
                     >
@@ -193,7 +200,6 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
                     </motion.div>
                   )}
                 </AnimatePresence>
-
 
 
               </Box>

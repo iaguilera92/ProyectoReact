@@ -292,7 +292,7 @@ const InformationsPromotions = ({
                                       transform: "skewX(12deg)",
                                       textAlign: "center",
                                       mb: 0,
-                                      mr: 1,
+                                      mr: 1.3,
                                       textDecoration: "line-through",
                                     }}
                                   >
@@ -318,7 +318,7 @@ const InformationsPromotions = ({
                                       transform: "skewX(12deg)",
                                       textAlign: "center",
                                       mb: 0,
-                                      mr: 1
+                                      mr: 1.3
                                     }}
                                   >
                                     {promo.price}
