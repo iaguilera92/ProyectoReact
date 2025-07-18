@@ -133,7 +133,7 @@ const Evidencias = () => {
                         width: '100%',
                         overflow: 'hidden',
                         position: 'absolute',
-                        top: '10px',
+                        top: '30px',
                         left: 0,
                         right: 0,
                         zIndex: 2,

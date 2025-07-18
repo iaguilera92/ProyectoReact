@@ -292,7 +292,7 @@ const InformationsPromotions = ({
                                       transform: "skewX(12deg)",
                                       textAlign: "center",
                                       mb: 0,
-                                      mr: 1.3,
+                                      mr: 1.8,
                                       textDecoration: "line-through",
                                     }}
                                   >
@@ -318,7 +318,7 @@ const InformationsPromotions = ({
                                       transform: "skewX(12deg)",
                                       textAlign: "center",
                                       mb: 0,
-                                      mr: 1.3
+                                      mr: 1.8
                                     }}
                                   >
                                     {promo.price}
@@ -546,31 +546,6 @@ const InformationsPromotions = ({
                       <Typography variant="body2" sx={{ textAlign: "left", fontSize: "0.9rem", color: "#ddd" }}>{promo.description}</Typography>
                     </Box>
 
-                    <Box sx={{ fontFamily: "'Inter', sans-serif", backgroundColor: "#edf4ff", borderRadius: "12px", py: promo.price ? 1.3 : 1.5, px: 3, mb: 0.5, width: "100%", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "90px" }}>
-
-                      <Typography variant="h6" sx={{ fontWeight: "bold", color: "black", fontSize: "1.5rem", mt: 2 }}>
-                        Por definir
-                      </Typography>
-                      <Box component="button"
-                        onClick={() => handleContactClick(promo.title)}
-                        sx={{
-                          backgroundColor: "#007de0",
-                          color: "white",
-                          border: "none",
-                          borderRadius: "8px",
-                          width: "80%",
-                          py: 1,
-                          fontWeight: "bold",
-                          fontSize: "0.9rem",
-                          cursor: "pointer",
-                          transition: "background-color 0.3s",
-                          mt: 1.7,
-                          "&:hover": { backgroundColor: "#005bb5" }
-                        }}>
-                        Cotizar
-                      </Box>
-                    </Box>
-
 
                     <Box sx={{
                       width: isMobile ? "100%" : "80%", mt: 0.5,
@@ -592,7 +567,7 @@ const InformationsPromotions = ({
                     </Box>
 
                     <Box sx={{
-                      width: "80%", mt: 0.4, display: "flex", height: "15%",
+                      width: "80%", mt: 6.8, display: "flex", height: "15%",
                       justifyContent: "space-between", gap: 2
                     }}>
                       {promo.extraPrices?.map(({ label, price }, idx) => (
@@ -645,6 +620,32 @@ const InformationsPromotions = ({
                           </Box>
                         </Box>
                       ))}
+                    </Box>
+                    <Box sx={{ fontFamily: "'Inter', sans-serif", py: promo.price ? 1.3 : 1.5, px: 3, mb: 0.5, width: "100%", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "90px" }}>
+
+                      <Box
+                        component="button"
+                        onClick={() => handleContactClick(promo.title)}
+                        sx={{
+                          backgroundColor: "#007de0",
+                          color: "white",
+                          border: "none",
+                          borderRadius: "8px",
+                          width: "100%",
+                          py: 1,
+                          fontWeight: "bold",
+                          fontSize: "0.9rem",
+                          cursor: "pointer",
+                          transition: "all 0.3s ease-in-out",
+                          "&:hover": {
+                            backgroundColor: "#005bb5",
+                            transform: "translateY(-1px)",
+                            boxShadow: "0 4px 14px rgba(0,0,0,0.3)"
+                          }
+                        }}
+                      >
+                        Cotizar
+                      </Box>
                     </Box>
                   </Box>
                 </Box>
