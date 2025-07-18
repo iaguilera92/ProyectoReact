@@ -296,7 +296,7 @@ const InformationsPromotions = ({
                                       textDecoration: "line-through",
                                     }}
                                   >
-                                    $200.000
+                                    $150.000
                                   </Typography>
                                 </motion.div>
                               ) : (
