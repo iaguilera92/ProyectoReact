@@ -4,7 +4,7 @@ import { Box, IconButton, Typography, Stack } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import CheckIcon from '@mui/icons-material/Check';
-import RocketLaunchIcon from '@mui/icons-material/RocketLaunch'
+import MouseIcon from '@mui/icons-material/Mouse';
 import 'swiper/css';
 
 const InformationsPromotions = ({
@@ -501,7 +501,25 @@ const InformationsPromotions = ({
                         }}
                       >
                         <Stack direction="row" alignItems="center" justifyContent="center" spacing={1}>
-                          <RocketLaunchIcon sx={{ fontSize: "1.2rem", color: "white" }} />
+                          <Box
+                            component="img"
+                            src="/clic.jpg"
+                            alt="Ícono de clic"
+                            sx={{
+                              width: 20,
+                              height: 20,
+                              cursor: "pointer",
+                              userSelect: "none",
+                              filter: 'invert(1) brightness(2)',
+                              ml: 1, // margen izquierdo si lo usas al lado de un texto
+                              mt: 0.5, // ajusta si necesitas moverlo verticalmente
+                              transition: "transform 0.2s ease-in-out",
+                              "&:hover": {
+                                transform: "scale(1.15)",
+                              },
+                            }}
+                          />
+
                           <span>Solicitar DEMO Gratis</span>
                         </Stack>
                       </Box>

@@ -253,12 +253,9 @@ const Clientes = () => {
     const motionValor = useMotionValue(valorInicial);
     const [display, setDisplay] = useState(`$${valorFinal.toLocaleString("es-CL")} CLP`);
     const [mostrarEfecto, setMostrarEfecto] = useState(false);
-    const [zoomActivo, setZoomActivo] = useState(false);
 
     useEffect(() => {
       if (!tipoCambio) return;
-
-      setZoomActivo(true); // <-- activa zoom
 
       motionValor.set(valorInicial);
 
@@ -274,7 +271,6 @@ const Clientes = () => {
           // Después de 2s, apaga el zoom y el efecto
           setTimeout(() => {
             setMostrarEfecto(false);
-            setZoomActivo(false); // <-- vuelve a la normalidad
           }, 2000);
         },
       });
@@ -290,7 +286,7 @@ const Clientes = () => {
         variant="h6"
         fontWeight={700}
         sx={{
-          fontSize: "1.2rem",
+          fontSize: "1.1rem",
           lineHeight: 1.2,
           color: mostrarEfecto
             ? esGanancia
@@ -394,7 +390,7 @@ const Clientes = () => {
             border: "2px solid #66bb6a",
             borderRadius: 2,
             px: 1.5,
-            py: 1,
+            py: 0.6,
             flex: "1 1 auto",
             maxWidth: 160,
             minWidth: 140,
@@ -447,7 +443,7 @@ const Clientes = () => {
             border: "2px solid #ff9800",
             borderRadius: 2,
             px: 1.5,
-            py: 1,
+            py: 0.6,
             flex: "1 1 auto",
             maxWidth: 160,
             minWidth: 140,
@@ -469,7 +465,7 @@ const Clientes = () => {
           <Typography
             variant="h6"
             fontWeight={700}
-            sx={{ fontSize: "1rem", lineHeight: 1.2, color: "#d32f2f" }} // rojo fuerte
+            sx={{ fontSize: "1.1rem", lineHeight: 1.2, color: "#d32f2f" }} // rojo fuerte
           >
             ${totalDeuda.toLocaleString("es-CL")} CLP
           </Typography>
