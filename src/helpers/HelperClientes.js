@@ -23,15 +23,16 @@ export const cargarClientesDesdeExcel = async () => {
 
     return jsonData.map((c) => ({
       idCliente: c.idCliente || "",                         // ✅ ID del cliente
-      cliente: c.cliente?.trim() || "",
-      sitioWeb: c.sitioWeb?.trim() || "",                        // ✅ Nombre del cliente
-      url: c.url?.trim() || "",                        // URL del sitio
+      cliente: c.cliente?.trim() || "",                     // ✅ Nombre del cliente
+      sitioWeb: c.sitioWeb?.trim() || "",
+      url: c.url?.trim() || "",                             // URL del sitio
       telefono: c.telefono?.toString() || "",               // Teléfono
       correo: c.correo?.trim() || "",                       // Email
       pagado: c.pagado === 1 || c.pagado === "1",           // Boolean pagado
       valor: c.valor?.toString().replace(/\r?\n|\r/g, "").trim() || "$0", // Monto
       fechaPago: c.fechaPago || "",                         // Fecha (si aplica)
       estado: c.estado === 1 || c.estado === "1",           // Boolean activo
+      logoCliente: c.logoCliente?.trim() || "",             // ✅ Logo del cliente
     }));
   } catch (error) {
     console.error("❌ Error al cargar clientes desde el Excel:", error);

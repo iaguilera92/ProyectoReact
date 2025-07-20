@@ -3,10 +3,10 @@ import { Snackbar, Box, Table, TableBody, TableCell, TableContainer, TableHead, 
 import { styled, keyframes } from "@mui/system";
 import { cargarClientesDesdeExcel } from "../../helpers/HelperClientes";
 import MenuInferior from './MenuInferior';
-import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import GroupIcon from "@mui/icons-material/Group";
 import emailjs from "@emailjs/browser";
+import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { motion, AnimatePresence, useMotionValue, useTransform, animate } from "framer-motion";
 
 const baseDelay = 1.5; // segundos antes de comenzar la animación
@@ -77,9 +77,13 @@ const revertFlash = keyframes({
   "100%": { textShadow: "0 0 4px rgba(255,0,0,0.4)" },
 });
 
-
+const meses = [
+  "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+  "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+];
 
 const Clientes = () => {
+  const [iniciarAnimacionContador, setIniciarAnimacionContador] = useState(false);
   const [clientes, setClientes] = useState([]);
   const isMobile = useMediaQuery("(max-width:600px)");
   const cardSize = isMobile ? "300px" : "340px";
@@ -99,8 +103,20 @@ const Clientes = () => {
   const [esReversion, setEsReversion] = useState(false);
   const [mostrarDialogoUltimoDia, setMostrarDialogoUltimoDia] = useState(false);
   const [tipoCambioVisual, setTipoCambioVisual] = useState(null);
-  const [iniciarAnimacionContador, setIniciarAnimacionContador] = useState(false);
   const [totalGanadoAnterior, setTotalGanadoAnterior] = useState(0);
+  const [openDialogCobro, setOpenDialogCobro] = useState(false);
+  const [mesManual, setMesManual] = useState(""); // ← si está vacío, usamos automático
+
+  const hoy = new Date();
+
+
+  const obtenerMesSiguiente = () => {
+    const mesSiguiente = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 1);
+    const nombreMes = mesSiguiente.toLocaleString("es-CL", { month: "long" });
+    return nombreMes.charAt(0).toUpperCase() + nombreMes.slice(1);
+  };
+
+  const mesSiguienteCorreo = obtenerMesSiguiente();
 
   const totalGanado = clientes.reduce((acc, c) => {
     const valorLimpio = c.valor?.replace(/[$.\s\r\n]/g, "") || "0";
@@ -133,6 +149,8 @@ const Clientes = () => {
     setOpenDialog(true);
   };
 
+
+  //PAGO RECIBIDO
   const confirmarPago = async (revertir = false) => {
     console.log("➡️ Cliente seleccionado:", clienteSeleccionado);
     if (!clienteSeleccionado || !clienteSeleccionado.idCliente) {
@@ -169,17 +187,18 @@ const Clientes = () => {
         setClientes(nuevosClientes);
 
         setTipoCambioVisual(revertir ? "reversion" : "ganancia");
-        setIniciarAnimacionContador(true); // <-- activa animación
+        setIniciarAnimacionContador(true);
 
         setTimeout(() => {
           setTipoCambioVisual(null);
-          setIniciarAnimacionContador(false); // <-- la apagas para permitir futuro reinicio
+          setIniciarAnimacionContador(false);
         }, 2000);
 
         setSnackbar({
           open: true,
           message: result.message || (revertir ? "Pago revertido correctamente" : "Pago confirmado correctamente"),
         });
+
       } else {
         setSnackbar({
           open: true,
@@ -197,12 +216,37 @@ const Clientes = () => {
     }
   };
 
+  //PAGO RECIBIDO - CORREO
+  const enviarCorreoPagoRecibido = (cliente, mesFinal) => {
+
+    const templateParams = {
+      sitioWeb: `www.${cliente.sitioWeb}`,
+      nombre: cliente.cliente || cliente.sitioWeb || "Cliente",
+      mes: mesFinal,
+      fechaPago: new Date().toLocaleDateString("es-CL"),
+      montoPagado: cliente.valor || "$10.000 CLP",
+      metodoPago: "Transferencia",
+      logoCliente: cliente.logoCliente || "/logo-plataformas-web-correo.png",
+      //email: cliente.correo || "plataformas.web.cl@gmail.com", // ← destinatario real
+      email: "plataformas.web.cl@gmail.com",
+      cc: "plataformas.web.cl@gmail.com",
+    };
+
+    return emailjs.send(
+      "service_ocjgtpc",
+      "template_ligrzq3",
+      templateParams,
+      "byR6suwAx2-x6ddVp"
+    );
+  };
+
+
   //ÚLTIMO DÍA DEL MES
   const modoDesarrollo = false;
 
   useEffect(() => {
-    const hoy = modoDesarrollo ? new Date(2025, 6, 31) : new Date();
-    const esUltimoDia = hoy.getDate() === new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0).getDate();
+    const hoyUltimo = modoDesarrollo ? new Date(2025, 6, 31) : new Date();
+    const esUltimoDia = hoy.getDate() === new Date(hoyUltimo.getFullYear(), hoyUltimo.getMonth() + 1, 0).getDate();
 
     if (esUltimoDia) {
       setMostrarDialogoUltimoDia(true);
@@ -215,17 +259,18 @@ const Clientes = () => {
       sitioWeb: `www.${cliente.sitioWeb}`,
       nombre: cliente.cliente || cliente.sitioWeb || "Cliente",
       mes: mesCapitalizado,
-      //email: "plataformas.web.cl@gmail.com", // ← destinatario real
-      email: cliente.correo || "plataformas.web.cl@gmail.com", // ← destinatario real
+      email: "plataformas.web.cl@gmail.com", // ← destinatario real
+      //email: cliente.correo || "plataformas.web.cl@gmail.com", // ← destinatario real
+      monto: cliente.valor ? `$${cliente.valor.replace(/\$/g, "").trim()} CLP` : "$10.000 CLP",
       cc: "plataformas.web.cl@gmail.com", // copia interna
     };
 
     emailjs
       .send(
-        "service_dgbzstm",
-        "template_rapmi7b",
+        "service_ocjgtpc",
+        "template_eoaqvlw",
         templateParams,
-        "bk4Szn-mnTqjPaQQ5"
+        "byR6suwAx2-x6ddVp"
       )
       .then(() => {
         console.log("📧 Correo enviado exitosamente a", templateParams.email);
@@ -240,7 +285,7 @@ const Clientes = () => {
 
     setTimeout(() => {
       setBotonesBloqueados((prev) => prev.filter((i) => i !== index));
-    }, 10000); // 10 segundos
+    }, 10000); // ← 10 segundos
   };
 
 
@@ -314,8 +359,11 @@ const Clientes = () => {
       </Typography>
     );
   };
-
-
+  useEffect(() => {
+    if (openDialog && !esReversion) {
+      setMesManual(mesSiguienteCorreo); // ← selecciona directamente el mes automático
+    }
+  }, [openDialog, esReversion, mesSiguienteCorreo]);
 
 
   return (
@@ -599,20 +647,19 @@ const Clientes = () => {
                           color="error"
                           size="small"
                           onClick={() => {
-                            const mensaje = `Buenas! recordar el pago del HOSTING de ${cliente.sitioWeb} de *${cliente.valor}* del mes de ${mes}.`;
-                            const numero = cliente.telefono || "56946873014";
-                            const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
-                            window.open(url, "_blank");
-                            enviarCorreoCobro(cliente, mesCapitalizado);
-                            bloquearBotonTemporalmente(index);
+                            setClienteSeleccionado(cliente);
+                            setOpenDialogCobro(true);
                           }}
                           disabled={estaAlDia || botonesBloqueados.includes(index)}
                           sx={{
                             minWidth: isMobile ? "auto" : undefined,
                             px: isMobile ? 1.3 : 2.2,
                             py: isMobile ? 0.5 : 0.8,
-                            fontSize: isMobile ? 0 : "0.8rem",
+                            fontSize: isMobile ? 0 : "0.8rem", // texto oculto en mobile
                             fontWeight: 600,
+                            '& .emoji': {
+                              fontSize: '1rem', // 👈 tamaño visible solo del ícono
+                            },
                             '&.Mui-disabled': {
                               cursor: 'not-allowed !important',
                               pointerEvents: 'auto',
@@ -620,8 +667,10 @@ const Clientes = () => {
                             },
                           }}
                         >
-                          {isMobile ? <MonetizationOnIcon fontSize="small" /> : "Cobrar"}
+                          {isMobile ? <span className="emoji">💰</span> : "Cobrar"}
                         </Button>
+
+
                       </Box>
                     </TableCell>
 
@@ -710,10 +759,14 @@ const Clientes = () => {
                                   fontSize: isMobile ? 0 : "0.8rem",
                                   fontWeight: 600,
                                   textTransform: "none",
+                                  '& .emoji': {
+                                    fontSize: '1rem',
+                                  },
                                 }}
                               >
-                                {isMobile ? <DoneAllIcon fontSize="small" /> : "Pago recibido"}
+                                {isMobile ? <span className="emoji">💸</span> : "Pago recibido"}
                               </Button>
+
                             </motion.div>
                           )}
                         </AnimatePresence>
@@ -765,32 +818,168 @@ const Clientes = () => {
         onClose={() => setOpenDialog(false)}
       >
         <DialogTitle>
-          {esReversion ? "Confirmar reversión de pago" : "Confirmar pago recibido"}
+          {esReversion
+            ? "Confirmar reversión de pago"
+            : `Confirmar pago recibido – ${mesSiguienteCorreo}`}
         </DialogTitle>
         <DialogContent>
           {openDialog && (
-            <DialogContentText>
+            <DialogContentText sx={{ mt: 1 }}>
               {esReversion ? (
-                <>¿Estás seguro de que deseas <strong>revertir</strong> el pago de <strong>{clienteSeleccionado?.sitioWeb}</strong>?</>
+                <>
+                  ¿Estás seguro de que deseas <strong>revertir</strong> el pago de <strong>{clienteSeleccionado?.sitioWeb}</strong>?
+                </>
               ) : (
-                <>¿Estás seguro de que deseas <strong>marcar como pagado</strong> a <strong>{clienteSeleccionado?.sitioWeb}</strong>?</>
+                <>
+                  ¿Estás seguro de que deseas <strong>marcar como pagado</strong> a <strong>{clienteSeleccionado?.sitioWeb}</strong>?
+
+                </>
               )}
             </DialogContentText>
           )}
+          {!esReversion && (
+            <FormControl fullWidth size="small" sx={{ mt: 2 }}>
+              <InputLabel>Mes de cobro</InputLabel>
+              <Select
+                label="Mes de cobro"
+                value={mesManual}
+                onChange={(e) => setMesManual(e.target.value)}
+              >
+                <MenuItem value="">
+                  <em>Automático – {mesSiguienteCorreo}</em>
+                </MenuItem>
+                {meses.map((mes, i) => (
+                  <MenuItem key={i} value={mes}>
+                    {mes}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )}
+
+
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDialog(false)}>Cancelar</Button>
+        <DialogActions
+          sx={{
+            justifyContent: "flex-end",
+            px: 2,
+            pb: 2,
+            gap: 0.5,
+            flexWrap: "nowrap",
+            overflowX: "auto",
+          }}
+        >
           <Button
-            onClick={() => confirmarPago(esReversion)}
-            color={esReversion ? "warning" : "success"}
-            variant="contained"
-            autoFocus
-            disabled={actualizando}
+            onClick={() => setOpenDialog(false)}
+            sx={{ fontSize: "0.75rem", px: 1.5, minWidth: "auto" }}
           >
-            {esReversion ? "Revertir pago" : "Confirmar"}
+            Cancelar
           </Button>
+
+          {!esReversion ? (
+            <>
+              <Button
+                onClick={() => confirmarPago(false)}
+                color="primary"
+                variant="contained"
+                disabled={actualizando}
+                sx={{ fontSize: "0.75rem", px: 1.5, minWidth: "auto" }}
+              >
+                Confirmar
+              </Button>
+
+              <Button
+                onClick={() => {
+                  confirmarPago(false);
+                  enviarCorreoPagoRecibido(clienteSeleccionado, mesManual || mesSiguienteCorreo);
+                }}
+                color="success"
+                variant="contained"
+                disabled={actualizando}
+                sx={{
+                  fontSize: "0.75rem",
+                  px: 1.5,
+                  minWidth: "auto",
+                }}
+              >
+                Confirmar + 📧
+              </Button>
+
+
+            </>
+          ) : (
+            <Button
+              onClick={() => confirmarPago(true)}
+              color="warning"
+              variant="contained"
+              disabled={actualizando}
+              sx={{ fontSize: "0.75rem", px: 1.5, minWidth: "auto" }}
+            >
+              Revertir pago
+            </Button>
+          )}
         </DialogActions>
       </Dialog>
+
+      <Dialog open={openDialogCobro} onClose={() => setOpenDialogCobro(false)} maxWidth="xs" fullWidth>
+        <DialogTitle>Cobro del mes de {mesCapitalizado}</DialogTitle>
+
+        <DialogContent>
+          <DialogContentText>
+            Notificaremos al cliente <strong>{clienteSeleccionado?.cliente}</strong> por el sitio <strong>{clienteSeleccionado?.sitioWeb}</strong>.
+          </DialogContentText>
+          <FormControl fullWidth size="small" sx={{ mt: 2 }}>
+            <InputLabel>Mes de cobro</InputLabel>
+            <Select
+              label="Mes de cobro"
+              value={mesManual}
+              onChange={(e) => setMesManual(e.target.value)}
+            >
+              <MenuItem value="">
+                <em>Automático – {mesSiguienteCorreo}</em>
+              </MenuItem>
+              {meses.map((mes, i) => (
+                <MenuItem key={i} value={mes}>
+                  {mes}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </DialogContent>
+
+        <DialogActions sx={{ justifyContent: "flex-end", px: 3, pb: 2 }}>
+          <Button onClick={() => setOpenDialogCobro(false)}>Cancelar</Button>
+          <Button
+            onClick={() => {
+              const mesFinal = mesManual || mesSiguienteCorreo;
+              const mesFinalCapitalizado = mesFinal.charAt(0).toUpperCase() + mesFinal.slice(1);
+
+              const mensaje = `Buenas! recordar el pago del HOSTING de ${clienteSeleccionado.sitioWeb} de *${clienteSeleccionado.valor}* del mes de ${mesFinalCapitalizado}.`;
+              const numero = clienteSeleccionado.telefono || "56946873014";
+              const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
+
+              window.open(url, "_blank");
+
+              enviarCorreoCobro(clienteSeleccionado, mesFinalCapitalizado);
+
+              if (clienteSeleccionado.index !== undefined) {
+                bloquearBotonTemporalmente(clienteSeleccionado.index);
+              }
+
+              setOpenDialogCobro(false);
+            }}
+            color="error"
+            variant="contained"
+          >
+            💰 Cobrar
+          </Button>
+
+        </DialogActions>
+      </Dialog>
+
+
+
+
       {/* 🔔 Dialogo último día del mes */}
       <Dialog
         open={mostrarDialogoUltimoDia}
