@@ -227,8 +227,8 @@ const Clientes = () => {
       montoPagado: cliente.valor || "$10.000 CLP",
       metodoPago: "Transferencia",
       logoCliente: cliente.logoCliente || "/logo-plataformas-web-correo.png",
-      //email: cliente.correo || "plataformas.web.cl@gmail.com", // ← destinatario real
-      email: "plataformas.web.cl@gmail.com",
+      email: cliente.correo || "plataformas.web.cl@gmail.com", // ← destinatario real
+      //email: "plataformas.web.cl@gmail.com",
       cc: "plataformas.web.cl@gmail.com",
     };
 
@@ -259,8 +259,8 @@ const Clientes = () => {
       sitioWeb: `www.${cliente.sitioWeb}`,
       nombre: cliente.cliente || cliente.sitioWeb || "Cliente",
       mes: mesCapitalizado,
-      email: "plataformas.web.cl@gmail.com", // ← destinatario real
-      //email: cliente.correo || "plataformas.web.cl@gmail.com", // ← destinatario real
+      //email: "plataformas.web.cl@gmail.com", // ← destinatario real
+      email: cliente.correo || "plataformas.web.cl@gmail.com", // ← destinatario real
       monto: cliente.valor ? `$${cliente.valor.replace(/\$/g, "").trim()} CLP` : "$10.000 CLP",
       cc: "plataformas.web.cl@gmail.com", // copia interna
     };
