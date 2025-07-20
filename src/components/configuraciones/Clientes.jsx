@@ -864,14 +864,14 @@ const Clientes = () => {
             justifyContent: "flex-end",
             px: 2,
             pb: 2,
-            gap: 0.5,
+            gap: 0.1,
             flexWrap: "nowrap",
             overflowX: "auto",
           }}
         >
           <Button
             onClick={() => setOpenDialog(false)}
-            sx={{ fontSize: "0.75rem", px: 1.5, minWidth: "auto" }}
+            sx={{ fontSize: "0.75rem", px: 0.5, minWidth: "auto" }}
           >
             Cancelar
           </Button>
@@ -883,7 +883,12 @@ const Clientes = () => {
                 color="primary"
                 variant="contained"
                 disabled={actualizando}
-                sx={{ fontSize: "0.75rem", px: 1.5, minWidth: "auto" }}
+                sx={{
+                  fontSize: isMobile ? '0.65rem' : '0.75rem',
+                  px: isMobile ? 1 : 1.5,
+                  py: isMobile ? 1 : 0.8,
+                  minWidth: isMobile ? 'auto' : undefined,
+                }}
               >
                 Confirmar
               </Button>
@@ -897,13 +902,15 @@ const Clientes = () => {
                 variant="contained"
                 disabled={actualizando}
                 sx={{
-                  fontSize: "0.75rem",
-                  px: 1.5,
-                  minWidth: "auto",
+                  fontSize: isMobile ? '0.65rem' : '0.75rem',
+                  px: isMobile ? 1 : 1.5,
+                  py: isMobile ? 1 : 0.8,
+                  minWidth: isMobile ? 'auto' : undefined,
                 }}
               >
                 Confirmar + 📧
               </Button>
+
 
 
             </>
