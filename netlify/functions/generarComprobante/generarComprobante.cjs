@@ -2,14 +2,10 @@ const fs = require("fs");
 const path = require("path");
 const AWS = require("aws-sdk");
 
-
-const s3 = new AWS.S3({
-    region: "us-east-2",
-});
+const s3 = new AWS.S3({ region: "us-east-2" });
 
 exports.handler = async (event) => {
     const isDev = process.env.NETLIFY_DEV === "true" || process.env.NODE_ENV !== "production";
-
 
     // 🔹 Manejar preflight CORS
     if (event.httpMethod === "OPTIONS") {
@@ -27,10 +23,7 @@ exports.handler = async (event) => {
     try {
         console.log("🧪 Modo:", isDev ? "Desarrollo (puppeteer)" : "Producción (chrome-aws-lambda)");
 
-        // 🔸 Cargar Puppeteer justo aquí (para evitar fallos previos)
-        const puppeteer = isDev
-            ? require("puppeteer")
-            : require("puppeteer-core");
+        const puppeteer = isDev ? require("puppeteer") : require("puppeteer-core");
         const chromium = isDev ? null : require("chrome-aws-lambda");
 
         const { cliente, mes } = JSON.parse(event.body || "{}");
@@ -49,8 +42,7 @@ exports.handler = async (event) => {
             .replace(/{{montoEnLetras}}/g, "Diez mil pesos")
             .replace(/{{qrUrl}}/g, "https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=www.plataformas-web.cl")
             .replace(/{{barcodeUrl}}/g, `https://barcode.tec-it.com/barcode.ashx?data=${codigoBarra}&code=Code128&multiplebarcodes=false&translate-esc=false&unit=Fit&dpi=96&imagetype=Gif&modulewidth=1.2&height=25&fontheight=0&text=false`)
-            .replace(/{{codigoBarra}}/g, codigoBarra)
-
+            .replace(/{{codigoBarra}}/g, codigoBarra);
 
         const browser = await puppeteer.launch(
             isDev
