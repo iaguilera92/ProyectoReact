@@ -163,14 +163,14 @@ const SeccionDestacada = () => {
                 <Box
                     ref={ref}
                     sx={{
-                        width: '45%',
+                        width: '50%',
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'flex-start',
                         px: 2,
                         py: 3,
-                        gap: 2,
+                        gap: 0,
                         overflowY: 'auto',
                         scrollbarWidth: 'none', // Firefox
                         '&::-webkit-scrollbar': {
@@ -246,8 +246,9 @@ const SeccionDestacada = () => {
                     <Box
                         sx={{
                             display: 'flex',
-                            gap: 2,
+                            gap: 2.1,
                             justifyContent: 'center',
+                            ml: 8,
                             alignItems: 'flex-end', // Alinea los videos abajo
                             mt: 6,
                             // mr: '10px', // Elimina este margen para que todos estén alineados
