@@ -88,6 +88,7 @@ const Clientes = () => {
   const isMobile = useMediaQuery("(max-width:600px)");
   const cardSize = isMobile ? "300px" : "340px";
   const mes = new Date().toLocaleString("es-CL", { month: "long" });
+
   const mesCapitalizado = mes.charAt(0).toUpperCase() + mes.slice(1);
   const [botonesBloqueados, setBotonesBloqueados] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
@@ -105,7 +106,8 @@ const Clientes = () => {
   const [tipoCambioVisual, setTipoCambioVisual] = useState(null);
   const [totalGanadoAnterior, setTotalGanadoAnterior] = useState(0);
   const [openDialogCobro, setOpenDialogCobro] = useState(false);
-  const [mesManual, setMesManual] = useState(""); // ← si está vacío, usamos automático
+  const [mesManual, setMesManual] = useState("");
+  const modoDesarrollo = true;
 
   const hoy = new Date();
 
@@ -117,6 +119,8 @@ const Clientes = () => {
   };
 
   const mesSiguienteCorreo = obtenerMesSiguiente();
+  const [mesDialogPago, setMesDialogPago] = useState(mesSiguienteCorreo);
+
 
   const totalGanado = clientes.reduce((acc, c) => {
     const valorLimpio = c.valor?.replace(/[$.\s\r\n]/g, "") || "0";
@@ -158,7 +162,7 @@ const Clientes = () => {
       return;
     }
 
-    const url = `${window.location.hostname === "localhost" ? "http://localhost:9999" : ""}/.netlify/functions/actualizarCliente`;
+    const url = `${window.location.hostname === "localhost" ? "http://localhost:8888" : ""}/.netlify/functions/actualizarCliente`;
     setActualizando(true);
 
     try {
@@ -216,42 +220,84 @@ const Clientes = () => {
     }
   };
 
-  //PAGO RECIBIDO - CORREO
-  const enviarCorreoPagoRecibido = (cliente, mesFinal) => {
+  const enviarCorreoPagoRecibido = async (cliente, mesFinal) => {
+    try {
+      // 🔹 Determinar la URL base
+      const urlBase = window.location.hostname === "localhost"
+        ? "http://localhost:8888"
+        : "";
 
-    const templateParams = {
-      sitioWeb: `www.${cliente.sitioWeb}`,
-      nombre: cliente.cliente || cliente.sitioWeb || "Cliente",
-      mes: mesFinal,
-      fechaPago: new Date().toLocaleDateString("es-CL"),
-      montoPagado: cliente.valor || "$10.000 CLP",
-      metodoPago: "Transferencia",
-      logoCliente: cliente.logoCliente || "/logo-plataformas-web-correo.png",
-      email: cliente.correo || "plataformas.web.cl@gmail.com", // ← destinatario real
-      //email: "plataformas.web.cl@gmail.com",
-      cc: "plataformas.web.cl@gmail.com",
-    };
+      // 🔹 Generar el comprobante en el backend
+      const generarPDFResponse = await fetch(`${urlBase}/.netlify/functions/generarComprobante`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cliente, mes: mesFinal }),
+      });
 
-    return emailjs.send(
-      "service_ocjgtpc",
-      "template_ligrzq3",
-      templateParams,
-      "byR6suwAx2-x6ddVp"
-    );
+      const raw = await generarPDFResponse.text();
+      console.log("🪵 Respuesta generarComprobante:", raw);
+
+      let resultado;
+      try {
+        resultado = JSON.parse(raw);
+      } catch {
+        throw new Error("❌ Respuesta inválida desde generarComprobante");
+      }
+
+      if (!generarPDFResponse.ok) {
+        throw new Error(resultado.message || resultado.detalle || "Error al generar el comprobante");
+      }
+
+      // 🔹 URL del comprobante (ya sabes cuál es)
+      const pdfUrl = "https://plataformas-web-buckets.s3.us-east-2.amazonaws.com/comprobantes/comprobante-pago.pdf";
+
+      // 🔹 Parámetros del correo
+      const templateParams = {
+        sitioWeb: `www.${cliente.sitioWeb}`,
+        nombre: cliente.cliente || cliente.sitioWeb || "Cliente",
+        mes: mesFinal,
+        fechaPago: new Date().toLocaleDateString("es-CL"),
+        montoPagado: cliente.valor || "$10.000 CLP",
+        metodoPago: "Transferencia",
+        logoCliente: cliente.logoCliente || "/logo-plataformas-web-correo.png",
+        //email: "plataformas.web.cl@gmail.com", // ← para pruebas
+        email: cliente.correo || "plataformas.web.cl@gmail.com", // ← producción
+        cc: "plataformas.web.cl@gmail.com",
+        pdfUrl,
+      };
+
+      // 🔹 Enviar el correo con EmailJS
+      const resultadoCorreo = await emailjs.send(
+        "service_ocjgtpc",
+        "template_ligrzq3",
+        templateParams,
+        "byR6suwAx2-x6ddVp"
+      );
+
+      console.log("✅ Correo enviado con comprobante PDF:", resultadoCorreo);
+      return resultadoCorreo;
+
+    } catch (err) {
+      console.error("❌ Error en enviarCorreoPagoRecibido:", err);
+      throw err;
+    }
   };
 
 
-  //ÚLTIMO DÍA DEL MES
-  const modoDesarrollo = false;
 
+  //ÚLTIMO DÍA DEL MES
   useEffect(() => {
-    const hoyUltimo = modoDesarrollo ? new Date(2025, 6, 31) : new Date();
-    const esUltimoDia = hoy.getDate() === new Date(hoyUltimo.getFullYear(), hoyUltimo.getMonth() + 1, 0).getDate();
+
+    const hoy = modoDesarrollo ? new Date(2025, 6, 31) : new Date(); // julio es mes 6 (cero indexado)
+
+    const ultimoDiaDelMes = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0).getDate();
+    const esUltimoDia = hoy.getDate() === ultimoDiaDelMes;
 
     if (esUltimoDia) {
       setMostrarDialogoUltimoDia(true);
     }
   }, []);
+
 
 
   const enviarCorreoCobro = (cliente, mesCapitalizado) => {
@@ -359,12 +405,20 @@ const Clientes = () => {
       </Typography>
     );
   };
+
+  // Para diálogo de cobro
+  useEffect(() => {
+    if (openDialogCobro) {
+      setMesManual(mesCapitalizado);
+    }
+  }, [openDialogCobro, mesCapitalizado]);
+
+  // Para diálogo de pago
   useEffect(() => {
     if (openDialog && !esReversion) {
-      setMesManual(mesSiguienteCorreo); // ← selecciona directamente el mes automático
+      setMesManual(mesSiguienteCorreo);
     }
   }, [openDialog, esReversion, mesSiguienteCorreo]);
-
 
   return (
     <Box
@@ -839,21 +893,19 @@ const Clientes = () => {
           )}
           {!esReversion && (
             <FormControl fullWidth size="small" sx={{ mt: 2 }}>
-              <InputLabel>Mes de cobro</InputLabel>
+              <InputLabel>Mes de Pago</InputLabel>
               <Select
                 label="Mes de cobro"
-                value={mesManual}
-                onChange={(e) => setMesManual(e.target.value)}
+                value={mesDialogPago}
+                onChange={(e) => setMesDialogPago(e.target.value)}
               >
-                <MenuItem value="">
-                  <em>Automático – {mesSiguienteCorreo}</em>
-                </MenuItem>
                 {meses.map((mes, i) => (
                   <MenuItem key={i} value={mes}>
                     {mes}
                   </MenuItem>
                 ))}
               </Select>
+
             </FormControl>
           )}
 
@@ -942,9 +994,6 @@ const Clientes = () => {
               value={mesManual}
               onChange={(e) => setMesManual(e.target.value)}
             >
-              <MenuItem value="">
-                <em>Automático – {mesSiguienteCorreo}</em>
-              </MenuItem>
               {meses.map((mes, i) => (
                 <MenuItem key={i} value={mes}>
                   {mes}
@@ -952,13 +1001,14 @@ const Clientes = () => {
               ))}
             </Select>
           </FormControl>
+
         </DialogContent>
 
         <DialogActions sx={{ justifyContent: "flex-end", px: 3, pb: 2 }}>
           <Button onClick={() => setOpenDialogCobro(false)}>Cancelar</Button>
           <Button
             onClick={() => {
-              const mesFinal = mesManual || mesSiguienteCorreo;
+              const mesFinal = mesManual || mesCapitalizado;
               const mesFinalCapitalizado = mesFinal.charAt(0).toUpperCase() + mesFinal.slice(1);
 
               const mensaje = `Buenas! recordar el pago del HOSTING de ${clienteSeleccionado.sitioWeb} de *${clienteSeleccionado.valor}* del mes de ${mesFinalCapitalizado}.`;
@@ -1009,7 +1059,7 @@ const Clientes = () => {
 
               try {
                 const url = `${window.location.hostname === "localhost"
-                  ? "http://localhost:9999"
+                  ? "http://localhost:8888"
                   : ""
                   }/.netlify/functions/reiniciarPagos`;
 

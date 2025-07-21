@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Boleta de Pago</title>
+    <style>
+        body {
+            font-family: "Courier New", monospace;
+            font-size: 12px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .ticket {
+            width: 270px;
+            padding: 16px;
+            margin: auto;
+            border: 1px solid #ccc;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+
+        .section {
+            margin: 10px 0;
+        }
+
+        .line {
+            border-top: 1px dashed #000;
+            margin: 10px 0;
+        }
+
+        .qr,
+        .barcode {
+            display: block;
+            margin: 10px auto;
+            max-width: 180px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        td {
+            padding: 4px 0;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        .small {
+            font-size: 10px;
+        }
+
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 10px;
+            color: #444;
+        }
+
+        .barcode {
+            width: 100%;
+            height: 35px;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="ticket">
+        <div class="center">
+            <img src="https://plataformas-web.cl/logo-plataformas-web.png" width="100" />
+            <p class="bold">PLATAFORMAS WEB</p>
+            <p class="small">www.plataformas-web.cl<br />plataformas.web.cl@gmail.com<br />+56 9 4687 3014</p>
+        </div>
+
+        <div class="center section">
+            <p class="bold">COMPROBANTE DE PAGO</p>
+            <p>N° {{numeroBoleta}}</p>
+        </div>
+
+        <div class="section">
+            <p><span class="bold">Cliente:</span> {{nombre}}</p>
+            <p><span class="bold">Sitio:</span> www.{{sitioWeb}}</p>
+            <p><span class="bold">Fecha:</span> {{fechaPago}}</p>
+        </div>
+
+        <div class="line"></div>
+
+        <table>
+            <tr>
+                <td>1</td>
+                <td>Hosting {{mes}}</td>
+                <td class="right">{{montoPagado}}</td>
+            </tr>
+            <tr>
+                <td colspan="2">Subtotal</td>
+                <td class="right">{{montoPagado}}</td>
+            </tr>
+            <tr>
+                <td colspan="2">I.V.A. (0%)</td>
+                <td class="right">$0</td>
+            </tr>
+            <tr>
+                <td colspan="2" class="bold">Total</td>
+                <td class="right bold">{{montoPagado}}</td>
+            </tr>
+        </table>
+
+        <div class="line"></div>
+        <p class="center">Importe en letras:<br /><span class="bold">{{montoEnLetras}}</span></p>
+        <img src="{{barcodeUrl}}" class="barcode" alt="Código de barras" />
+        <img src="{{qrUrl}}" class="qr" alt="QR Comprobante" />
+
+        <div class="center section">
+            <p>¡Gracias por tu preferencia!</p>
+        </div>
+        <div class="footer">Documento generado automáticamente · No requiere firma</div>
+    </div>
+</body>
+
+</html>

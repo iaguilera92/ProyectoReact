@@ -18,5 +18,7 @@
 [functions]
   included_files = [
     "netlify/functions/Servicios.xlsx",
-    "netlify/functions/Clientes.xlsx"
+    "netlify/functions/Clientes.xlsx",
+    "public/plantilla_boleta.html"
+
   ]

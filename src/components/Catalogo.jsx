@@ -384,7 +384,7 @@ const Catalogo = () => {
                 width: '100vw',
                 height: '100vh',
                 bgcolor: 'black',
-                zIndex: 9999,
+                zIndex: 8888,
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'flex-start',
