@@ -403,7 +403,7 @@ const Productos = ({ producto, girado, onGirar, FormatearPesos, onVisualizarMobi
                   borderRadius: '20px',
                   px: 3,
                   py: 1,
-                  zIndex: 8888,
+                  zIndex: 9999,
                   display: 'none', // ← lo controlamos desde el fullscreen listener
                   boxShadow: '0px 4px 10px rgba(0,0,0,0.3)',
                   '@media (max-width: 600px)': {

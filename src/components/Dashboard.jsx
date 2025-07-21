@@ -106,7 +106,7 @@ const Dashboard = () => {
             try {
                 const endpoint =
                     window.location.hostname === "localhost"
-                        ? "http://localhost:8888/.netlify/functions/getAnalyticsStats"
+                        ? "http://localhost:9999/.netlify/functions/getAnalyticsStats"
                         : "/.netlify/functions/getAnalyticsStats";
 
                 const res = await fetch(endpoint);

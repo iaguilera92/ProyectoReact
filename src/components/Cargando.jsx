@@ -54,7 +54,7 @@ const Cargando = () => {
                 justifyContent: 'center',
                 alignItems: 'center',
                 bgcolor: 'rgba(0, 0, 0, 0.85)',
-                zIndex: 8888,
+                zIndex: 9999,
             }}
         >
 

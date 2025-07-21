@@ -65,6 +65,7 @@ export default defineConfig({
   },
   server: {
     port: 5173, // ✅ fuerza este puerto
+    strictPort: true,
     mimeTypes: {
       '.jsx': 'application/javascript'
     }

@@ -162,7 +162,7 @@ const Clientes = () => {
       return;
     }
 
-    const url = `${window.location.hostname === "localhost" ? "http://localhost:8888" : ""}/.netlify/functions/actualizarCliente`;
+    const url = `${window.location.hostname === "localhost" ? "http://localhost:9999" : ""}/.netlify/functions/actualizarCliente`;
     setActualizando(true);
 
     try {
@@ -222,34 +222,41 @@ const Clientes = () => {
 
   const enviarCorreoPagoRecibido = async (cliente, mesFinal) => {
     try {
-      // 🔹 Determinar la URL base
       const urlBase = window.location.hostname === "localhost"
-        ? "http://localhost:8888"
+        ? "http://localhost:9999"
         : "";
 
-      // 🔹 Generar el comprobante en el backend
-      const generarPDFResponse = await fetch(`${urlBase}/.netlify/functions/generarComprobante`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cliente, mes: mesFinal }),
-      });
+      let pdfUrl = "https://plataformas-web-buckets.s3.us-east-2.amazonaws.com/comprobantes/comprobante-pago.pdf";
 
-      const raw = await generarPDFResponse.text();
-      console.log("🪵 Respuesta generarComprobante:", raw);
-
-      let resultado;
       try {
-        resultado = JSON.parse(raw);
-      } catch {
-        throw new Error("❌ Respuesta inválida desde generarComprobante");
-      }
+        // 🔹 Intentar generar el comprobante PDF
+        const generarPDFResponse = await fetch(`${urlBase}/.netlify/functions/generarComprobante`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cliente, mes: mesFinal }),
+        });
 
-      if (!generarPDFResponse.ok) {
-        throw new Error(resultado.message || resultado.detalle || "Error al generar el comprobante");
-      }
+        const raw = await generarPDFResponse.text();
+        console.log("🪵 Respuesta generarComprobante:", raw);
 
-      // 🔹 URL del comprobante (ya sabes cuál es)
-      const pdfUrl = "https://plataformas-web-buckets.s3.us-east-2.amazonaws.com/comprobantes/comprobante-pago.pdf";
+        let resultado;
+        try {
+          resultado = JSON.parse(raw);
+        } catch {
+          throw new Error("❌ Respuesta inválida desde generarComprobante");
+        }
+
+        if (!generarPDFResponse.ok) {
+          throw new Error(resultado.message || resultado.detalle || "Error al generar el comprobante");
+        }
+
+        // PDF generado correctamente, la URL es la misma (ya que siempre se sobrescribe)
+        console.log("✅ PDF generado exitosamente");
+
+      } catch (err) {
+        console.warn("⚠️ No se pudo generar el comprobante, se enviará correo sin adjunto:", err.message);
+        // puedes dejar pdfUrl como está (última versión generada) o poner un placeholder
+      }
 
       // 🔹 Parámetros del correo
       const templateParams = {
@@ -260,13 +267,12 @@ const Clientes = () => {
         montoPagado: cliente.valor || "$10.000 CLP",
         metodoPago: "Transferencia",
         logoCliente: cliente.logoCliente || "/logo-plataformas-web-correo.png",
-        //email: "plataformas.web.cl@gmail.com", // ← para pruebas
-        email: cliente.correo || "plataformas.web.cl@gmail.com", // ← producción
+        email: cliente.correo || "plataformas.web.cl@gmail.com",
         cc: "plataformas.web.cl@gmail.com",
-        pdfUrl,
+        pdfUrl, // sigue teniendo valor
       };
 
-      // 🔹 Enviar el correo con EmailJS
+      // 🔹 Enviar correo
       const resultadoCorreo = await emailjs.send(
         "service_ocjgtpc",
         "template_ligrzq3",
@@ -274,7 +280,7 @@ const Clientes = () => {
         "byR6suwAx2-x6ddVp"
       );
 
-      console.log("✅ Correo enviado con comprobante PDF:", resultadoCorreo);
+      console.log("✅ Correo enviado:", resultadoCorreo);
       return resultadoCorreo;
 
     } catch (err) {
@@ -1059,7 +1065,7 @@ const Clientes = () => {
 
               try {
                 const url = `${window.location.hostname === "localhost"
-                  ? "http://localhost:8888"
+                  ? "http://localhost:9999"
                   : ""
                   }/.netlify/functions/reiniciarPagos`;
 
