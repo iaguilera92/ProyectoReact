@@ -30,7 +30,8 @@ exports.handler = async (event) => {
         // 🔸 Cargar Puppeteer justo aquí (para evitar fallos previos)
         const puppeteer = isDev
             ? require("puppeteer")
-            : require("chrome-aws-lambda");
+            : require("puppeteer-core");
+        const chromium = isDev ? null : require("chrome-aws-lambda");
 
         const { cliente, mes } = JSON.parse(event.body || "{}");
 
@@ -58,9 +59,9 @@ exports.handler = async (event) => {
                     args: ["--no-sandbox", "--disable-setuid-sandbox"],
                 }
                 : {
-                    args: puppeteer.args,
-                    executablePath: await puppeteer.executablePath,
-                    headless: puppeteer.headless,
+                    args: chromium.args,
+                    executablePath: await chromium.executablePath,
+                    headless: chromium.headless,
                 }
         );
 
