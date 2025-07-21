@@ -52,7 +52,7 @@ exports.handler = async (event) => {
                 }
                 : {
                     args: chromium.args,
-                    executablePath: await chromium.executablePath || "/usr/bin/chromium-browser",
+                    executablePath: await chromium.executablePath,
                     headless: chromium.headless,
                     defaultViewport: chromium.defaultViewport,
                 }
