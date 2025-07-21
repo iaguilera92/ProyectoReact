@@ -16,13 +16,11 @@
     Access-Control-Allow-Methods = "GET, POST, OPTIONS"
 
 [functions]
-  # Permitir incluir archivos estáticos utilizados por funciones
   included_files = [
     "netlify/functions/Servicios.xlsx",
     "netlify/functions/Clientes.xlsx",
     "public/plantilla_boleta.html"
   ]
 
-  # Importante para puppeteer-core en producción
   node_bundler = "esbuild"
   external_node_modules = ["chrome-aws-lambda", "puppeteer-core"]

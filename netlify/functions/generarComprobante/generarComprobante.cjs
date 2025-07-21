@@ -52,10 +52,12 @@ exports.handler = async (event) => {
                 }
                 : {
                     args: chromium.args,
-                    executablePath: await chromium.executablePath,
+                    executablePath: await chromium.executablePath || "/usr/bin/chromium-browser",
                     headless: chromium.headless,
+                    defaultViewport: chromium.defaultViewport,
                 }
         );
+
 
         const page = await browser.newPage();
         await page.setContent(contenidoHTML, { waitUntil: "networkidle0" });
