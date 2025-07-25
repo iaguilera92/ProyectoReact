@@ -146,9 +146,9 @@ const InformationsPromotions = ({
                       width: "100%",
                       flexDirection: "row",
                       px: 2,
-                      pt: isMobile ? 12 : 18, // 👈 Espacio superior interno ajustado
+                      pt: isMobile ? 10.5 : 16, // 👈 Espacio superior interno ajustado
                       pb: 0,
-                      minHeight: isMobile ? "110px" : "130px",
+                      minHeight: isMobile ? "110px" : "105px",
                       alignItems: "flex-start", // sigue pegando arriba, pero con padding controlado
                       justifyContent: "space-between",
                     }}
@@ -167,12 +167,12 @@ const InformationsPromotions = ({
                             variant="h1"
                             sx={{
                               fontWeight: 900,
-                              fontSize: isMobile ? "2.4rem" : "2.8rem",
+                              fontSize: isMobile ? "2.4rem" : "2.6rem",
                               fontFamily: "'Anton', sans-serif",
                               letterSpacing: "2px",
                               color: "#ffb905",
                               textShadow: "2px 2px 5px rgba(0,0,0,0.5)",
-                              mt: isMobile ? 2.5 : -2,
+                              mt: isMobile ? 2.0 : -2.5,
                               mb: 0,
                             }}
                           >
@@ -182,9 +182,9 @@ const InformationsPromotions = ({
                             variant="h1"
                             sx={{
                               fontWeight: 900,
-                              fontSize: isMobile ? "1.8rem" : "2.3rem",
+                              fontSize: isMobile ? "1.8rem" : "2.2rem",
                               fontFamily: "'Anton', sans-serif",
-                              letterSpacing: "1.1px",
+                              letterSpacing: isMobile ? "2.3px" : "1.5px",
                               color: "white",
                               textShadow: "2px 2px 5px rgba(0,0,0,0.6)",
                             }}
@@ -200,7 +200,7 @@ const InformationsPromotions = ({
                               fontFamily: "'Poppins', sans-serif",
                               letterSpacing: "0.5px",
                               textShadow: "1px 1px 2px rgba(0,0,0,0.4)",
-                              mt: 0.5
+                              mt: 0.2
                             }}
                           >
                             LO QUE TU{" "}
@@ -238,7 +238,7 @@ const InformationsPromotions = ({
                               transform: "skewX(-12deg)",
                               backgroundColor: "black",
                               px: 0,
-                              py: 2,
+                              py: 1.5,
                               boxShadow: "0 6px 15px rgba(0,0,0,0.35)",
                               width: isMobile ? "160px" : "200px",
                             }}
@@ -253,7 +253,7 @@ const InformationsPromotions = ({
                                 px: 1,
                                 py: 0,
                                 boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
-                                minWidth: isMobile ? "130px" : "150px",
+                                minWidth: isMobile ? "130px" : "170px",
                                 textAlign: "center",
                               }}
                             >
@@ -265,7 +265,7 @@ const InformationsPromotions = ({
                                   fontSize: isMobile ? "0.59rem" : "0.8rem",
                                   fontFamily: "'Poppins', sans-serif",
                                   transform: "skewX(12deg)",
-                                  mr: 3,
+                                  mr: 3
                                 }}
                               >
                                 PRECIO DESARROLLO
@@ -292,11 +292,12 @@ const InformationsPromotions = ({
                                       transform: "skewX(12deg)",
                                       textAlign: "center",
                                       mb: 0,
+                                      mt: 0.2,
                                       mr: 1.8,
                                       textDecoration: "line-through",
                                     }}
                                   >
-                                    $150.000
+                                    $120.000
                                   </Typography>
                                 </motion.div>
                               ) : (
@@ -318,7 +319,8 @@ const InformationsPromotions = ({
                                       transform: "skewX(12deg)",
                                       textAlign: "center",
                                       mb: 0,
-                                      mr: 1.8
+                                      mt: 0.2,
+                                      mr: 1.5
                                     }}
                                   >
                                     {promo.price}
@@ -334,10 +336,9 @@ const InformationsPromotions = ({
                       </motion.div>
                     )}
 
-
-
-
                   </Box>
+
+
 
                   {showPopularBadge && (
                     <motion.div
@@ -347,17 +348,67 @@ const InformationsPromotions = ({
                     >
                       <Box
                         sx={{
-                          mt: isMobile ? 4 : 0,
+                          mt: isMobile ? 3 : 0,
                           mb: 1,
                           background: "linear-gradient(180deg, #1E1EBA 0%, #0075FF 100%)",
                           borderRadius: "12px",
                           px: 2,
-                          py: isMobile ? 1.2 : 1.1,
+                          py: isMobile ? 0.6 : 0.4,
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          width: "100%",
+                          maxWidth: "300px",
+                          color: "white",
+                          boxShadow: "0 3px 12px rgba(0, 0, 0, 0.3)",
+                          position: "relative",
+                          zIndex: 3,
+                          mx: "auto",
+                          alignSelf: "center",
+                          boxSizing: "border-box",
+                          textAlign: "center"
+                        }}
+                      >
+                        <Typography
+                          variant="body1"
+                          sx={{
+                            fontFamily: "'Mukta', sans-serif",
+                            fontWeight: 700,
+                            fontSize: isMobile ? "14px" : "16px",
+                            textTransform: "uppercase",
+                            lineHeight: 1.2
+                          }}
+                        >
+                          <Box component="span" sx={{ color: "rgb(243, 210, 98)", fontWeight: 700 }}>
+                            $30.000
+                          </Box>{" "}
+                          PARA EMPEZAR,<br />
+                          EL RESTO AL FINALIZAR TU WEB
+                        </Typography>
+                      </Box>
+                    </motion.div>
+                  )}
+
+
+                  {showPopularBadge && (
+                    <motion.div
+                      initial={{ y: 40, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ duration: 0.6, ease: "easeOut", delay: 0.4 }}
+                    >
+                      <Box
+                        sx={{
+                          mt: isMobile ? 0.6 : 0,
+                          mb: 0.5,
+                          background: "linear-gradient(180deg, #1E1EBA 0%, #0075FF 100%)",
+                          borderRadius: "12px",
+                          px: 2,
+                          py: isMobile ? 0.5 : 0.3,
                           display: "flex",
                           justifyContent: "space-between",
                           alignItems: "center",
                           width: "100%",
-                          maxWidth: "290px",
+                          maxWidth: "300px",
                           color: "white",
                           boxShadow: "0 3px 12px rgba(0, 0, 0, 0.3)",
                           position: "relative",
@@ -386,7 +437,7 @@ const InformationsPromotions = ({
                           <Typography
                             sx={{
                               fontFamily: "'Montserrat', sans-serif",
-                              fontSize: isMobile ? "1.3rem" : "1.4rem", // 👈 levemente más compacto
+                              fontSize: isMobile ? "1.3rem" : "1.3rem", // 👈 levemente más compacto
                               fontWeight: "bold",
                               color: "white",
                               lineHeight: 1,
@@ -435,7 +486,7 @@ const InformationsPromotions = ({
                           <Typography
                             sx={{
                               fontFamily: "'Montserrat', sans-serif",
-                              fontSize: isMobile ? "1.3rem" : "1.4rem",
+                              fontSize: isMobile ? "1.3rem" : "1.3rem",
                               fontWeight: "bold",
                               color: "white",
                               lineHeight: 1,
@@ -485,7 +536,7 @@ const InformationsPromotions = ({
                           color: "white",
                           borderRadius: "10px",
                           width: "100%",
-                          maxWidth: "290px",
+                          maxWidth: "300px",
                           px: 1,
                           py: 0.7,
                           fontWeight: "bold",
@@ -585,7 +636,7 @@ const InformationsPromotions = ({
                     </Box>
 
                     <Box sx={{
-                      width: "80%", mt: 8.5, display: "flex", height: "15%",
+                      width: "80%", mt: 10.3, display: "flex", height: "15%",
                       justifyContent: "space-between", gap: 2
                     }}>
                       {promo.extraPrices?.map(({ label, price }, idx) => (

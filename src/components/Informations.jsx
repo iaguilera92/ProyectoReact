@@ -18,7 +18,7 @@ const promotions = [
     title2: "TU SITIO WEB",
     description: "Lo que tu emprendimiento necesita.",
     image: "/promocion-1.jpg",
-    price: "$120.000",
+    price: "$99.000",
     extraPrices: [
       { label: "DOMINIO .CL", price: "$10.000" },
       { label: "HOSTING", price: "$10.000" }
