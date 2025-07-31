@@ -107,7 +107,7 @@ const Clientes = () => {
   const [totalGanadoAnterior, setTotalGanadoAnterior] = useState(0);
   const [openDialogCobro, setOpenDialogCobro] = useState(false);
   const [mesManual, setMesManual] = useState("");
-  const modoDesarrollo = true;
+  const modoDesarrollo = false;
 
   const hoy = new Date();
 
