@@ -870,10 +870,13 @@ const Clientes = () => {
           setMesManual("");
         }}
       >
-        <DialogTitle>
+        <DialogTitle sx={{
+          fontSize: "1rem",
+          fontWeight: 600
+        }}>
           {esReversion
             ? "Confirmar reversión de pago"
-            : `Confirmar pago recibido – ${mesDialogPago}`}
+            : `Confirmar pago recibido ${mesDialogPago}`}
         </DialogTitle>
         <DialogContent>
           {openDialog && (
