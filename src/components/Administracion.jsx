@@ -23,6 +23,7 @@ const Administracion = () => {
   const [showCursor, setShowCursor] = useState(true);
   const textToType = useRef("Iniciar sesión");
   const currentIndex = useRef(0);
+  const emailRef = useRef();
 
   const handleTogglePassword = () => setShowPassword((prev) => !prev);
 
@@ -99,6 +100,17 @@ const Administracion = () => {
     }
   }, []);
 
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      const valor = emailRef.current?.value?.toLowerCase();
+      if (valor === "iaguilera") {
+        sessionStorage.setItem("mostrarAdmin", "1");
+      }
+    }, 700);
+
+    return () => clearTimeout(timeout);
+  }, []);
+
   return (
     <Box sx={{
       height: "100vh", width: "100vw", backgroundImage: "url(/fondo-administracion.webp)",
@@ -120,8 +132,13 @@ const Administracion = () => {
 
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
           <TextField
-            fullWidth variant="filled" label="Usuario o correo" margin="dense"
-            value={email} onChange={(e) => setEmail(e.target.value)}
+            inputRef={emailRef}
+            fullWidth
+            variant="filled"
+            label="Usuario o correo"
+            margin="dense"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             InputProps={{ style: { backgroundColor: "#ffffff10", color: "white" } }}
             InputLabelProps={{ style: { color: "#bbb" } }}
           />

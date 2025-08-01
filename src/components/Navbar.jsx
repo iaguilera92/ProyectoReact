@@ -141,20 +141,13 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
     }
   }, [mostrarAnimacion]);
 
+
   useEffect(() => {
-    const credenciales = sessionStorage.getItem("credenciales");
-    if (credenciales) {
-      try {
-        const parsed = JSON.parse(credenciales);
-        if (parsed.usuario?.toLowerCase() === "iaguilera") {
-          setMostrarAdmin(true);
-        }
-      } catch (err) {
-        console.warn("⚠️ Error al parsear credenciales:", err);
-      }
+    const flag = sessionStorage.getItem("mostrarAdmin");
+    if (flag === "1") {
+      setMostrarAdmin(true);
     }
   }, []);
-
   return (
     <>
       <Box
