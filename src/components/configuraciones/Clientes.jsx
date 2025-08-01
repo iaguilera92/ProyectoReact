@@ -108,18 +108,7 @@ const Clientes = () => {
   const [openDialogCobro, setOpenDialogCobro] = useState(false);
   const [mesManual, setMesManual] = useState("");
   const modoDesarrollo = false;
-
-  const hoy = new Date();
-
-
-  const obtenerMesSiguiente = () => {
-    const mesSiguiente = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 1);
-    const nombreMes = mesSiguiente.toLocaleString("es-CL", { month: "long" });
-    return nombreMes.charAt(0).toUpperCase() + nombreMes.slice(1);
-  };
-
-  const mesSiguienteCorreo = obtenerMesSiguiente();
-  const [mesDialogPago, setMesDialogPago] = useState(mesSiguienteCorreo);
+  const mesDialogPago = mesManual || mesCapitalizado;
 
 
   const totalGanado = clientes.reduce((acc, c) => {
@@ -215,6 +204,7 @@ const Clientes = () => {
       setSnackbar({ open: true, message: "Error de red o del servidor." });
     } finally {
       setOpenDialog(false);
+      setMesManual("");
       setActualizando(false);
       setClienteSeleccionado(null);
     }
@@ -422,9 +412,9 @@ const Clientes = () => {
   // Para diálogo de pago
   useEffect(() => {
     if (openDialog && !esReversion) {
-      setMesManual(mesSiguienteCorreo);
+      setMesManual(mesCapitalizado);
     }
-  }, [openDialog, esReversion, mesSiguienteCorreo]);
+  }, [openDialog, esReversion, mesCapitalizado]);
 
   return (
     <Box
@@ -875,12 +865,15 @@ const Clientes = () => {
       <MenuInferior cardSize={cardSize} modo="clientes" />
       <Dialog
         open={openDialog}
-        onClose={() => setOpenDialog(false)}
+        onClose={() => {
+          setOpenDialog(false);
+          setMesManual("");
+        }}
       >
         <DialogTitle>
           {esReversion
             ? "Confirmar reversión de pago"
-            : `Confirmar pago recibido – ${mesSiguienteCorreo}`}
+            : `Confirmar pago recibido – ${mesDialogPago}`}
         </DialogTitle>
         <DialogContent>
           {openDialog && (
@@ -902,8 +895,8 @@ const Clientes = () => {
               <InputLabel>Mes de Pago</InputLabel>
               <Select
                 label="Mes de cobro"
-                value={mesDialogPago}
-                onChange={(e) => setMesDialogPago(e.target.value)}
+                value={mesManual}
+                onChange={(e) => setMesManual(e.target.value)}
               >
                 {meses.map((mes, i) => (
                   <MenuItem key={i} value={mes}>
@@ -954,7 +947,7 @@ const Clientes = () => {
               <Button
                 onClick={() => {
                   confirmarPago(false);
-                  enviarCorreoPagoRecibido(clienteSeleccionado, mesManual || mesSiguienteCorreo);
+                  enviarCorreoPagoRecibido(clienteSeleccionado, mesManual || mesCapitalizado);
                 }}
                 color="success"
                 variant="contained"
@@ -1110,7 +1103,7 @@ const Clientes = () => {
         onClose={() => setSnackbar({ ...snackbar, open: false })}
         message={snackbar.message}
       />
-    </Box>
+    </Box >
   );
 };
 

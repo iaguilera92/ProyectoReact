@@ -96,7 +96,8 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
   const mostrarAnimacion = videoReady || (location.pathname !== '/' && location.pathname !== '');
   const [animacionMostrada, setAnimacionMostrada] = useState(false);
   const mostrarLogo = mostrarAnimacion || animacionMostrada;
-  const [logueado, setLogueado] = useState(false);
+  const [mostrarAdmin, setMostrarAdmin] = useState(false);
+
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -141,8 +142,17 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
   }, [mostrarAnimacion]);
 
   useEffect(() => {
-    const tieneCredenciales = sessionStorage.getItem("credenciales");
-    setLogueado(!!tieneCredenciales);
+    const credenciales = sessionStorage.getItem("credenciales");
+    if (credenciales) {
+      try {
+        const parsed = JSON.parse(credenciales);
+        if (parsed.usuario?.toLowerCase() === "iaguilera") {
+          setMostrarAdmin(true);
+        }
+      } catch (err) {
+        console.warn("⚠️ Error al parsear credenciales:", err);
+      }
+    }
   }, []);
 
   return (
@@ -460,60 +470,57 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
           </AnimatePresence>
 
           {/* Administración */}
-          {logueado && (
-            <AnimatePresence mode="wait">
-              {open && (
-                <motion.div
-                  variants={bienvenidaVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
+          {open && mostrarAdmin && (
+            <motion.div
+              variants={bienvenidaVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+            >
+              <Box
+                onClick={() => navigate("/administracion")}
+                sx={{
+                  background: `
+          radial-gradient(circle at top left, rgba(144,202,249,0.1), transparent 70%),
+          linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))
+        `,
+                  borderRadius: 3,
+                  px: 2,
+                  py: 2,
+                  mx: 2,
+                  mt: 2,
+                  color: "#ffffff",
+                  backdropFilter: "blur(8px)",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  boxShadow: "0 0 12px rgba(255,255,255,0.05)",
+                  cursor: "pointer",
+                  transition: "all 0.3s ease",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  minHeight: 80,
+                  "&:hover": {
+                    backgroundColor: "rgba(255,255,255,0.05)",
+                    boxShadow: "0 0 16px rgba(144,202,249,0.2)",
+                  },
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontFamily: 'Poppins, sans-serif',
+                    fontWeight: 600,
+                    fontSize: "1rem",
+                    letterSpacing: 0.5,
+                    textAlign: "center",
+                  }}
                 >
-                  <Box
-                    onClick={() => navigate("/administracion")}
-                    sx={{
-                      background: `
-              radial-gradient(circle at top left, rgba(144,202,249,0.1), transparent 70%),
-              linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))
-            `,
-                      borderRadius: 3,
-                      px: 2,
-                      py: 2,
-                      mx: 2,
-                      mt: 2,
-                      color: "#ffffff",
-                      backdropFilter: "blur(8px)",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                      boxShadow: "0 0 12px rgba(255,255,255,0.05)",
-                      cursor: "pointer",
-                      transition: "all 0.3s ease",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      minHeight: 80,
-                      "&:hover": {
-                        backgroundColor: "rgba(255,255,255,0.05)",
-                        boxShadow: "0 0 16px rgba(144,202,249,0.2)",
-                      },
-                    }}
-                  >
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        fontFamily: 'Poppins, sans-serif',
-                        fontWeight: 600,
-                        fontSize: "1rem",
-                        letterSpacing: 0.5,
-                        textAlign: "center",
-                      }}
-                    >
-                      ⚙️Administración
-                    </Typography>
-                  </Box>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                  ⚙️ Administración
+                </Typography>
+              </Box>
+            </motion.div>
           )}
+
 
 
 
