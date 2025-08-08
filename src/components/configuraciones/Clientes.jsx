@@ -7,7 +7,7 @@ import DoneAllIcon from '@mui/icons-material/DoneAll';
 import GroupIcon from "@mui/icons-material/Group";
 import emailjs from "@emailjs/browser";
 import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
-import { motion, AnimatePresence, useMotionValue, useTransform, animate } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, animate } from "framer-motion";
 
 const baseDelay = 1.5; // segundos antes de comenzar la animación
 const letterDelay = 0.04;
@@ -94,7 +94,7 @@ const Clientes = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
   const [paginaActual, setPaginaActual] = useState(1);
-  const clientesPorPagina = 5;
+  const clientesPorPagina = 7;
   const [actualizando, setActualizando] = useState(false);
   const indiceInicio = (paginaActual - 1) * clientesPorPagina;
   const indiceFin = indiceInicio + clientesPorPagina;
@@ -827,40 +827,63 @@ const Clientes = () => {
                   </TableRow>
                 );
               })}
-            </TableBody>
 
+            </TableBody>
           </Table>
         </TableContainer>
+
+
+        {totalPaginas > 1 && (
+          <Box
+            sx={{
+              mt: 2,
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+              width: isMobile ? "100%" : "70%",
+              gap: 1,
+            }}
+          >
+            <Button
+              variant="outlined"
+              disabled={paginaActual === 1}
+              onClick={() => setPaginaActual((p) => p - 1)}
+              sx={{
+                color: "white",
+                borderColor: "white",
+                "&:hover": {
+                  borderColor: "#E95420",
+                  backgroundColor: "#E95420",
+                },
+              }}
+            >
+              Anterior
+            </Button>
+            <Typography variant="body2" sx={{ color: "white" }}>
+              Página {paginaActual} de {totalPaginas}
+            </Typography>
+            <Button
+              variant="outlined"
+              disabled={paginaActual === totalPaginas}
+              onClick={() => setPaginaActual((p) => p + 1)}
+              sx={{
+                color: "white",
+                borderColor: "white",
+                "&:hover": {
+                  borderColor: "#E95420",
+                  backgroundColor: "#E95420",
+                },
+              }}
+            >
+              Siguiente
+            </Button>
+          </Box>
+        )}
+
+
       </Box>
-      {totalPaginas > 1 && (
-        <Box
-          sx={{
-            mt: 2,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: 2,
-          }}
-        >
-          <Button
-            variant="outlined"
-            disabled={paginaActual === 1}
-            onClick={() => setPaginaActual(p => p - 1)}
-          >
-            Anterior
-          </Button>
-          <Typography variant="body2">
-            Página {paginaActual} de {totalPaginas}
-          </Typography>
-          <Button
-            variant="outlined"
-            disabled={paginaActual === totalPaginas}
-            onClick={() => setPaginaActual(p => p + 1)}
-          >
-            Siguiente
-          </Button>
-        </Box>
-      )}
+
+
 
       <MenuInferior cardSize={cardSize} modo="clientes" />
       <Dialog

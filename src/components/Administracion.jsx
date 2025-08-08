@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
   Box, Link, TextField, Button, Typography, Paper, InputAdornment,
-  IconButton, useMediaQuery, Snackbar, Alert, useTheme, Checkbox, FormControlLabel
+  IconButton, useMediaQuery, Alert, useTheme, Checkbox, FormControlLabel
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { validarCredenciales } from "../helpers/HelperUsuarios";
 import Fade from "@mui/material/Fade";
+import "./css/Administracion.css"; // Importamos el CSS
+import CircularProgress from '@mui/material/CircularProgress';
+import { motion } from 'framer-motion';
 
 const Administracion = () => {
   const theme = useTheme();
@@ -21,29 +24,26 @@ const Administracion = () => {
 
   const [typedText, setTypedText] = useState("");
   const [showCursor, setShowCursor] = useState(true);
+  const emailRef = useRef();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const textToType = useRef("Iniciar sesión");
   const currentIndex = useRef(0);
-  const emailRef = useRef();
 
   const handleTogglePassword = () => setShowPassword((prev) => !prev);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+
     const usuarioValido = await validarCredenciales(email, password);
+
     if (usuarioValido) {
-
-      //VARIABLE DE SESIÓN
       sessionStorage.setItem("credenciales", JSON.stringify({ email, password }));
-
-      // Solo guarda en localStorage si marcó "recordarme"
       if (recordarme) {
         localStorage.setItem("credenciales", JSON.stringify({ email, password }));
       } else {
         localStorage.removeItem("credenciales");
       }
-
-
-      // 🧠 Guardar datos en sessionStorage antes de redirigir
       sessionStorage.setItem("snackbar", JSON.stringify({
         open: true,
         type: "success",
@@ -51,15 +51,17 @@ const Administracion = () => {
       }));
       sessionStorage.setItem("usuario", JSON.stringify(usuarioValido));
 
-      navigate("/dashboard", { replace: true });
-
-    }
-    else {
+      // ⏳ Esperar 1 segundo antes de navegar
+      setTimeout(() => {
+        navigate("/dashboard", { replace: true });
+      }, 1000);
+    } else {
+      setIsSubmitting(false);
       setSnackbar({ open: true, type: "error", message: "Usuario o contraseña incorrectos" });
     }
   };
 
-  // Efecto para ocultar snackbar
+
   useEffect(() => {
     if (snackbar.open) {
       const timer = setTimeout(() => setSnackbar((prev) => ({ ...prev, open: false })), 4000);
@@ -67,7 +69,6 @@ const Administracion = () => {
     }
   }, [snackbar.open]);
 
-  // Efecto de tipeo
   useEffect(() => {
     const timeout = setTimeout(() => {
       const typing = setInterval(() => {
@@ -84,13 +85,11 @@ const Administracion = () => {
     return () => clearTimeout(timeout);
   }, []);
 
-  // Evitar scroll
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => { document.body.style.overflow = "auto"; };
   }, []);
 
-  // Cargar credenciales guardadas
   useEffect(() => {
     const creds = JSON.parse(localStorage.getItem("credenciales"));
     if (creds) {
@@ -127,7 +126,7 @@ const Administracion = () => {
           margin: "0 auto", mb: 2, border: "2px solid #E95420"
         }} />
         <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ fontFamily: "monospace", color: "white", minHeight: "1.5em" }}>
-          {typedText}{showCursor && <span style={{ display: "inline-block", fontWeight: "bold", transform: "scaleX(1.8)" }}>|</span>}
+          {isSubmitting ? <DotsAnimation /> : <>{typedText}{showCursor && <span style={{ display: "inline-block", fontWeight: "bold", transform: "scaleX(1.8)" }}>|</span>}</>}
         </Typography>
 
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
@@ -162,12 +161,43 @@ const Administracion = () => {
             control={<Checkbox checked={recordarme} onChange={(e) => setRecordarme(e.target.checked)} sx={{ color: "white" }} />}
             label="Recordarme" sx={{ color: "#bbb", mt: 0, fontSize: "0.8rem" }}
           />
-          <Button type="submit" fullWidth variant="outlined" sx={{
-            mt: 2, color: "white", borderColor: "white",
-            "&:hover": { borderColor: "#E95420", backgroundColor: "#E95420" }
-          }}>
-            Entrar
-          </Button>
+          <motion.div
+            initial={false}
+            animate={{ scale: isSubmitting ? 0.98 : 1 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          >
+            <Button
+              type="submit"
+              fullWidth
+              variant="outlined"
+              disabled={isSubmitting}
+              sx={{
+                mt: 2,
+                height: 45,
+                position: "relative",
+                color: isSubmitting ? "#fff" : "white",
+                backgroundColor: isSubmitting ? "#E95420" : "transparent",
+                borderColor: isSubmitting ? "#E95420" : "white",
+                transition: "all 0.3s ease-in-out",
+                "&:hover": {
+                  borderColor: "#E95420",
+                  backgroundColor: "#E95420",
+                },
+                "&.Mui-disabled": {
+                  borderColor: "#888",
+                  color: "#ccc",
+                },
+              }}
+            >
+              {isSubmitting ? (
+                <CircularProgress size={22} sx={{ color: "#fff" }} />
+              ) : (
+                "Entrar"
+              )}
+            </Button>
+
+          </motion.div>
+
           <Box sx={{ mt: 2 }}>
             <Link component="button" onClick={() => navigate("/")} underline="hover" sx={{
               color: "#bbb", fontSize: "0.9rem", "&:hover": { color: "#E95420" }
@@ -189,6 +219,19 @@ const Administracion = () => {
       </Fade>
     </Box>
   );
+};
+
+const DotsAnimation = () => {
+  const [dots, setDots] = useState("");
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDots((prev) => (prev.length < 3 ? prev + "." : ""));
+    }, 500);
+    return () => clearInterval(interval);
+  }, []);
+
+  return <span style={{ fontWeight: "bold" }}>Cargando{dots}</span>;
 };
 
 export default Administracion;
