@@ -134,7 +134,7 @@ export default function MusicaApp({
     position: "fixed",
     right: 20,
     bottom: 22,
-    zIndex: 9999,
+    zIndex: 1099,
     width: btnSize,
     height: btnSize,
     borderRadius: "50%",
