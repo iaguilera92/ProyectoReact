@@ -10,6 +10,7 @@ const Evidencias = lazy(() => import("./components/Evidencias"));
 const Evidencias2 = lazy(() => import("./components/Evidencias2"));
 const Footer = lazy(() => import("./components/Footer"));
 const Navbar = lazy(() => import("./components/Navbar"));
+const MusicaApp = lazy(() => import("./components/MusicaApp"));
 
 import { WhatsApp as WhatsAppIcon, ArrowUpward as ArrowUpwardIcon } from "@mui/icons-material";
 import { useLocation, Outlet } from "react-router-dom";
@@ -208,7 +209,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-
+      <MusicaApp src="/musica-app.mp3" volume={0.25} btnSize={40} />
       {/* Pantalla de carga */}
       <AnimatePresence>
         {!showApp && location.pathname !== "/dashboard" && location.pathname !== "/administracion" && location.pathname !== "/configurar-servicios" && (
@@ -300,7 +301,7 @@ function App() {
 
         {/* Botón WhatsApp */}
         {location.pathname !== "/administracion" && location.pathname !== "/dashboard" && location.pathname !== "/configurar-servicios" && location.pathname !== "/clientes" && (
-          <Box sx={{ position: "fixed", bottom: "40px", right: "20px", zIndex: 100, transition: "bottom 0.3s ease", }}>
+          <Box sx={{ position: "fixed", bottom: "75px", right: "15px", zIndex: 100, transition: "bottom 0.3s ease", }}>
             <IconButton onClick={() => { window.open("https://api.whatsapp.com/send?phone=56946873014", "_blank"); setHasInteracted(true); }} sx={{
               width: 60, height: 60, backgroundColor: "#25d366", color: "#FFF", borderRadius: "50%", boxShadow: "2px 2px 3px #999", "&:hover": { backgroundColor: "#1ebe5d" }, zIndex: 101
             }}>
@@ -312,7 +313,7 @@ function App() {
               <Box
                 sx={{
                   position: "fixed",
-                  bottom: 110,
+                  bottom: 140,
                   right: 20,
                   backgroundColor: "#fff",
                   color: "#000",
@@ -338,8 +339,8 @@ function App() {
           <IconButton onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             sx={{
               position: "fixed",
-              bottom: "120px",
-              right: "20px",
+              bottom: "145px",
+              right: "15px",
               backgroundColor: "#fff",
               color: "#000",
               borderRadius: "50%",
