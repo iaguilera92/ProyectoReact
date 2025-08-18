@@ -11,33 +11,33 @@ export default function MusicaApp({
   const [muted, setMuted] = useState(false);          // objetivo: empezar con sonido
   const [needsInteract, setNeedsInteract] = useState(false);
   const [consented, setConsented] = useState(() => localStorage.getItem(consentKey) === "1");
+  const playingRef = useRef(false);
 
   const tryPlay = async (preferAudible = true) => {
     const el = audioRef.current;
-    if (!el) return false;
-
-    // 1) intenta con sonido
-    if (preferAudible) {
-      try {
+    if (!el || playingRef.current) return false;
+    playingRef.current = true;
+    try {
+      if (preferAudible) {
         el.muted = false;
         await el.play();
         setMuted(false);
         setNeedsInteract(false);
         return true;
-      } catch {/* fall back */ }
-    }
-    // 2) intenta en silencio (para “desbloquear” reproducción)
-    try {
+      }
       el.muted = true;
       await el.play();
       setMuted(true);
-      setNeedsInteract(true); // pediremos gesto para desmutear
+      setNeedsInteract(true);
       return true;
     } catch {
       setNeedsInteract(true);
       return false;
+    } finally {
+      playingRef.current = false;
     }
   };
+
 
   // Reintentos en el montaje: normal → mute → reintentos con visibilidad/focus
   useEffect(() => {
@@ -114,6 +114,20 @@ export default function MusicaApp({
       setConsented(true);
     }
   };
+
+  useEffect(() => {
+    const onUnlock = async () => {
+      await tryPlay(true);
+      localStorage.setItem(consentKey, "1");
+      setConsented(true);
+      setMuted(false);
+      setNeedsInteract(false);
+    };
+    window.addEventListener("bgm:unlockAudio", onUnlock);
+    return () => window.removeEventListener("bgm:unlockAudio", onUnlock);
+  }, []);
+
+
 
   const iconSize = Math.max(14, Math.round(btnSize * 0.5));
   const btnStyle = {

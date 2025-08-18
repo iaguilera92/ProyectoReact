@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { motion } from 'framer-motion';
 import "./css/Cargando.css";
@@ -13,38 +13,53 @@ const Cargando = () => {
     const [showImage, setShowImage] = useState(false);
     const [showStrips, setShowStrips] = useState(true);
 
+    // ✅ NUEVO: control de “desbloqueo” (una sola vez) + reflejo en UI
+    const didUnlock = useRef(false);
+    const [unlocked, setUnlocked] = useState(false);
+
+    // ✅ NUEVO: gesto del usuario → activar música (MusicaApp lo escucha)
+    const handleUserGesture = () => {
+        if (didUnlock.current) return;
+        didUnlock.current = true;
+        setUnlocked(true);
+        window.dispatchEvent(new Event('bgm:unlockAudio'));
+    };
+
+    // ✅ NUEVO: si ya hubo consentimiento antes, desbloquea al montar
+    useEffect(() => {
+        if (localStorage.getItem('bgmConsent') === '1') {
+            didUnlock.current = true;
+            setUnlocked(true);
+            setTimeout(() => window.dispatchEvent(new Event('bgm:unlockAudio')), 0);
+        }
+    }, []);
 
     useEffect(() => {
         const timerGlow = setTimeout(() => {
             setGlow(true);
             setShowElectricEffect(true);
-
-            setTimeout(() => {
-                setShowElectricEffect(false);
-            }, 1000);
+            setTimeout(() => setShowElectricEffect(false), 1000);
         }, 2000);
-
         return () => clearTimeout(timerGlow);
     }, []);
 
-    //FONDO TIRAS VERTICALES
+    // FONDO TIRAS VERTICALES
     useEffect(() => {
         const showImageTimer = setTimeout(() => {
             setShowImage(true);
-
-            const hideStripsTimer = setTimeout(() => {
-                setShowStrips(false);
-            }, 2000); // duración del fadeIn
-
+            const hideStripsTimer = setTimeout(() => setShowStrips(false), 2000);
             return () => clearTimeout(hideStripsTimer);
-        }, 800); // ⏳ duración de las tiras
-
+        }, 800);
         return () => clearTimeout(showImageTimer);
     }, []);
 
-
     return (
         <Box
+            role="button"
+            tabIndex={0}
+            onClick={handleUserGesture}
+            onTouchStart={handleUserGesture}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleUserGesture(); }}
             sx={{
                 position: 'relative',
                 width: '100%',
@@ -55,31 +70,18 @@ const Cargando = () => {
                 alignItems: 'center',
                 bgcolor: 'rgba(0, 0, 0, 0.85)',
                 zIndex: 9999,
+                cursor: unlocked ? 'default' : 'pointer', // feedback visual
             }}
         >
-
             {/* FONDO */}
-
             {showStrips && (
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        inset: 0,
-                        display: 'flex',
-                        zIndex: 1, // correcto
-                    }}
-                >
-
+                <Box sx={{ position: 'absolute', inset: 0, display: 'flex', zIndex: 1 }}>
                     {Array.from({ length: NUM_COLUMNS }).map((_, index) => (
                         <motion.div
                             key={index}
                             initial={{ translateY: index % 2 === 0 ? '-100%' : '100%' }}
                             animate={{ translateY: '0%' }}
-                            transition={{
-                                duration: 0.8,
-                                delay: index * 0,
-                                ease: 'easeInOut',
-                            }}
+                            transition={{ duration: 0.8, delay: index * 0, ease: 'easeInOut' }}
                             style={{
                                 flex: isMobile ? '0 0 auto' : '1',
                                 width: isMobile ? `${COLUMN_WIDTH_PX}px` : 'auto',
@@ -96,10 +98,8 @@ const Cargando = () => {
                             }}
                         />
                     ))}
-
                 </Box>
             )}
-
 
             <Box
                 sx={{
@@ -115,7 +115,6 @@ const Cargando = () => {
                     transition: 'opacity 2s ease-in',
                 }}
             />
-
 
             {/* Contenido */}
             <Box
@@ -136,13 +135,12 @@ const Cargando = () => {
                         display: 'flex',
                         alignItems: 'center',
                         gap: 0,
-                        marginLeft: '-1px', // o prueba con -2 si es necesario
+                        marginLeft: '-1px',
                         marginBottom: '20px',
                         position: 'relative',
                         lineHeight: 0,
                     }}
                 >
-                    {/* ⚡ Rayo eléctrico */}
                     {showElectricEffect && (
                         <motion.div
                             initial={{ opacity: 0 }}
@@ -165,43 +163,22 @@ const Cargando = () => {
                         />
                     )}
 
-                    {/* Logo Izquierdo */}
                     <motion.img
                         src="/logo-plataformas-1.png"
                         alt="Logo izquierda"
                         initial={{ x: -80, opacity: 0 }}
-                        animate={showImage ? { x: 0, opacity: 1 } : { x: -80, opacity: 0 }} // 🚀 controlado por showImage
+                        animate={showImage ? { x: 0, opacity: 1 } : { x: -80, opacity: 0 }}
                         transition={{ duration: 1.2, ease: 'easeOut' }}
-                        style={{
-                            width: 130,
-                            height: 'auto',
-                            display: 'block',
-                            position: 'relative',
-                            zIndex: 2,
-                            filter: glow ? 'drop-shadow(0 0 6px #00e0ff88)' : 'none',
-                            verticalAlign: 'top',
-                        }}
+                        style={{ width: 130, height: 'auto', display: 'block', position: 'relative', zIndex: 2, filter: glow ? 'drop-shadow(0 0 6px #00e0ff88)' : 'none', verticalAlign: 'top' }}
                     />
-
-
-                    {/* Logo Derecho */}
                     <motion.img
                         src="/logo-plataformas-2.png"
                         alt="Logo derecha"
                         initial={{ x: 80, opacity: 0 }}
-                        animate={showImage ? { x: 0, opacity: 1 } : { x: 80, opacity: 0 }} // 🚀 controlado por showImage
+                        animate={showImage ? { x: 0, opacity: 1 } : { x: 80, opacity: 0 }}
                         transition={{ duration: 1.2, ease: 'easeOut' }}
-                        style={{
-                            width: 130,
-                            height: 'auto',
-                            display: 'block',
-                            position: 'relative',
-                            zIndex: 2,
-                            filter: glow ? 'drop-shadow(0 0 6px #00e0ff88)' : 'none',
-                            verticalAlign: 'top',
-                        }}
+                        style={{ width: 130, height: 'auto', display: 'block', position: 'relative', zIndex: 2, filter: glow ? 'drop-shadow(0 0 6px #00e0ff88)' : 'none', verticalAlign: 'top' }}
                     />
-
                 </Box>
 
                 {/* Barra de carga */}
@@ -226,12 +203,7 @@ const Cargando = () => {
                         }}
                         initial={{ x: -80 }}
                         animate={{ x: 260 }}
-                        transition={{
-                            repeat: Infinity,
-                            repeatType: 'loop',
-                            duration: 1,
-                            ease: 'linear',
-                        }}
+                        transition={{ repeat: Infinity, repeatType: 'loop', duration: 1, ease: 'linear' }}
                     />
                 </Box>
             </Box>
