@@ -1,11 +1,15 @@
-import { Container, Grid, Card, CardActionArea, CardMedia, Typography, Box, Button, useTheme, useMediaQuery, } from "@mui/material";
+import { Container, Grid, Badge, Card, Tooltip, CardActionArea, CardMedia, Typography, Box, Button, useTheme, useMediaQuery, } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import { styled } from "@mui/system";
 import { motion } from "framer-motion";
+import AccessTimeFilledRoundedIcon from '@mui/icons-material/AccessTimeFilledRounded';
+import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
+import DialogTrabajos from "./DialogTrabajos";
+
 import { FaHubspot } from "react-icons/fa";
 import { useInView } from "react-intersection-observer";
 import { useNavigate } from "react-router-dom";
-import "./css/Features.css"; // Importamos el CSS
+import "./css/Features.css"; // Importamos el CSSi
 
 // DATOS
 const features = [
@@ -14,6 +18,12 @@ const features = [
   { id: 3, title: "Desarrollo de Sistemas a Medida", desc: "Desarrollo de sistemas a medida, creamos software y sitios web personalizados para tu negocio.", image: "servicio1.jpg" }
 ];
 
+// TRABAJOS
+const trabajos = [
+  { SitioWeb: "plataformas-web.cl", Porcentaje: 80, Estado: true },
+  { SitioWeb: "investigadores-privados.cl", Porcentaje: 65, Estado: true },
+  { SitioWeb: "mastracker.cl", Porcentaje: 100, Estado: false },
+];
 
 // EFECTOS
 const StyledCardActionArea = styled(CardActionArea)({
@@ -71,6 +81,27 @@ function Features({ videoReady }) {
     }),
   };
 
+  //TRABAJOS ACTIVOS
+  // --- CTA dinámica según trabajos ---
+  const enDesarrollo = trabajos.filter(t => t.Estado && t.Porcentaje < 100).length;
+  const enCola = trabajos.filter(t => !t.Estado).length;
+
+  const hasTrabajos = trabajos.length > 0;
+  const textoTrabajos = `${enDesarrollo} Sitio${enDesarrollo === 1 ? "" : "s"} web en desarrollo, ${enCola} Sistema${enCola === 1 ? "" : "s"} en cola`;
+
+  const progresoMedio = trabajos.length
+    ? Math.round(trabajos.reduce((acc, t) => acc + t.Porcentaje, 0) / trabajos.length)
+    : 0;
+
+  const handleSolucionesClick = () => {
+    navigate("/servicios");
+  };
+  const [openTrabajos, setOpenTrabajos] = useState(false);
+
+  // handlers
+  const handleTrabajosClick = () => setOpenTrabajos(true);
+  const handleCloseTrabajos = () => setOpenTrabajos(false);
+
   return (
     <Box
       sx={{
@@ -78,13 +109,197 @@ function Features({ videoReady }) {
         backgroundSize: 'cover',  // Asegura que la imagen cubra todo el contenedor
         backgroundPosition: 'center',  // Centra la imagen en el fondo
         backgroundAttachment: 'fixed',  // Asegura que la imagen de fondo no se mueva al hacer scroll
-        py: 4,
+        py: 2,
         paddingBottom: "15px",
         color: "white",  // Ajusta el color del texto para que sea visible sobre el fondo
         overflowY: 'visible'
       }}
     >
       <Container sx={{ py: 0, maxWidth: "1500px !important", overflow: 'hidden' }}>
+        <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
+          <motion.div
+            ref={buttonRef}
+            initial={{ opacity: 0, y: 50 }}
+            animate={
+              isMobile
+                ? (buttonInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 })
+                : (hasAnimated ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 })
+            }
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+            style={{
+              minHeight: "60px",
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+
+            {hasTrabajos ? (
+              <Button
+                onClick={handleTrabajosClick}
+                variant="contained"
+                target="_self"
+                aria-label={textoTrabajos}
+                startIcon={
+                  <AccessTimeFilledRoundedIcon
+                    sx={{
+                      fontSize: { xs: 18, sm: 22 },
+                      transformOrigin: "50% 50%",
+                      animation: "clock 12s steps(12) infinite", // ⏱️ “tictac” en 12 pasos
+                      filter: "drop-shadow(0 0 4px rgba(255,167,38,.35))",
+                      "@media (prefers-reduced-motion: reduce)": { animation: "none" },
+                    }}
+                  />
+                }
+                endIcon={
+                  <Box className="arrow" sx={{ display: 'inline-flex', ml: .25, transition: 'transform .18s ease' }}>
+                    <ChevronRightRoundedIcon sx={{ fontSize: { xs: 18, sm: 22 } }} />
+                  </Box>
+                }
+                sx={{
+                  textTransform: "none",
+                  fontWeight: "bold",
+                  letterSpacing: "2px",
+                  fontFamily: "albert sans, sans-serif",
+                  border: "1px solid #ffa726",
+                  fontSize: { xs: "10px", sm: "1.1rem" },
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  position: "relative",
+                  overflow: "hidden",
+                  width: { xs: "100%", sm: "500px" },
+                  maxWidth: "500px",
+                  height: "50px",
+                  color: "#fff",
+                  background: "linear-gradient(90deg,#ff9800,#f57c00)",
+                  boxShadow: "0 6px 18px rgba(255,152,0,.35)",
+                  backgroundSize: "200% 100%",
+                  animation: "bgShift 6s linear infinite",
+                  transition: "width .3s ease, box-shadow .2s ease, transform .12s ease",
+                  "&:hover": {
+                    width: { xs: "100%", sm: "500px" },
+                    background: "linear-gradient(90deg,#ffa726,#fb8c00)",
+                    boxShadow: "0 8px 22px rgba(255,152,0,.45)",
+                    transform: "translateY(-1px)",
+                  },
+                  "&:hover .arrow": { transform: "translateX(4px)" },
+                  "&:active": {
+                    transform: "translateY(0)",
+                    boxShadow: "0 4px 14px rgba(255,152,0,.35)",
+                  },
+                  "&:focus-visible": {
+                    outline: "3px solid rgba(255,167,38,.6)",
+                    outlineOffset: "2px",
+                  },
+                  "&::after": {
+                    content: '""',
+                    position: "absolute",
+                    inset: 0,
+                    pointerEvents: "none",
+                    background: "linear-gradient(120deg, transparent 0%, rgba(255,255,255,.14) 50%, transparent 100%)",
+                    transform: "translateX(-100%)",
+                    animation: "sheen 2.8s ease-in-out infinite",
+                  },
+                  "@keyframes clock": {
+                    "0%": { transform: "rotate(0deg)" },
+                    "100%": { transform: "rotate(360deg)" },
+                  },
+                  "@keyframes sheen": {
+                    "0%": { transform: "translateX(-120%)" },
+                    "100%": { transform: "translateX(120%)" },
+                  },
+                  "@keyframes bgShift": {
+                    "0%": { backgroundPosition: "0% 0%" },
+                    "100%": { backgroundPosition: "200% 0%" },
+                  },
+                }}
+              >
+                {/* Texto con números destacados y más compacto */}
+                <Box
+                  sx={{
+                    display: "inline-flex",
+                    alignItems: "baseline",
+                    gap: 0.28,
+                    whiteSpace: "nowrap",
+                    letterSpacing: 0, // anula el tracking del botón
+                    // normaliza tipografía para ambos
+                    "--fz": { xs: "12.5px", sm: "14.5px" },
+                    "& .piece": {
+                      fontFamily: "albert sans, sans-serif",
+                      fontSize: "var(--fz)",
+                      fontWeight: 700,
+                      lineHeight: 1,
+                      // fuerza números “alineados” y proporcionales para que no desentonen
+                      fontVariantNumeric: "lining-nums proportional-nums",
+                      fontFeatureSettings: '"lnum" 1, "pnum" 1',
+                    },
+                    "& .num": {
+                      fontWeight: 800,          // sutilmente más pesado (misma familia/tamaño)
+                      marginRight: "0.15ch",    // pega número con texto sin abrir huecos raros
+                      textShadow: "0 0 4px rgba(255,167,38,.25)", // énfasis sin cambiar formato
+                    },
+                    "& .sep": { mx: 0.2, opacity: 0.8 },
+
+                  }}
+                >
+                  <span className="piece num">{enDesarrollo}</span>
+                  <span className="piece">
+                    {enDesarrollo === 1 ? "Sitio web en desarrollo, " : "Sitios web en desarrollo, "}
+                  </span>
+
+                  <span className="piece num">{enCola}</span>
+                  <span className="piece">
+                    {enCola === 1 ? "Sistema en cola" : "Sistemas en cola"}
+                  </span>
+                </Box>
+
+              </Button>
+
+
+            ) : (
+              <Button
+                onClick={handleSolucionesClick}
+                variant="contained"
+                target="_self"
+                sx={{
+                  textTransform: "none",
+                  fontWeight: "bold",
+                  letterSpacing: "3.1px",
+                  fontFamily: "albert sans, sans-serif",
+                  border: "1px solid #007de0",
+                  fontSize: { xs: "10px", sm: "1.1rem" },
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  position: "relative",
+                  overflow: "hidden",
+                  width: { xs: "100%", sm: "460px" },
+                  maxWidth: "460px",
+                  height: "50px",
+                  backgroundColor: "#007de0",
+                  transition: "width 0.3s ease",
+                  "&:hover": {
+                    width: { xs: "100%", sm: "470px" },
+                    backgroundColor: "#007de0",
+                  },
+                  "&:hover .icon": {
+                    opacity: 1,
+                    transform: "translateX(-10px)",
+                  },
+                  "&:hover .letter": {
+                    transform: "translateX(15px)",
+                  },
+                }}
+              >
+                {/* deja tu icono FaHubspot si quieres */}
+                <Box component="span" fontSize={isMobile ? "11px" : "15px"}>
+                  + SOLUCIONES PARA TU EMPRESA
+                </Box>
+              </Button>
+            )}
+
+          </motion.div>
+        </Box>
         <Box ref={ref}>
           <Grid container spacing={2}>
             {features.map((feature, index) => (
@@ -168,92 +383,14 @@ function Features({ videoReady }) {
               </Grid>
             ))}
           </Grid>
-          <br />
-          <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
-            <motion.div
-              ref={buttonRef}
-              initial={{ opacity: 0, y: 50 }}
-              animate={
-                isMobile
-                  ? (buttonInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 })
-                  : (hasAnimated ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 })
-              }
-              transition={{ duration: 0.8, ease: 'easeOut' }}
-              style={{
-                minHeight: "60px",
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-
-              <Button
-                onClick={() => { navigate('/servicios'); }}
-                variant="contained"
-                target="_self"
-                sx={{
-                  textTransform: "none",
-                  fontWeight: "bold",
-                  letterSpacing: "3.1px",
-                  fontFamily: "albert sans, sans-serif",
-                  border: "1px solid #007de0",
-                  fontSize: { xs: "10px", sm: "1.1rem" },
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  position: "relative",
-                  overflow: "hidden",
-                  width: { xs: "100%", sm: "460px" },
-                  maxWidth: "460px",
-                  height: "50px",
-                  backgroundColor: "#007de0",
-                  transition: "width 0.3s ease",
-                  "&:hover": {
-                    width: { xs: "100%", sm: "470px" },
-                    backgroundColor: "#007de0",
-                  },
-                  "&:hover .icon": {
-                    opacity: 1,
-                    transform: "translateX(-10px)",
-                  },
-                  "&:hover .letter": {
-                    transform: "translateX(15px)",
-                  },
-                }}
-              >
-                <Box sx={{ position: "relative", display: "flex", alignItems: "center" }}>
-                  <Box
-                    component="span"
-                    className={`icon ${hasAnimated ? "animate" : ""}`} // Activar animación al estar en vista
-                    sx={{
-                      position: "absolute",
-                      left: 0,
-                      display: "flex",
-                      alignItems: "center",
-                      opacity: hasAnimated ? 0 : 1,  // Al hacer scroll, se oculta el icono
-                      transform: hasAnimated ? "translateX(10px)" : "translateX(0)", // Mover el icono a la derecha
-                      transition: "all 1s ease", // Transición suave
-                      zIndex: 2,
-                    }}
-                  >
-                    <FaHubspot style={{ color: "#fff", fontSize: "1.5rem" }} />
-                  </Box>
-                </Box>
-                <Box
-                  component="span"
-                  fontSize={isMobile ? "11px" : "15px"}
-                  className={`letter ${hasAnimated ? "animate" : ""}`} // Activar animación al estar en vista
-                  sx={{
-                    ml: 1,
-                    transition: "all 1s ease", // Transición suave
-                    transform: hasAnimated ? "translateX(0)" : "translateX(15px)", // Inicialmente a la derecha (15px)
-                  }}
-                >
-                  + SOLUCIONES PARA TU EMPRESA
-                </Box>
-              </Button>
-            </motion.div>
-          </Box>
         </Box>
+        <DialogTrabajos
+          open={openTrabajos}
+          onClose={handleCloseTrabajos}
+          trabajos={trabajos}
+          primaryLabel="Ver servicios"
+          onPrimaryClick={() => { handleCloseTrabajos(); navigate("/servicios"); }}
+        />
       </Container >
     </Box >
   );
