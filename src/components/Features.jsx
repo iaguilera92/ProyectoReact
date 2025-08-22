@@ -5,8 +5,7 @@ import { motion } from "framer-motion";
 import AccessTimeFilledRoundedIcon from '@mui/icons-material/AccessTimeFilledRounded';
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
 import DialogTrabajos from "./DialogTrabajos";
-
-import { FaHubspot } from "react-icons/fa";
+import { cargarTrabajos } from "../helpers/HelperTrabajos";
 import { useInView } from "react-intersection-observer";
 import { useNavigate } from "react-router-dom";
 import "./css/Features.css"; // Importamos el CSSi
@@ -16,14 +15,6 @@ const features = [
   { id: 1, title: "Plataformas web", desc: "Diseñamos sitios web modernos, rápidos y adaptables para impulsar tus emprendimientos.", image: "servicio3.webp" },
   { id: 2, title: "Soporte Evolutivo de Sistemas", desc: "Soporte evolutivo y mantenimiento de sistemas, brindamos soporte TI para el mantenimiento de tus sistemas.", image: "servicio2.jpg" },
   { id: 3, title: "Desarrollo de Sistemas a Medida", desc: "Desarrollo de sistemas a medida, creamos software y sitios web personalizados para tu negocio.", image: "servicio1.jpg" }
-];
-
-// TRABAJOS
-const trabajos = [
-  { SitioWeb: "investigadores-privados.cl", Porcentaje: 60, Estado: true, TipoApp: 1 },
-  { SitioWeb: "mastracker.cl", Porcentaje: 80, Estado: true, TipoApp: 1 },
-  { SitioWeb: "ivelpink.cl", Porcentaje: 100, Estado: false, TipoApp: 1 },
-  { SitioWeb: "Sistema-Consultorio", Porcentaje: 10, Estado: true, TipoApp: 2 },
 ];
 
 // EFECTOS
@@ -43,15 +34,20 @@ const Overlay = styled(Box)(({ theme }) => ({
 
 const AdditionalContent = styled(Box)({ opacity: 0, transition: "opacity 0.3s ease" });
 
-
 function Features({ videoReady }) {
-
+  const timestamp = Date.now();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { ref, inView } = useInView({ triggerOnce: false, threshold: 0.1 });
   const [hasAnimated, setHasAnimated] = useState(false);
   const navigate = useNavigate();
-  const [buttonRef, buttonInView] = useInView({ triggerOnce: true, rootMargin: '0px 0px -20% 0px' });
+  const [trabajos, setTrabajos] = useState([]);
+
+  //TRABAJOS S3
+  useEffect(() => {
+    cargarTrabajos(`https://plataformas-web-buckets.s3.us-east-2.amazonaws.com/Trabajos.xlsx?t=${timestamp}`)
+      .then(setTrabajos);
+  }, []);
 
 
   //EVITAR ANIMACIÓN DUPLICADA
@@ -82,17 +78,14 @@ function Features({ videoReady }) {
     }),
   };
 
-  //TRABAJOS ACTIVOS
-  // --- CTA dinámica según trabajos ---
-  const enDesarrollo = trabajos.filter(t => t.Estado && t.Porcentaje < 100).length;
-  const enCola = trabajos.filter(t => !t.Estado).length;
+  // TRABAJOS ACTIVOS
+  const trabajosActivos = trabajos.filter(t => Number(t.Estado) === 1);
 
-  const hasTrabajos = trabajos.length > 0;
-  const textoTrabajos = `${enDesarrollo} Sitio${enDesarrollo === 1 ? "" : "s"} web en desarrollo, ${enCola} Sistema${enCola === 1 ? "" : "s"} en cola`;
+  // Ahora cuentas sobre los activos
+  const sitiosWebDesarrollo = trabajosActivos.filter(t => Number(t.TipoApp) === 1).length;
+  const sistemasDesarrollo = trabajosActivos.filter(t => Number(t.TipoApp) === 2).length;
+  const hasTrabajos = trabajosActivos.length > 0;
 
-  const progresoMedio = trabajos.length
-    ? Math.round(trabajos.reduce((acc, t) => acc + t.Porcentaje, 0) / trabajos.length)
-    : 0;
 
   const handleSolucionesClick = () => {
     navigate("/servicios");
@@ -117,190 +110,233 @@ function Features({ videoReady }) {
       }}
     >
       <Container sx={{ py: 0, maxWidth: "1500px !important", overflow: 'hidden' }}>
-        <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
-          <motion.div
-            ref={buttonRef}
-            initial={{ opacity: 0, y: 50 }}
-            animate={
-              isMobile
-                ? (buttonInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 })
-                : (hasAnimated ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 })
-            }
-            transition={{ duration: 0.8, ease: 'easeOut' }}
-            style={{
-              minHeight: "60px",
-              display: "flex",
-              justifyContent: "center",
-            }}
-          >
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={hasAnimated ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }
+          }
+          transition={{
+            duration: 0.8,
+            ease: "easeOut",
+            delay: isMobile ? 0.8 : 0.3,
+          }}
+          style={{
+            minHeight: "60px",
+            display: "flex",
+            justifyContent: "center",
+            marginTop: "10px",
+            marginBottom: "16px",
+          }}
+        >
 
-            {hasTrabajos ? (
-              <Button
-                onClick={handleTrabajosClick}
-                variant="contained"
-                target="_self"
-                aria-label={textoTrabajos}
-                startIcon={
-                  <AccessTimeFilledRoundedIcon
-                    sx={{
-                      fontSize: { xs: 18, sm: 22 },
-                      transformOrigin: "50% 50%",
-                      animation: "clock 12s steps(12) infinite", // ⏱️ “tictac” en 12 pasos
-                      filter: "drop-shadow(0 0 4px rgba(255,167,38,.35))",
-                      "@media (prefers-reduced-motion: reduce)": { animation: "none" },
-                    }}
-                  />
-                }
-                endIcon={
-                  <Box className="arrow" sx={{ display: 'inline-flex', ml: .25, transition: 'transform .18s ease' }}>
-                    <ChevronRightRoundedIcon sx={{ fontSize: { xs: 18, sm: 22 } }} />
-                  </Box>
-                }
-                sx={{
-                  textTransform: "none",
-                  fontWeight: "bold",
-                  letterSpacing: "2px",
-                  fontFamily: "albert sans, sans-serif",
-                  border: "1px solid #ffa726",
-                  fontSize: { xs: "10px", sm: "1.1rem" },
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  position: "relative",
-                  overflow: "hidden",
-                  width: { xs: "100%", sm: "500px" },
-                  maxWidth: "500px",
-                  height: "50px",
-                  color: "#fff",
-                  background: "linear-gradient(90deg,#ff9800,#f57c00)",
-                  boxShadow: "0 6px 18px rgba(255,152,0,.35)",
-                  backgroundSize: "200% 100%",
-                  animation: "bgShift 6s linear infinite",
-                  transition: "width .3s ease, box-shadow .2s ease, transform .12s ease",
-                  "&:hover": {
-                    width: { xs: "100%", sm: "500px" },
-                    background: "linear-gradient(90deg,#ffa726,#fb8c00)",
-                    boxShadow: "0 8px 22px rgba(255,152,0,.45)",
-                    transform: "translateY(-1px)",
-                  },
-                  "&:hover .arrow": { transform: "translateX(4px)" },
-                  "&:active": {
-                    transform: "translateY(0)",
-                    boxShadow: "0 4px 14px rgba(255,152,0,.35)",
-                  },
-                  "&:focus-visible": {
-                    outline: "3px solid rgba(255,167,38,.6)",
-                    outlineOffset: "2px",
-                  },
-                  "&::after": {
-                    content: '""',
-                    position: "absolute",
-                    inset: 0,
-                    pointerEvents: "none",
-                    background: "linear-gradient(120deg, transparent 0%, rgba(255,255,255,.14) 50%, transparent 100%)",
-                    transform: "translateX(-100%)",
-                    animation: "sheen 2.8s ease-in-out infinite",
-                  },
-                  "@keyframes clock": {
-                    "0%": { transform: "rotate(0deg)" },
-                    "100%": { transform: "rotate(360deg)" },
-                  },
-                  "@keyframes sheen": {
-                    "0%": { transform: "translateX(-120%)" },
-                    "100%": { transform: "translateX(120%)" },
-                  },
-                  "@keyframes bgShift": {
-                    "0%": { backgroundPosition: "0% 0%" },
-                    "100%": { backgroundPosition: "200% 0%" },
-                  },
+          {hasTrabajos ? (
+            <Button
+              onClick={handleTrabajosClick}
+              variant="contained"
+              fullWidth
+              sx={{
+                minWidth: { xs: "320px", sm: "360px" },
+                height: "58px",
+                borderRadius: "14px",
+                textTransform: "none",
+                fontFamily: "Albert Sans, sans-serif",
+                fontWeight: 600,
+                color: "#fff",
+                background: "linear-gradient(135deg, #ffd54f, #ff9800 45%, #f57c00 85%)",
+                backgroundSize: "200% 200%",
+                animation: "gradientShift 8s ease infinite",
+                boxShadow: "0 6px 16px rgba(255,152,0,.4)",
+                position: "relative",
+                overflow: "hidden",
+                justifyContent: "center",
+                gap: 0.6,
+                maxWidth: { xs: "100%", md: "520px" },
+                "&:hover": {
+                  background: "linear-gradient(135deg,#ffb74d,#fb8c00)",
+                  boxShadow:
+                    "0 0 6px rgba(255,167,38,.6), inset 0 0 6px rgba(255,255,255,0.25)",
+                },
+                "&::after": {
+                  content: '""',
+                  position: "absolute",
+                  inset: 0,
+                  background:
+                    "linear-gradient(120deg, transparent 0%, rgba(255,255,255,.35) 50%, transparent 100%)",
+                  transform: "translateX(-100%)",
+                  animation: "sheen 3.5s ease-in-out infinite",
+                  pointerEvents: "none",
+                },
+                "@keyframes gradientShift": {
+                  "0%": { backgroundPosition: "0% 50%" },
+                  "50%": { backgroundPosition: "100% 50%" },
+                  "100%": { backgroundPosition: "0% 50%" },
+                },
+                "@keyframes sheen": {
+                  "0%": { transform: "translateX(-120%)" },
+                  "100%": { transform: "translateX(120%)" },
+                },
+                "@keyframes clock": {
+                  "0%": { transform: "rotate(0deg)" },
+                  "100%": { transform: "rotate(360deg)" },
+                },
+              }}
+            >
+              {/* ⏩ Pop al contenido */}
+              <motion.div
+                initial={{ scale: 0.9 }} // parte un poco más chico
+                animate={hasAnimated ? { scale: 1 } : {}}
+                transition={{
+                  duration: 0.5,
+                  ease: "easeOut",
+                  delay: isMobile ? 1.5 : 1, // 🔑 espera 1s después de hasAnimated
                 }}
+                style={{ display: "flex", alignItems: "center", gap: 6 }}
               >
-                {/* Texto con números destacados y más compacto */}
+                {/* Reloj */}
+                <AccessTimeFilledRoundedIcon
+                  sx={{
+                    fontSize: { xs: 18, sm: 22 },
+                    animation: "clock 12s steps(12) infinite",
+                    transformOrigin: "50% 50%",
+                    filter: "drop-shadow(0 0 4px rgba(255,167,38,.35))",
+                    "@media (prefers-reduced-motion: reduce)": { animation: "none" },
+                  }}
+                />
+
+                {/* Texto + chips */}
                 <Box
                   sx={{
-                    display: "inline-flex",
-                    alignItems: "baseline",
-                    gap: 0.28,
-                    whiteSpace: "nowrap",
-                    letterSpacing: 0, // anula el tracking del botón
-                    // normaliza tipografía para ambos
-                    "--fz": { xs: "12.5px", sm: "14.5px" },
-                    "& .piece": {
-                      fontFamily: "albert sans, sans-serif",
-                      fontSize: "var(--fz)",
-                      fontWeight: 700,
-                      lineHeight: 1,
-                      // fuerza números “alineados” y proporcionales para que no desentonen
-                      fontVariantNumeric: "lining-nums proportional-nums",
-                      fontFeatureSettings: '"lnum" 1, "pnum" 1',
-                    },
-                    "& .num": {
-                      fontWeight: 800,          // sutilmente más pesado (misma familia/tamaño)
-                      marginRight: "0.15ch",    // pega número con texto sin abrir huecos raros
-                      textShadow: "0 0 4px rgba(255,167,38,.25)", // énfasis sin cambiar formato
-                    },
-                    "& .sep": { mx: 0.2, opacity: 0.8 },
-
+                    display: "flex",
+                    alignItems: "center",
+                    flexWrap: "nowrap",
+                    gap: { xs: 0.5, sm: 1 },
+                    overflow: "hidden",
+                    fontSize: { xs: "0.7rem", sm: "0.9rem" },
                   }}
                 >
-                  <span className="piece num">{enDesarrollo}</span>
-                  <span className="piece">
-                    {enDesarrollo === 1 ? "Sitio web en desarrollo, " : "Sitios web en desarrollo, "}
-                  </span>
+                  <span>En desarrollo:</span>
 
-                  <span className="piece num">{enCola}</span>
-                  <span className="piece">
-                    {enCola === 1 ? "Sistema en cola" : "Sistemas en cola"}
-                  </span>
+                  <Box
+                    sx={{
+                      minWidth: { xs: 90, sm: 120 },
+                      textAlign: "center",
+                      px: { xs: 0.6, sm: 1.2 },
+                      py: 0.4,
+                      borderRadius: "8px",
+                      fontWeight: 700,
+                      background: "linear-gradient(135deg,#ffa726,#fb8c00)",
+                      border: "2px solid rgba(255,255,255,.8)",
+                      boxShadow:
+                        "0 0 6px rgba(255,167,38,.5), inset 0 0 6px rgba(255,255,255,0.25)",
+                      whiteSpace: "nowrap",
+                      position: "relative",
+                      zIndex: 1,
+                      transition: "all .25s ease",
+                      "&:hover": {
+                        borderColor: "#fff",
+                        boxShadow:
+                          "0 0 10px rgba(255,193,7,.8), inset 0 0 8px rgba(255,255,255,0.35)",
+                      },
+                    }}
+                  >
+                    {sitiosWebDesarrollo} {sitiosWebDesarrollo === 1 ? "Sitio web" : "Sitios web"}
+                  </Box>
+
+                  <Box
+                    sx={{
+                      minWidth: { xs: 90, sm: 120 },
+                      textAlign: "center",
+                      px: { xs: 0.6, sm: 1.2 },
+                      py: 0.4,
+                      borderRadius: "8px",
+                      fontWeight: 700,
+                      background: "linear-gradient(135deg,#ffa726,#fb8c00)",
+                      border: "2px solid rgba(255,255,255,.8)",
+                      boxShadow:
+                        "0 0 6px rgba(255,167,38,.5), inset 0 0 6px rgba(255,255,255,0.25)",
+                      whiteSpace: "nowrap",
+                      position: "relative",
+                      zIndex: 1,
+                      transition: "all .25s ease",
+                      "&:hover": {
+                        borderColor: "#fff",
+                        boxShadow:
+                          "0 0 10px rgba(255,193,7,.8), inset 0 0 8px rgba(255,255,255,0.35)",
+                      },
+                    }}
+                  >
+                    {sistemasDesarrollo} {sistemasDesarrollo === 1 ? "Sistema" : "Sistemas"}
+                  </Box>
                 </Box>
 
-              </Button>
+                {/* Flecha */}
+                <motion.div
+                  initial={{ x: 0 }}
+                  animate={{ x: [0, 4, 0] }}
+                  transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+                  whileTap={{ scale: 0.85 }}
+                  style={{ display: "flex", alignItems: "center" }}
+                >
+                  <ChevronRightRoundedIcon
+                    sx={{
+                      fontSize: { xs: 18, sm: 22 },
+                      transition: "transform .25s ease",
+                      ".MuiButton-root:hover &": {
+                        transform: "translateX(6px)",
+                      },
+                    }}
+                  />
+                </motion.div>
+              </motion.div>
+            </Button>
 
 
-            ) : (
-              <Button
-                onClick={handleSolucionesClick}
-                variant="contained"
-                target="_self"
-                sx={{
-                  textTransform: "none",
-                  fontWeight: "bold",
-                  letterSpacing: "3.1px",
-                  fontFamily: "albert sans, sans-serif",
-                  border: "1px solid #007de0",
-                  fontSize: { xs: "10px", sm: "1.1rem" },
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  position: "relative",
-                  overflow: "hidden",
-                  width: { xs: "100%", sm: "460px" },
-                  maxWidth: "460px",
-                  height: "50px",
+
+
+          ) : (
+            <Button
+              onClick={handleSolucionesClick}
+              variant="contained"
+              target="_self"
+              sx={{
+                textTransform: "none",
+                fontWeight: "bold",
+                letterSpacing: "3.1px",
+                fontFamily: "albert sans, sans-serif",
+                border: "1px solid #007de0",
+                fontSize: { xs: "10px", sm: "1.1rem" },
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                position: "relative",
+                overflow: "hidden",
+                width: { xs: "100%", sm: "460px" },
+                maxWidth: "460px",
+                height: "50px",
+                backgroundColor: "#007de0",
+                transition: "width 0.3s ease",
+                "&:hover": {
+                  width: { xs: "100%", sm: "470px" },
                   backgroundColor: "#007de0",
-                  transition: "width 0.3s ease",
-                  "&:hover": {
-                    width: { xs: "100%", sm: "470px" },
-                    backgroundColor: "#007de0",
-                  },
-                  "&:hover .icon": {
-                    opacity: 1,
-                    transform: "translateX(-10px)",
-                  },
-                  "&:hover .letter": {
-                    transform: "translateX(15px)",
-                  },
-                }}
-              >
-                {/* deja tu icono FaHubspot si quieres */}
-                <Box component="span" fontSize={isMobile ? "11px" : "15px"}>
-                  + SOLUCIONES PARA TU EMPRESA
-                </Box>
-              </Button>
-            )}
+                },
+                "&:hover .icon": {
+                  opacity: 1,
+                  transform: "translateX(-10px)",
+                },
+                "&:hover .letter": {
+                  transform: "translateX(15px)",
+                },
+              }}
+            >
+              {/* deja tu icono FaHubspot si quieres */}
+              <Box component="span" fontSize={isMobile ? "11px" : "15px"}>
+                + SOLUCIONES PARA TU EMPRESA
+              </Box>
+            </Button>
+          )}
 
-          </motion.div>
-        </Box>
+        </motion.div>
+
+
         <Box ref={ref}>
           <Grid container spacing={2}>
             {features.map((feature, index) => (

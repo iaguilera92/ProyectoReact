@@ -36,13 +36,13 @@ const MenuInferior = ({ cardSize }) => {
             icono: <BarChartIcon sx={{ fontSize: 45, color: "success.main" }} />,
             texto: "Visitas",
         },
-        "/configurar-servicios": {
+        "/configurar-trabajos": {
             icono: <HomeRepairServiceIcon sx={{ fontSize: 45, color: "success.main" }} />,
-            texto: "Servicios",
+            texto: "Trabajos",
         },
     };
 
-    const orden = ["/clientes", "/dashboard", "/configurar-servicios"];
+    const orden = ["/clientes", "/dashboard", "/configurar-trabajos"];
     const rutaCentral = orden.find(r => pathname.startsWith(r)) || "/dashboard";
     const rutasLaterales = orden.filter(r => r !== rutaCentral);
 
