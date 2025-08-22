@@ -84,7 +84,7 @@ const Trabajos = ({ trabajo }) => {
   };
 
   return (
-    <Box sx={{ mb: 2.5 }}>
+    <Box sx={{ mb: 0 }}>
       {/* Cabecera */}
       <Box
         sx={{

@@ -224,7 +224,7 @@ export default function DialogTrabajos({
             },
           }}
         >
-          <CloseRoundedIcon />
+          <CloseRoundedIcon sx={{ fontSize: 28 }} />
         </IconButton>
 
 
@@ -272,17 +272,18 @@ export default function DialogTrabajos({
               flexWrap: "nowrap",     // 👈 evita salto a segunda línea
             }}
           >
-            {/* Sitios en desarrollo */}
+            {/* Web en desarrollo */}
             <Box
               sx={{
                 flex: 1,
-                minWidth: 160, // 👈 asegura ancho mínimo en mobile
+                minWidth: { xs: 120, sm: 160 }, // más pequeño en mobile
                 textAlign: "center",
-                px: { xs: 1.5, sm: 2 },
-                py: 2,
+                px: { xs: 1, sm: 2 },
+                py: { xs: 1.2, sm: 2 },
                 borderRadius: 3,
-                background: "linear-gradient(135deg, rgba(230,81,0,0.9), rgba(255,152,0,0.7))",
-                boxShadow: "0 6px 20px rgba(0,0,0,.45)",
+                background:
+                  "linear-gradient(135deg, rgba(230,81,0,0.9), rgba(255,152,0,0.7))",
+                boxShadow: { xs: "0 4px 14px rgba(0,0,0,.35)", sm: "0 6px 20px rgba(0,0,0,.45)" },
                 color: "#fff",
               }}
             >
@@ -291,34 +292,49 @@ export default function DialogTrabajos({
                   display: "inline-flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  width: 70,
-                  height: 70,
+                  width: { xs: 55, sm: 70 },
+                  height: { xs: 55, sm: 70 },
                   borderRadius: "50%",
                   bgcolor: "rgba(255,255,255,0.15)",
-                  border: "3px solid #fff",
+                  border: { xs: "2px solid #fff", sm: "3px solid #fff" },
                   mb: 1,
                 }}
               >
-                <Typography variant="h4" sx={{ fontWeight: 900, color: "#fff" }}>
+                <Typography
+                  variant="h4"
+                  sx={{
+                    fontWeight: 900,
+                    color: "#fff",
+                    fontSize: { xs: "1.5rem", sm: "2rem" },
+                  }}
+                >
                   <ContadorAnimado value={sitiosWeb} delay={0.5} duration={2} />
                 </Typography>
               </Box>
-              <Typography variant="body2" sx={{ fontWeight: 600, whiteSpace: "nowrap", }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  fontWeight: 600,
+                  whiteSpace: "nowrap",
+                  fontSize: { xs: "0.7rem", sm: "0.875rem" },
+                }}
+              >
                 Web en desarrollo
               </Typography>
             </Box>
 
-            {/* Sistemas en cola */}
+            {/* Sistemas en desarrollo */}
             <Box
               sx={{
                 flex: 1,
-                minWidth: 160, // 👈 asegura ancho mínimo en mobile
+                minWidth: { xs: 120, sm: 160 },
                 textAlign: "center",
-                px: { xs: 1.5, sm: 2 },
-                py: 2,
+                px: { xs: 1, sm: 2 },
+                py: { xs: 1.2, sm: 2 },
                 borderRadius: 3,
-                background: "linear-gradient(135deg, rgba(251,140,0,0.9), rgba(255,202,40,0.7))",
-                boxShadow: "0 6px 20px rgba(0,0,0,.45)",
+                background:
+                  "linear-gradient(135deg, rgba(251,140,0,0.9), rgba(255,202,40,0.7))",
+                boxShadow: { xs: "0 4px 14px rgba(0,0,0,.35)", sm: "0 6px 20px rgba(0,0,0,.45)" },
                 color: "#fff",
               }}
             >
@@ -327,22 +343,37 @@ export default function DialogTrabajos({
                   display: "inline-flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  width: 70,
-                  height: 70,
+                  width: { xs: 55, sm: 70 },
+                  height: { xs: 55, sm: 70 },
                   borderRadius: "50%",
                   bgcolor: "rgba(255,255,255,0.15)",
-                  border: "3px solid #fff",
+                  border: { xs: "2px solid #fff", sm: "3px solid #fff" },
                   mb: 1,
                 }}
               >
-                <Typography variant="h4" sx={{ fontWeight: 900, color: "#fff" }}>
+                <Typography
+                  variant="h4"
+                  sx={{
+                    fontWeight: 900,
+                    color: "#fff",
+                    fontSize: { xs: "1.5rem", sm: "2rem" },
+                  }}
+                >
                   <ContadorAnimado value={sistemas} delay={0.5} duration={2} />
                 </Typography>
               </Box>
-              <Typography variant="body2" sx={{ fontWeight: 600, whiteSpace: "nowrap", }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  fontWeight: 600,
+                  whiteSpace: "nowrap",
+                  fontSize: { xs: "0.7rem", sm: "0.875rem" },
+                }}
+              >
                 Sistemas en desarrollo
               </Typography>
             </Box>
+
           </Box>
         ) : (
           <Typography
@@ -376,7 +407,7 @@ export default function DialogTrabajos({
             <DialogContent
               sx={{
                 background: "linear-gradient(180deg, #FFF8E1 0%, #FFF3E0 100%)",
-                py: 2.5,
+                py: isMobile ? 1 : 2.5,
                 mb: 0
               }}
             >
