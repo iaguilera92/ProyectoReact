@@ -209,10 +209,12 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <MusicaApp src="/musica-app.mp3" volume={0.25} btnSize={40} />
+      {location.pathname !== "/administracion" && location.pathname !== "/dashboard" && location.pathname !== "/configurar-servicios" && location.pathname !== "/configurar-trabajos" && location.pathname !== "/clientes" && (
+        <MusicaApp src="/musica-app.mp3" volume={0.25} btnSize={40} />
+      )}
       {/* Pantalla de carga */}
       <AnimatePresence>
-        {!showApp && location.pathname !== "/dashboard" && location.pathname !== "/administracion" && location.pathname !== "/configurar-servicios" && location.pathname !== "/configurar-trabajos" && (
+        {!showApp && location.pathname !== "/dashboard" && location.pathname !== "/administracion" && location.pathname !== "/configurar-servicios" && (
           <>
             <motion.div key="cargando" initial={{ opacity: 1 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.8 }} style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", zIndex: 9999, }}>
               <Cargando />

@@ -157,27 +157,46 @@ const ConfigurarTrabajos = () => {
 
   const guardarCambios = async (trabajo) => {
     try {
-      setLoadingSaveAll(true); // 🔒 bloquea toda la tabla
+      setLoadingSaveAll(true);
 
+      const payload = {
+        SitioWeb: trabajo.SitioWeb,
+        nuevoPorcentaje: Number(trabajo.Porcentaje), // 👈 usar nombre esperado
+        nuevoEstado: Number(trabajo.Estado),         // 👈 usar nombre esperado
+      };
 
-      const url = `${window.location.hostname === "localhost" ? "http://localhost:9999" : ""}/.netlify/functions/actualizarTrabajo`;
+      const url = `${window.location.hostname === "localhost"
+        ? "http://localhost:9999"
+        : ""
+        }/.netlify/functions/actualizarTrabajo`;
+
       const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(trabajo),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Error al guardar");
 
-      setSnackbar({ open: true, type: "success", message: "Cambios guardados correctamente" });
+      setSnackbar({
+        open: true,
+        type: "success",
+        message: "Cambios guardados correctamente",
+      });
     } catch (error) {
       console.error("❌ Error al guardar:", error);
-      setSnackbar({ open: true, type: "error", message: "Error al guardar cambios" });
+      setSnackbar({
+        open: true,
+        type: "error",
+        message: "Error al guardar cambios",
+      });
     } finally {
-      setLoadingSaveAll(false); // 👈 liberar bloqueo
+      setLoadingSaveAll(false);
     }
   };
+
+
 
   const restaurarTrabajo = async (trabajo) => {
     try {

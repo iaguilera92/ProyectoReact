@@ -100,15 +100,10 @@ const Administracion = () => {
   }, []);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      const valor = emailRef.current?.value?.toLowerCase();
-      if (valor === "iaguilera") {
-        sessionStorage.setItem("mostrarAdmin", "1");
-      }
-    }, 700);
-
-    return () => clearTimeout(timeout);
-  }, []);
+    if (email?.toLowerCase() === "iaguilera") {
+      sessionStorage.setItem("mostrarAdmin", "1");
+    }
+  }, [email]);
 
   return (
     <Box sx={{
@@ -199,9 +194,17 @@ const Administracion = () => {
           </motion.div>
 
           <Box sx={{ mt: 2 }}>
-            <Link component="button" onClick={() => navigate("/")} underline="hover" sx={{
-              color: "#bbb", fontSize: "0.9rem", "&:hover": { color: "#E95420" }
-            }}>
+            <Link
+              component="button"
+              type="button"   // 👈 esto evita que dispare el onSubmit
+              onClick={() => {
+                sessionStorage.removeItem("credenciales");
+                localStorage.removeItem("credenciales");
+                navigate("/");
+              }}
+              underline="hover"
+              sx={{ color: "#bbb", fontSize: "0.9rem", "&:hover": { color: "#E95420" } }}
+            >
               ← Volver al inicio
             </Link>
           </Box>

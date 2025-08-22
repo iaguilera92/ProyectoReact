@@ -174,7 +174,7 @@ const Footer = () => {
             {/* 🔹 Columna 3: Proveedores */}
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 0.5 }}>
 
-              <img src="area-clientes.png" width={120} alt="Área Clientes" style={{ marginTop: -35, marginBottom: "10px" }} />
+              <img src="area-clientes.png" onClick={handleClick} width={120} alt="Área Clientes" style={{ marginTop: -35, marginBottom: "10px", cursor: "pointer", }} />
 
               <Typography sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                 <AdminPanelSettingsIcon fontSize="small" />
@@ -202,8 +202,18 @@ const Footer = () => {
             </Box>
             <Box ref={socialRef} sx={{ display: "flex", flexDirection: "column", alignItems: "left", gap: 0.5, animation: socialInView ? `${growElement} 1s forwards` : "none", }}>
 
-              <img src="area-clientes.png" width={120} alt="Área Clientes" style={{ marginTop: 30, marginRight: 30, marginBottom: "20px" }} />
-
+              <img
+                src="area-clientes.png"
+                width={120}
+                onClick={handleClick}
+                alt="Área Clientes"
+                style={{
+                  marginTop: 30,
+                  marginRight: 30,
+                  marginBottom: "20px",
+                  cursor: "pointer", // 👈 para que se vea como botón
+                }}
+              />
               <Typography ml={"10px"} sx={{ display: "flex", alignItems: "center", gap: 0 }}              >
                 <AdminPanelSettingsIcon fontSize="small" />
                 <Link href="administracion" color="inherit" onClick={handleClick}>

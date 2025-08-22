@@ -424,7 +424,7 @@ function Features({ videoReady }) {
         <DialogTrabajos
           open={openTrabajos}
           onClose={handleCloseTrabajos}
-          trabajos={trabajos}
+          trabajos={trabajosActivos}
           primaryLabel="Ver servicios"
           onPrimaryClick={() => { handleCloseTrabajos(); navigate("/servicios"); }}
         />
