@@ -1,7 +1,10 @@
-import React, { useState } from "react";
-import { Slider, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, IconButton, Slide, Box, Typography, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Snackbar, Alert, Slider, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, IconButton, Slide, Box, Typography, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, } from "@mui/material";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
+import { motion, AnimatePresence } from "framer-motion";
+import { CircularProgress } from "@mui/material";
+import CheckIcon from "@mui/icons-material/Check";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -9,12 +12,33 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 export default function DialogAgregarTrabajo({ open, onClose, onSave }) {
   const [loading, setLoading] = useState(false);
+  const [snackbar, setSnackbar] = useState({ open: false, message: "", type: "success" });
+  const [success, setSuccess] = useState(false);
 
   const [form, setForm] = useState({
     nombre: "",
     tipo: "1",
     progreso: 0,
   });
+
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => {
+        onSave(form);   // 👈 notifica al padre después de los 3 s
+        setSuccess(false);
+        onClose();
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [success, onClose, onSave, form]);
+
+  useEffect(() => {
+    if (open) {
+      setSuccess(false);
+      setForm({ nombre: "", tipo: "1", progreso: 0 }); // 👈 opcional, limpia también el form
+    }
+  }, [open]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,12 +47,12 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave }) {
 
   const handleSave = async () => {
     if (!form.nombre || !form.tipo) {
-      alert("Por favor completa los campos obligatorios.");
+      setSnackbar({ open: true, type: "error", message: "Completa los campos obligatorios" });
       return;
     }
 
     try {
-      setLoading(true); // 🔒 bloquea botón
+      setLoading(true);
 
       const url = `${window.location.hostname === "localhost"
         ? "http://localhost:9999"
@@ -38,26 +62,21 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave }) {
       const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nombre: form.nombre,
-          tipo: form.tipo,
-          progreso: form.progreso,
-        }),
+        body: JSON.stringify(form),
       });
 
       const data = await response.json();
-
       if (!response.ok) throw new Error(data.message || "Error al guardar");
 
-      console.log("✅ Trabajo agregado:", data);
-      onSave(form);
-      setForm({ nombre: "", tipo: "1", progreso: 0 });
-      onClose();
+      // 👇 en lugar de cerrar → mostrar éxito
+      setLoading(false);
+      setSuccess(true);
+
     } catch (error) {
       console.error("❌ Error al guardar:", error);
-      alert("Hubo un problema al guardar el trabajo.");
+      setSnackbar({ open: true, type: "error", message: "Hubo un problema al guardar el trabajo." });
     } finally {
-      setLoading(false); // 🔓 desbloquea botón
+      setLoading(false);
     }
   };
 
@@ -65,7 +84,12 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave }) {
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={(event, reason) => {
+        if (reason === "backdropClick" || reason === "escapeKeyDown") {
+          return;
+        }
+        onClose();
+      }}
       maxWidth="sm"
       fullWidth
       scroll="body"
@@ -194,7 +218,7 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave }) {
               fontSize: { xs: "1.1rem", sm: "1.25rem" },
             }}
           >
-            Agregar Trabajo
+            {success ? "¡Éxito!" : "Agregar Trabajo"}
           </Typography>
 
           {/* Ícono a la derecha */}
@@ -205,152 +229,253 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave }) {
 
       </DialogTitle>
 
-      {/* BODY */}
-      <DialogContent
-        dividers
-        sx={{
-          py: 3,
-          pb: 6, // 👈 más espacio abajo para el número
-          bgcolor: "#FFFDF8",
-        }}
-      >
+      <AnimatePresence>
+        {!loading && (
+          <motion.div
+            key="content"
+            initial={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 1, ease: "easeInOut" }} // ⏱️ animación de 1s
+          >
+            <DialogContent
+              dividers
+              sx={{
+                py: 3,
+                pb: 6,
+                bgcolor: success ? "#e6f4ea" : "#FFFDF8",
+                position: "relative",
+                overflow: "visible",
+              }}
+            >
+              <AnimatePresence mode="wait">
+                {success ? (
+                  <motion.div
+                    key="success"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.6, ease: "easeInOut" }}
+                    style={{ overflow: "hidden" }} // controla solo el colapso
+                  >
+                    <Box textAlign="center" sx={{ pt: 2 }}>
+                      <motion.div
+                        initial={{ scale: 0.5, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.5 }}
+                      >
+                        <Box
+                          sx={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            bgcolor: "#4caf50",
+                            borderRadius: "50%",
+                            width: 96,
+                            height: 96,
+                            mb: 2,
+                            mt: 1, // 👈 agrega margen superior
+                            boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+                          }}
+                        >
+                          <motion.div
+                            initial={{ scale: 0, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            transition={{ duration: 0.5, delay: 1 }}
+                          >
+                            <CheckIcon
+                              sx={{
+                                fontSize: 60,
+                                color: "#fff",
+                                transform: "translateY(2px)", // 👈 menos agresivo que 6px
+                              }}
+                            />
+                          </motion.div>
+                        </Box>
+                      </motion.div>
+                      <Typography variant="h6" fontWeight={700} color="success.dark">
+                        Trabajo creado correctamente!
+                      </Typography>
+                    </Box>
 
-        <Box display="flex" flexDirection="column" gap={3}>
-          <TextField
-            label="Nombre del Trabajo"
-            name="nombre"
-            value={form.nombre}
-            onChange={handleChange}
-            fullWidth
-            required
-            variant="outlined"
+                  </motion.div>
+                ) : (
+
+                  <Box display="flex" flexDirection="column" gap={3}>
+                    <TextField
+                      label="Nombre del Trabajo"
+                      name="nombre"
+                      value={form.nombre}
+                      onChange={handleChange}
+                      fullWidth
+                      required
+                      variant="outlined"
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          borderRadius: 2,
+                          "&:hover fieldset": { borderColor: "#FB8C00" },
+                          "&.Mui-focused fieldset": { borderColor: "#F57C00", borderWidth: 2 },
+                        },
+                        "& .MuiInputLabel-root.Mui-focused": {
+                          color: "#F57C00",
+                        },
+                      }}
+                    />
+
+
+                    <FormControl required>
+                      <FormLabel
+                        component="legend"
+                        sx={{ fontWeight: 600, color: "#E65100", mb: 1 }}
+                      >
+                        Tipo de Aplicación
+                      </FormLabel>
+                      <RadioGroup
+                        row
+                        name="tipo"
+                        value={form.tipo}     // 👈 esto se enlaza al estado
+                        onChange={handleChange}
+                      >
+                        <FormControlLabel
+                          value="1"
+                          control={<Radio color="warning" />}
+                          label={
+                            <Typography sx={{ fontWeight: 600, color: "#333" }}>
+                              Sitio Web
+                            </Typography>
+                          }
+                        />
+                        <FormControlLabel
+                          value="2"
+                          control={<Radio color="warning" />}
+                          label={
+                            <Typography sx={{ fontWeight: 600, color: "#333" }}>
+                              Sistema
+                            </Typography>
+                          }
+                        />
+                      </RadioGroup>
+                    </FormControl>
+
+
+                    <Box>
+                      <Typography
+                        gutterBottom
+                        sx={{ fontWeight: 600, color: "#E65100", mb: 1 }}
+                      >
+                        Progreso
+                      </Typography>
+                      <Slider
+                        value={form.progreso}
+                        onChange={(e, newValue) =>
+                          handleChange({ target: { name: "progreso", value: newValue } })
+                        }
+                        valueLabelDisplay="on"
+                        step={5}
+                        marks
+                        min={0}
+                        max={100}
+                        sx={{
+                          color: form.progreso === 100 ? "success.main" : "warning.main",
+                          "& .MuiSlider-valueLabel": {
+                            position: "absolute",
+                            top: "40px", // 👈 más arriba (más cerca del slider)
+                            left: "50%",
+                            transform: "translateX(-50%) !important",
+                            "& *": { transform: "none" },
+
+                            background:
+                              form.progreso === 100
+                                ? "linear-gradient(45deg,#43A047,#66BB6A)"
+                                : "linear-gradient(45deg,#FB8C00,#F57C00)",
+                            borderRadius: "50%",
+                            fontWeight: 700,
+                            color: "#fff",
+                            padding: "4px 8px",
+                            boxShadow: "0 2px 6px rgba(0,0,0,0.25)",
+                          },
+                        }}
+                      />
+                    </Box>
+                  </Box>
+                )}
+              </AnimatePresence>
+            </DialogContent>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {loading && (
+        <Box
+          sx={{
+            position: "absolute",
+            inset: 0,
+            bgcolor: "rgba(255,255,255,0.65)",
+            backdropFilter: "blur(3px)",
+            zIndex: 10,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <CircularProgress
+            size={48}
             sx={{
-              "& .MuiOutlinedInput-root": {
-                borderRadius: 2,
-                "&:hover fieldset": { borderColor: "#FB8C00" },
-                "&.Mui-focused fieldset": { borderColor: "#F57C00", borderWidth: 2 },
-              },
-              "& .MuiInputLabel-root.Mui-focused": {
-                color: "#F57C00",
+              color: "warning.main",
+              animation: "pulse 1.5s infinite",
+              "@keyframes pulse": {
+                "0%": { transform: "scale(1)", opacity: 1 },
+                "50%": { transform: "scale(1.2)", opacity: 0.6 },
+                "100%": { transform: "scale(1)", opacity: 1 },
               },
             }}
           />
-
-
-          <FormControl required>
-            <FormLabel
-              component="legend"
-              sx={{ fontWeight: 600, color: "#E65100", mb: 1 }}
-            >
-              Tipo de Aplicación
-            </FormLabel>
-            <RadioGroup
-              row
-              name="tipo"
-              value={form.tipo}     // 👈 esto se enlaza al estado
-              onChange={handleChange}
-            >
-              <FormControlLabel
-                value="1"
-                control={<Radio color="warning" />}
-                label={
-                  <Typography sx={{ fontWeight: 600, color: "#333" }}>
-                    Sitio Web
-                  </Typography>
-                }
-              />
-              <FormControlLabel
-                value="2"
-                control={<Radio color="warning" />}
-                label={
-                  <Typography sx={{ fontWeight: 600, color: "#333" }}>
-                    Sistema
-                  </Typography>
-                }
-              />
-            </RadioGroup>
-          </FormControl>
-
-
-          <Box>
-            <Typography
-              gutterBottom
-              sx={{ fontWeight: 600, color: "#E65100", mb: 1 }}
-            >
-              Progreso
-            </Typography>
-            <Slider
-              value={form.progreso}
-              onChange={(e, newValue) =>
-                handleChange({ target: { name: "progreso", value: newValue } })
-              }
-              valueLabelDisplay="on"
-              step={5}
-              marks
-              min={0}
-              max={100}
+        </Box>
+      )}
+      {/* FOOTER */}
+      <DialogActions sx={{ justifyContent: "center", py: 2 }}>
+        {success ? (
+          <Button
+            variant="contained"
+            color="success"
+            disabled
+            sx={{ fontWeight: 700, textTransform: "none" }}
+          >
+            Nuevo Trabajo Registrado💰
+          </Button>
+        ) : (
+          <>
+            <Button onClick={onClose} sx={{ color: "#E65100", fontWeight: 700 }}>
+              Cancelar
+            </Button>
+            <Button
+              variant="contained"
+              onClick={handleSave}
+              disabled={loading}
               sx={{
-                color: form.progreso === 100 ? "success.main" : "warning.main",
-                "& .MuiSlider-valueLabel": {
-                  position: "absolute",
-                  top: "40px", // 👈 más arriba (más cerca del slider)
-                  left: "50%",
-                  transform: "translateX(-50%) !important",
-                  "& *": { transform: "none" },
-
-                  background:
-                    form.progreso === 100
-                      ? "linear-gradient(45deg,#43A047,#66BB6A)"
-                      : "linear-gradient(45deg,#FB8C00,#F57C00)",
-                  borderRadius: "50%",
-                  fontWeight: 700,
-                  color: "#fff",
-                  padding: "4px 8px",
-                  boxShadow: "0 2px 6px rgba(0,0,0,0.25)",
+                textTransform: "none",
+                fontWeight: 700,
+                px: 3,
+                minWidth: 160,
+                background: "linear-gradient(90deg,#FF9800,#F57C00)",
+                "&:hover": {
+                  background: "linear-gradient(90deg,#FFA726,#FB8C00)",
                 },
               }}
-            />
-          </Box>
-        </Box>
-      </DialogContent>
-
-      {/* FOOTER */}
-      <DialogActions
-        sx={{
-          px: 3,
-          py: 2,
-          background: "linear-gradient(90deg,#FFF3E0,#FFE0B2)",
-          backdropFilter: "blur(6px)",
-          boxShadow: "0 -4px 12px rgba(0,0,0,.1)",
-        }}
-      >
-        <Button
-          onClick={onClose}
-          sx={{
-            color: "#E65100",
-            fontWeight: 700,
-            textTransform: "none",
-          }}
-        >
-          Cancelar
-        </Button>
-        <Button
-          variant="contained"
-          onClick={handleSave}
-          disabled={loading} // 👈 bloquea cuando loading=true
-          sx={{
-            textTransform: "none",
-            fontWeight: 700,
-            px: 3,
-            background: "linear-gradient(90deg,#FF9800,#F57C00)",
-            "&:hover": {
-              background: "linear-gradient(90deg,#FFA726,#FB8C00)",
-            },
-          }}
-        >
-          {loading ? "Guardando..." : "Guardar"}
-        </Button>
+            >
+              Guardar
+            </Button>
+          </>
+        )}
       </DialogActions>
-    </Dialog>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert severity={snackbar.type}>{snackbar.message}</Alert>
+      </Snackbar>
+    </Dialog >
   );
 }
