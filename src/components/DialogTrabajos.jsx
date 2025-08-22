@@ -1,25 +1,98 @@
 // DialogTrabajos.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dialog, DialogTitle, DialogContent, DialogActions,
   IconButton, Slide, Chip, LinearProgress,
   Box, Button, Typography, useTheme, useMediaQuery
 } from "@mui/material";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
-import AccessTimeFilledRoundedIcon from '@mui/icons-material/AccessTimeFilledRounded';
+import { motion, AnimatePresence, useMotionValue, useTransform, animate } from "framer-motion";
+import Trabajos from "./Trabajos";
+
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-/**
- * Props:
- * - open: boolean
- * - onClose: () => void
- * - trabajos: Array<{ SitioWeb: string, Porcentaje: number, Estado: boolean }>
- * - primaryLabel?: string  (texto del botón primario)
- * - onPrimaryClick?: () => void  (acción del botón primario)
- */
+function RelojAnimado() {
+  return (
+    <Box
+      sx={{
+        position: "relative",
+        width: 32,
+        height: 32,
+        borderRadius: "50%",
+        border: "2px solid #E65100",
+        bgcolor: "#FFF8E1",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        boxShadow: "0 2px 6px rgba(0,0,0,.25) inset",
+      }}
+    >
+      {/* Aguja */}
+      <Box
+        sx={{
+          position: "absolute",
+          width: 2,
+          height: "40%",
+          bgcolor: "#E65100",
+          borderRadius: 1,
+          top: "10%",
+          left: "47%",
+          transformOrigin: "bottom center",
+          animation: "spin 5s linear infinite",
+          "@keyframes spin": {
+            "0%": { transform: "rotate(0deg)" },
+            "100%": { transform: "rotate(360deg)" },
+          },
+        }}
+      />
+
+      {/* Centro */}
+      <Box
+        sx={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          width: 6,
+          height: 6,
+          borderRadius: "50%",
+          bgcolor: "#E65100",
+          transform: "translate(-50%, -50%)",   // ✅ centrado perfecto
+          zIndex: 2,
+        }}
+      />
+    </Box>
+  );
+}
+const ContadorAnimado = ({ value, delay = 0.5, duration = 2 }) => {
+  const count = useMotionValue(0);
+  const [display, setDisplay] = useState(0);
+
+  useEffect(() => {
+    // Suscripción a cambios
+    const unsubscribe = count.on("change", (latest) => {
+      setDisplay(Math.round(latest));
+    });
+
+    // Animación
+    const controls = animate(count, value, {
+      duration,
+      delay,
+      ease: "easeOut",
+    });
+
+    return () => {
+      unsubscribe();
+      controls.stop();
+    };
+  }, [value, delay, duration]);
+
+  return <span>{display}</span>;
+};
+
+
 export default function DialogTrabajos({
   open,
   onClose,
@@ -30,18 +103,24 @@ export default function DialogTrabajos({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const enDesarrollo = trabajos.filter(t => t.Estado && t.Porcentaje < 100).length;
-  const enCola = trabajos.filter(t => !t.Estado).length;
+  const sitiosWeb = trabajos.filter(t => t.TipoApp === 1).length;
+  const sistemas = trabajos.filter(t => t.TipoApp === 2).length;
+  const [showContent, setShowContent] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
-  const progresoMedio = trabajos.length
-    ? Math.round(trabajos.reduce((acc, t) => acc + (t.Porcentaje || 0), 0) / trabajos.length)
-    : 0;
+  //EXPANSIÓN
+  useEffect(() => {
+    let timer;
+    if (open) {
+      setShowContent(true);   // 👈 habilitamos el contenido
+      setExpanded(false);     // reset de expand
+      timer = setTimeout(() => setExpanded(true), 2000);
+    } else {
+      setShowContent(false);  // 👈 ocultamos todo cuando se cierra
+    }
+    return () => clearTimeout(timer);
+  }, [open]);
 
-  const getEstado = (t) => {
-    if (t.Porcentaje >= 100) return { label: "Completado", color: "success" };
-    if (!t.Estado) return { label: "En cola", color: "warning" };
-    return { label: "En curso", color: "info" };
-  };
 
   return (
     <Dialog
@@ -67,168 +146,259 @@ export default function DialogTrabajos({
         sx={{
           textAlign: "center",
           fontWeight: 700,
-          color: "#E65100",
+          color: "#FFF",
           fontFamily: "'Poppins', sans-serif",
           py: 2,
-          background: "linear-gradient(90deg,#FFF3E0,#FFE0B2)",
           borderBottom: "1px solid rgba(255,167,38,.35)",
           position: "relative",
+          overflow: "hidden",
 
-          // keyframes para el “tictac”
-          "@keyframes clock": {
-            "0%": { transform: "rotate(0deg)" },
-            "100%": { transform: "rotate(360deg)" },
+          "&::before": {
+            content: '""',
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundImage: "url('/servicio1.jpg')",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            zIndex: 0,
+
+            // Desktop
+            backgroundSize: "130%",
+            animation: "zoomInDesktop 2.5s ease-out forwards",
+
+            // Mobile override
+            "@media (max-width:600px)": {
+              backgroundSize: "250%",              // 👈 inicia súper cerca
+              animation: "zoomInMobile 2.5s ease-out forwards",
+            },
+
+            "@keyframes zoomInDesktop": {
+              "0%": { backgroundSize: "150%" },
+              "100%": { backgroundSize: "110%" },
+            },
+            "@keyframes zoomInMobile": {
+              "0%": { backgroundSize: "270%" },   // 👈 más zoom inicial en mobile
+              "100%": { backgroundSize: "140%" }, // 👈 termina aún con presencia
+            },
+          },
+
+          "&::after": {
+            content: '""',
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            bgcolor: "rgba(0,0,0,0.45)", // overlay oscuro
+            zIndex: 1,
+          },
+
+          "& > *": {
+            position: "relative",
+            zIndex: 2,
           },
         }}
       >
-        {/* Fila: ícono reloj + título */}
-        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
-          <AccessTimeFilledRoundedIcon
-            sx={{
-              fontSize: { xs: 20, sm: 22 },
-              color: "#E65100",
-              transformOrigin: "50% 50%",
-              animation: "clock 12s steps(12) infinite",   // “tictac” en 12 pasos
-              "@media (prefers-reduced-motion: reduce)": { animation: "none" },
-            }}
-          />
-          <Typography variant="h6" component="span">
-            Estado de desarrollos
-          </Typography>
-        </Box>
 
-        {/* Línea 1: cantidades */}
-        <Typography
-          variant="caption"
-          sx={{ color: "#6D4C41", mt: 0.5, display: "block" }}
-          aria-live="polite"
-        >
-          {trabajos.length
-            ? `${enDesarrollo} ${enDesarrollo === 1 ? "sitio" : "sitios"} en desarrollo, ${enCola} ${enCola === 1 ? "sistema" : "sistemas"} en cola`
-            : "Sin trabajos activos por ahora"}
-        </Typography>
-
-        {/* Línea 2: pill de Progreso medio (si hay trabajos) */}
-        {trabajos.length > 0 && (
-          <Box
-            sx={{
-              mt: 1,
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 0.5,
-              px: 1.2,
-              py: 0.4,
-              borderRadius: "999px",
-              bgcolor: "rgba(255,224,130,.7)",
-              border: "1px solid rgba(255,167,38,.55)",
-              boxShadow: "0 2px 10px rgba(255,167,38,.22)",
-            }}
-          >
-            <Typography
-              variant="overline"
-              sx={{ m: 0, p: 0, lineHeight: 1, letterSpacing: ".7px", color: "#6D4C41" }}
-            >
-              Progreso
-            </Typography>
-            <Typography
-              component="span"
-              sx={{
-                fontWeight: 900,
-                color: "#E65100",
-                fontSize: { xs: 16, sm: 18 },
-                lineHeight: 1,
-                fontVariantNumeric: "tabular-nums",
-                fontFeatureSettings: '"tnum" 1',
-              }}
-            >
-              {progresoMedio}%
-            </Typography>
-          </Box>
-        )}
-
-        {/* Cerrar */}
+        {/* Botón cerrar */}
         <IconButton
           aria-label="Cerrar"
           onClick={onClose}
           sx={{
-            position: "absolute", right: 8, top: 8,
-            color: "#E65100",
-            "&:hover": { backgroundColor: "rgba(255,167,38,.15)" },
+            position: "absolute",
+            top: 8,
+            right: 8,
+            color: "#FFF",
+            zIndex: 3, // 👈 más arriba que ::before y ::after
+            "&:hover": { backgroundColor: "rgba(255,255,255,.15)" },
+
+            // animación al abrir
+            animation: open ? "spinTwice 0.6s ease-in-out" : "none",
+            animationFillMode: "forwards",
+            "@keyframes spinTwice": {
+              "0%": { transform: "rotate(0deg)" },
+              "100%": { transform: "rotate(720deg)" },
+            },
           }}
         >
           <CloseRoundedIcon />
         </IconButton>
+
+
+        {/* Fila: ícono reloj + título */}
+        <Box
+          sx={{
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: { xs: 0.8, sm: 1.2 }, // más compacto en mobile
+            px: { xs: 1.2, sm: 2 },
+            py: { xs: 0.5, sm: 0.8 },
+            borderRadius: "999px",
+            bgcolor: "rgba(0,0,0,0.55)",
+            backdropFilter: "blur(4px)",
+            boxShadow: "0 4px 14px rgba(0,0,0,.35)",
+          }}
+        >
+          <RelojAnimado />
+          <Typography
+            variant="h6" // 👈 más chico que h5
+            component="span"
+            sx={{
+              fontWeight: 800,
+              letterSpacing: { xs: "0.3px", sm: "1px" },
+              fontFamily: "'Poppins', sans-serif",
+              color: "#fff",
+              fontSize: { xs: "1.1rem", sm: "1.25rem" }, // ajuste fino
+            }}
+          >
+            Desarrollos Activos
+          </Typography>
+        </Box>
+
+
+
+        {trabajos.length > 0 ? (
+          <Box
+            sx={{
+              mt: 3,
+              display: "flex",
+              justifyContent: "center",
+              gap: 2,
+              flexDirection: "row",   // 👈 siempre fila
+              flexWrap: "nowrap",     // 👈 evita salto a segunda línea
+            }}
+          >
+            {/* Sitios en desarrollo */}
+            <Box
+              sx={{
+                flex: 1,
+                minWidth: 160, // 👈 asegura ancho mínimo en mobile
+                textAlign: "center",
+                px: { xs: 1.5, sm: 2 },
+                py: 2,
+                borderRadius: 3,
+                background: "linear-gradient(135deg, rgba(230,81,0,0.9), rgba(255,152,0,0.7))",
+                boxShadow: "0 6px 20px rgba(0,0,0,.45)",
+                color: "#fff",
+              }}
+            >
+              <Box
+                sx={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: 70,
+                  height: 70,
+                  borderRadius: "50%",
+                  bgcolor: "rgba(255,255,255,0.15)",
+                  border: "3px solid #fff",
+                  mb: 1,
+                }}
+              >
+                <Typography variant="h4" sx={{ fontWeight: 900, color: "#fff" }}>
+                  <ContadorAnimado value={sitiosWeb} delay={0.5} duration={2} />
+                </Typography>
+              </Box>
+              <Typography variant="body2" sx={{ fontWeight: 600, whiteSpace: "nowrap", }}>
+                Web en desarrollo
+              </Typography>
+            </Box>
+
+            {/* Sistemas en cola */}
+            <Box
+              sx={{
+                flex: 1,
+                minWidth: 160, // 👈 asegura ancho mínimo en mobile
+                textAlign: "center",
+                px: { xs: 1.5, sm: 2 },
+                py: 2,
+                borderRadius: 3,
+                background: "linear-gradient(135deg, rgba(251,140,0,0.9), rgba(255,202,40,0.7))",
+                boxShadow: "0 6px 20px rgba(0,0,0,.45)",
+                color: "#fff",
+              }}
+            >
+              <Box
+                sx={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: 70,
+                  height: 70,
+                  borderRadius: "50%",
+                  bgcolor: "rgba(255,255,255,0.15)",
+                  border: "3px solid #fff",
+                  mb: 1,
+                }}
+              >
+                <Typography variant="h4" sx={{ fontWeight: 900, color: "#fff" }}>
+                  <ContadorAnimado value={sistemas} delay={0.5} duration={2} />
+                </Typography>
+              </Box>
+              <Typography variant="body2" sx={{ fontWeight: 600, whiteSpace: "nowrap", }}>
+                Sistemas en desarrollo
+              </Typography>
+            </Box>
+          </Box>
+        ) : (
+          <Typography
+            variant="body2"
+            sx={{
+              color: "#5D4037",
+              mt: 2,
+              display: "block",
+              textAlign: "center",
+              fontWeight: 500,
+            }}
+          >
+            Sin trabajos activos por ahora
+          </Typography>
+        )}
+
+
+
+
       </DialogTitle>
 
-      {/* Content */}
-      <DialogContent
-        sx={{
-          background: "linear-gradient(180deg, #FFF8E1 0%, #FFF3E0 100%)",
-          py: 2.5,
-          mb: 0
-        }}
-      >
-        {trabajos.length === 0 && (
-          <Box sx={{ py: 2 }}>
-            <Typography variant="body2" sx={{ color: "#5D4037", textAlign: "center" }}>
-              Pronto verás aquí tus próximos desarrollos.
-            </Typography>
-          </Box>
-        )}
-        <Box sx={{ mt: { xs: 1.5, sm: 2.5 } }}>
-          {trabajos.map((t) => {
-            const st = getEstado(t);
-            return (
-              <Box key={`${t.SitioWeb}-${st.label}`} sx={{ mb: 2.5 }}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    mb: 0.75,
-                    gap: 1,
-                  }}
-                >
-                  <Typography
-                    variant="subtitle2"
-                    sx={{
-                      fontWeight: 700,
-                      color: "#5D4037",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                      maxWidth: isMobile ? "68%" : "78%",
-                    }}
-                    title={t.SitioWeb}
-                  >
-                    {t.SitioWeb}
+      <AnimatePresence>
+        {showContent && (
+          <motion.div
+            key="dialogContent"
+            initial={false}
+            animate={expanded ? { opacity: 1, height: "auto" } : { opacity: 0, height: 0 }}
+            transition={{ duration: 0.7, ease: "easeInOut" }}
+            style={{ overflow: "hidden" }} // evita que se vea raro al colapsar
+          >
+            <DialogContent
+              sx={{
+                background: "linear-gradient(180deg, #FFF8E1 0%, #FFF3E0 100%)",
+                py: 2.5,
+                mb: 0
+              }}
+            >
+              {trabajos.length === 0 && (
+                <Box sx={{ py: 2 }}>
+                  <Typography variant="body2" sx={{ color: "#5D4037", textAlign: "center" }}>
+                    Pronto verás aquí tus próximos desarrollos.
                   </Typography>
-                  <Chip size="small" color={st.color} label={st.label} />
                 </Box>
+              )}
 
-                <LinearProgress
-                  variant="determinate"
-                  value={Math.min(100, Math.max(0, t.Porcentaje || 0))}
-                  sx={{
-                    height: 8,
-                    borderRadius: 6,
-                    bgcolor: "rgba(0,0,0,.08)",
-                    "& .MuiLinearProgress-bar": {
-                      background: "linear-gradient(90deg,#FFB74D,#FB8C00)",
-                    },
-                  }}
-                />
-                <Box sx={{ display: "flex", justifyContent: "space-between", mt: 0.5 }}>
-                  <Typography variant="caption" sx={{ color: "#6D4C41" }}>Progreso</Typography>
-                  <Typography variant="caption" sx={{ fontWeight: 700, color: "#6D4C41" }}>
-                    {t.Porcentaje ?? 0}%
-                  </Typography>
-                </Box>
+              <Box sx={{ mt: { xs: 1.5, sm: 2.5 } }}>
+                {trabajos.map((t) => (
+                  <Trabajos key={`${t.SitioWeb}-${t.Id}`} trabajo={t} />
+                ))}
               </Box>
-            );
-          })}
-        </Box>
-      </DialogContent>
+
+            </DialogContent>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
 
       {/* Actions */}
       <DialogActions
@@ -259,6 +429,6 @@ export default function DialogTrabajos({
           </Button>
         )}
       </DialogActions>
-    </Dialog>
+    </Dialog >
   );
 }

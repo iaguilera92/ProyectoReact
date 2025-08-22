@@ -20,9 +20,10 @@ const features = [
 
 // TRABAJOS
 const trabajos = [
-  { SitioWeb: "plataformas-web.cl", Porcentaje: 80, Estado: true },
-  { SitioWeb: "investigadores-privados.cl", Porcentaje: 65, Estado: true },
-  { SitioWeb: "mastracker.cl", Porcentaje: 100, Estado: false },
+  { SitioWeb: "investigadores-privados.cl", Porcentaje: 60, Estado: true, TipoApp: 1 },
+  { SitioWeb: "mastracker.cl", Porcentaje: 80, Estado: true, TipoApp: 1 },
+  { SitioWeb: "ivelpink.cl", Porcentaje: 100, Estado: false, TipoApp: 1 },
+  { SitioWeb: "Sistema-Consultorio", Porcentaje: 10, Estado: true, TipoApp: 2 },
 ];
 
 // EFECTOS
