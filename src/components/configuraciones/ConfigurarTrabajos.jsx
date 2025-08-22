@@ -236,18 +236,25 @@ const ConfigurarTrabajos = () => {
         {/* Título */}
         <Box display="flex" alignItems="center" justifyContent="space-between" pb={2}>
           {/* Título */}
-          <Box display="flex" alignItems="center" gap={1}>
-            <SettingsSuggestIcon sx={{ color: "white", fontSize: 28, mt: "-2px" }} />
-            {/* 👆 un pequeño mt negativo ayuda a centrar mejor con el texto */}
+          <Box display="flex" alignItems="center" gap={{ xs: 0.5, sm: 1 }}>
+            <SettingsSuggestIcon
+              sx={{
+                color: "white",
+                fontSize: { xs: 22, sm: 28 },
+                mt: "-2px",
+                mr: { xs: "-2px", sm: 0 }, // 👈 corrige separación en mobile
+              }}
+            />
             <Typography
               variant="h6"
               sx={{
                 color: "white",
                 fontWeight: 700,
-                fontSize: { xs: "1rem", sm: "1.25rem" },
+                fontSize: { xs: "0.9rem", sm: "1.15rem" },
+                whiteSpace: "nowrap",
               }}
             >
-              Configuración de Trabajos
+              Configuración Trabajos
             </Typography>
           </Box>
 
@@ -257,12 +264,13 @@ const ConfigurarTrabajos = () => {
               onClick={() => agregarTrabajo()}
               variant="outlined"
               color="inherit"
-              startIcon={<AddIcon />}   // 👈 icono cambiado
+              startIcon={<AddIcon />}
               sx={{
                 color: "white",
                 borderColor: "white",
-                fontSize: { xs: "0.75rem", sm: "0.875rem" },
-                padding: { xs: "4px 8px", sm: "6px 12px" },
+                fontSize: { xs: "0.7rem", sm: "0.85rem" }, // 👈 más chico
+                px: { xs: 1, sm: 1.5 }, // padding horizontal reducido
+                py: { xs: 0.25, sm: 0.5 }, // padding vertical reducido
                 minWidth: "auto",
                 "&:hover": {
                   backgroundColor: "#ffffff22",
@@ -274,6 +282,7 @@ const ConfigurarTrabajos = () => {
             </Button>
           </motion.div>
         </Box>
+
 
 
         {/* Tabla */}
@@ -290,7 +299,14 @@ const ConfigurarTrabajos = () => {
             <Table>
               <TableHead sx={{ bgcolor: "grey.200" }}>
                 <TableRow>
-                  <TableCell sx={{ width: "70%", fontWeight: "bold" }}>
+                  <TableCell
+                    sx={{
+                      width: "70%",
+                      fontWeight: "bold",
+                      fontSize: { xs: "0.75rem", sm: "0.875rem" }, // 👈 tamaño menor en mobile
+                      py: { xs: 0.5, sm: 1 }, // 👈 menos alto en mobile
+                    }}
+                  >
                     Sitios Web
                   </TableCell>
 
@@ -299,22 +315,27 @@ const ConfigurarTrabajos = () => {
                       width: "20%",
                       fontWeight: "bold",
                       pr: 0,
+                      fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                      py: { xs: 0.5, sm: 1 },
                     }}
                   >
                     Progreso
                   </TableCell>
 
-                  {/* Acciones */}
                   <TableCell
                     align="center"
                     sx={{
                       width: "10%",
                       pl: 0,
+                      fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                      py: { xs: 0.5, sm: 1 },
                     }}
                   >
+                    {/* Acciones */}
                   </TableCell>
                 </TableRow>
               </TableHead>
+
 
               <TableBody>
                 {trabajos.map((trabajo, index) => (
@@ -327,10 +348,26 @@ const ConfigurarTrabajos = () => {
                     sx={{
                       "&:nth-of-type(odd)": { bgcolor: "grey.50" },
                       "&:hover": { bgcolor: "primary.light", opacity: 0.95 },
+
+                      // 👇 Ajusta altura
+                      "& td, & th": {
+                        py: { xs: 0.5, sm: 0.75 }, // menos padding vertical
+                        px: { xs: 1, sm: 2 },     // padding horizontal más compacto
+                        fontSize: { xs: "0.75rem", sm: "0.85rem" }, // letras más chicas
+                      },
                     }}
                   >
                     {/* Sitio Web */}
-                    <TableCell sx={{ fontWeight: 500 }}>{trabajo.SitioWeb}</TableCell>
+                    <TableCell
+                      sx={{
+                        fontWeight: 500,
+                        fontSize: { xs: "0.75rem", sm: "0.875rem" }, // 👈 más chico en móvil
+                        whiteSpace: "nowrap", // evita cortes feos
+                      }}
+                    >
+                      {trabajo.SitioWeb}
+                    </TableCell>
+
 
                     {/* Progreso editable */}
                     <TableCell sx={{ pr: 0 }}>
@@ -339,7 +376,7 @@ const ConfigurarTrabajos = () => {
                           display: "flex",
                           flexDirection: isMobile ? "column" : "row", // 📱 columna / 🖥️ fila
                           alignItems: "center",
-                          gap: 1,
+                          gap: isMobile ? 0.5 : 1, // 👈 más pegado en mobile
                           width: "100%",
                         }}
                       >
@@ -362,9 +399,7 @@ const ConfigurarTrabajos = () => {
                               borderRadius: 2,
                               "& .MuiLinearProgress-bar": {
                                 bgcolor:
-                                  trabajo.Porcentaje === 100
-                                    ? "success.main"
-                                    : "warning.main",
+                                  trabajo.Porcentaje === 100 ? "success.main" : "warning.main",
                               },
                             }}
                           />
@@ -400,6 +435,7 @@ const ConfigurarTrabajos = () => {
                           sx={{
                             width: 90,
                             alignSelf: isMobile ? "flex-start" : "center", // 📱 alineado arriba / 🖥️ centrado
+                            mt: isMobile ? 0.25 : 0, // 👈 sube un pelín en mobile
                           }}
                         />
                       </Box>
