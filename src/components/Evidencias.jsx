@@ -18,9 +18,19 @@ const Evidencias = () => {
         triggerOnce: true, // para que solo se dispare una vez
     });
 
+    const evidencias = [
+        { url: "https://www.ivelpink.cl", label: "www.ivelpink.cl", video: "/evidencia1.mp4" },
+        { url: "https://www.ingsnt.cl", label: "www.ingsnt.cl", video: "/evidencia2.mp4" },
+        { url: "https://www.masatracker.cl", label: "www.masatracker.cl", video: "/evidencia3.mp4" },
+        { url: "https://www.investigadores-privados.cl", label: "investigadores-privados.cl", video: "/evidencia4.mp4" },
+        { url: "https://www.masautomatizacion.cl", label: "masautomatizacion.cl", video: "/evidencia5.mp4" },
+        { url: "https://www.sifg.cl", label: "www.sifg.cl", video: "/evidencia6.mp4" },
+        { url: null, label: "www.autoges-web.cl", video: "/evidencia7.mp4" }, // tachada
+    ];
     const evidenciaIndices = isMobile
-        ? [[0, 1], [2, 3], [4]]  // Mobile: 3 filas (2 + 2 + 1)
-        : [[0], [1], [2], [3]]; //desktop
+        ? [[0, 1], [2, 3], [4, 5], [6]]   // Mobile → 3 filas de 2 + 1 fila de 1
+        : [[0], [1], [2], [3], [4], [5], [6]]; // Desktop → todas en filas individuales
+
 
     const letterVariants = {
         hidden: { opacity: 0, x: -20 },
@@ -392,7 +402,7 @@ const Evidencias = () => {
                                                             <CardMedia
                                                                 component="video"
                                                                 ref={(el) => (videosRef.current[n] = el)}
-                                                                src={`/evidencia${n + 1}.mp4`}
+                                                                src={evidencias[n].video}
                                                                 playsInline
                                                                 muted
                                                                 loop
@@ -443,36 +453,12 @@ const Evidencias = () => {
 
                                                         </Box>
 
-                                                        {/* Descriptor dentro del Card */}
-                                                        {n === 4 ? (
-                                                            <Typography
-                                                                variant="body2"
-                                                                align="center"
-                                                                sx={{
-                                                                    display: 'block',
-                                                                    mt: 1.5,
-                                                                    mb: 1.5,
-                                                                    color: 'gray',
-                                                                    fontFamily: 'Poppins, sans-serif',
-                                                                    textAlign: 'center',
-                                                                    textDecoration: 'line-through',
-                                                                    cursor: 'not-allowed',
-                                                                    pointerEvents: 'none',
-                                                                }}
-                                                            >
-                                                                www.autoges-web.cl
-                                                            </Typography>
-                                                        ) : (
+                                                        {evidencias[n].url ? (
                                                             <Typography
                                                                 variant="body2"
                                                                 align="center"
                                                                 component="a"
-                                                                href={
-                                                                    n === 0 ? 'https://www.ivelpink.cl'
-                                                                        : n === 1 ? 'https://www.ingsnt.cl'
-                                                                            : n === 2 ? 'https://www.masautomatizacion.cl'
-                                                                                : 'https://www.sifg.cl'
-                                                                }
+                                                                href={evidencias[n].url}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
                                                                 sx={{
@@ -489,12 +475,25 @@ const Evidencias = () => {
                                                                     },
                                                                 }}
                                                             >
-                                                                {
-                                                                    n === 0 ? 'www.ivelpink.cl'
-                                                                        : n === 1 ? 'www.ingsnt.cl'
-                                                                            : n === 2 ? 'masautomatizacion.cl'
-                                                                                : 'www.sifg.cl'
-                                                                }
+                                                                {evidencias[n].label}
+                                                            </Typography>
+                                                        ) : (
+                                                            <Typography
+                                                                variant="body2"
+                                                                align="center"
+                                                                sx={{
+                                                                    display: 'block',
+                                                                    mt: 1.5,
+                                                                    mb: 1.5,
+                                                                    color: 'gray',
+                                                                    fontFamily: 'Poppins, sans-serif',
+                                                                    textAlign: 'center',
+                                                                    textDecoration: 'line-through',
+                                                                    cursor: 'not-allowed',
+                                                                    pointerEvents: 'none',
+                                                                }}
+                                                            >
+                                                                {evidencias[n].label}
                                                             </Typography>
                                                         )}
 

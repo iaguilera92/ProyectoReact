@@ -20,8 +20,8 @@ const textoAnimado = "Nuestros trabajos";
 const videos = [
     { src: '/evidencia1.mp4', url: 'https://www.ivelpink.cl', label: 'www.ivelpink.cl' },
     { src: '/evidencia2.mp4', url: 'https://www.ingsnt.cl', label: 'www.ingsnt.cl' },
-    { src: '/evidencia3.mp4', url: 'https://www.masautomatizacion.cl', label: 'www.masautomatizacion.cl' },
-    { src: '/evidencia4.mp4', url: 'https://www.sifg.cl', label: 'www.sifg.cl' },
+    { src: '/evidencia3.mp4', url: 'https://www.mastracker.cl', label: 'www.mastracker.cl' },
+    { src: '/evidencia4.mp4', url: 'https://www.investigadores-privados.cl', label: 'investigadores-privados.cl' },
 ];
 
 const SeccionDestacada = () => {
@@ -308,7 +308,7 @@ const SeccionDestacada = () => {
                                             color: '#00bcd4',
                                             fontFamily: 'Poppins, sans-serif',
                                             textDecoration: 'none',
-                                            fontSize: '0.75rem',
+                                            fontSize: '0.70rem',
                                             '&:hover': {
                                                 textDecoration: 'underline',
                                                 color: '#26c6da',
