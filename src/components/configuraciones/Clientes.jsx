@@ -298,14 +298,21 @@ const Clientes = () => {
 
 
   const enviarCorreoCobro = (cliente, mesCapitalizado) => {
+    const year = new Date().getFullYear();
+
     const templateParams = {
       sitioWeb: `www.${cliente.sitioWeb}`,
       nombre: cliente.cliente || cliente.sitioWeb || "Cliente",
-      mes: mesCapitalizado,
-      email: modoDesarrollo ? "plataformas.web.cl@gmail.com" : (cliente.correo || "plataformas.web.cl@gmail.com"), // ← destinatario real
-      monto: cliente.valor ? `$${cliente.valor.replace(/\$/g, "").trim()} CLP` : "$10.000 CLP",
+      mes: `${mesCapitalizado} ${year}`,   // 👈 ahora mes + año
+      email: modoDesarrollo
+        ? "plataformas.web.cl@gmail.com"
+        : (cliente.correo || "plataformas.web.cl@gmail.com"),
+      monto: cliente.valor
+        ? `$${cliente.valor.replace(/\$/g, "").trim()} CLP`
+        : "$10.000 CLP",
       cc: "plataformas.web.cl@gmail.com", // copia interna
     };
+
 
     emailjs
       .send(
@@ -600,33 +607,68 @@ const Clientes = () => {
             overflowX: isMobile ? "auto" : "hidden", // 👈 scroll horizontal solo en mobile
             overflowY: "auto",
             boxShadow: "0 8px 25px rgba(0,0,0,0.4)",
+            backgroundColor: "#fdfdfd",
           }}
         >
           <Table
             stickyHeader
             size="small"
             sx={{
-              minWidth: isMobile ? 400 : "auto", // ← esto estabiliza el ancho de columnas en mobile
+              minWidth: isMobile ? 400 : "auto",
+              "& .MuiTableCell-root": {
+                fontFamily: "Poppins, sans-serif",
+                borderColor: "rgba(0,0,0,0.1)", // 👈 bordes suaves
+              },
             }}
           >
             <TableHead>
               <TableRow>
-
-                <TableCell sx={{ fontWeight: "bold", minWidth: 160, py: 0.5, fontSize: "0.85rem" }}>
+                <TableCell
+                  sx={{
+                    backgroundColor: "#ffffff",   // 👈 fondo blanco fijo
+                    fontWeight: "bold",
+                    color: "#1b263b",
+                    fontFamily: "Poppins, sans-serif",
+                    fontSize: "0.85rem",
+                    minWidth: 160,
+                    py: 0.5,
+                  }}
+                >
                   Clientes
                 </TableCell>
-                <TableCell align="center" sx={{ fontWeight: "bold", width: isMobile ? 50 : 100, py: 0.5, fontSize: "0.85rem", }}>Estado</TableCell>
                 <TableCell
                   align="center"
-                  sx={{ width: isMobile ? 60 : 140, px: isMobile ? 0.5 : 1 }}
+                  sx={{
+                    backgroundColor: "#ffffff",
+                    fontWeight: "bold",
+                    color: "#1b263b",
+                    width: isMobile ? 50 : 100,
+                    py: 0.5,
+                    fontSize: "0.85rem",
+                  }}
+                >
+                  Estado
+                </TableCell>
+                <TableCell
+                  align="center"
+                  sx={{
+                    backgroundColor: "#ffffff",
+                    width: isMobile ? 60 : 140,
+                    px: isMobile ? 0.5 : 1,
+                  }}
                 />
-
                 <TableCell
                   align="center"
-                  sx={{ width: isMobile ? 80 : 170, px: isMobile ? 0.5 : 1, pr: isMobile ? 1.5 : 0 }}
+                  sx={{
+                    backgroundColor: "#ffffff",
+                    width: isMobile ? 80 : 170,
+                    px: isMobile ? 0.5 : 1,
+                    pr: isMobile ? 1.5 : 0,
+                  }}
                 />
               </TableRow>
             </TableHead>
+
             <TableBody>
               {clientesPaginados.map((cliente, index) => {
                 const estaAlDia = cliente.pagado;
@@ -901,14 +943,21 @@ const Clientes = () => {
           setOpenDialog(false);
           setMesManual("");
         }}
+        PaperProps={{
+          sx: {
+            backgroundColor: "#ffffff", // 👈 blanco puro
+            borderRadius: 2,            // opcional: esquinas más suaves
+            boxShadow: 6                // opcional: sombra elegante
+          },
+        }}
       >
         <DialogTitle sx={{
-          fontSize: "1rem",
+          fontSize: isMobile ? "0.8rem" : "1rem",
           fontWeight: 600
         }}>
           {esReversion
             ? "Confirmar reversión de pago"
-            : `Confirmar pago recibido ${mesDialogPago}`}
+            : `Confirmar Hosting Activo para ${mesDialogPago}`}
         </DialogTitle>
         <DialogContent>
           {openDialog && (
@@ -927,20 +976,70 @@ const Clientes = () => {
           )}
           {!esReversion && (
             <FormControl fullWidth size="small" sx={{ mt: 2 }}>
-              <InputLabel>Mes de Pago</InputLabel>
+              <InputLabel sx={{ color: "#1b263b" }}>Mes que seguirá activo</InputLabel>
               <Select
-                label="Mes de cobro"
+                label="Mes que seguirá activo"
                 value={mesManual}
                 onChange={(e) => setMesManual(e.target.value)}
+                sx={{
+                  backgroundColor: "#ffffff",
+                  color: "#1b263b",
+                  borderRadius: 1,
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "rgba(255,167,38,0.6)", // 🟠 borde suave
+                  },
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "rgba(255,167,38,0.9)",
+                  },
+                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#ff9800",
+                  },
+                  "& .MuiSelect-icon": { color: "#1b263b" }, // ícono oscuro
+                }}
+                MenuProps={{
+                  PaperProps: {
+                    sx: {
+                      "& .MuiList-root": {
+                        paddingTop: 0, // quita espacio arriba
+                      },
+                      "&::before": {
+                        display: "none", // elimina la línea superior fantasma
+                      },
+                      "&::after": {
+                        display: "none",
+                      },
+                      borderRadius: 1.5, // 👈 bordes redondeados en el dropdown
+                      backgroundColor: "#ffffff",
+                    },
+                  },
+                }}
               >
                 {meses.map((mes, i) => (
-                  <MenuItem key={i} value={mes}>
+                  <MenuItem
+                    key={i}
+                    value={mes}
+                    sx={{
+                      backgroundColor: "#ffffff",
+                      color: "#1b263b",
+                      "&.Mui-selected": {
+                        backgroundColor: "#FFE0B2", // seleccionado suave
+                        color: "#1b263b",
+                        fontWeight: "bold",
+                      },
+                      "&.Mui-selected:hover": {
+                        backgroundColor: "#FFCC80",
+                      },
+                      "&:hover": {
+                        backgroundColor: "#f5f5f5",
+                      },
+                    }}
+                  >
                     {mes}
                   </MenuItem>
                 ))}
               </Select>
-
             </FormControl>
+
           )}
 
 
@@ -1014,7 +1113,13 @@ const Clientes = () => {
         </DialogActions>
       </Dialog>
 
-      <Dialog open={openDialogCobro} onClose={() => setOpenDialogCobro(false)} maxWidth="xs" fullWidth>
+      <Dialog open={openDialogCobro} onClose={() => setOpenDialogCobro(false)} maxWidth="xs" fullWidth PaperProps={{
+        sx: {
+          backgroundColor: "#ffffff", // 👈 blanco puro
+          borderRadius: 2,            // opcional: esquinas más suaves
+          boxShadow: 6                // opcional: sombra elegante
+        },
+      }}>
         <DialogTitle>Cobro del mes de {mesCapitalizado}</DialogTitle>
 
         <DialogContent>
@@ -1022,19 +1127,69 @@ const Clientes = () => {
             Notificaremos al cliente <strong>{clienteSeleccionado?.cliente}</strong> por el sitio <strong>{clienteSeleccionado?.sitioWeb}</strong>.
           </DialogContentText>
           <FormControl fullWidth size="small" sx={{ mt: 2 }}>
-            <InputLabel>Mes de cobro</InputLabel>
+            <InputLabel sx={{ color: "#1b263b" }}>Mes de cobro</InputLabel>
             <Select
               label="Mes de cobro"
               value={mesManual}
               onChange={(e) => setMesManual(e.target.value)}
+              sx={{
+                backgroundColor: "#ffffff",
+                color: "#1b263b",
+                borderRadius: 1,
+                "& .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "rgba(255,167,38,0.6)",
+                },
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "rgba(255,167,38,0.9)",
+                },
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#ff9800",
+                },
+                "& .MuiSelect-icon": { color: "#1b263b" },
+              }}
+              MenuProps={{
+                PaperProps: {
+                  sx: {
+                    "& .MuiList-root": {
+                      paddingTop: 0, // 👈 elimina el padding superior
+                    },
+                    "&::before": {
+                      display: "none", // 👈 elimina la línea superior fantasma
+                    },
+                    "&::after": {
+                      display: "none", // por si hay sombra inferior también
+                    },
+                  },
+                },
+              }}
             >
               {meses.map((mes, i) => (
-                <MenuItem key={i} value={mes}>
+                <MenuItem
+                  key={i}
+                  value={mes}
+                  sx={{
+                    backgroundColor: "#ffffff",
+                    color: "#1b263b",
+                    "&.Mui-selected": {
+                      backgroundColor: "#FFE0B2",
+                      color: "#1b263b",
+                      fontWeight: "bold",
+                    },
+                    "&.Mui-selected:hover": {
+                      backgroundColor: "#FFCC80",
+                    },
+                    "&:hover": {
+                      backgroundColor: "#f5f5f5",
+                    },
+                  }}
+                >
                   {mes}
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
+
+
 
         </DialogContent>
 

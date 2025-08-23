@@ -372,18 +372,44 @@ const ConfigurarTrabajos = () => {
               borderRadius: 3,
               boxShadow: 6,
               opacity: loadingSaveAll ? 0.5 : 1,
-              pointerEvents: loadingSaveAll ? "none" : "auto", // bloquea clicks
+              pointerEvents: loadingSaveAll ? "none" : "auto",
             }}
           >
-            <Table>
-              <TableHead sx={{ bgcolor: "grey.200" }}>
+            <Table
+              stickyHeader
+              size="small"
+              sx={{
+                minWidth: isMobile ? 400 : "auto",
+                "& .MuiTableCell-root": {
+                  fontFamily: "Poppins, sans-serif",
+                  border: "none !important", // 🚫 fuerza quitar todos los bordes
+                },
+                "& .MuiTableCell-head": {
+                  backgroundColor: "#ffffff",
+                  fontWeight: "bold",
+                  color: "#1b263b",
+                  fontFamily: "Poppins, sans-serif",
+                  border: "none !important",        // 🚫 sin líneas horizontales ni verticales
+                  "&:before, &:after": {            // 🚫 quita pseudo-elementos que pintan líneas
+                    display: "none !important",
+                  },
+                },
+                "& .MuiTableCell-body": {
+                  borderTop: "1px solid rgba(0,0,0,0.1)",    // ✅ solo arriba
+                  borderBottom: "1px solid rgba(0,0,0,0.1)", // ✅ solo abajo
+                },
+              }}
+            >
+
+
+              <TableHead>
                 <TableRow>
                   <TableCell
                     sx={{
                       width: "70%",
-                      fontWeight: "bold",
-                      fontSize: { xs: "0.75rem", sm: "0.875rem" }, // 👈 tamaño menor en mobile
-                      py: { xs: 0.5, sm: 1 }, // 👈 menos alto en mobile
+                      fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                      py: { xs: 0.5, sm: 1 },
+                      border: "none",   // 🚫 sin bordes
                     }}
                   >
                     Sitios Web
@@ -392,10 +418,10 @@ const ConfigurarTrabajos = () => {
                   <TableCell
                     sx={{
                       width: "20%",
-                      fontWeight: "bold",
                       pr: 0,
                       fontSize: { xs: "0.75rem", sm: "0.875rem" },
                       py: { xs: 0.5, sm: 1 },
+                      border: "none",   // 🚫 sin bordes
                     }}
                   >
                     Progreso
@@ -408,12 +434,12 @@ const ConfigurarTrabajos = () => {
                       pl: 0,
                       fontSize: { xs: "0.75rem", sm: "0.875rem" },
                       py: { xs: 0.5, sm: 1 },
+                      border: "none",   // 🚫 sin bordes
                     }}
-                  >
-                    {/* Acciones */}
-                  </TableCell>
+                  />
                 </TableRow>
               </TableHead>
+
 
 
               <TableBody>
@@ -425,21 +451,24 @@ const ConfigurarTrabajos = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.05 }}
                     sx={{
-                      bgcolor: trabajo.Porcentaje === 100 ? "#e8f5e9" : "inherit", // 💚 verde pastel si está al 100
+                      bgcolor: trabajo.Porcentaje === 100 ? "#e8f5e9" : "#ffffff",
                       "&:nth-of-type(odd)": {
-                        bgcolor: trabajo.Porcentaje === 100 ? "#e8f5e9" : "grey.50",
+                        bgcolor: trabajo.Porcentaje === 100 ? "#e8f5e9" : "#f9f9f9",
                       },
                       "&:hover": {
                         bgcolor:
-                          trabajo.Porcentaje === 100 ? "#c8e6c9" : "primary.light", // verde un poco más fuerte en hover
-                        opacity: 0.95,
+                          trabajo.Porcentaje === 100 ? "#c8e6c9" : "#f1f7ff",
                       },
-
-                      // 👇 Ajusta altura
                       "& td, & th": {
                         py: { xs: 0.5, sm: 0.75 },
                         px: { xs: 1, sm: 2 },
                         fontSize: { xs: "0.75rem", sm: "0.85rem" },
+                        color: "#1b263b",
+                        fontFamily: "Poppins, sans-serif",
+                        borderTop: "1px solid rgba(0,0,0,0.1)",     // ✅ solo arriba
+                        borderBottom: "1px solid rgba(0,0,0,0.1)",  // ✅ solo abajo
+                        borderLeft: "none",                        // 🚫 quitamos lados
+                        borderRight: "none",
                       },
                     }}
                   >

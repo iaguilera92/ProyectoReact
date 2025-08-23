@@ -11,12 +11,6 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 //COLORES PROGRESO
-const getColor = (val) => {
-  if (val < 20) return "#ff8a80";
-  if (val < 30) return "#e53935";
-  if (val < 70) return "#fb8c00";
-  return "#388e3c";
-};
 const getGradient = (val) => {
   if (val < 20) return "linear-gradient(90deg,#ff8a80,#e57373)"; // rojo suave
   if (val < 30) return "linear-gradient(90deg,#ef5350,#e53935)"; // rojo fuerte
@@ -257,7 +251,7 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave }) {
               sx={{
                 py: 3,
                 pb: 6,
-                bgcolor: success ? "#e6f4ea" : "#FFFDF8",
+                bgcolor: success ? "#e6f4ea" : "#FFF8EC",
                 position: "relative",
                 overflow: "visible",
               }}
@@ -455,7 +449,9 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave }) {
         </Box>
       )}
       {/* FOOTER */}
-      <DialogActions sx={{ justifyContent: "flex-end", py: 2 }}>
+      <DialogActions sx={{
+        justifyContent: "center", py: 2, background: "linear-gradient(90deg,#FFF3E0,#FFE0B2)", borderTop: "1px solid rgba(255,167,38,.35)",
+      }}>
         {success ? (
           <Button
             variant="contained"

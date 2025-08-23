@@ -37,6 +37,14 @@ function App() {
   const [shouldAnimateInformations, setShouldAnimateInformations] = useState(false);
   const triggerInformations = (value) => setShouldAnimateInformations(value);
   const [hasSeenInformations, setHasSeenInformations] = useState(false);
+  const [isFading, setIsFading] = useState(false);
+
+  //EFECTO CAMBIAR DE RUTA
+  useEffect(() => {
+    setIsFading(true);
+    const timer = setTimeout(() => setIsFading(false), 400);
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
 
   //GOOGLE ANALYTICS
   useEffect(() => {
@@ -85,10 +93,6 @@ function App() {
     });
   };
 
-  const handleUserInteraction = () => {
-    setHasInteracted(true);
-  };
-
   //location.pathname
   useEffect(() => {
     if (location.pathname === "/") {
@@ -104,12 +108,9 @@ function App() {
       return;
     }
 
-    let minListo = false;
-
     const requiereVideo = ["/", "/inicio", ""].includes(location.pathname);
 
     const minTimeout = setTimeout(() => {
-      minListo = true;
       if (!requiereVideo || videoReady) {
         setShowApp(true);
       }
@@ -263,8 +264,26 @@ function App() {
           </Suspense>
         )}
 
-        {/* Rutas principales con contexto */}
-        <Outlet context={{ showApp, informationsRef }} />
+        {/* Transición entre páginas */}
+        <Box sx={{ position: "relative", minHeight: "100vh" }}>
+          <Outlet context={{ showApp, informationsRef }} />
+          {isFading && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              style={{
+                position: "fixed",
+                inset: 0,
+                background: "#061F35",
+                zIndex: 2000
+              }}
+            />
+          )}
+        </Box>
+
+
 
         {/* Secciones visibles solo en la página de inicio */}
         {["/", ""].includes(location.pathname) && (
@@ -361,7 +380,7 @@ function App() {
           </IconButton>
         )}
       </Box>
-    </ThemeProvider>
+    </ThemeProvider >
   );
 }
 

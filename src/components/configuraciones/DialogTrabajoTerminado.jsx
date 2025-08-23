@@ -47,7 +47,7 @@ export default function DialogTrabajoTerminado({
           if (trabajo?.TelefonoCliente) {
             const phone = String(trabajo.TelefonoCliente).replace(/\D/g, "");
             const message = `Buenas, se ha terminado su Sitio Web ${trabajo.SitioWeb}, se encuentra lista para utilizar. 🚀`;
-            const whatsappUrl = `https://wa.me/56${phone}?text=${encodeURIComponent(message)}`;
+            const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 
             // 👇 Abrimos WhatsApp ANTES de cerrar el diálogo
             window.open(whatsappUrl, "_blank");
@@ -347,11 +347,14 @@ export default function DialogTrabajoTerminado({
       {/* Footer */}
       <DialogActions
         sx={{
-          justifyContent: success ? "center" : "flex-end", // 👈 ahora sí: aplausos al centro, botones a la derecha
+          justifyContent: success ? "center" : "flex-end",
           py: 2,
-          gap: 0.3, // espacio entre los aplausos
+          gap: 0.3,
+          background: "#FDF3E7",                 // 👈 un beige más oscuro que #FFFDF8
+          borderTop: "1px solid rgba(230,126,34,.45)" // 👈 ámbar más profundo
         }}
       >
+
         {success ? (
           Array.from({ length: 5 }).map((_, i) => (
             <motion.span

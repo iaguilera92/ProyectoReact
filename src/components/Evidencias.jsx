@@ -48,15 +48,26 @@ const Evidencias = () => {
 
     // Reproducción automática solo si es visible
     useEffect(() => {
+        if (!videosRef.current.length) return;
+
         const observers = videosRef.current.map((video) => {
             if (!video) return null;
+
             const observer = new IntersectionObserver(
                 ([entry]) => {
-                    if (entry.isIntersecting) video.play();
-                    else video.pause();
+                    if (entry.isIntersecting) {
+                        video.play().catch(() => { });
+                    } else {
+                        video.pause();
+                    }
                 },
-                { threshold: 0.3 }
+                {
+                    root: null,
+                    threshold: 0.5,           // al menos 50% visible
+                    rootMargin: "0px 0px -10% 0px", // puedes ajustar sensibilidad
+                }
             );
+
             observer.observe(video);
             return observer;
         });
@@ -68,7 +79,7 @@ const Evidencias = () => {
                 }
             });
         };
-    }, []);
+    }, [evidencias.length]);
 
     useEffect(() => {
         const observer = new IntersectionObserver(
@@ -406,7 +417,7 @@ const Evidencias = () => {
                                                                 playsInline
                                                                 muted
                                                                 loop
-                                                                preload="auto"
+                                                                preload="none"
                                                                 controls={false}
                                                                 disablePictureInPicture
                                                                 controlsList="nodownload nofullscreen noremoteplayback"
@@ -461,7 +472,10 @@ const Evidencias = () => {
                                                                 href={evidencias[n].url}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
+
                                                                 sx={{
+                                                                    fontSize: evidencias[n].label === "investigadores-privados.cl" ? "0.63rem" : "0.75rem", // 👈 solo cambia aquí
+
                                                                     display: 'block',
                                                                     mt: 1.5,
                                                                     mb: 1.5,
