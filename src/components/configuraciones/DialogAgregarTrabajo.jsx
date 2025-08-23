@@ -377,7 +377,7 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave }) {
                         gutterBottom
                         sx={{ fontWeight: 600, color: "#E65100", mb: 1 }}
                       >
-                        Progreso
+                        Progreso *
                       </Typography>
                       <Slider
                         value={form.progreso}
@@ -455,7 +455,7 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave }) {
         </Box>
       )}
       {/* FOOTER */}
-      <DialogActions sx={{ justifyContent: "center", py: 2 }}>
+      <DialogActions sx={{ justifyContent: "flex-end", py: 2 }}>
         {success ? (
           <Button
             variant="contained"
@@ -467,9 +467,23 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave }) {
           </Button>
         ) : (
           <>
-            <Button onClick={onClose} sx={{ color: "#E65100", fontWeight: 700 }}>
+            <Button
+              onClick={onClose}
+              sx={{
+                color: "#E65100",
+                fontWeight: 700,
+                textTransform: "none",
+                px: 3,
+                minWidth: 160,
+                border: "1px solid #E65100",
+                "&:hover": {
+                  backgroundColor: "rgba(230,81,0,0.08)",
+                },
+              }}
+            >
               Cancelar
             </Button>
+
             <Button
               variant="contained"
               onClick={handleSave}
@@ -485,8 +499,9 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave }) {
                 },
               }}
             >
-              Guardar
+              Crear Trabajo
             </Button>
+
           </>
         )}
       </DialogActions>

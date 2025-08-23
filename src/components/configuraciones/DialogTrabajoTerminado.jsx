@@ -300,10 +300,15 @@ export default function DialogTrabajoTerminado({
                     </Box>
                   </motion.div>
                 ) : (
-                  <Typography>
-                    El trabajo <b>{trabajo?.SitioWeb}</b> alcanzó el <b>100%</b>.{" "}
-                    ¿Desea marcarlo como finalizado?
-                  </Typography>
+                  <>
+                    <Typography>
+                      🎉 ¡El trabajo <b>{trabajo?.SitioWeb}</b> alcanzó el <b>100%</b>!
+                    </Typography>
+                    <Typography sx={{ mt: 1 }}>
+                      ¿Quieres marcarlo como finalizado?
+                    </Typography>
+
+                  </>
                 )}
               </AnimatePresence>
             </DialogContent>
@@ -344,7 +349,7 @@ export default function DialogTrabajoTerminado({
         sx={{
           justifyContent: success ? "center" : "flex-end", // 👈 ahora sí: aplausos al centro, botones a la derecha
           py: 2,
-          gap: 1, // espacio entre los aplausos
+          gap: 0.3, // espacio entre los aplausos
         }}
       >
         {success ? (
@@ -365,14 +370,30 @@ export default function DialogTrabajoTerminado({
           ))
         ) : (
           <>
-            <Button onClick={onClose} sx={{ color: "success.dark", fontWeight: 700 }}>
+            <Button
+              onClick={onClose}
+              sx={{
+                color: "success.dark",
+                fontWeight: 700,
+                fontSize: isMobile ? "0.7rem" : "0.8rem", // 👈 mismo tamaño
+                px: isMobile ? 1 : 1.5,
+                height: 36,
+              }}
+            >
               Cancelar
             </Button>
+
             <Button
               variant="contained"
               color="success"
               disabled={loading}
               onClick={() => handleAccion(onConfirmar, "confirmar")}
+              sx={{
+                fontWeight: 700,
+                fontSize: isMobile ? "0.7rem" : "0.8rem", // 👈 mismo tamaño
+                px: isMobile ? 1 : 1.5,
+                height: 36,
+              }}
             >
               Confirmar
             </Button>
@@ -382,7 +403,8 @@ export default function DialogTrabajoTerminado({
               variant="contained"
               disabled={loading}
               sx={{
-                fontSize: isMobile ? "0.65rem" : "0.75rem",
+                fontWeight: 700,
+                fontSize: isMobile ? "0.7rem" : "0.8rem", // 👈 mismo tamaño
                 px: isMobile ? 1 : 1.5,
                 height: 36,
                 minWidth: isMobile ? "auto" : undefined,
@@ -391,8 +413,9 @@ export default function DialogTrabajoTerminado({
                 gap: 0.5,
               }}
             >
-              Confirmar + <MailOutlineIcon />
+              Confirmar + <MailOutlineIcon sx={{ fontSize: "1rem" }} />
             </Button>
+
 
           </>
         )}

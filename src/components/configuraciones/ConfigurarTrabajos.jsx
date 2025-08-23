@@ -205,7 +205,7 @@ const ConfigurarTrabajos = () => {
       setSnackbar({
         open: true,
         type: "success",
-        message: "Cambios guardados correctamente",
+        message: "💾 Trabajo actualizado correctamente.",
       });
     } catch (error) {
       console.error("❌ Error al guardar:", error);
