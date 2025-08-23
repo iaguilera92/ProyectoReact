@@ -16,9 +16,14 @@ export const cargarTrabajos = async (urlExcel) => {
     // 👇 mapeamos al formato esperado de trabajos
     const trabajos = jsonData.map((row) => ({
       SitioWeb: row["SitioWeb"] || "",
+      NombreCliente: row["NombreCliente"] || "",
+      EmailCliente: row["EmailCliente"] || "",
+      LogoCliente: row["LogoCliente"] || "",
+      TelefonoCliente: row["TelefonoCliente"] || "",
       Porcentaje: Number(row["Porcentaje"]) || 0,
       Estado: row["Estado"] === 1, // convierte 0/1 a booleano
       TipoApp: Number(row["TipoApp"]) || 0,
+      FechaCreacion: row["FechaCreacion"] || ""
     }));
 
     return trabajos;

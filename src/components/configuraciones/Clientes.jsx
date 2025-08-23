@@ -429,11 +429,11 @@ const Clientes = () => {
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
         overflow: "hidden",
-        paddingTop: isMobile ? 12 : 11,
+        paddingTop: isMobile ? 10 : 11,
       }}
     >
       <Typography
-        variant={isMobile ? "h5" : "h5"}
+        variant={isMobile ? "h6" : "h5"}
         fontWeight={700}
         sx={{
           color: "#e3f2fd",
@@ -475,25 +475,25 @@ const Clientes = () => {
           flexWrap: "nowrap",
           justifyContent: "center",
           alignItems: "stretch",
-          gap: 2,
+          gap: 1.5, // 👈 menos espacio entre cuadros
           mb: 2,
           width: "100%",
           px: isMobile ? 1 : 0,
         }}
       >
-
+        {/* Cuadro Ganado */}
         <Box
           sx={{
             backgroundColor: "#e8f5e9",
             border: "2px solid #66bb6a",
             borderRadius: 2,
-            px: 1.5,
-            py: 0.6,
+            px: 1.2,   // 👈 menos padding horizontal
+            py: 0.5,   // 👈 menos padding vertical
             flex: "1 1 auto",
-            maxWidth: 160,
-            minWidth: 140,
+            maxWidth: 140, // 👈 antes 160
+            minWidth: 120, // 👈 antes 140
             textAlign: "center",
-            height: "72px",
+            height: "64px", // 👈 más bajo (antes 72px)
             display: "flex",
             flexDirection: "column",
             justifyContent: "start",
@@ -503,7 +503,7 @@ const Clientes = () => {
             variant="subtitle2"
             fontWeight={600}
             color="green"
-            sx={{ fontSize: "0.85rem", mt: 0.1 }}
+            sx={{ fontSize: "0.8rem", mt: 0.1 }}
           >
             Ganado en {mesCapitalizado}
           </Typography>
@@ -514,7 +514,7 @@ const Clientes = () => {
               alignItems: "center",
               justifyContent: "center",
               flexGrow: 1,
-              minHeight: "1.2rem",
+              minHeight: "1rem",
             }}
           >
             <ContadorGanado
@@ -527,26 +527,25 @@ const Clientes = () => {
           <Typography
             variant="caption"
             color="text.secondary"
-            sx={{ fontSize: "0.75rem" }}
+            sx={{ fontSize: "0.7rem" }} // 👈 más chico
           >
             {clientes.filter(c => c.pagado).length} pagado
           </Typography>
         </Box>
 
-
-
+        {/* Cuadro Deuda */}
         <Box
           sx={{
             backgroundColor: "#fff3e0",
             border: "2px solid #ff9800",
             borderRadius: 2,
-            px: 1.5,
-            py: 0.6,
+            px: 1.2,
+            py: 0.5,
             flex: "1 1 auto",
-            maxWidth: 160,
-            minWidth: 140,
+            maxWidth: 140,
+            minWidth: 120,
             textAlign: "center",
-            height: "72px",
+            height: "64px",
             display: "flex",
             flexDirection: "column",
             justifyContent: "start",
@@ -556,27 +555,30 @@ const Clientes = () => {
             variant="subtitle2"
             fontWeight={600}
             color="orange"
-            sx={{ fontSize: "0.85rem", mt: 0.1 }}
+            sx={{ fontSize: "0.8rem", mt: 0.1 }}
           >
             Deuda actual
           </Typography>
           <Typography
             variant="h6"
             fontWeight={700}
-            sx={{ fontSize: "1.1rem", lineHeight: 1.2, color: "#d32f2f" }} // rojo fuerte
+            sx={{
+              fontSize: "1rem", // 👈 más pequeño
+              lineHeight: 1.2,
+              color: "#d32f2f",
+            }}
           >
             ${totalDeuda.toLocaleString("es-CL")} CLP
           </Typography>
           <Typography
             variant="caption"
             color="text.secondary"
-            sx={{ fontSize: "0.75rem" }}
+            sx={{ fontSize: "0.7rem" }}
           >
             {clientes.filter(c => !c.pagado).length} deben
           </Typography>
         </Box>
       </Box>
-
 
       <Box
         sx={{
@@ -632,8 +634,15 @@ const Clientes = () => {
                   <TableRow
                     key={index}
                     sx={{
-                      backgroundColor: estaAlDia ? 'rgba(200, 255, 200, 0.12)' : 'transparent',
-                      transition: 'background-color 0.3s ease-in-out',
+                      backgroundColor: estaAlDia ? "rgba(200, 255, 200, 0.12)" : "transparent",
+                      transition: "background-color 0.3s ease-in-out",
+
+                      // 👇 aplica padding distinto en mobile
+                      "& td, & th": {
+                        py: { xs: 0, sm: 0 }, // menos alto en mobile
+                        px: { xs: 1, sm: 2 },   // opcional: menos ancho en mobile
+                        fontSize: { xs: "0.75rem", sm: "0.875rem" }, // 👈 texto más chico en mobile
+                      },
                     }}
                   >
                     {/* Cliente */}

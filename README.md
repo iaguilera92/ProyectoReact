@@ -8,6 +8,14 @@ Currently, two official plugins are available:
 - [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
 
+CORREOS
+=======
+
+plataformas.web.cl@gmail.com //OFICIAL
+plataformas.web.contacto@gmail.com //CONTACTO
+
+
+
 ANOTACIONES
 ===========
 Password Example (Comando Git): node hashea.js admin 1234
@@ -69,3 +77,5 @@ AUTORIZAR NETLIFY: netlify deploy --prod
 API NETLIFY: npx netlify functions:serve getAnalyticsStats
 
 CORRER SERVICIOS: npx netlify dev
+
+

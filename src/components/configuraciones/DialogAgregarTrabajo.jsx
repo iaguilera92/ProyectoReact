@@ -10,10 +10,25 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
+//COLORES PROGRESO
+const getColor = (val) => {
+  if (val < 20) return "#ff8a80";
+  if (val < 30) return "#e53935";
+  if (val < 70) return "#fb8c00";
+  return "#388e3c";
+};
+const getGradient = (val) => {
+  if (val < 20) return "linear-gradient(90deg,#ff8a80,#e57373)"; // rojo suave
+  if (val < 30) return "linear-gradient(90deg,#ef5350,#e53935)"; // rojo fuerte
+  if (val < 70) return "linear-gradient(90deg,#ffb74d,#fb8c00)"; // naranjo
+  return "linear-gradient(90deg,#81c784,#388e3c)"; // verde
+};
+
 export default function DialogAgregarTrabajo({ open, onClose, onSave }) {
   const [loading, setLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: "", type: "success" });
   const [success, setSuccess] = useState(false);
+
 
   const [form, setForm] = useState({
     nombre: "",
@@ -375,23 +390,31 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave }) {
                         min={0}
                         max={100}
                         sx={{
-                          color: form.progreso === 100 ? "success.main" : "warning.main",
+                          "& .MuiSlider-track": {
+                            backgroundImage: getGradient(form.progreso),
+                            border: "none",
+                          },
+                          "& .MuiSlider-rail": {
+                            opacity: 0.3,
+                            backgroundColor: "#ccc",
+                          },
                           "& .MuiSlider-valueLabel": {
                             position: "absolute",
-                            top: "40px", // 👈 más arriba (más cerca del slider)
+                            top: "40px",
                             left: "50%",
                             transform: "translateX(-50%) !important",
                             "& *": { transform: "none" },
-
-                            background:
-                              form.progreso === 100
-                                ? "linear-gradient(45deg,#43A047,#66BB6A)"
-                                : "linear-gradient(45deg,#FB8C00,#F57C00)",
+                            backgroundImage: getGradient(form.progreso),
                             borderRadius: "50%",
                             fontWeight: 700,
                             color: "#fff",
                             padding: "4px 8px",
                             boxShadow: "0 2px 6px rgba(0,0,0,0.25)",
+
+                            // 🔥 quita el diamante
+                            "&:before": {
+                              display: "none",
+                            },
                           },
                         }}
                       />

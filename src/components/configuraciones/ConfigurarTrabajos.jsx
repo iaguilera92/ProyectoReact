@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Box, Typography, Table, TableHead, TableRow, TableCell, TableBody, IconButton, TextField, Snackbar, Alert, Container, Paper, LinearProgress, Tooltip, useTheme, useMediaQuery } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -7,8 +7,10 @@ import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
 import { motion } from "framer-motion";
 import MenuInferior from './MenuInferior';
 import AddIcon from "@mui/icons-material/Add";
-import DialogAgregarTrabajo from "../DialogAgregarTrabajo";
+import DialogAgregarTrabajo from "./DialogAgregarTrabajo";
+import DialogTrabajoTerminado from "./DialogTrabajoTerminado";
 import { CircularProgress } from "@mui/material";
+import emailjs from "emailjs-com";
 
 const ActionButton = ({ title, color, onClick, icon }) => (
   <motion.div whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.9 }}>
@@ -38,6 +40,18 @@ const ConfigurarTrabajos = () => {
   const [loadingDialog, setLoadingDialog] = useState(false);
   const [loadingSaveAll, setLoadingSaveAll] = useState(false);
   const [loadingDialogAction, setLoadingDialogAction] = useState(null);
+  const [dialogFinalizar, setDialogFinalizar] = useState({
+    open: false,
+    trabajo: null,
+  });
+
+  // Función para decidir gradiente según avance
+  const getGradient = (val) => {
+    if (val < 20) return "linear-gradient(90deg,#ff8a80,#e57373)"; // rojo suave
+    if (val < 30) return "linear-gradient(90deg,#ef5350,#e53935)"; // rojo fuerte
+    if (val < 70) return "linear-gradient(90deg,#ffb74d,#fb8c00)"; // naranjo
+    return "linear-gradient(90deg,#81c784,#388e3c)"; // verde
+  };
 
   const [dialog, setDialog] = useState({
     open: false,
@@ -155,6 +169,15 @@ const ConfigurarTrabajos = () => {
     setTrabajos(updated);
   };
 
+  //BOTÓN GUARDAR
+  const handleGuardarClick = (trabajo) => {
+    if (trabajo.Porcentaje === 100) {
+      setDialogFinalizar({ open: true, trabajo });
+    } else {
+      guardarCambios(trabajo);
+    }
+  };
+
   const guardarCambios = async (trabajo) => {
     try {
       setLoadingSaveAll(true);
@@ -196,8 +219,13 @@ const ConfigurarTrabajos = () => {
     }
   };
 
+  const handleConfirmarFinalizar = async () => {
+    if (dialogFinalizar.trabajo) {
+      await guardarCambios(dialogFinalizar.trabajo);
+    }
+  };
 
-
+  //BOTÓN RESTAURAR
   const restaurarTrabajo = async (trabajo) => {
     try {
       setLoadingSaveAll(true); // 🔒 bloquea toda la tabla
@@ -232,8 +260,40 @@ const ConfigurarTrabajos = () => {
     }
   };
 
+  // CONFIRMACIÓN + CORREO
+  const handleEnviarCorreo = async () => {
+    try {
+      const fecha = new Date().toLocaleDateString("es-CL", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
 
+      const params = {
+        sitioWeb: dialogFinalizar.trabajo?.SitioWeb || "plataformas-web.cl",
+        nombre: dialogFinalizar.trabajo?.NombreCliente || "Ignacio",
+        logoCliente:
+          dialogFinalizar.trabajo?.LogoCliente ||
+          "https://plataformas-web.cl/logo-plataformas-web-correo.png",
+        email:
+          dialogFinalizar.trabajo?.EmailCliente ||
+          "plataformas.web.cl@gmail.com",
+        fechaEntrega: fecha,
+        cc: "plataformas.web.cl@gmail.com", // 👈 campo CC
+      };
 
+      await emailjs.send(
+        "service_kz3yaug",      // Service ID
+        "template_yowj1al",     // Template ID
+        params,
+        "lwCAuhptLOofypnhx"     // Public Key
+      );
+
+      console.log("✅ Correo enviado correctamente a:", params.email, "(CC:", params.cc, ")");
+    } catch (error) {
+      console.error("❌ Error al enviar correo:", error);
+    }
+  };
 
   return (
     <Container
@@ -365,17 +425,25 @@ const ConfigurarTrabajos = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.05 }}
                     sx={{
-                      "&:nth-of-type(odd)": { bgcolor: "grey.50" },
-                      "&:hover": { bgcolor: "primary.light", opacity: 0.95 },
+                      bgcolor: trabajo.Porcentaje === 100 ? "#e8f5e9" : "inherit", // 💚 verde pastel si está al 100
+                      "&:nth-of-type(odd)": {
+                        bgcolor: trabajo.Porcentaje === 100 ? "#e8f5e9" : "grey.50",
+                      },
+                      "&:hover": {
+                        bgcolor:
+                          trabajo.Porcentaje === 100 ? "#c8e6c9" : "primary.light", // verde un poco más fuerte en hover
+                        opacity: 0.95,
+                      },
 
                       // 👇 Ajusta altura
                       "& td, & th": {
-                        py: { xs: 0.5, sm: 0.75 }, // menos padding vertical
-                        px: { xs: 1, sm: 2 },     // padding horizontal más compacto
-                        fontSize: { xs: "0.75rem", sm: "0.85rem" }, // letras más chicas
+                        py: { xs: 0.5, sm: 0.75 },
+                        px: { xs: 1, sm: 2 },
+                        fontSize: { xs: "0.75rem", sm: "0.85rem" },
                       },
                     }}
                   >
+
                     {/* Sitio Web */}
                     <TableCell
                       sx={{
@@ -404,9 +472,9 @@ const ConfigurarTrabajos = () => {
                           sx={{
                             display: "flex",
                             alignItems: "center",
-                            gap: 1,
+                            gap: 0,
                             flex: 1,
-                            width: isMobile ? 90 : "100%", // 📱 compacto / 🖥️ full
+                            width: isMobile ? "100%" : "100%", // 📱 compacto / 🖥️ full
                           }}
                         >
                           <LinearProgress
@@ -417,11 +485,12 @@ const ConfigurarTrabajos = () => {
                               height: 8,
                               borderRadius: 2,
                               "& .MuiLinearProgress-bar": {
-                                bgcolor:
-                                  trabajo.Porcentaje === 100 ? "success.main" : "warning.main",
+                                backgroundImage: getGradient(trabajo.Porcentaje), // 🎨 gradiente dinámico
+                                transition: "transform 0.6s ease-in-out",
                               },
                             }}
                           />
+
                           <Typography
                             variant="body2"
                             sx={{
@@ -438,13 +507,20 @@ const ConfigurarTrabajos = () => {
                         <TextField
                           type="number"
                           value={trabajo.Porcentaje}
-                          onChange={(e) =>
-                            handleChange(
-                              index,
-                              "Porcentaje",
-                              Math.min(100, Math.max(0, Number(e.target.value)))
-                            )
-                          }
+                          onChange={(e) => {
+                            let val = e.target.value;
+
+                            // evitar 0 iniciales innecesarios
+                            if (/^0\d+/.test(val)) {
+                              val = val.replace(/^0+/, "");
+                            }
+
+                            // limitar entre 0 y 100
+                            let num = Math.min(100, Math.max(0, Number(val || 0)));
+
+                            // actualiza el estado con el número ya corregido
+                            handleChange(index, "Porcentaje", num);
+                          }}
                           inputProps={{
                             min: 0,
                             max: 100,
@@ -453,10 +529,13 @@ const ConfigurarTrabajos = () => {
                           size="small"
                           sx={{
                             width: 90,
-                            alignSelf: isMobile ? "flex-start" : "center", // 📱 alineado arriba / 🖥️ centrado
-                            mt: isMobile ? 0.25 : 0, // 👈 sube un pelín en mobile
+                            alignSelf: isMobile ? "flex-start" : "center",
+                            mt: isMobile ? 0.25 : 0,
                           }}
                         />
+
+
+
                       </Box>
                     </TableCell>
 
@@ -467,8 +546,8 @@ const ConfigurarTrabajos = () => {
                         <ActionButton
                           title="Guardar cambios"
                           color="primary"
-                          disabled={loadingSave === trabajo.SitioWeb} // 👈 deshabilitado si está guardando
-                          onClick={() => guardarCambios(trabajo)}
+                          disabled={loadingSave === trabajo.SitioWeb}
+                          onClick={() => handleGuardarClick(trabajo)}   // 👈 usamos el nuevo handler
                           icon={
                             loadingSave === trabajo.SitioWeb ? (
                               <CircularProgress size={20} color="inherit" />
@@ -527,12 +606,13 @@ const ConfigurarTrabajos = () => {
           <Alert severity={snackbar.type}>{snackbar.message}</Alert>
         </Snackbar>
 
+        {/*DIALOG: AGREGAR TRABAJO*/}
         <DialogAgregarTrabajo
           open={openDialogAgregar}
           onClose={() => setOpenDialogAgregar(false)}
           onSave={handleSaveTrabajo}
         />
-
+        {/*DIALOG: ELIMINAR*/}
         <Dialog open={dialog.open} onClose={cerrarDialog}>
           <DialogTitle sx={{ fontWeight: "bold", color: "#e65100" }}>
             Confirmar acción
@@ -579,10 +659,24 @@ const ConfigurarTrabajos = () => {
           </DialogActions>
         </Dialog>
 
+        <DialogTrabajoTerminado
+          open={dialogFinalizar.open}
+          trabajo={dialogFinalizar.trabajo}
+          onClose={() => setDialogFinalizar({ open: false, trabajo: null })}
+          onConfirmar={async () => {
+            await guardarCambios(dialogFinalizar.trabajo);
+          }}
+          onConfirmarConCorreo={async () => {
+            await guardarCambios(dialogFinalizar.trabajo);
+            await handleEnviarCorreo();
+          }}
+        />
+
+
 
         <MenuInferior cardSize={cardSize} modo="trabajos" />
       </Box>
-    </Container>
+    </Container >
   );
 };
 
