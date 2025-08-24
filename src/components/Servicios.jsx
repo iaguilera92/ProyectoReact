@@ -96,8 +96,8 @@ const Servicios = () => {
     }}>
 
       <Box ref={containerRef} sx={{ pt: 12, pb: 4, px: { xs: 1, md: 4 } }}>
-        <Box textAlign="center" mb={4} px={2}>
-          <Typography variant={isMobile ? "h4" : "h3"} fontWeight={700} sx={{ color: 'white', display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'center' }}>
+        <Box textAlign="center" mb={3} px={2}>
+          <Typography variant={isMobile ? "h5" : "h3"} fontWeight={700} sx={{ color: 'white', display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'center' }}>
             {"Nuestros Servicios".split("").map((char, i) => (
               <motion.span key={i} custom={i} variants={letterVariants} initial="hidden" animate="visible" style={{ display: 'inline-block' }}>
                 {char === " " ? "\u00A0" : char}
@@ -105,13 +105,13 @@ const Servicios = () => {
             ))}
           </Typography>
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1, duration: 0.8, ease: 'easeOut' }}>
-            <Typography variant="body1" color="white" sx={{ maxWidth: 800, mx: 'auto', fontSize: '1.2rem', fontFamily: '"Segoe UI", sans-serif', lineHeight: 1.6, opacity: 0.9, mt: 1.5 }}>
-              Equipo de Especialistas para Evaluación, Implementación y Gestión de Proyectos Industriales con un Enfoque Tecnológico.
+            <Typography variant="body1" color="white" sx={{ maxWidth: 800, mx: 'auto', fontSize: '1.2rem', fontFamily: '"Segoe UI", sans-serif', lineHeight: 1.6, opacity: 0.9, mt: 1 }}>
+              Desarrollamos sitios web y sistemas para todos los negocios.
             </Typography>
           </motion.div>
         </Box>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, mx: 'auto', mb: 2, maxWidth: 1200, px: 0 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, mx: 'auto', mb: 1, maxWidth: 1200, px: 0 }}>
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.5, duration: 0.8, ease: 'easeOut' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Box component="img" src="/public-service.png" alt="Servicios icon" sx={{ width: 18, height: 18, filter: 'invert(1)' }} />
