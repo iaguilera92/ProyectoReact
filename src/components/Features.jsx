@@ -9,12 +9,32 @@ import { cargarTrabajos } from "../helpers/HelperTrabajos";
 import { useInView } from "react-intersection-observer";
 import { useNavigate } from "react-router-dom";
 import "./css/Features.css"; // Importamos el CSSi
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
+
 
 // DATOS
 const features = [
-  { id: 1, title: "Plataformas web", desc: "Diseñamos sitios web modernos, rápidos y adaptables para impulsar tus emprendimientos.", image: "servicio3.webp" },
-  { id: 2, title: "Soporte Evolutivo de Sistemas", desc: "Soporte evolutivo y mantenimiento de sistemas, brindamos soporte TI para el mantenimiento de tus sistemas.", image: "servicio2.jpg" },
-  { id: 3, title: "Desarrollo de Sistemas a Medida", desc: "Desarrollo de sistemas a medida, creamos software y sitios web personalizados para tu negocio.", image: "servicio1.jpg" }
+  {
+    id: 1,
+    title: "Plataformas Web",
+    desc: "Creamos sitios web con la última tecnología, responsivos que potencian tu presencia digital y hacen crecer tu negocio.",
+    image: "servicio1.jpg"
+  },
+  {
+    id: 2,
+    title: "Soporte Evolutivo de Sistemas",
+    desc: "Garantizamos la continuidad y mejora de tus sistemas con mantenimiento proactivo y soporte TI especializado.",
+    image: "servicio2.jpg"
+  },
+  {
+    id: 3,
+    title: "Desarrollo de Sistemas a Medida",
+    desc: "Diseñamos y desarrollamos software personalizado que se adapta a las necesidades únicas de tu empresa.",
+    image: "servicio3.webp"
+  }
 ];
 
 // EFECTOS
@@ -338,87 +358,316 @@ function Features({ videoReady }) {
 
 
         <Box ref={ref}>
-          <Grid container spacing={2}>
-            {features.map((feature, index) => (
-              <Grid item xs={12} md={4} key={feature.id}>
-                <motion.div
-                  initial="hidden"
-                  animate={hasAnimated ? "visible" : "hidden"}
-                  variants={cardAnimation}
-                  custom={index}
-                >
-                  <Card sx={{ position: "relative", overflow: "hidden" }}>
-                    <StyledCardActionArea href={feature.link} target="_self">
-                      <CardMedia
-                        className="card-media"
-                        component="img"
-                        image={feature.image}
-                        alt={feature.title}
-                        sx={{
-                          height: isMobile ? 205 : 250,
-                          transition: "transform 1s",
+          <Grid container spacing={isMobile ? 1.5 : 4}>
+
+            {features.map((feature, index) => {
+              // ✅ Caso especial: id=1 en mobile → slider con 2 secciones
+              if (isMobile && feature.id === 1) {
+                return (
+                  <Grid item xs={12} key={feature.id}>
+                    <motion.div
+                      initial="hidden"
+                      animate={hasAnimated ? "visible" : "hidden"}
+                      variants={cardAnimation}
+                      custom={index}
+                    >
+                      <Swiper
+                        spaceBetween={10}
+                        slidesPerView={1}
+                        modules={[Autoplay, Pagination]}
+                        autoplay={{
+                          delay: 5000,
+                          disableOnInteraction: false,
+                          pauseOnMouseEnter: true,
                         }}
-                      />
-                      <Overlay className="overlay">
-                        <Typography
-                          variant="h6"
-                          sx={{
-                            fontWeight: "bold",
-                            marginTop: isMobile ? "20px" : "30px",
-                            mb: 1,
-                            textAlign: "left",
-                            width: "100%",
-                            marginLeft: "9px",
-                            fontSize: isMobile ? "1.15rem" : "1.4rem",
-                          }}
-                        >
-                          {feature.title}
-                        </Typography>
-
-                        <AdditionalContent className="additional">
-                          <Typography
-                            variant="body2"
-                            sx={{ mb: 1, px: 1, fontSize: "1rem" }}
+                        pagination={{
+                          clickable: true,
+                          type: "bullets",
+                        }}
+                        onSwiper={(swiper) => {
+                          // Pausa autoplay al montar
+                          swiper.autoplay.stop();
+                          // Lo arranca después de 2s
+                          setTimeout(() => {
+                            swiper.autoplay.start();
+                          }, 2000);
+                        }}
+                        className="custom-swiper"
+                      >
+                        {/* Slide 1: Sitios Web */}
+                        <SwiperSlide>
+                          <Card
+                            sx={{
+                              position: "relative",
+                              overflow: "visible",
+                              borderRadius: "50px",
+                              boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
+                              height: 200,
+                              display: "flex",
+                              alignItems: "flex-end",
+                            }}
                           >
-                            {feature.desc}
-                          </Typography>
-
-                          {/* ✅ Botón personalizado, fuera del <button> de CardActionArea */}
-                          <Box sx={{ textAlign: "center", mt: 2 }}>
+                            {/* Box verde */}
                             <Box
-                              component="span"
-                              role="button"
-                              tabIndex={0}
-                              className="btn-3-features"
                               sx={{
-                                zIndex: 5,
+                                flex: 1,
+                                background: "linear-gradient(135deg, hsl(142.63deg 70.28% 48.82%), hsl(142.63deg 80% 35%))",
+                                borderRadius: "30px",
+                                p: 3,
+                                height: "65%",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "center",
+                                width: "100%",
                                 cursor: "pointer",
-                                display: "inline-block",
                               }}
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                handleContactClick(feature.title);
+                                handleContactClick("Sitios Web");
                               }}
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter" || e.key === " ") {
+                            >
+                              <Box sx={{ maxWidth: "60%" }}>
+                                <Typography
+                                  variant="h4"
+                                  sx={{
+                                    fontWeight: "bold",
+                                    mb: 0.5,
+                                    textAlign: "left",
+                                    color: "#fff",
+                                    fontSize: "1.9rem",
+                                  }}
+                                >
+                                  Sitios Web
+                                </Typography>
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    color: "#fff",
+                                    textAlign: "left",
+                                    fontSize: "0.85rem",
+                                  }}
+                                >
+                                  Creamos sitios web modernos, responsivos y optimizados.
+                                </Typography>
+                              </Box>
+                            </Box>
+
+                            {/* Imagen mockup derecha */}
+                            <Box
+                              sx={{
+                                position: "absolute",
+                                right: 0,
+                                bottom: 0,
+                                height: "100%",
+                                aspectRatio: "572 / 788",
+                                zIndex: 2,
+                              }}
+                            >
+                              <Box
+                                component="img"
+                                src="/sitios-web.png"
+                                alt="Preview Sitios Web"
+                                sx={{
+                                  position: "absolute",
+                                  top: "5%",
+                                  left: "12%",
+                                  width: "54.4%",
+                                  height: "81.7%",
+                                  objectFit: "cover",
+                                  borderRadius: "10px",
+                                  zIndex: 0,
+                                  backgroundColor: "black",
+                                }}
+                              />
+                              <Box
+                                component="img"
+                                src="/mano-celular.png"
+                                alt="Mano con celular"
+                                sx={{
+                                  width: "100%",
+                                  height: "auto",
+                                  position: "absolute",
+                                  top: 0,
+                                  left: 0,
+                                  zIndex: 1,
+                                  pointerEvents: "none",
+                                }}
+                              />
+                            </Box>
+                          </Card>
+                        </SwiperSlide>
+
+                        {/* Slide 2: Sistemas */}
+                        <SwiperSlide>
+                          <Card
+                            sx={{
+                              position: "relative",
+                              overflow: "visible",
+                              borderRadius: "50px",
+                              boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
+                              height: 200,
+                              display: "flex",
+                              alignItems: "flex-end",
+                            }}
+                          >
+                            {/* Box degradado azul */}
+                            <Box
+                              sx={{
+                                flex: 1,
+                                background: "linear-gradient(135deg, hsl(210, 80%, 55%), hsl(220, 70%, 35%))",
+                                borderRadius: "30px",
+                                p: 3,
+                                height: "65%",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "center",
+                                width: "100%",
+                                alignItems: "flex-end",
+                                cursor: "pointer",
+                              }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleContactClick("Sistemas");
+                              }}
+                            >
+                              <Box sx={{ maxWidth: "60%", textAlign: "right" }}>
+                                <Typography
+                                  variant="h4"
+                                  sx={{
+                                    fontWeight: "bold",
+                                    mb: 0.5,
+                                    color: "#fff",
+                                    fontSize: "1.9rem",
+                                  }}
+                                >
+                                  Sistemas
+                                </Typography>
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    color: "#fff",
+                                    fontSize: "0.85rem",
+                                  }}
+                                >
+                                  Control total sobre tu negocio.
+                                </Typography>
+                              </Box>
+                            </Box>
+
+                            {/* Imagen mockup izquierda */}
+                            <Box
+                              sx={{
+                                position: "absolute",
+                                left: 10,
+                                bottom: 0,
+                                height: "100%",
+                                aspectRatio: "572 / 788",
+                                zIndex: 2,
+                                transform: "scaleX(-1)",
+                              }}
+                            >
+                              <Box
+                                component="img"
+                                src="/sistemas.png"
+                                alt="Preview Sistemas"
+                                sx={{
+                                  position: "absolute",
+                                  top: "5%",
+                                  left: "12%",
+                                  width: "54.4%",
+                                  height: "81.7%",
+                                  objectFit: "cover",
+                                  borderRadius: "10px",
+                                  zIndex: 0,
+                                  backgroundColor: "black",
+                                  transform: "scaleX(-1)",
+                                }}
+                              />
+                              <Box
+                                component="img"
+                                src="/mano-celular.png"
+                                alt="Mano con celular"
+                                sx={{
+                                  width: "100%",
+                                  height: "auto",
+                                  position: "absolute",
+                                  top: 0,
+                                  left: 0,
+                                  zIndex: 1,
+                                  pointerEvents: "none",
+                                }}
+                              />
+                            </Box>
+                          </Card>
+                        </SwiperSlide>
+                      </Swiper>
+                    </motion.div>
+                  </Grid>
+                );
+              }
+
+
+              // ✅ resto de las cards como estaban
+              return (
+                <Grid item xs={12} md={4} key={feature.id}>
+                  <motion.div
+                    initial="hidden"
+                    animate={hasAnimated ? "visible" : "hidden"}
+                    variants={cardAnimation}
+                    custom={index}
+                  >
+                    <Card sx={{ position: "relative", overflow: "hidden" }}>
+                      <StyledCardActionArea href={feature.link} target="_self">
+                        <CardMedia
+                          component="img"
+                          image={feature.image}
+                          alt={feature.title}
+                          loading="lazy"
+                          sx={{ height: isMobile ? 205 : 250, transition: "transform 1s ease" }}
+                        />
+                        <Overlay className="overlay">
+                          <Typography
+                            variant="h6"
+                            sx={{
+                              fontWeight: "bold",
+                              mt: isMobile ? 2 : 3,
+                              mb: 1,
+                              textAlign: "left",
+                              px: 1,
+                              fontSize: isMobile ? "1.15rem" : "1.4rem",
+                            }}
+                          >
+                            {feature.title}
+                          </Typography>
+                          <AdditionalContent className="additional">
+                            <Typography variant="body2" sx={{ mb: 1, px: 1 }}>
+                              {feature.desc}
+                            </Typography>
+                            <Box sx={{ textAlign: "center", mt: 2 }}>
+                              <Button
+                                variant="contained"
+                                disableElevation
+                                disableRipple
+                                className="btn-3-features"
+                                onClick={(e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
                                   handleContactClick(feature.title);
-                                }
-                              }}
-                            >
-                              <span>Contratar</span>
+                                }}
+                              >
+                                <span>Contratar</span>
+                              </Button>
                             </Box>
-                          </Box>
-                        </AdditionalContent>
-                      </Overlay>
-                    </StyledCardActionArea>
-                  </Card>
-
-                </motion.div>
-              </Grid>
-            ))}
+                          </AdditionalContent>
+                        </Overlay>
+                      </StyledCardActionArea>
+                    </Card>
+                  </motion.div>
+                </Grid>
+              );
+            })}
           </Grid>
         </Box>
         <DialogTrabajos

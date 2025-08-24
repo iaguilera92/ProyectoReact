@@ -349,7 +349,7 @@ function App() {
                 }}
                 onClick={() => setOpenBubble(false)}
               >
-                Puedes escribirnos al wsp!
+                En linea 24/7
               </Box>
             )}
           </Box>

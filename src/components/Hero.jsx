@@ -18,8 +18,8 @@ function Hero({ informationsRef, setVideoReady }) {
 
   const texts = [
     { title: "Innovación Tecnológica", description: "Sistemas y sitios web con última tecnología." },
-    { title: "Soporte Evolutivo", description: "Soluciones digitales que crecen contigo." },
-    { title: "Plataformas TI", description: "Tecnología para impulsar tu negocio." }
+    { title: "Soporte Evolutivo", description: "Materializamos tu ideas." },
+    { title: "Plataformas TI", description: "Impulsamos tu negocio con tecnología" }
   ];
 
 
