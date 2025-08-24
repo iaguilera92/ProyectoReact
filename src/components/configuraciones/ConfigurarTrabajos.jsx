@@ -205,7 +205,7 @@ const ConfigurarTrabajos = () => {
       setSnackbar({
         open: true,
         type: "success",
-        message: "💾 Trabajo actualizado correctamente.",
+        message: "Trabajo actualizado correctamente.",
       });
     } catch (error) {
       console.error("❌ Error al guardar:", error);
@@ -263,11 +263,8 @@ const ConfigurarTrabajos = () => {
   // CONFIRMACIÓN + CORREO
   const handleEnviarCorreo = async () => {
     try {
-      const fecha = new Date().toLocaleDateString("es-CL", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      });
+      const hoy = new Date();
+      const fecha = `${String(hoy.getDate()).padStart(2, "0")}-${String(hoy.getMonth() + 1).padStart(2, "0")}-${hoy.getFullYear()}`;
 
       const params = {
         sitioWeb: dialogFinalizar.trabajo?.SitioWeb || "plataformas-web.cl",

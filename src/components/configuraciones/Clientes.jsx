@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Snackbar, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Paper, Typography, useMediaQuery, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@mui/material";
+import { IconButton, Snackbar, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Paper, Typography, useMediaQuery, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@mui/material";
 import { styled, keyframes } from "@mui/system";
 import { cargarClientesDesdeExcel } from "../../helpers/HelperClientes";
 import MenuInferior from './MenuInferior';
@@ -8,6 +8,7 @@ import GroupIcon from "@mui/icons-material/Group";
 import emailjs from "@emailjs/browser";
 import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { motion, AnimatePresence, useMotionValue, animate } from "framer-motion";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 
 const baseDelay = 1.5; // segundos antes de comenzar la animación
 const letterDelay = 0.04;
@@ -937,6 +938,7 @@ const Clientes = () => {
 
 
       <MenuInferior cardSize={cardSize} modo="clientes" />
+
       <Dialog
         open={openDialog}
         onClose={() => {
@@ -945,35 +947,128 @@ const Clientes = () => {
         }}
         PaperProps={{
           sx: {
-            backgroundColor: "#ffffff", // 👈 blanco puro
-            borderRadius: 2,            // opcional: esquinas más suaves
-            boxShadow: 6                // opcional: sombra elegante
+            background: "linear-gradient(180deg, #F1F8F6, #DFF0E4)", // 💚 verde aún más claro y suave
+            borderRadius: 2,
+            boxShadow: "0 8px 30px rgba(0,0,0,0.25)",
           },
         }}
+
       >
-        <DialogTitle sx={{
-          fontSize: isMobile ? "0.8rem" : "1rem",
-          fontWeight: 600
-        }}>
-          {esReversion
-            ? "Confirmar reversión de pago"
-            : `Confirmar Hosting Activo para ${mesDialogPago}`}
+        {/* Título con fondo + animación */}
+        <DialogTitle
+          sx={{
+            textAlign: "center",
+            fontWeight: 700,
+            color: "#FFF",
+            fontFamily: "'Poppins', sans-serif",
+            py: 3,
+            position: "relative",
+            overflow: "hidden",
+            borderTopLeftRadius: 8,
+            borderTopRightRadius: 8,
+
+            "&::before": {
+              content: '""',
+              position: "absolute",
+              inset: 0,
+              backgroundImage: "url('/trabajo-terminado.webp')",
+              backgroundSize: "130%",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+              animation: "zoomIn 1.2s ease-out forwards",
+            },
+
+            "@keyframes zoomIn": {
+              "0%": { backgroundSize: "150%" },
+              "100%": { backgroundSize: "115%" },
+            },
+
+            "&::after": {
+              content: '""',
+              position: "absolute",
+              inset: 0,
+              bgcolor: "rgba(0,0,0,0.45)", // overlay oscuro para legibilidad
+              zIndex: 1,
+            },
+
+            "& > *": {
+              position: "relative",
+              zIndex: 2,
+            },
+          }}
+        >
+          {/* Botón cerrar */}
+          <IconButton
+            aria-label="Cerrar"
+            onClick={() => setOpenDialog(false)}
+            sx={{
+              position: "absolute",
+              top: 8,
+              right: 8,
+              color: "#FFF",
+              zIndex: 8,
+              "&:hover": { backgroundColor: "rgba(255,255,255,.15)" },
+              animation: openDialog ? "spinTwice 0.6s ease-in-out" : "none", // ✅ ahora escucha al estado correcto
+              animationFillMode: "forwards",
+              "@keyframes spinTwice": {
+                "0%": { transform: "rotate(0deg)" },
+                "100%": { transform: "rotate(720deg)" },
+              },
+            }}
+          >
+            <CloseRoundedIcon sx={{ fontSize: 26 }} />
+          </IconButton>
+
+          <Box
+            sx={{
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: { xs: 0.8, sm: 1.2 },
+              px: { xs: 1.2, sm: 2 },
+              py: { xs: 0.5, sm: 0.8 },
+              borderRadius: "999px",
+              bgcolor: "rgba(0,0,0,0.55)",
+              backdropFilter: "blur(4px)",
+              boxShadow: "0 4px 14px rgba(0,0,0,.35)",
+            }}
+          >
+            <Typography
+              variant="h6"
+              component="span"
+              sx={{
+                fontWeight: 800,
+                letterSpacing: { xs: "0.2px", sm: "1px" },
+                fontFamily: "'Poppins', sans-serif",
+                color: "#fff",
+                fontSize: { xs: "0.95rem", sm: "1.1rem" },
+              }}
+            >
+              {esReversion
+                ? "Revertir Pago"
+                : `Confirmar Hosting Activo ${mesDialogPago}`}
+            </Typography>
+          </Box>
         </DialogTitle>
-        <DialogContent>
+
+        <DialogContent sx={{ pt: 4 }}>
           {openDialog && (
             <DialogContentText sx={{ mt: 1 }}>
               {esReversion ? (
                 <>
-                  ¿Estás seguro de que deseas <strong>revertir</strong> el pago de <strong>{clienteSeleccionado?.sitioWeb}</strong>?
+                  ¿Estás seguro de que deseas <strong>revertir</strong> el pago de{" "}
+                  <strong>{clienteSeleccionado?.sitioWeb}</strong>?
                 </>
               ) : (
                 <>
-                  ¿Estás seguro de que deseas <strong>marcar como pagado</strong> a <strong>{clienteSeleccionado?.sitioWeb}</strong>?
-
+                  ¿Estás seguro de que deseas <strong>marcar como pagado</strong> a{" "}
+                  <strong>{clienteSeleccionado?.sitioWeb}</strong>?
                 </>
               )}
             </DialogContentText>
           )}
+
+          {/* Combo Mes */}
           {!esReversion && (
             <FormControl fullWidth size="small" sx={{ mt: 2 }}>
               <InputLabel sx={{ color: "#1b263b" }}>Mes que seguirá activo</InputLabel>
@@ -986,7 +1081,7 @@ const Clientes = () => {
                   color: "#1b263b",
                   borderRadius: 1,
                   "& .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "rgba(255,167,38,0.6)", // 🟠 borde suave
+                    borderColor: "rgba(255,167,38,0.6)",
                   },
                   "&:hover .MuiOutlinedInput-notchedOutline": {
                     borderColor: "rgba(255,167,38,0.9)",
@@ -994,21 +1089,14 @@ const Clientes = () => {
                   "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
                     borderColor: "#ff9800",
                   },
-                  "& .MuiSelect-icon": { color: "#1b263b" }, // ícono oscuro
+                  "& .MuiSelect-icon": { color: "#1b263b" },
                 }}
                 MenuProps={{
                   PaperProps: {
                     sx: {
-                      "& .MuiList-root": {
-                        paddingTop: 0, // quita espacio arriba
-                      },
-                      "&::before": {
-                        display: "none", // elimina la línea superior fantasma
-                      },
-                      "&::after": {
-                        display: "none",
-                      },
-                      borderRadius: 1.5, // 👈 bordes redondeados en el dropdown
+                      "& .MuiList-root": { paddingTop: 0 },
+                      "&::before, &::after": { display: "none" },
+                      borderRadius: 1.5,
                       backgroundColor: "#ffffff",
                     },
                   },
@@ -1022,16 +1110,12 @@ const Clientes = () => {
                       backgroundColor: "#ffffff",
                       color: "#1b263b",
                       "&.Mui-selected": {
-                        backgroundColor: "#FFE0B2", // seleccionado suave
+                        backgroundColor: "#FFE0B2",
                         color: "#1b263b",
                         fontWeight: "bold",
                       },
-                      "&.Mui-selected:hover": {
-                        backgroundColor: "#FFCC80",
-                      },
-                      "&:hover": {
-                        backgroundColor: "#f5f5f5",
-                      },
+                      "&.Mui-selected:hover": { backgroundColor: "#FFCC80" },
+                      "&:hover": { backgroundColor: "#f5f5f5" },
                     }}
                   >
                     {mes}
@@ -1039,20 +1123,19 @@ const Clientes = () => {
                 ))}
               </Select>
             </FormControl>
-
           )}
-
-
         </DialogContent>
+
         <DialogActions
           sx={{
             justifyContent: "flex-end",
             px: 2,
             pb: 2,
-            gap: 0.1,
-            flexWrap: "nowrap",
-            overflowX: "auto",
+            gap: 0.5,
+            background: "linear-gradient(90deg, #E8F5E9, #C8E6C9)", // 💚 mismo verde pastel
+            borderTop: "1px solid rgba(56,142,60,.35)", // borde verde suave (puedes oscurecerlo más si quieres)
           }}
+
         >
           <Button
             onClick={() => setOpenDialog(false)}
@@ -1068,16 +1151,10 @@ const Clientes = () => {
                 color="primary"
                 variant="contained"
                 disabled={actualizando}
-                sx={{
-                  fontSize: isMobile ? '0.65rem' : '0.75rem',
-                  px: isMobile ? 1 : 1.5,
-                  py: isMobile ? 1 : 0.8,
-                  minWidth: isMobile ? 'auto' : undefined,
-                }}
+                sx={{ fontSize: "0.75rem", px: 1.5 }}
               >
                 Confirmar
               </Button>
-
               <Button
                 onClick={() => {
                   confirmarPago(false);
@@ -1086,18 +1163,10 @@ const Clientes = () => {
                 color="success"
                 variant="contained"
                 disabled={actualizando}
-                sx={{
-                  fontSize: isMobile ? '0.65rem' : '0.75rem',
-                  px: isMobile ? 1 : 1.5,
-                  py: isMobile ? 1 : 0.8,
-                  minWidth: isMobile ? 'auto' : undefined,
-                }}
+                sx={{ fontSize: "0.75rem", px: 1.5 }}
               >
                 Confirmar + 📧
               </Button>
-
-
-
             </>
           ) : (
             <Button
@@ -1105,7 +1174,7 @@ const Clientes = () => {
               color="warning"
               variant="contained"
               disabled={actualizando}
-              sx={{ fontSize: "0.75rem", px: 1.5, minWidth: "auto" }}
+              sx={{ fontSize: "0.75rem", px: 1.5 }}
             >
               Revertir pago
             </Button>
@@ -1113,18 +1182,131 @@ const Clientes = () => {
         </DialogActions>
       </Dialog>
 
-      <Dialog open={openDialogCobro} onClose={() => setOpenDialogCobro(false)} maxWidth="xs" fullWidth PaperProps={{
-        sx: {
-          backgroundColor: "#ffffff", // 👈 blanco puro
-          borderRadius: 2,            // opcional: esquinas más suaves
-          boxShadow: 6                // opcional: sombra elegante
-        },
-      }}>
-        <DialogTitle>Cobro del mes de {mesCapitalizado}</DialogTitle>
 
-        <DialogContent>
-          <DialogContentText>
-            Notificaremos al cliente <strong>{clienteSeleccionado?.cliente}</strong> por el sitio <strong>{clienteSeleccionado?.sitioWeb}</strong>.
+      <Dialog
+        open={openDialogCobro}
+        onClose={() => setOpenDialogCobro(false)}
+        maxWidth="xs"
+        fullWidth
+        PaperProps={{
+          sx: {
+            background: "linear-gradient(180deg, #FFF8EC, #FFEFD5)",
+            borderRadius: 2,
+            boxShadow: "0 8px 30px rgba(0,0,0,0.25)",
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            textAlign: "center",
+            fontWeight: 700,
+            color: "#FFF",
+            fontFamily: "'Poppins', sans-serif",
+            py: 2.5,
+            borderBottom: "1px solid rgba(255,167,38,.35)",
+            position: "relative",
+            overflow: "hidden",
+
+            "&::before": {
+              content: '""',
+              position: "absolute",
+              inset: 0,
+              backgroundImage: "url('/dialog-cobrar.webp')",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+              backgroundSize: "140%",
+              zIndex: 0,
+              animation: "zoomInDesktop 1s ease-out forwards",
+
+              "@media (max-width:600px)": {
+                backgroundSize: "220%",
+                animation: "zoomInMobile 1s ease-out forwards",
+              },
+
+              "@keyframes zoomInDesktop": {
+                "0%": { backgroundSize: "160%" },
+                "100%": { backgroundSize: "140%" },
+              },
+              "@keyframes zoomInMobile": {
+                "0%": { backgroundSize: "250%" },
+                "100%": { backgroundSize: "200%" },
+              },
+            },
+
+            "&::after": {
+              content: '""',
+              position: "absolute",
+              inset: 0,
+              bgcolor: "rgba(0,0,0,0.45)", // oscurece para legibilidad
+              zIndex: 1,
+            },
+
+            "& > *": {
+              position: "relative",
+              zIndex: 2,
+            },
+          }}
+        >
+          {/* Botón cerrar */}
+          <IconButton
+            aria-label="Cerrar"
+            onClick={() => setOpenDialogCobro(false)}
+            sx={{
+              position: "absolute",
+              top: 8,
+              right: 8,
+              color: "#FFF",
+              zIndex: 6,
+              "&:hover": { backgroundColor: "rgba(255,255,255,.15)" },
+              animation: openDialogCobro ? "spinTwice 0.6s ease-in-out" : "none", // 👈 depende del estado del dialog
+              animationFillMode: "forwards",
+              "@keyframes spinTwice": {
+                "0%": { transform: "rotate(0deg)" },
+                "100%": { transform: "rotate(720deg)" },
+              },
+            }}
+          >
+            <CloseRoundedIcon sx={{ fontSize: 26 }} />
+          </IconButton>
+
+
+          {/* Título dinámico */}
+          <Box
+            sx={{
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: { xs: 0.6, sm: 1 }, // 👈 menos separación
+              px: { xs: 1, sm: 1.5 },  // 👈 padding horizontal reducido
+              py: { xs: 0.3, sm: 0.6 }, // 👈 padding vertical reducido
+              borderRadius: "999px",
+              bgcolor: "rgba(0,0,0,0.55)",
+              backdropFilter: "blur(4px)",
+              boxShadow: "0 3px 10px rgba(0,0,0,.3)", // 👈 sombra más sutil
+            }}
+          >
+            <Typography
+              variant="h6"
+              component="span"
+              sx={{
+                fontWeight: 700, // 👈 un poco menos bold
+                letterSpacing: { xs: "0.2px", sm: "0.8px" },
+                fontFamily: "'Poppins', sans-serif",
+                color: "#fff",
+                fontSize: { xs: "0.95rem", sm: "1.1rem" }, // 👈 texto más chico
+              }}
+            >
+              Cobro del mes de {mesManual || mesCapitalizado} {new Date().getFullYear()}
+            </Typography>
+          </Box>
+        </DialogTitle>
+
+
+        <DialogContent sx={{ pt: 4, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+
+          <DialogContentText sx={{ pt: 3 }}>
+            Notificaremos al cliente <strong>{clienteSeleccionado?.cliente}</strong> por el sitio{" "}
+            <strong>{clienteSeleccionado?.sitioWeb}</strong>.
           </DialogContentText>
           <FormControl fullWidth size="small" sx={{ mt: 2 }}>
             <InputLabel sx={{ color: "#1b263b" }}>Mes de cobro</InputLabel>
@@ -1193,7 +1375,15 @@ const Clientes = () => {
 
         </DialogContent>
 
-        <DialogActions sx={{ justifyContent: "flex-end", px: 3, pb: 2 }}>
+        <DialogActions
+          sx={{
+            justifyContent: "flex-end",
+            px: 3,
+            pb: 2,
+            background: "linear-gradient(90deg, #FFF3E0, #FFE0B2)", // footer en contraste
+            borderTop: "1px solid rgba(255,167,38,.35)",
+          }}
+        >
           <Button onClick={() => setOpenDialogCobro(false)}>Cancelar</Button>
           <Button
             onClick={() => {

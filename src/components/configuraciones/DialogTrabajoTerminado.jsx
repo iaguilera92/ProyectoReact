@@ -46,7 +46,7 @@ export default function DialogTrabajoTerminado({
         if (accionEnCurso === "confirmar" || accionEnCurso === "confirmarConCorreo") {
           if (trabajo?.TelefonoCliente) {
             const phone = String(trabajo.TelefonoCliente).replace(/\D/g, "");
-            const message = `Buenas, se ha terminado su Sitio Web ${trabajo.SitioWeb}, se encuentra lista para utilizar. 🚀`;
+            const message = `¡Buenas noticias! 🚀 Su sitio web *www.${trabajo.SitioWeb}* ha finalizado y ya está disponible en *producción*. 🎉`;
             const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 
             // 👇 Abrimos WhatsApp ANTES de cerrar el diálogo
@@ -350,8 +350,8 @@ export default function DialogTrabajoTerminado({
           justifyContent: success ? "center" : "flex-end",
           py: 2,
           gap: 0.3,
-          background: "#FDF3E7",                 // 👈 un beige más oscuro que #FFFDF8
-          borderTop: "1px solid rgba(230,126,34,.45)" // 👈 ámbar más profundo
+          background: "#FDF3E7",
+          borderTop: "1px solid rgba(230,126,34,.45)"
         }}
       >
 
@@ -365,7 +365,7 @@ export default function DialogTrabajoTerminado({
                 duration: 0.5,
                 repeat: Infinity,
                 ease: "easeInOut",
-                delay: i * 0.1, // 👈 efecto escalonado
+                delay: i * 0.1,
               }}
             >
               👏
