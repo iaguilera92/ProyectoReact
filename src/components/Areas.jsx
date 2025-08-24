@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 const data = [
   { count: 20, text: "Proyectos terminados en distintas empresas", image: "ProyectoTerminado.mp4" },
   { count: 45, text: "Proyectos a Pymes e Independientes", image: "ProyectoPymes.mp4" },
-  { count: 8, text: "Años de Experiencia como desarrolladores", image: "Experience.mp4" },
+  { count: 9, text: "Años de Experiencia como desarrolladores", image: "Experience.mp4" },
   { count: 7, text: "Tazas de café en el día ☕", image: "Cafe.mp4" },
 ];
 const images = ["servicios.png", "computador.png"];

@@ -89,7 +89,7 @@ const Nosotros = () => {
                     </Typography>
 
                     <Typography variant="body1" sx={{ color: '#ccc', textAlign: 'justify', mb: 2 }}>
-                      Somos una empresa de soluciones tecnológicas con más de 8 años de experiencia desarrollando proyectos a medida para empresas de distintas industrias.
+                      Somos una empresa de soluciones tecnológicas con más de 9 años de experiencia desarrollando proyectos a medida para empresas de distintas industrias.
                     </Typography>
 
                     <Typography variant="body1" sx={{ color: '#ccc', textAlign: 'justify', mb: 2 }}>

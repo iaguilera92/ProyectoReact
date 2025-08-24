@@ -116,10 +116,22 @@ const Administracion = () => {
         backgroundColor: "rgba(0,0,0,0.6)", color: "white", p: 4, borderRadius: 3,
         maxWidth: 350, width: "90%", textAlign: "center", mt: isMobile ? -8 : 0
       }}>
-        <Box component="img" src="/user.png" alt="Usuario" sx={{
-          width: 80, height: 80, borderRadius: "50%", objectFit: "cover",
-          margin: "0 auto", mb: 2, border: "2px solid #E95420"
-        }} />
+        <Box
+          component="img"
+          src="/logo-james.png"
+          alt="Usuario"
+          sx={{
+            width: 80,
+            height: 80,
+            borderRadius: "50%",
+            objectFit: "cover",        // la imagen llena el círculo
+            objectPosition: "center 50%", // 👈 desplaza el recorte hacia arriba (ajusta % según lo que quieras)
+            transform: "scale(1.1)",   // 👈 zoom interno, se ve más la imagen
+            margin: "0 auto",
+            mb: 1,
+            border: "2px solid #E95420",
+          }}
+        />
         <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ fontFamily: "monospace", color: "white", minHeight: "1.5em" }}>
           {isSubmitting ? <DotsAnimation /> : <>{typedText}{showCursor && <span style={{ display: "inline-block", fontWeight: "bold", transform: "scaleX(1.8)" }}>|</span>}</>}
         </Typography>

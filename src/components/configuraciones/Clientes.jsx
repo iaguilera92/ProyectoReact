@@ -9,6 +9,8 @@ import emailjs from "@emailjs/browser";
 import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { motion, AnimatePresence, useMotionValue, animate } from "framer-motion";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import { CircularProgress } from "@mui/material";
+import DialogClientePagos from "./DialogClientePagos";
 
 const baseDelay = 1.5; // segundos antes de comenzar la animación
 const letterDelay = 0.04;
@@ -110,6 +112,7 @@ const Clientes = () => {
   const [mesManual, setMesManual] = useState("");
   const modoDesarrollo = false;
   const mesDialogPago = mesManual || mesCapitalizado;
+  const [botonCargando, setBotonCargando] = useState(null);
 
 
   const totalGanado = clientes.reduce((acc, c) => {
@@ -939,250 +942,25 @@ const Clientes = () => {
 
       <MenuInferior cardSize={cardSize} modo="clientes" />
 
-      <Dialog
+      {/* DIALOG: REVERTIR && PAGOS */}
+      <DialogClientePagos
         open={openDialog}
         onClose={() => {
           setOpenDialog(false);
           setMesManual("");
         }}
-        PaperProps={{
-          sx: {
-            background: "linear-gradient(180deg, #F1F8F6, #DFF0E4)", // 💚 verde aún más claro y suave
-            borderRadius: 2,
-            boxShadow: "0 8px 30px rgba(0,0,0,0.25)",
-          },
-        }}
+        esReversion={esReversion}
+        clienteSeleccionado={clienteSeleccionado}
+        mesDialogPago={mesDialogPago}
+        meses={meses}
+        mesManual={mesManual}
+        setMesManual={setMesManual}
+        confirmarPago={confirmarPago}
+        enviarCorreoPagoRecibido={enviarCorreoPagoRecibido}
+        mesCapitalizado={mesCapitalizado}
+      />
 
-      >
-        {/* Título con fondo + animación */}
-        <DialogTitle
-          sx={{
-            textAlign: "center",
-            fontWeight: 700,
-            color: "#FFF",
-            fontFamily: "'Poppins', sans-serif",
-            py: 3,
-            position: "relative",
-            overflow: "hidden",
-            borderTopLeftRadius: 8,
-            borderTopRightRadius: 8,
-
-            "&::before": {
-              content: '""',
-              position: "absolute",
-              inset: 0,
-              backgroundImage: "url('/trabajo-terminado.webp')",
-              backgroundSize: "130%",
-              backgroundPosition: "center",
-              backgroundRepeat: "no-repeat",
-              animation: "zoomIn 1.2s ease-out forwards",
-            },
-
-            "@keyframes zoomIn": {
-              "0%": { backgroundSize: "150%" },
-              "100%": { backgroundSize: "115%" },
-            },
-
-            "&::after": {
-              content: '""',
-              position: "absolute",
-              inset: 0,
-              bgcolor: "rgba(0,0,0,0.45)", // overlay oscuro para legibilidad
-              zIndex: 1,
-            },
-
-            "& > *": {
-              position: "relative",
-              zIndex: 2,
-            },
-          }}
-        >
-          {/* Botón cerrar */}
-          <IconButton
-            aria-label="Cerrar"
-            onClick={() => setOpenDialog(false)}
-            sx={{
-              position: "absolute",
-              top: 8,
-              right: 8,
-              color: "#FFF",
-              zIndex: 8,
-              "&:hover": { backgroundColor: "rgba(255,255,255,.15)" },
-              animation: openDialog ? "spinTwice 0.6s ease-in-out" : "none", // ✅ ahora escucha al estado correcto
-              animationFillMode: "forwards",
-              "@keyframes spinTwice": {
-                "0%": { transform: "rotate(0deg)" },
-                "100%": { transform: "rotate(720deg)" },
-              },
-            }}
-          >
-            <CloseRoundedIcon sx={{ fontSize: 26 }} />
-          </IconButton>
-
-          <Box
-            sx={{
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: { xs: 0.8, sm: 1.2 },
-              px: { xs: 1.2, sm: 2 },
-              py: { xs: 0.5, sm: 0.8 },
-              borderRadius: "999px",
-              bgcolor: "rgba(0,0,0,0.55)",
-              backdropFilter: "blur(4px)",
-              boxShadow: "0 4px 14px rgba(0,0,0,.35)",
-            }}
-          >
-            <Typography
-              variant="h6"
-              component="span"
-              sx={{
-                fontWeight: 800,
-                letterSpacing: { xs: "0.2px", sm: "1px" },
-                fontFamily: "'Poppins', sans-serif",
-                color: "#fff",
-                fontSize: { xs: "0.95rem", sm: "1.1rem" },
-              }}
-            >
-              {esReversion
-                ? "Revertir Pago"
-                : `Confirmar Hosting Activo ${mesDialogPago}`}
-            </Typography>
-          </Box>
-        </DialogTitle>
-
-        <DialogContent sx={{ pt: 4 }}>
-          {openDialog && (
-            <DialogContentText sx={{ mt: 1 }}>
-              {esReversion ? (
-                <>
-                  ¿Estás seguro de que deseas <strong>revertir</strong> el pago de{" "}
-                  <strong>{clienteSeleccionado?.sitioWeb}</strong>?
-                </>
-              ) : (
-                <>
-                  ¿Estás seguro de que deseas <strong>marcar como pagado</strong> a{" "}
-                  <strong>{clienteSeleccionado?.sitioWeb}</strong>?
-                </>
-              )}
-            </DialogContentText>
-          )}
-
-          {/* Combo Mes */}
-          {!esReversion && (
-            <FormControl fullWidth size="small" sx={{ mt: 2 }}>
-              <InputLabel sx={{ color: "#1b263b" }}>Mes que seguirá activo</InputLabel>
-              <Select
-                label="Mes que seguirá activo"
-                value={mesManual}
-                onChange={(e) => setMesManual(e.target.value)}
-                sx={{
-                  backgroundColor: "#ffffff",
-                  color: "#1b263b",
-                  borderRadius: 1,
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "rgba(255,167,38,0.6)",
-                  },
-                  "&:hover .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "rgba(255,167,38,0.9)",
-                  },
-                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "#ff9800",
-                  },
-                  "& .MuiSelect-icon": { color: "#1b263b" },
-                }}
-                MenuProps={{
-                  PaperProps: {
-                    sx: {
-                      "& .MuiList-root": { paddingTop: 0 },
-                      "&::before, &::after": { display: "none" },
-                      borderRadius: 1.5,
-                      backgroundColor: "#ffffff",
-                    },
-                  },
-                }}
-              >
-                {meses.map((mes, i) => (
-                  <MenuItem
-                    key={i}
-                    value={mes}
-                    sx={{
-                      backgroundColor: "#ffffff",
-                      color: "#1b263b",
-                      "&.Mui-selected": {
-                        backgroundColor: "#FFE0B2",
-                        color: "#1b263b",
-                        fontWeight: "bold",
-                      },
-                      "&.Mui-selected:hover": { backgroundColor: "#FFCC80" },
-                      "&:hover": { backgroundColor: "#f5f5f5" },
-                    }}
-                  >
-                    {mes}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          )}
-        </DialogContent>
-
-        <DialogActions
-          sx={{
-            justifyContent: "flex-end",
-            px: 2,
-            pb: 2,
-            gap: 0.5,
-            background: "linear-gradient(90deg, #E8F5E9, #C8E6C9)", // 💚 mismo verde pastel
-            borderTop: "1px solid rgba(56,142,60,.35)", // borde verde suave (puedes oscurecerlo más si quieres)
-          }}
-
-        >
-          <Button
-            onClick={() => setOpenDialog(false)}
-            sx={{ fontSize: "0.75rem", px: 0.5, minWidth: "auto" }}
-          >
-            Cancelar
-          </Button>
-
-          {!esReversion ? (
-            <>
-              <Button
-                onClick={() => confirmarPago(false)}
-                color="primary"
-                variant="contained"
-                disabled={actualizando}
-                sx={{ fontSize: "0.75rem", px: 1.5 }}
-              >
-                Confirmar
-              </Button>
-              <Button
-                onClick={() => {
-                  confirmarPago(false);
-                  enviarCorreoPagoRecibido(clienteSeleccionado, mesManual || mesCapitalizado);
-                }}
-                color="success"
-                variant="contained"
-                disabled={actualizando}
-                sx={{ fontSize: "0.75rem", px: 1.5 }}
-              >
-                Confirmar + 📧
-              </Button>
-            </>
-          ) : (
-            <Button
-              onClick={() => confirmarPago(true)}
-              color="warning"
-              variant="contained"
-              disabled={actualizando}
-              sx={{ fontSize: "0.75rem", px: 1.5 }}
-            >
-              Revertir pago
-            </Button>
-          )}
-        </DialogActions>
-      </Dialog>
-
-
+      {/* DIALOG: COBROS */}
       <Dialog
         open={openDialogCobro}
         onClose={() => setOpenDialogCobro(false)}
