@@ -310,8 +310,6 @@ function Features({ videoReady }) {
             </Button>
 
 
-
-
           ) : (
             <Button
               onClick={handleSolucionesClick}
@@ -448,7 +446,7 @@ function Features({ videoReady }) {
                                     fontSize: "0.85rem",
                                   }}
                                 >
-                                  Creamos sitios web modernos, responsivos y optimizados.
+                                  Conecta con clientes en el mundo digital.
                                 </Typography>
                               </Box>
                             </Box>
@@ -646,19 +644,31 @@ function Features({ videoReady }) {
                               {feature.desc}
                             </Typography>
                             <Box sx={{ textAlign: "center", mt: 2 }}>
-                              <Button
-                                variant="contained"
-                                disableElevation
-                                disableRipple
+                              <Box
+                                component="span"
+                                role="button"
+                                tabIndex={0}
                                 className="btn-3-features"
+                                sx={{
+                                  zIndex: 5,
+                                  cursor: "pointer",
+                                  display: "inline-block",
+                                }}
                                 onClick={(e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
                                   handleContactClick(feature.title);
                                 }}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter" || e.key === " ") {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleContactClick(feature.title);
+                                  }
+                                }}
                               >
                                 <span>Contratar</span>
-                              </Button>
+                              </Box>
                             </Box>
                           </AdditionalContent>
                         </Overlay>

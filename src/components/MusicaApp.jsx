@@ -5,12 +5,14 @@ export default function MusicaApp({
   volume = 0.25,
   loop = true,
   btnSize = 36,
-  consentKey = "bgmConsent",   // guarda consentimiento tras primer unmute manual
+  consentKey = "bgmConsent", // guarda consentimiento tras primer unmute manual
 }) {
   const audioRef = useRef(null);
-  const [muted, setMuted] = useState(false);          // objetivo: empezar con sonido
+  const [muted, setMuted] = useState(false); // objetivo: empezar con sonido
   const [needsInteract, setNeedsInteract] = useState(false);
-  const [consented, setConsented] = useState(() => localStorage.getItem(consentKey) === "1");
+  const [consented, setConsented] = useState(
+    () => localStorage.getItem(consentKey) === "1"
+  );
   const playingRef = useRef(false);
 
   const tryPlay = async (preferAudible = true) => {
@@ -38,18 +40,15 @@ export default function MusicaApp({
     }
   };
 
-
-  // Reintentos en el montaje: normal → mute → reintentos con visibilidad/focus
+  // Reintentos en el montaje + control de visibilidad/focus
   useEffect(() => {
     const el = audioRef.current;
     if (!el) return;
     el.volume = Math.min(1, Math.max(0, volume));
     el.loop = loop;
 
-    // si ya hubo consentimiento previo, priorizamos audible
     const preferAudible = consented || !muted;
 
-    // pequeños reintentos (algunas veces el contexto aún no está listo)
     const kicks = [
       setTimeout(() => tryPlay(preferAudible), 50),
       setTimeout(() => tryPlay(preferAudible), 400),
@@ -57,12 +56,21 @@ export default function MusicaApp({
     ];
 
     const onVisible = () => {
-      if (document.visibilityState === "visible") tryPlay(preferAudible);
+      if (document.visibilityState === "visible") {
+        tryPlay(preferAudible);
+      } else {
+        if (el && !el.paused) el.pause(); // pestaña oculta → pausa
+      }
     };
+
     const onFocus = () => tryPlay(preferAudible);
+    const onBlur = () => {
+      if (el && !el.paused) el.pause(); // ventana pierde foco → pausa
+    };
 
     document.addEventListener("visibilitychange", onVisible);
     window.addEventListener("focus", onFocus);
+    window.addEventListener("blur", onBlur);
 
     // primer gesto del usuario: intentamos dejarlo audible
     const onFirstGesture = async () => {
@@ -92,6 +100,7 @@ export default function MusicaApp({
       kicks.forEach(clearTimeout);
       document.removeEventListener("visibilitychange", onVisible);
       window.removeEventListener("focus", onFocus);
+      window.removeEventListener("blur", onBlur);
       removeGestureListeners();
       if (audioRef.current) audioRef.current.pause();
     };
@@ -106,10 +115,8 @@ export default function MusicaApp({
   const toggleMute = async () => {
     const next = !muted;
     setMuted(next);
-    // asegúrate de que esté reproduciendo (si estaba bloqueado)
     await tryPlay(!next); // si vamos a desmutear, preferimos audible
     if (!next) {
-      // usuario activó sonido → guardamos consentimiento
       localStorage.setItem(consentKey, "1");
       setConsented(true);
     }
@@ -126,8 +133,6 @@ export default function MusicaApp({
     window.addEventListener("bgm:unlockAudio", onUnlock);
     return () => window.removeEventListener("bgm:unlockAudio", onUnlock);
   }, []);
-
-
 
   const iconSize = Math.max(14, Math.round(btnSize * 0.5));
   const btnStyle = {
@@ -151,18 +156,20 @@ export default function MusicaApp({
   };
 
   const title = needsInteract
-    ? (muted ? "Activar sonido" : "Intentar reproducir")
-    : (muted ? "Activar sonido" : "Silenciar");
+    ? muted
+      ? "Activar sonido"
+      : "Intentar reproducir"
+    : muted
+      ? "Activar sonido"
+      : "Silenciar";
 
   return (
     <>
-      {/* Mantener <audio> en el DOM mejora compatibilidad (iOS/Safari) */}
       <audio
         ref={audioRef}
         src={src}
         preload="auto"
         playsInline
-        // no usamos autoPlay; lo gestionamos manualmente
         style={{ display: "none" }}
       />
       <button aria-label={title} title={title} onClick={toggleMute} style={btnStyle}>
