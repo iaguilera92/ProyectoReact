@@ -88,6 +88,22 @@ function Hero({ informationsRef, setVideoReady }) {
     }
   }, [loadingVideo]);
 
+  useEffect(() => {
+    const unlock = () => {
+      if (videoRef.current) {
+        videoRef.current.currentTime = 0; // 👈 arranca desde el inicio
+        videoRef.current.play().catch(err => {
+          console.warn("⚠️ Autoplay bloqueado:", err);
+        });
+      }
+    };
+    window.addEventListener("touchstart", unlock, { once: true });
+    window.addEventListener("click", unlock, { once: true });
+    return () => {
+      window.removeEventListener("touchstart", unlock);
+      window.removeEventListener("click", unlock);
+    };
+  }, []);
 
   return (
     <Box
@@ -137,13 +153,9 @@ function Hero({ informationsRef, setVideoReady }) {
           ref={videoRef}
           playsInline
           onLoadedData={() => {
-            console.log("🎥 Componentes cargados");
+            console.log("🎥 Video cargado");
             if (setVideoReady) setVideoReady(true);
-            if (videoRef.current) {
-              videoRef.current.pause();
-              videoRef.current.currentTime = 0;
-            }
-            setLoadingVideo(false); // 👈 aquí marcamos listo altiro
+            setLoadingVideo(false);
           }}
           style={{
             width: "100%",
@@ -159,6 +171,7 @@ function Hero({ informationsRef, setVideoReady }) {
             type="video/mp4"
           />
         </video>
+
 
       </Box>
 

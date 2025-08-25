@@ -8,7 +8,7 @@ import DialogTrabajos from "./DialogTrabajos";
 import { cargarTrabajos } from "../helpers/HelperTrabajos";
 import { useInView } from "react-intersection-observer";
 import { useNavigate } from "react-router-dom";
-import "./css/Features.css"; // Importamos el CSSi
+import "./css/Features.css";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
 import "swiper/css";
