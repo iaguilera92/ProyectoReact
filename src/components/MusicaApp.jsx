@@ -168,7 +168,7 @@ export default function MusicaApp({
       <audio
         ref={audioRef}
         src={src}
-        preload="auto"
+        preload="metadata"
         playsInline
         style={{ display: "none" }}
       />

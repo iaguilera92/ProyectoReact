@@ -8,13 +8,11 @@ function Hero({ informationsRef, setVideoReady }) {
 
   const [currentText, setCurrentText] = useState(0);
   const [openAlert, setOpenAlert] = useState(false);
-  const [showButton, setShowButton] = useState(false); // Estado para mostrar el botón después del delay
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [loadingVideo, setLoadingVideo] = useState(true);
-  const [isHeroVisible, setIsHeroVisible] = useState(true);
-  const heroRef = useRef(null);
   const intervalRef = useRef(null);
+  const videoRef = useRef(null);
 
   const texts = [
     { title: "Innovación Tecnológica", description: "Sistemas y sitios web con última tecnología." },
@@ -22,91 +20,30 @@ function Hero({ informationsRef, setVideoReady }) {
     { title: "Plataformas TI", description: "Impulsamos tu negocio con tecnología" }
   ];
 
-
-  // Activa el botón con un delay de 1s después de cargar la página
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowButton(true);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []);
-
   //PAUSAR VIDEO SI NO SE VE
   useEffect(() => {
-    const video = document.getElementById("background-video");
+    if (loadingVideo) return;
+    const video = videoRef.current;
+    if (!video) return;
 
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          video?.play();
-        } else {
-          video?.pause();
-        }
-      },
-      { threshold: 0.3 } // Se pausa si menos del 30% del video es visible
-    );
-
-    if (video) observer.observe(video);
-
-    return () => video && observer.unobserve(video);
-  }, []);
-
-
-
-  // Detectar visibilidad con IntersectionObserver
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsHeroVisible(entry.isIntersecting);
-      },
+      ([entry]) => entry.isIntersecting ? video.play() : video.pause(),
       { threshold: 0.3 }
     );
 
-    if (heroRef.current) observer.observe(heroRef.current);
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, [loadingVideo]);
 
-    return () => {
-      if (heroRef.current) observer.unobserve(heroRef.current);
-    };
-  }, []);
-
-  // Cambiar texto cada 6 segundos solo si la sección está visible y la pestaña activa
   useEffect(() => {
-    const handleVisibilityChange = () => {
-      const isPageVisible = document.visibilityState === "visible";
-
-      if (isPageVisible && isHeroVisible) {
-        startTextRotation();
-      } else {
-        stopTextRotation();
-      }
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    // Start on mount if visible
-    if (document.visibilityState === "visible" && isHeroVisible) {
-      startTextRotation();
-    }
-
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-      stopTextRotation();
-    };
-  }, [isHeroVisible]);
-
-  const startTextRotation = () => {
-    if (intervalRef.current) return;
-    intervalRef.current = setInterval(() => {
-      setCurrentText((prev) => (prev + 1) % texts.length);
+    if (document.visibilityState !== "visible") return;
+    const id = setInterval(() => {
+      setCurrentText(prev => (prev + 1) % texts.length);
     }, 6000);
-  };
+    return () => clearInterval(id);
+  }, [texts.length]);
 
-  const stopTextRotation = () => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-  };
+
   //MONITOREAR - COMENTAR PRD
   /*useEffect(() => {
     const video = document.getElementById("background-video");
@@ -133,9 +70,22 @@ function Hero({ informationsRef, setVideoReady }) {
       if (loadingVideo) {
         setLoadingVideo(false);
       }
-    }, 0);
+    }, 5000); // 5 segundos de espera
 
     return () => clearTimeout(fallbackTimer);
+  }, [loadingVideo]);
+
+
+  // Forzar inicio cuando loader termina
+  useEffect(() => {
+    if (!loadingVideo && videoRef.current) {
+      videoRef.current.currentTime = 0;
+      videoRef.current.play().then(() => {
+        console.log("▶️ Video empezó.");
+      }).catch(err => {
+        console.warn("No se pudo reproducir automáticamente:", err);
+      });
+    }
   }, [loadingVideo]);
 
 
@@ -172,7 +122,7 @@ function Hero({ informationsRef, setVideoReady }) {
               zIndex: 2,
               width: "100%",
               height: "100%",
-              backgroundColor: "rgba(0,0,0,0.4)",
+              backgroundColor: "rgba(0,0,0,0.85)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -182,21 +132,24 @@ function Hero({ informationsRef, setVideoReady }) {
           </Box>
         )}
         <video
-          autoPlay
           muted
           loop
+          ref={videoRef}
           playsInline
-          id="background-video"
           onLoadedData={() => {
             console.log("🎥 Componentes cargados");
-            setLoadingVideo(false);
-            if (setVideoReady) setVideoReady(true); // Opcional si lo estás usando en App
+            if (setVideoReady) setVideoReady(true);
+            if (videoRef.current) {
+              videoRef.current.pause();
+              videoRef.current.currentTime = 0;
+            }
+            setLoadingVideo(false); // 👈 aquí marcamos listo altiro
           }}
           style={{
             width: "100%",
             height: "100%",
             objectFit: "cover",
-            pointerEvents: "none", // Evita interacción del usuario
+            pointerEvents: "none",
           }}
           disablePictureInPicture
           controlsList="nodownload nofullscreen noremoteplayback"
@@ -269,34 +222,32 @@ function Hero({ informationsRef, setVideoReady }) {
             </Box>
 
             {/* Botón debajo */}
-            {showButton && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, ease: "easeOut", delay: 1 }}
-              >
-                <Box sx={{ mt: isMobile ? -1.5 : 0 }}>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: "easeOut", delay: 1 }}
+            >
+              <Box sx={{ mt: isMobile ? -1.5 : 0 }}>
 
-                  <button
-                    className="btn-3"
-                    onClick={() => {
-                      setOpenAlert(true);
+                <button
+                  className="btn-3"
+                  onClick={() => {
+                    setOpenAlert(true);
 
-                      const isMobile = window.innerWidth < 768;
-                      const offset = isMobile ? 490 : -50;
+                    const isMobile = window.innerWidth < 768;
+                    const offset = isMobile ? 490 : -50;
 
-                      const y =
-                        informationsRef.current.getBoundingClientRect().top +
-                        window.scrollY +
-                        offset;
-                      window.scrollTo({ top: y, behavior: "smooth" });
-                    }}
-                  >
-                    <span>Nuestros Precios</span>
-                  </button>
-                </Box>
-              </motion.div>
-            )}
+                    const y =
+                      informationsRef.current.getBoundingClientRect().top +
+                      window.scrollY +
+                      offset;
+                    window.scrollTo({ top: y, behavior: "smooth" });
+                  }}
+                >
+                  <span>Nuestros Precios</span>
+                </button>
+              </Box>
+            </motion.div>
           </Box>
 
         </Container>

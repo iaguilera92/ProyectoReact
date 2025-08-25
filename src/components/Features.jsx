@@ -382,16 +382,16 @@ function Features({ videoReady }) {
                           clickable: true,
                           type: "bullets",
                         }}
-                        onSwiper={(swiper) => {
-                          // Pausa autoplay al montar
-                          swiper.autoplay.stop();
-                          // Lo arranca después de 2s
-                          setTimeout(() => {
-                            swiper.autoplay.start();
-                          }, 2000);
+                        onInit={(swiper) => {
+                          if (swiper.autoplay) {
+                            swiper.autoplay.stop();
+                            setTimeout(() => {
+                              swiper.autoplay?.start();
+                            }, 2000);
+                          }
                         }}
-                        className="custom-swiper"
-                      >
+                        className="custom-swiper">
+
                         {/* Slide 1: Sitios Web */}
                         <SwiperSlide>
                           <Card
