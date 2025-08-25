@@ -19,14 +19,50 @@ const Evidencias = () => {
     });
 
     const evidencias = [
-        { url: "https://www.ivelpink.cl", label: "www.ivelpink.cl", video: "/evidencia1.mp4" },
-        { url: "https://www.ingsnt.cl", label: "www.ingsnt.cl", video: "/evidencia2.mp4" },
-        { url: "https://www.masatracker.cl", label: "www.masatracker.cl", video: "/evidencia3.mp4" },
-        { url: "https://www.investigadores-privados.cl", label: "investigadores-privados.cl", video: "/evidencia4.mp4" },
-        { url: "https://www.masautomatizacion.cl", label: "masautomatizacion.cl", video: "/evidencia5.mp4" },
-        { url: "https://www.sifg.cl", label: "www.sifg.cl", video: "/evidencia6.mp4" },
-        { url: null, label: "www.autoges-web.cl", video: "/evidencia7.mp4" }, // tachada
+        {
+            url: "https://www.ivelpink.cl",
+            label: "www.ivelpink.cl",
+            video: "/evidencia1.mp4",
+            logo: "/logos/logo-ivelpink.jpg"
+        },
+        {
+            url: "https://www.ingsnt.cl",
+            label: "www.ingsnt.cl",
+            video: "/evidencia2.mp4",
+            logo: "/logos/logo-ingsnt.png"
+        },
+        {
+            url: "https://www.masatracker.cl",
+            label: "www.masatracker.cl",
+            video: "/evidencia3.mp4",
+            logo: "/logos/logo-mastracker.png"
+        },
+        {
+            url: "https://www.investigadores-privados.cl",
+            label: "investigadores-privados.cl",
+            video: "/evidencia4.mp4",
+            logo: "/logos/logo-investigadores-privados.png"
+        },
+        {
+            url: "https://www.masautomatizacion.cl",
+            label: "masautomatizacion.cl",
+            video: "/evidencia5.mp4",
+            logo: "/logos/logo-masautomatizacion.png"
+        },
+        {
+            url: "https://www.sifg.cl",
+            label: "www.sifg.cl",
+            video: "/evidencia6.mp4",
+            logo: "/logos/logo-sifg.png"
+        },
+        {
+            url: null,
+            label: "www.autoges-web.cl",
+            video: "/evidencia7.mp4",
+            logo: "/logos/logo-autoges.png"
+        }, // tachada
     ];
+
     const evidenciaIndices = isMobile
         ? [[0, 1], [2, 3], [4, 5], [6]]   // Mobile → 3 filas de 2 + 1 fila de 1
         : [[0], [1], [2], [3], [4], [5], [6]]; // Desktop → todas en filas individuales
@@ -410,57 +446,110 @@ const Evidencias = () => {
                                                                 overflow: 'hidden',
                                                             }}
                                                         >
-                                                            <CardMedia
-                                                                component="video"
-                                                                ref={(el) => (videosRef.current[n] = el)}
-                                                                src={evidencias[n].video}
-                                                                playsInline
-                                                                muted
-                                                                loop
-                                                                preload="none"
-                                                                controls={false}
-                                                                disablePictureInPicture
-                                                                controlsList="nodownload nofullscreen noremoteplayback"
-                                                                onCanPlay={e => e.target.play()}
-                                                                onLoadedData={e => e.target.play()}
-                                                                onClick={(e) => {
-                                                                    const video = e.target;
+                                                            <Box sx={{ position: "relative", width: "100%", height: "100%" }}>
+                                                                <CardMedia
+                                                                    component="video"
+                                                                    ref={(el) => (videosRef.current[n] = el)}
+                                                                    src={evidencias[n].video}
+                                                                    playsInline
+                                                                    muted
+                                                                    loop
+                                                                    preload="none"
+                                                                    controls={false}
+                                                                    disablePictureInPicture
+                                                                    controlsList="nodownload nofullscreen noremoteplayback"
+                                                                    onCanPlay={(e) => e.target.play()}
+                                                                    onLoadedData={(e) => e.target.play()}
+                                                                    onClick={(e) => {
+                                                                        const video = e.target;
 
-                                                                    const requestFullscreen =
-                                                                        video.requestFullscreen ||
-                                                                        video.webkitEnterFullscreen ||
-                                                                        video.webkitRequestFullscreen ||
-                                                                        video.msRequestFullscreen;
+                                                                        const requestFullscreen =
+                                                                            video.requestFullscreen ||
+                                                                            video.webkitEnterFullscreen ||
+                                                                            video.webkitRequestFullscreen ||
+                                                                            video.msRequestFullscreen;
 
-                                                                    if (requestFullscreen) {
-                                                                        requestFullscreen.call(video);
+                                                                        if (requestFullscreen) {
+                                                                            requestFullscreen.call(video);
 
-                                                                        // Opcional: cambiar estilo cuando entra en fullscreen
-                                                                        const handleFullscreenChange = () => {
-                                                                            const isFullscreen =
-                                                                                document.fullscreenElement === video ||
-                                                                                document.webkitFullscreenElement === video ||
-                                                                                document.msFullscreenElement === video;
+                                                                            // Opcional: cambiar estilo cuando entra en fullscreen
+                                                                            const handleFullscreenChange = () => {
+                                                                                const isFullscreen =
+                                                                                    document.fullscreenElement === video ||
+                                                                                    document.webkitFullscreenElement === video ||
+                                                                                    document.msFullscreenElement === video;
 
-                                                                            video.style.objectFit = isFullscreen ? 'contain' : 'cover';
-                                                                        };
+                                                                                video.style.objectFit = isFullscreen ? 'contain' : 'cover';
+                                                                            };
 
-                                                                        document.addEventListener('fullscreenchange', handleFullscreenChange);
-                                                                        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-                                                                        document.addEventListener('msfullscreenchange', handleFullscreenChange);
-                                                                    }
+                                                                            document.addEventListener('fullscreenchange', handleFullscreenChange);
+                                                                            document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+                                                                            document.addEventListener('msfullscreenchange', handleFullscreenChange);
+                                                                        }
 
-                                                                    if (video.paused) video.play();
-                                                                }}
+                                                                        if (video.paused) video.play();
+                                                                    }}
+                                                                    sx={{
+                                                                        height: "100%",
+                                                                        width: "100%",
+                                                                        objectFit: "cover",
+                                                                        cursor: "pointer",
+                                                                        zIndex: 1,
+                                                                    }}
+                                                                />
 
-                                                                sx={{
-                                                                    height: '100%',
-                                                                    width: '100%',
-                                                                    objectFit: 'cover',
-                                                                    cursor: 'pointer',
-                                                                    zIndex: 1,
-                                                                }}
-                                                            />
+                                                                {evidencias[n].logo && (
+                                                                    <Box
+                                                                        sx={{
+                                                                            position: "absolute",
+                                                                            bottom: 4,
+                                                                            left: "50%",
+                                                                            transform: "translateX(-50%)", // ✅ solo centra
+                                                                            zIndex: 2,
+                                                                        }}
+                                                                    >
+                                                                        {/* Este es el que anima scale/opacity */}
+                                                                        <Box
+                                                                            component={motion.div}
+                                                                            initial={{ scale: 0, opacity: 0 }}
+                                                                            animate={inView ? { scale: 1, opacity: 1 } : {}}
+                                                                            transition={{
+                                                                                duration: 0.6,
+                                                                                ease: "easeOut",
+                                                                                delay: 1   // ⏳ delay de 1 segundo
+                                                                            }}
+                                                                            sx={{
+                                                                                width: 70,
+                                                                                height: 70,
+                                                                                borderRadius: "50%",
+                                                                                background:
+                                                                                    "linear-gradient(45deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5)",
+                                                                                display: "flex",
+                                                                                alignItems: "center",
+                                                                                justifyContent: "center",
+                                                                                boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
+                                                                                p: "4px",
+                                                                            }}
+                                                                        >
+                                                                            <Box
+                                                                                component="img"
+                                                                                src={evidencias[n].logo}
+                                                                                alt={`${evidencias[n].label} logo`}
+                                                                                sx={{
+                                                                                    width: "100%",
+                                                                                    height: "100%",
+                                                                                    borderRadius: "50%",
+                                                                                    backgroundColor: "#fff",
+                                                                                    objectFit: "contain",
+                                                                                }}
+                                                                            />
+                                                                        </Box>
+                                                                    </Box>
+                                                                )}
+
+
+
+                                                            </Box>
 
                                                         </Box>
 

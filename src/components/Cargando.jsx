@@ -68,7 +68,7 @@ const Cargando = () => {
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                bgcolor: 'rgba(0, 0, 0, 0.85)',
+                bgcolor: '#2b2b2b',
                 zIndex: 9999,
                 cursor: unlocked ? 'default' : 'pointer', // feedback visual
             }}

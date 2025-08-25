@@ -17,11 +17,37 @@ const letterVariants = {
     }),
 };
 const textoAnimado = "Nuestros trabajos";
-const videos = [
-    { src: '/evidencia1.mp4', url: 'https://www.ivelpink.cl', label: 'www.ivelpink.cl' },
-    { src: '/evidencia2.mp4', url: 'https://www.ingsnt.cl', label: 'www.ingsnt.cl' },
-    { src: '/evidencia3.mp4', url: 'https://www.mastracker.cl', label: 'www.mastracker.cl' },
-    { src: '/evidencia4.mp4', url: 'https://www.investigadores-privados.cl', label: 'investigadores-privados.cl' },
+const evidencias = [
+    {
+        url: "https://www.ivelpink.cl",
+        label: "www.ivelpink.cl",
+        video: "/evidencia1.mp4",
+        logo: "/logos/logo-ivelpink.jpg"
+    },
+    {
+        url: "https://www.ingsnt.cl",
+        label: "www.ingsnt.cl",
+        video: "/evidencia2.mp4",
+        logo: "/logos/logo-ingsnt.png"
+    },
+    {
+        url: "https://www.masatracker.cl",
+        label: "www.masatracker.cl",
+        video: "/evidencia3.mp4",
+        logo: "/logos/logo-mastracker.png"
+    },
+    {
+        url: "https://www.investigadores-privados.cl",
+        label: "investigadores-privados.cl",
+        video: "/evidencia4.mp4",
+        logo: "/logos/logo-investigadores-privados.png"
+    },
+    {
+        url: "https://www.sifg.cl",
+        label: "www.sifg.cl",
+        video: "/evidencia6.mp4",
+        logo: "/logos/logo-sifg.png"
+    },
 ];
 
 const SeccionDestacada = () => {
@@ -163,7 +189,7 @@ const SeccionDestacada = () => {
                 <Box
                     ref={ref}
                     sx={{
-                        width: '50%',
+                        width: '55%',
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
@@ -188,8 +214,8 @@ const SeccionDestacada = () => {
                             sx={{
                                 fontFamily: "'Montserrat', Helvetica, Arial, sans-serif",
                                 fontSize: { xs: "1.5rem", md: "2rem" },
-                                paddingLeft: { xs: "100px", md: "30px" },
-                                paddingRight: { xs: "100px", md: "30px" },
+                                paddingLeft: { xs: "100px", md: "10px" },
+                                paddingRight: { xs: "100px", md: "10px" },
                                 letterSpacing: "3px",
                                 my: 0,
                                 display: "flex",
@@ -246,15 +272,15 @@ const SeccionDestacada = () => {
                     <Box
                         sx={{
                             display: 'flex',
-                            gap: 2.1,
+                            gap: 1.5,
                             justifyContent: 'center',
-                            ml: 8,
+                            ml: 2,
                             alignItems: 'flex-end', // Alinea los videos abajo
-                            mt: 6,
+                            mt: 4,
                             // mr: '10px', // Elimina este margen para que todos estén alineados
                         }}
                     >
-                        {videos.map((video, i) => (
+                        {evidencias.map((evidencia, i) => (
                             <motion.div
                                 key={i}
                                 initial={{ opacity: 0, x: 100 }}
@@ -264,60 +290,117 @@ const SeccionDestacada = () => {
                             >
                                 <Box
                                     sx={{
-                                        width: 160,
-                                        height: 310,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'center',
-                                        justifyContent: 'flex-end', // Alinea el link abajo del video
+                                        width: 140,
+                                        height: 300,
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "center",
+                                        justifyContent: "flex-end",
                                     }}
                                 >
-                                    <CardMedia
-                                        component="video"
-                                        ref={(el) => (videosRef.current[i] = el)}
-                                        src={video.src}
-                                        playsInline
-                                        muted
-                                        loop
-                                        preload="auto"
-                                        controls={false}
-                                        disablePictureInPicture
-                                        controlsList="nodownload nofullscreen noremoteplayback"
-                                        onClick={handleVideoClick}
-                                        onCanPlay={(e) => e.target.play()} // <-- Esto ayuda a iniciar el video apenas pueda
+                                    {/* 🔹 Contenedor relativo para video + logo */}
+                                    <Box
                                         sx={{
-                                            width: '100%',
+                                            position: "relative",   // ✅ necesario para el overlay
+                                            width: "100%",
                                             height: 270,
-                                            objectFit: 'cover',
-                                            cursor: 'pointer',
                                             borderRadius: 2,
-                                            display: 'block',
-                                            background: '#000',
+                                            overflow: "hidden",
+                                            background: "#000",
                                         }}
-                                    />
+                                    >
+                                        <CardMedia
+                                            component="video"
+                                            ref={(el) => (videosRef.current[i] = el)}
+                                            src={evidencia.video}
+                                            playsInline
+                                            muted
+                                            loop
+                                            preload="auto"
+                                            controls={false}
+                                            disablePictureInPicture
+                                            controlsList="nodownload nofullscreen noremoteplayback"
+                                            onClick={handleVideoClick}
+                                            onCanPlay={(e) => e.target.play()}
+                                            sx={{
+                                                width: "100%",
+                                                height: "100%",
+                                                objectFit: "cover",
+                                                cursor: "pointer",
+                                                borderRadius: 2,
+                                                display: "block",
+                                            }}
+                                        />
+
+                                        {/* 🔹 Logo dentro del video */}
+                                        {evidencia.logo && (
+                                            <Box
+                                                component={motion.div}
+                                                initial={{ scale: 0, opacity: 0 }}
+                                                animate={inView ? { scale: 1, opacity: 1 } : {}}
+                                                transition={{
+                                                    duration: 0.6,
+                                                    ease: "easeOut",
+                                                    delay: 1,
+                                                }}
+                                                sx={{
+                                                    position: "absolute",
+                                                    bottom: 8,           // 🔹 mitad de 70px para que sobresalga justo la mitad
+                                                    left: "28%",           // 🔹 centro exacto
+                                                    width: 60,
+                                                    height: 60,
+                                                    borderRadius: "50%",
+                                                    background:
+                                                        "linear-gradient(45deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5)",
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    justifyContent: "center",
+                                                    boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
+                                                    p: "4px",
+                                                    zIndex: 2,
+                                                }}
+                                            >
+                                                <Box
+                                                    component="img"
+                                                    src={evidencia.logo}
+                                                    alt={`${evidencia.label} logo`}
+                                                    sx={{
+                                                        width: "100%",
+                                                        height: "100%",
+                                                        borderRadius: "50%",
+                                                        backgroundColor: "#fff",
+                                                        objectFit: "contain",
+                                                    }}
+                                                />
+                                            </Box>
+                                        )}
+                                    </Box>
+
+                                    {/* 🔹 Texto debajo del video */}
                                     <Typography
                                         variant="body2"
                                         align="center"
                                         component="a"
-                                        href={video.url}
+                                        href={evidencia.url}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         sx={{
-                                            display: 'block',
+                                            display: "block",
                                             mt: 1,
-                                            color: '#00bcd4',
-                                            fontFamily: 'Poppins, sans-serif',
-                                            textDecoration: 'none',
-                                            fontSize: '0.70rem',
-                                            '&:hover': {
-                                                textDecoration: 'underline',
-                                                color: '#26c6da',
+                                            color: "#00bcd4",
+                                            fontFamily: "Poppins, sans-serif",
+                                            textDecoration: "none",
+                                            fontSize: "0.60rem",
+                                            "&:hover": {
+                                                textDecoration: "underline",
+                                                color: "#26c6da",
                                             },
                                         }}
                                     >
-                                        {video.label}
+                                        {evidencia.label}
                                     </Typography>
                                 </Box>
+
                             </motion.div>
                         ))}
                     </Box>
@@ -351,6 +434,7 @@ const SeccionDestacada = () => {
                         width: 'auto',
                         height: '100%',
                         display: 'flex',
+                        left: '0%',
                         alignItems: 'center',
                         backgroundColor: 'transparent',
                         marginLeft: 0,
@@ -361,11 +445,15 @@ const SeccionDestacada = () => {
                         src="/mongodb.svg"
                         alt="mongodb"
                         sx={{
+                            left: '-1%',
                             height: '100%',
                             objectFit: 'contain',
                             display: 'block',
+                            position: "relative", // o absolute si lo necesitas fijo
+                            zIndex: -1,            // 👈 asegura que quede detrás
                         }}
                     />
+
                 </Box>
             </Box>
         </Box >

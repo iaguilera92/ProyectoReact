@@ -449,15 +449,43 @@ export default function DialogTrabajos({
             variant="contained"
             onClick={onPrimaryClick}
             sx={{
+              position: "relative",
+              overflow: "hidden",
+              minWidth: 140,
               textTransform: "none",
               fontWeight: 700,
-              background: "linear-gradient(90deg,#FF9800,#F57C00)",
-              boxShadow: "0 6px 18px rgba(255,152,0,.35)",
-              "&:hover": { background: "linear-gradient(90deg,#FFA726,#FB8C00)" },
+              color: "#fff",
+              border: expanded ? "none" : "2px solid #fff",
+              background: "transparent", // siempre transparente, relleno lo hace el ::before
+              boxShadow: expanded
+                ? "0 6px 18px rgba(255,152,0,.35)"
+                : "none",
+              transition: "all 0.3s ease",
+              "&::before": {
+                content: '""',
+                position: "absolute",
+                inset: 0,
+                borderRadius: "inherit",
+                background: "linear-gradient(90deg,#FF9800,#F57C00)",
+                transform: expanded ? "scale(1)" : "scale(0)",
+                transformOrigin: "center center", // 👈 se expande desde el centro
+                transition: "transform 0.6s ease",
+                zIndex: 0,
+              },
+              "& span": {
+                position: "relative",
+                zIndex: 1,
+              },
+              "&:hover::before": {
+                background: expanded
+                  ? "linear-gradient(90deg,#FFA726,#FB8C00)"
+                  : "rgba(255,255,255,0.15)",
+              },
             }}
           >
-            {primaryLabel}
+            <span>{primaryLabel}</span>
           </Button>
+
         )}
       </DialogActions>
     </Dialog >
