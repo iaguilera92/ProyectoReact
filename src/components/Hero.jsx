@@ -93,6 +93,7 @@ function Hero({ informationsRef, setVideoReady }) {
       stopTextRotation();
     };
   }, [isHeroVisible]);
+
   const startTextRotation = () => {
     if (intervalRef.current) return;
     intervalRef.current = setInterval(() => {
@@ -132,7 +133,7 @@ function Hero({ informationsRef, setVideoReady }) {
       if (loadingVideo) {
         setLoadingVideo(false);
       }
-    }, 3000);
+    }, 0);
 
     return () => clearTimeout(fallbackTimer);
   }, [loadingVideo]);
@@ -201,7 +202,7 @@ function Hero({ informationsRef, setVideoReady }) {
           controlsList="nodownload nofullscreen noremoteplayback"
         >
           <source
-            src="video-inicio.mp4"
+            src={isMobile ? "video-inicio-oficial.mp4" : "video-inicio.mp4"}
             type="video/mp4"
           />
         </video>

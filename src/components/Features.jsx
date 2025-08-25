@@ -21,7 +21,7 @@ const features = [
     id: 1,
     title: "Plataformas Web",
     desc: "Creamos sitios web con la última tecnología, responsivos que potencian tu presencia digital y hacen crecer tu negocio.",
-    image: "servicio1.jpg"
+    image: "servicio1.webp"
   },
   {
     id: 2,
@@ -464,7 +464,7 @@ function Features({ videoReady }) {
                             >
                               <Box
                                 component="img"
-                                src="/sitios-web.png"
+                                src="/sitios-web.webp"
                                 alt="Preview Sitios Web"
                                 sx={{
                                   position: "absolute",
@@ -568,7 +568,7 @@ function Features({ videoReady }) {
                             >
                               <Box
                                 component="img"
-                                src="/sistemas.png"
+                                src="/sistemas.webp"
                                 alt="Preview Sistemas"
                                 sx={{
                                   position: "absolute",

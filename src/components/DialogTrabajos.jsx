@@ -160,7 +160,7 @@ export default function DialogTrabajos({
             left: 0,
             width: "100%",
             height: "100%",
-            backgroundImage: "url('/servicio1.jpg')",
+            backgroundImage: "url('/servicio1.webp')",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
             zIndex: 0,

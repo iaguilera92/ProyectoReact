@@ -133,7 +133,7 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave }) {
             left: 0,
             width: "100%",
             height: "100%",
-            backgroundImage: "url('/servicio1.jpg')",
+            backgroundImage: "url('/servicio1.webp')",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
             zIndex: 0,
@@ -185,7 +185,7 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave }) {
             top: 8,
             right: 8,
             color: "#FFF",
-            zIndex: 3, // 👈 más arriba que ::before y ::after
+            zIndex: 4, // 👈 más arriba que ::before y ::after
             "&:hover": { backgroundColor: "rgba(255,255,255,.15)" },
 
             // animación al abrir

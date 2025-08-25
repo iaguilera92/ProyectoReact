@@ -11,7 +11,7 @@ const data = [
   { count: 9, text: "Años de Experiencia como desarrolladores", image: "Experience.mp4" },
   { count: 7, text: "Tazas de café en el día ☕", image: "Cafe.mp4" },
 ];
-const images = ["servicios.png", "computador.png"];
+const images = ["servicios.webp", "computador.webp"];
 
 const Areas = () => {
   const [currentImage, setCurrentImage] = useState(0);

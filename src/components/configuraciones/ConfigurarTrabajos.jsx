@@ -639,16 +639,16 @@ const ConfigurarTrabajos = () => {
           onSave={handleSaveTrabajo}
         />
         {/*DIALOG: ELIMINAR*/}
-        <Dialog open={dialog.open} onClose={cerrarDialog}>
-          <DialogTitle sx={{ fontWeight: "bold", color: "#e65100" }}>
+        <Dialog open={dialog.open} onClose={cerrarDialog} sx={{ background: "linear-gradient(180deg, #FFF8EC, #FFEFD5)", }}>
+          <DialogTitle sx={{ fontWeight: "bold", color: "#e65100", background: "linear-gradient(180deg, #FFF8EC, #FFEFD5)", }}>
             Confirmar acción
           </DialogTitle>
-          <DialogContent>
+          <DialogContent sx={{ background: "linear-gradient(180deg, #FFF8EC, #FFEFD5)", }}>
             <Typography>
               ¿Desea eliminar el trabajo <b>{dialog.sitioWeb}</b>?
             </Typography>
           </DialogContent>
-          <DialogActions>
+          <DialogActions sx={{ background: "linear-gradient(180deg, #FFF8EC, #FFEFD5)", }}>
             <Button
               onClick={cerrarDialog}
               color="inherit"

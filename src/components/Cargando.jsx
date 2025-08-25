@@ -105,7 +105,7 @@ const Cargando = () => {
                 sx={{
                     position: 'absolute',
                     inset: 0,
-                    backgroundImage: 'url(fondo-blizz.png)',
+                    backgroundImage: 'url(fondo-blizz.webp)',
                     backgroundSize: 'cover',
                     backgroundPosition: { xs: '25% 20%', md: 'center 20%' },
                     backgroundRepeat: 'no-repeat',
