@@ -28,6 +28,7 @@ const Administracion = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const textToType = useRef("Iniciar sesión");
   const currentIndex = useRef(0);
+  const [logo, setLogo] = useState("/logo-james.png");
 
   const handleTogglePassword = () => setShowPassword((prev) => !prev);
 
@@ -61,6 +62,14 @@ const Administracion = () => {
     }
   };
 
+
+  useEffect(() => {
+    // lista de logos disponibles
+    const logos = ["/logo-james.png", "/logo-flaca.png", "/logo-gorda.png"];
+    // seleccionar uno aleatorio
+    const randomLogo = logos[Math.floor(Math.random() * logos.length)];
+    setLogo(randomLogo);
+  }, []);
 
   useEffect(() => {
     if (snackbar.open) {
@@ -117,21 +126,59 @@ const Administracion = () => {
         maxWidth: 350, width: "90%", textAlign: "center", mt: isMobile ? -8 : 0
       }}>
         <Box
-          component="img"
-          src="/logo-james.png"
-          alt="Usuario"
           sx={{
-            width: 80,
-            height: 80,
+            width: 90,
+            height: 90,
             borderRadius: "50%",
-            objectFit: "cover",        // la imagen llena el círculo
-            objectPosition: "center 50%", // 👈 desplaza el recorte hacia arriba (ajusta % según lo que quieras)
-            transform: "scale(1.1)",   // 👈 zoom interno, se ve más la imagen
+            padding: "3px",
+            background: "radial-gradient(circle at 30% 30%, #ffe082, #ffb300, #ff6f00, #e65100)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
             margin: "0 auto",
             mb: 1,
-            border: "2px solid #E95420",
           }}
-        />
+        >
+          {/* Fondo negro fijo */}
+          <Box
+            sx={{
+              width: "100%",
+              height: "100%",
+              borderRadius: "50%",
+              backgroundColor: "black",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              overflow: "hidden",
+            }}
+          >
+            {/* Imagen con efecto pendular */}
+            <motion.img
+              src={logo}
+              alt="Usuario"
+              style={{
+                width: "100%",
+                height: "100%",
+                borderRadius: "50%",
+                objectFit: "cover",
+                transformOrigin: "bottom center", // 👈 pivote en la base
+              }}
+              animate={
+                isSubmitting
+                  ? { rotate: [-10, 10, -8, 8, -6, 6, 0] } // 👈 efecto péndulo
+                  : { rotate: 0 }
+              }
+              transition={{
+                duration: 1.2,
+                ease: "easeInOut",
+                repeat: isSubmitting ? Infinity : 0,
+              }}
+            />
+          </Box>
+        </Box>
+
+
+
         <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ fontFamily: "monospace", color: "white", minHeight: "1.5em" }}>
           {isSubmitting ? <DotsAnimation /> : <>{typedText}{showCursor && <span style={{ display: "inline-block", fontWeight: "bold", transform: "scaleX(1.8)" }}>|</span>}</>}
         </Typography>

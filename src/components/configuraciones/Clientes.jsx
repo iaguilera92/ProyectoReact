@@ -112,7 +112,8 @@ const Clientes = () => {
   const [mesManual, setMesManual] = useState("");
   const modoDesarrollo = false;
   const mesDialogPago = mesManual || mesCapitalizado;
-  const [botonCargando, setBotonCargando] = useState(null);
+  const MotionBox = motion(Box);
+
 
 
   const totalGanado = clientes.reduce((acc, c) => {
@@ -479,32 +480,36 @@ const Clientes = () => {
         </motion.div>
 
       </Typography>
+
       <Box
         sx={{
           display: "flex",
           flexDirection: "row",
           flexWrap: "nowrap",
-          justifyContent: "center",
+          justifyContent: "center", // 👈 asegura que se centre en el medio
           alignItems: "stretch",
-          gap: 1.5, // 👈 menos espacio entre cuadros
+          gap: 1.5,
           mb: 2,
           width: "100%",
           px: isMobile ? 1 : 0,
         }}
       >
         {/* Cuadro Ganado */}
-        <Box
+        <MotionBox
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 2.5, duration: 0.8, ease: "easeOut" }}
           sx={{
             backgroundColor: "#e8f5e9",
             border: "2px solid #66bb6a",
             borderRadius: 2,
-            px: 1.2,   // 👈 menos padding horizontal
-            py: 0.5,   // 👈 menos padding vertical
+            px: 1.2,
+            py: 0.5,
             flex: "1 1 auto",
-            maxWidth: 140, // 👈 antes 160
-            minWidth: 120, // 👈 antes 140
+            maxWidth: 140,
+            minWidth: 120,
             textAlign: "center",
-            height: "64px", // 👈 más bajo (antes 72px)
+            height: "64px",
             display: "flex",
             flexDirection: "column",
             justifyContent: "start",
@@ -538,14 +543,17 @@ const Clientes = () => {
           <Typography
             variant="caption"
             color="text.secondary"
-            sx={{ fontSize: "0.7rem" }} // 👈 más chico
+            sx={{ fontSize: "0.7rem" }}
           >
             {clientes.filter(c => c.pagado).length} pagado
           </Typography>
-        </Box>
+        </MotionBox>
 
         {/* Cuadro Deuda */}
-        <Box
+        <MotionBox
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 2.5, duration: 0.8, ease: "easeOut" }}
           sx={{
             backgroundColor: "#fff3e0",
             border: "2px solid #ff9800",
@@ -574,7 +582,7 @@ const Clientes = () => {
             variant="h6"
             fontWeight={700}
             sx={{
-              fontSize: "1rem", // 👈 más pequeño
+              fontSize: "1rem",
               lineHeight: 1.2,
               color: "#d32f2f",
             }}
@@ -588,8 +596,9 @@ const Clientes = () => {
           >
             {clientes.filter(c => !c.pagado).length} deben
           </Typography>
-        </Box>
+        </MotionBox>
       </Box>
+
 
       <Box
         sx={{
