@@ -271,7 +271,7 @@ function Contacto() {
                             <Marker
                               position={finalPosition}
                               icon={new L.Icon({
-                                iconUrl: "/logo-mapa.png",
+                                iconUrl: "/logo-mapa.webp",
                                 iconSize: [160, 160],
                                 iconAnchor: [80, 80],
                                 popupAnchor: [0, -80],

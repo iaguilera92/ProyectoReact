@@ -338,7 +338,7 @@ function Hero({ informationsRef, setVideoReady }) {
             )
           }}
         >
-          ¡Descubre cómo se verá tu sitio web! Solicita una vista previa personalizada.
+          ¡Descubre cómo se verá tu sitio web! Solicita una vista previa.
         </Alert>
       </Snackbar>
 

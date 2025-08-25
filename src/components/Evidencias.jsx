@@ -262,7 +262,7 @@ const Evidencias = () => {
 
                     {/* Imagen PNG encima */}
                     <motion.img
-                        src="/mano-celular.png"
+                        src="/mano-celular.webp"
                         alt="Decorativo"
                         initial={{ x: 300, opacity: 0 }}
                         animate={imagenInView ? { x: '0%', opacity: 1 } : { x: 300, opacity: 0 }}

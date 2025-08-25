@@ -65,7 +65,7 @@ const Administracion = () => {
 
   useEffect(() => {
     // lista de logos disponibles
-    const logos = ["/logo-james.png", "/logo-flaca.png", "/logo-gorda.png"];
+    const logos = ["/logo-james.webp", "/logo-flaca.webp", "/logo-gorda.webp"];
     // seleccionar uno aleatorio
     const randomLogo = logos[Math.floor(Math.random() * logos.length)];
     setLogo(randomLogo);

@@ -480,7 +480,7 @@ function Features({ videoReady }) {
                               />
                               <Box
                                 component="img"
-                                src="/mano-celular.png"
+                                src="/mano-celular.webp"
                                 alt="Mano con celular"
                                 sx={{
                                   width: "100%",
@@ -585,7 +585,7 @@ function Features({ videoReady }) {
                               />
                               <Box
                                 component="img"
-                                src="/mano-celular.png"
+                                src="/mano-celular.webp"
                                 alt="Mano con celular"
                                 sx={{
                                   width: "100%",
