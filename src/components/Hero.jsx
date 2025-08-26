@@ -172,7 +172,6 @@ function Hero({ informationsRef, setVideoReady }) {
           />
         </video>
 
-
       </Box>
 
       {/* Contenido sobre el video */}
