@@ -29,22 +29,35 @@ const Administracion = () => {
   const textToType = useRef("Iniciar sesión");
   const currentIndex = useRef(0);
   const [logo, setLogo] = useState("/logo-james.png");
+  const [logoAnimacion, setLogoAnimacion] = useState("idle"); // idle | pendulo | error
+  const logoTimeoutRef = useRef(null);
+  const [estadoMensaje, setEstadoMensaje] = useState("idle");
+  const [logoBase, setLogoBase] = useState("/logo-james.webp");
 
   const handleTogglePassword = () => setShowPassword((prev) => !prev);
+  const getLogoAnimado = () => {
+    if (logoAnimacion === "error") return logoBase.replace(".webp", "-enojada.webp");
+    return logoBase;
+  };
 
   const handleSubmit = async (e) => {
+    if (logoAnimacion === "error" || isSubmitting) return;
+
     e.preventDefault();
     setIsSubmitting(true);
 
     const usuarioValido = await validarCredenciales(email, password);
 
     if (usuarioValido) {
+      setLogoAnimacion("pendulo");
+
       sessionStorage.setItem("credenciales", JSON.stringify({ email, password }));
       if (recordarme) {
         localStorage.setItem("credenciales", JSON.stringify({ email, password }));
       } else {
         localStorage.removeItem("credenciales");
       }
+
       sessionStorage.setItem("snackbar", JSON.stringify({
         open: true,
         type: "success",
@@ -52,23 +65,38 @@ const Administracion = () => {
       }));
       sessionStorage.setItem("usuario", JSON.stringify(usuarioValido));
 
-      // ⏳ Esperar 1 segundo antes de navegar
       setTimeout(() => {
         navigate("/dashboard", { replace: true });
       }, 1000);
     } else {
-      setIsSubmitting(false);
-      setSnackbar({ open: true, type: "error", message: "Usuario o contraseña incorrectos" });
+      setLogoAnimacion("error");
+
+      setTimeout(() => {
+        setLogoAnimacion("idle");
+        setIsSubmitting(false);
+      }, 800);
+
+      setSnackbar({
+        open: true,
+        type: "error",
+        message: "Usuario o contraseña incorrectos"
+      });
     }
   };
 
 
   useEffect(() => {
-    // lista de logos disponibles
+    return () => {
+      if (logoTimeoutRef.current) {
+        clearTimeout(logoTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     const logos = ["/logo-james.webp", "/logo-flaca.webp", "/logo-gorda.webp"];
-    // seleccionar uno aleatorio
     const randomLogo = logos[Math.floor(Math.random() * logos.length)];
-    setLogo(randomLogo);
+    setLogoBase(randomLogo);
   }, []);
 
   useEffect(() => {
@@ -131,12 +159,16 @@ const Administracion = () => {
             height: 90,
             borderRadius: "50%",
             padding: "3px",
-            background: "radial-gradient(circle at 30% 30%, #ffe082, #ffb300, #ff6f00, #e65100)",
+            background:
+              logoAnimacion === "error"
+                ? "radial-gradient(circle at 30% 30%, #ff8a80, #e53935, #b71c1c)"
+                : "radial-gradient(circle at 30% 30%, #ffe082, #ffb300, #ff6f00, #e65100)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             margin: "0 auto",
             mb: 1,
+            transition: "background 0.4s ease",
           }}
         >
           {/* Fondo negro fijo */}
@@ -153,35 +185,91 @@ const Administracion = () => {
             }}
           >
             {/* Imagen con efecto pendular */}
-            <motion.img
-              src={logo}
-              alt="Usuario"
+            <motion.div
+              animate={
+                logoAnimacion === "error"
+                  ? {
+                    filter: [
+                      "brightness(1) contrast(1)",
+                      "brightness(1.2) contrast(1.5) drop-shadow(0 0 10px red)",
+                      "brightness(1) contrast(1)",
+                    ],
+                    scale: [1, 1.05, 1],
+                  }
+                  : {
+                    filter: "brightness(1) contrast(1)",
+                    scale: 1,
+                  }
+              }
+              transition={{
+                duration: 0.6,
+                ease: "easeInOut",
+              }}
               style={{
                 width: "100%",
                 height: "100%",
                 borderRadius: "50%",
-                objectFit: "cover",
-                transformOrigin: "bottom center", // 👈 pivote en la base
               }}
-              animate={
-                isSubmitting
-                  ? { rotate: [-10, 10, -8, 8, -6, 6, 0] } // 👈 efecto péndulo
-                  : { rotate: 0 }
-              }
-              transition={{
-                duration: 1.2,
-                ease: "easeInOut",
-                repeat: isSubmitting ? Infinity : 0,
-              }}
-            />
+            >
+              <motion.img
+                src={getLogoAnimado()}
+                alt="Usuario"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                  transformOrigin: "center center",
+                }}
+                animate={
+                  logoAnimacion === "pendulo"
+                    ? { rotate: [-10, 10, -8, 8, -6, 6, 0] }
+                    : logoAnimacion === "error"
+                      ? { x: [-6, 6, -5, 5, -2, 2, 0] }
+                      : { rotate: 0, x: 0 }
+                }
+                transition={{
+                  duration: logoAnimacion === "error" ? 0.5 : 1.2,
+                  ease: "easeInOut",
+                  repeat: logoAnimacion === "pendulo" ? Infinity : 0,
+                }}
+              />
+            </motion.div>
+
+
           </Box>
         </Box>
 
 
 
-        <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ fontFamily: "monospace", color: "white", minHeight: "1.5em" }}>
-          {isSubmitting ? <DotsAnimation /> : <>{typedText}{showCursor && <span style={{ display: "inline-block", fontWeight: "bold", transform: "scaleX(1.8)" }}>|</span>}</>}
+        <Typography
+          variant="h6"
+          fontWeight="bold"
+          gutterBottom
+          sx={{ fontFamily: "monospace", color: "white", minHeight: "1.5em" }}
+        >
+          {estadoMensaje === "cargando" ? (
+            <DotsAnimation />
+          ) : estadoMensaje === "error" ? (
+            "Usuario incorrecto"
+          ) : (
+            <>
+              {typedText}
+              {showCursor && (
+                <span
+                  style={{
+                    display: "inline-block",
+                    fontWeight: "bold",
+                    transform: "scaleX(1.8)",
+                  }}
+                >
+                  |
+                </span>
+              )}
+            </>
+          )}
         </Typography>
+
 
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
           <TextField

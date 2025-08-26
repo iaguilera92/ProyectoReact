@@ -262,13 +262,13 @@ const InformationsPromotions = ({
                                 sx={{
                                   color: "black",
                                   fontWeight: 600,
-                                  fontSize: isMobile ? "0.59rem" : "0.8rem",
+                                  fontSize: isMobile ? "0.52rem" : "0.7rem",
                                   fontFamily: "'Poppins', sans-serif",
                                   transform: "skewX(12deg)",
-                                  mr: 3
+                                  mr: 3.5
                                 }}
                               >
-                                PRECIO DESARROLLO
+                                DESARROLLO (2 CUOTAS)
                               </Typography>
                             </Box>
 
@@ -281,25 +281,48 @@ const InformationsPromotions = ({
                                   exit={{ opacity: 0, x: 80 }}
                                   transition={{ duration: 0.5 }}
                                 >
-                                  <Typography
-                                    variant="h3"
+                                  <Box
                                     sx={{
-                                      color: "#ccc",
-                                      fontWeight: "bold",
-                                      fontSize: isMobile ? "1.9rem" : "2.2rem",
-                                      fontFamily: "'Anton', sans-serif",
-                                      letterSpacing: "1px",
+                                      display: "inline-flex",
+                                      alignItems: "flex-start", // 👈 Alineación superior para que el CLP baje visualmente
                                       transform: "skewX(12deg)",
-                                      textAlign: "center",
-                                      mb: 0,
-                                      mt: 0.2,
-                                      mr: 1.8,
-                                      textDecoration: "line-through",
+                                      mr: 1.5,
+                                      mt: 1
                                     }}
                                   >
-                                    $120.000
-                                  </Typography>
+                                    <Typography
+                                      variant="h3"
+                                      sx={{
+                                        color: "#ccc",
+                                        fontWeight: "bold",
+                                        fontSize: isMobile ? "1.6rem" : "2rem",
+                                        fontFamily: "'Anton', sans-serif",
+                                        letterSpacing: "1px",
+                                        lineHeight: 1,
+                                      }}
+                                    >
+                                      $120.000
+                                    </Typography>
+
+                                    <Typography
+                                      component="span"
+                                      sx={{
+                                        fontSize: isMobile ? "0.7rem" : "0.8rem",  // 👈 mismo que en promo
+                                        fontWeight: 600,
+                                        fontFamily: "'Poppins', sans-serif",
+                                        color: "#ccc",
+                                        opacity: 0.9,
+                                        position: "relative",
+                                        top: "6px", // 👈 baja el CLP como subíndice
+                                        ml: "4px",
+                                        transform: "skewX(-12deg)",
+                                      }}
+                                    >
+                                      CLP
+                                    </Typography>
+                                  </Box>
                                 </motion.div>
+
                               ) : (
                                 <motion.div
                                   key="promo"
@@ -308,25 +331,51 @@ const InformationsPromotions = ({
                                   exit={{ opacity: 0, x: -80 }}
                                   transition={{ duration: 0.5 }}
                                 >
-                                  <Typography
-                                    variant="h3"
+                                  <Box
                                     sx={{
-                                      color: "#ffb905",
-                                      fontWeight: "bold",
-                                      fontSize: isMobile ? "1.9rem" : "2.2rem",
-                                      fontFamily: "'Anton', sans-serif",
-                                      letterSpacing: "1px",
+                                      display: "inline-flex",
+                                      alignItems: "flex-start", // 👈 asegura que el CLP se posicione bien hacia abajo
                                       transform: "skewX(12deg)",
-                                      textAlign: "center",
-                                      mb: 0,
-                                      mt: 0.2,
-                                      mr: 1.5
+                                      mr: 1.5,
+                                      mt: 1
                                     }}
                                   >
-                                    {promo.price}
-                                  </Typography>
+                                    {/* PRECIO */}
+                                    <Typography
+                                      variant="h3"
+                                      sx={{
+                                        color: "#ffb905",
+                                        fontWeight: "bold",
+                                        fontSize: isMobile ? "1.6rem" : "2rem",
+                                        fontFamily: "'Anton', sans-serif",
+                                        letterSpacing: "1px",
+                                        lineHeight: 1,
+                                      }}
+                                    >
+                                      {promo.price}
+                                    </Typography>
+
+                                    {/* CLP como subíndice visual */}
+                                    <Typography
+                                      component="span"
+                                      sx={{
+                                        fontSize: isMobile ? "0.7rem" : "0.8rem",
+                                        fontWeight: 600,
+                                        fontFamily: "'Poppins', sans-serif",
+                                        color: "#ffb905",
+                                        opacity: 0.9,
+                                        position: "relative",
+                                        top: "6px", // 👈 baja el CLP como subíndice
+                                        ml: "4px",
+                                      }}
+                                    >
+                                      CLP
+                                    </Typography>
+                                  </Box>
                                 </motion.div>
+
                               )}
+
                             </AnimatePresence>
 
 
@@ -382,8 +431,10 @@ const InformationsPromotions = ({
                           <Box component="span" sx={{ color: "rgb(243, 210, 98)", fontWeight: 700 }}>
                             $30.000
                           </Box>{" "}
-                          PARA EMPEZAR,<br />
-                          EL RESTO AL FINALIZAR TU WEB
+                          Y PARA FINALIZAR $60.000.<br />
+                          ENTREGA EN MENOS DE <Box component="span" sx={{ color: "rgb(243, 210, 98)", fontWeight: 700 }}>
+                            72HRS.
+                          </Box>
                         </Typography>
                       </Box>
                     </motion.div>
@@ -420,31 +471,37 @@ const InformationsPromotions = ({
                         }}
                       >
                         {/* DOMINIO .CL */}
-                        <Box sx={{ textAlign: "center", flex: 1 }}>
+                        <Box sx={{ textAlign: "center", flex: 1, mt: isMobile ? 1.2 : 0.8 }}>
                           <Typography
                             variant="caption"
                             sx={{
                               fontFamily: "'Mukta', sans-serif",
                               fontWeight: 300,
-                              fontSize: "0.85rem", // 👈 más grande
+                              fontSize: "0.75rem",
                               letterSpacing: "0.5px",
                               textTransform: "uppercase",
                               color: "white",
+                              lineHeight: 1.1,
                             }}
                           >
-                            {promo.extraPrices?.[0]?.label || "DOMINIO .CL"}
+                            <Box component="span" sx={{ display: "block", lineHeight: 1.1 }}>
+                              ELIGE TU DOMINIO .CL
+                            </Box>
                           </Typography>
+
                           <Typography
                             sx={{
                               fontFamily: "'Montserrat', sans-serif",
-                              fontSize: isMobile ? "1.3rem" : "1.3rem", // 👈 levemente más compacto
+                              fontSize: isMobile ? "1.3rem" : "1.3rem",
                               fontWeight: "bold",
                               color: "white",
                               lineHeight: 1,
+                              mt: 0.5,
                             }}
                           >
                             {promo.extraPrices?.[0]?.price || "$10.000"}
                           </Typography>
+
                           <Typography
                             sx={{
                               fontSize: "0.7rem",
@@ -458,6 +515,7 @@ const InformationsPromotions = ({
                           </Typography>
                         </Box>
 
+
                         {/* Separador */}
                         <Box
                           sx={{
@@ -469,20 +527,24 @@ const InformationsPromotions = ({
                         />
 
                         {/* HOSTING */}
-                        <Box sx={{ textAlign: "center", flex: 1 }}>
+                        <Box sx={{ textAlign: "center", flex: 1, mt: isMobile ? 1.2 : 0.8 }}>
                           <Typography
                             variant="caption"
                             sx={{
                               fontFamily: "'Mukta', sans-serif",
                               fontWeight: 300,
-                              fontSize: "0.85rem", // 👈 más grande
+                              fontSize: "0.75rem",
                               letterSpacing: "0.5px",
                               textTransform: "uppercase",
                               color: "white",
+                              lineHeight: 1.1,
                             }}
                           >
-                            {promo.extraPrices?.[1]?.label || "HOSTING"}
+                            <Box component="span" sx={{ display: "block", lineHeight: 1.1 }}>
+                              HOSTING + SOPORTE
+                            </Box>
                           </Typography>
+
                           <Typography
                             sx={{
                               fontFamily: "'Montserrat', sans-serif",
@@ -490,10 +552,12 @@ const InformationsPromotions = ({
                               fontWeight: "bold",
                               color: "white",
                               lineHeight: 1,
+                              mt: 0.5,
                             }}
                           >
-                            {promo.extraPrices?.[0]?.price || "$10.000"}
+                            {promo.extraPrices?.[1]?.price || "$10.000"}
                           </Typography>
+
                           <Typography
                             sx={{
                               fontSize: "0.7rem",
@@ -506,6 +570,7 @@ const InformationsPromotions = ({
                             MENSUAL
                           </Typography>
                         </Box>
+
                       </Box>
                     </motion.div>
                   )}
@@ -727,28 +792,30 @@ const InformationsPromotions = ({
         ))}
       </Swiper>
 
-      {showArrow && swiperInstance && (
-        <motion.div
-          animate={{ x: [0, 5, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-          style={{ position: "absolute", top: -4, right: 10, zIndex: 10 }}
-        >
-          <IconButton
-            onClick={() => swiperInstance.slideNext()}
-            sx={{
-              color: "white",
-              transition: "opacity 0.3s ease-in-out",
-              backgroundColor: "transparent",
-              boxShadow: "none",
-              padding: 0,
-              "&:hover": { backgroundColor: "transparent" },
-            }}
+      {
+        showArrow && swiperInstance && (
+          <motion.div
+            animate={{ x: [0, 5, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            style={{ position: "absolute", top: -4, right: 10, zIndex: 10 }}
           >
-            <ArrowForwardIcon fontSize="large" sx={{ fontSize: "23px" }} />
-          </IconButton>
-        </motion.div>
-      )}
-    </Box>
+            <IconButton
+              onClick={() => swiperInstance.slideNext()}
+              sx={{
+                color: "white",
+                transition: "opacity 0.3s ease-in-out",
+                backgroundColor: "transparent",
+                boxShadow: "none",
+                padding: 0,
+                "&:hover": { backgroundColor: "transparent" },
+              }}
+            >
+              <ArrowForwardIcon fontSize="large" sx={{ fontSize: "23px" }} />
+            </IconButton>
+          </motion.div>
+        )
+      }
+    </Box >
   );
 };
 
