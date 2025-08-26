@@ -167,7 +167,7 @@ function Hero({ informationsRef, setVideoReady }) {
           controlsList="nodownload nofullscreen noremoteplayback"
         >
           <source
-            src={isMobile ? "video-inicio-oficial.mp4" : "video-inicio.mp4"}
+            src={isMobile ? "video-inicio-2.mp4" : "video-inicio.mp4"}
             type="video/mp4"
           />
         </video>
