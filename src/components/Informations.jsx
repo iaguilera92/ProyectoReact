@@ -20,8 +20,8 @@ const promotions = [
     image: "/promocion-1.webp",
     price: "$99.000",
     extraPrices: [
-      { label: "DOMINIO .CL", price: "$10.000" },
-      { label: "HOSTING", price: "$10.000" }
+      { label: "ELIGE TU DOMINIO .CL", price: "$10.000" },
+      { label: "HOSTING + SOPORTE", price: "$10.000" }
     ],
     bgColor: "linear-gradient(180deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3))",
     textColor: "white",
