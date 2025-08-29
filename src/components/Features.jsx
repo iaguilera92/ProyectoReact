@@ -228,9 +228,9 @@ function Features({ videoReady }) {
                     display: "flex",
                     alignItems: "center",
                     flexWrap: "nowrap",
-                    gap: { xs: 0.5, sm: 1 },
+                    gap: { xs: 0.4, sm: 1 },
                     overflow: "hidden",
-                    fontSize: { xs: "0.7rem", sm: "0.9rem" },
+                    fontSize: { xs: "0.71rem", sm: "0.9rem" },
                   }}
                 >
                   <span>En desarrollo:</span>

@@ -34,13 +34,13 @@ const promotions = [
   },
   {
     id: 2,
-    title: "Tienda online",
+    title: "🛒Tienda online",
     description: "Vende tus productos online de forma segura.",
     image: "/Informations-2.jpg",
-    price: null,
+    price: "$250.000 a $400.000",
     extraPrices: [
-      { label: "Dominio anual", price: "-" },
-      { label: "Hosting mensual", price: "-" }
+      { label: "Dominio anual", price: "$15.000" },
+      { label: "Hosting mensual", price: "$150.000" }
     ],
     bgColor: "linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.2))",
     textColor: "white",
@@ -53,13 +53,13 @@ const promotions = [
   },
   {
     id: 3,
-    title: "Sistemas a la medida",
+    title: "🖥️Sistemas a la medida",
     description: "Desarrollo adaptados para tu negocio.",
     image: "/Informations-3.jpg",
-    price: null,
+    price: "$600.000 a $4.000.000",
     extraPrices: [
-      { label: "Dominio anual", price: "-" },
-      { label: "Hosting mensual", price: "-" }
+      { label: "Dominio anual", price: "$30.000" },
+      { label: "Hosting mensual", price: "$600.000" }
     ],
     bgColor: "linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.2))",
     textColor: "white",
@@ -396,6 +396,41 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
 
           {/* Informations Promotions */}
           <Grid item xs={12} md={6}>
+            <Typography
+              component={motion.h5}
+              initial={{ opacity: 0, y: 20 }}
+              animate={showPopularBadge ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              sx={{
+                fontFamily: "'Poppins', sans-serif",
+                fontWeight: 800,
+                mb: 2,
+                textAlign: isMobile ? "center" : "left",
+                textTransform: "uppercase",
+                letterSpacing: "2px",
+                fontSize: { xs: "1.2rem", md: "1.6rem" },
+                background: "linear-gradient(90deg, #ffffff, #f5f5f5)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                textShadow: "0 2px 10px rgba(0,0,0,0.35)",
+                position: "relative",
+                display: "inline-block",
+                "&::after": {
+                  content: '""',
+                  position: "absolute",
+                  bottom: -2,
+                  left: 0,
+                  width: showPopularBadge ? "100%" : "0%", // 👈 cambiamos solo el width dinámico
+                  height: "3px",
+                  borderRadius: "3px",
+                  background: "linear-gradient(90deg, #FF9800, #F57C00)",
+                  transition: "width 0.6s ease-out",
+                },
+              }}
+            >
+              Precios Desarrollos
+            </Typography>
+
             <InformationsPromotions
               isMobile={isMobile}
               promotions={promotions}
@@ -408,6 +443,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
               showPopularBadge={showPopularBadge}
             />
           </Grid>
+
 
 
         </Grid>

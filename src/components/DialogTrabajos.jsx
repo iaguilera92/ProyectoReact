@@ -102,6 +102,7 @@ export default function DialogTrabajos({
 }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const [armed, setArmed] = React.useState(false);
 
   const sitiosWeb = trabajos.filter(t => t.TipoApp === 1).length;
   const sistemas = trabajos.filter(t => t.TipoApp === 2).length;
@@ -121,6 +122,14 @@ export default function DialogTrabajos({
     return () => clearTimeout(timer);
   }, [open]);
 
+  useEffect(() => {
+    let t;
+    if (open) {
+      setArmed(false); // reset
+      t = setTimeout(() => setArmed(true), 600); // espera cada vez que se abre
+    }
+    return () => clearTimeout(t);
+  }, [open]);
 
   return (
     <Dialog
@@ -455,11 +464,9 @@ export default function DialogTrabajos({
               textTransform: "none",
               fontWeight: 700,
               color: "#fff",
-              border: expanded ? "none" : "2px solid #fff",
-              background: "transparent", // siempre transparente, relleno lo hace el ::before
-              boxShadow: expanded
-                ? "0 6px 18px rgba(255,152,0,.35)"
-                : "none",
+              border: armed ? "none" : "2px solid #fff",
+              background: "transparent", // siempre transparente
+              boxShadow: armed ? "0 6px 18px rgba(255,152,0,.35)" : "none",
               transition: "all 0.3s ease",
               "&::before": {
                 content: '""',
@@ -467,8 +474,9 @@ export default function DialogTrabajos({
                 inset: 0,
                 borderRadius: "inherit",
                 background: "linear-gradient(90deg,#FF9800,#F57C00)",
-                transform: expanded ? "scale(1)" : "scale(0)",
-                transformOrigin: "center center", // 👈 se expande desde el centro
+                // 👇 Solo se expande cuando expanded && armed (tras 1s de mount)
+                transform: armed ? "scale(1)" : "scale(0)",
+                transformOrigin: "center center",
                 transition: "transform 0.6s ease",
                 zIndex: 0,
               },

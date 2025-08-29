@@ -307,14 +307,15 @@ const InformationsPromotions = ({
                                     <Typography
                                       component="span"
                                       sx={{
-                                        fontSize: isMobile ? "0.7rem" : "0.8rem",  // 👈 mismo que en promo
+                                        fontSize: isMobile ? "0.7rem" : "0.8rem",
                                         fontWeight: 600,
                                         fontFamily: "'Poppins', sans-serif",
                                         color: "#ccc",
                                         opacity: 0.9,
+                                        ml: "0px",
+                                        lineHeight: 1,
                                         position: "relative",
-                                        top: "6px", // 👈 baja el CLP como subíndice
-                                        ml: "4px",
+                                        top: isMobile ? "13px" : "18px",
                                         transform: "skewX(-12deg)",
                                       }}
                                     >
@@ -364,9 +365,11 @@ const InformationsPromotions = ({
                                         fontFamily: "'Poppins', sans-serif",
                                         color: "#ffb905",
                                         opacity: 0.9,
+                                        ml: "0px",            // 👈 menos espacio horizontal
+                                        lineHeight: 1,        // 👈 evita “aire” extra
                                         position: "relative",
-                                        top: "6px", // 👈 baja el CLP como subíndice
-                                        ml: "4px",
+                                        top: isMobile ? "13px" : "18px",           // 👈 apenas lo bajas
+                                        transform: "skewX(-12deg)",
                                       }}
                                     >
                                       CLP
@@ -675,14 +678,53 @@ const InformationsPromotions = ({
                     position: "relative", zIndex: 2, p: 2, pt: 3, display: "flex",
                     flexDirection: "column", alignItems: "center", justifyContent: "flex-start", flexGrow: 1
                   }}>
-                    <Box sx={{ width: isMobile ? "100%" : "80%", display: "flex", flexDirection: "column", alignItems: "flex-start", mb: 2 }}>
-                      <Typography variant="h6" sx={{ fontWeight: "bold", fontSize: "1.2rem", textAlign: "left", color: promo.textColor || "white", mb: 1 }}>{promo.title}</Typography>
-                      <Typography variant="body2" sx={{ textAlign: "left", fontSize: "0.9rem", color: "#ddd" }}>{promo.description}</Typography>
+                    <Box
+                      sx={{
+                        width: isMobile ? "100%" : "80%",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "flex-start",
+                        mb: 3,
+                      }}
+                    >
+                      {/* Título */}
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontFamily: "'Poppins', sans-serif",
+                          fontWeight: 800,
+                          fontSize: { xs: "1.2rem", md: "1.5rem" },
+                          textAlign: "left",
+                          color: promo.textColor || "#fff",
+                          letterSpacing: "1.5px",
+                          mb: 0,
+                          position: "relative",
+                          display: "inline-block",
+                        }}
+                      >
+                        {promo.title}
+                      </Typography>
+
+                      {/* Descripción */}
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          textAlign: "left",
+                          fontSize: { xs: "0.85rem", md: "0.8rem" },
+                          lineHeight: 1.6,
+                          color: "#eee",
+                          fontFamily: "'Roboto', sans-serif",
+                          opacity: 0.9,
+                        }}
+                      >
+                        {promo.description}
+                      </Typography>
                     </Box>
 
 
+
                     <Box sx={{
-                      width: isMobile ? "100%" : "80%", mt: 0.5,
+                      width: isMobile ? "100%" : "80%", mt: 0,
                       display: "flex", flexDirection: "column", alignItems: "flex-start"
                     }}>
                       {promo.descriptors.map((desc, idx) => (
@@ -700,70 +742,208 @@ const InformationsPromotions = ({
                       ))}
                     </Box>
 
-                    <Box sx={{
-                      width: "80%", mt: 10.3, display: "flex", height: "15%",
-                      justifyContent: "space-between", gap: 2
-                    }}>
-                      {promo.extraPrices?.map(({ label, price }, idx) => (
-                        <Box key={idx} sx={{
-                          flex: 1,
-                          border: "1px solid white",
-                          borderRadius: "8px",
-                          p: 1,
-                          textAlign: "center",
-                          display: "flex",
-                          flexDirection: "column",
-                          justifyContent: "center",
-                          position: "relative"
-                        }}>
-                          <Box sx={{
-                            position: "absolute",
-                            top: 4,
-                            right: 5,
-                            fontSize: "0.49rem",
-                            color: "#aaa",
-                            fontWeight: 300,
-                            lineHeight: 1,
-                          }}>
-                            Requerido
-                          </Box>
 
-                          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 0.3 }}>
-                            <Typography
-                              variant="h5"
-                              sx={{
-                                fontWeight: "bold",
-                                color: "white",
-                                fontSize: "1.4rem",
-                                lineHeight: 1.2,
-                                mt: 1 // 🔽 Mueve el número más abajo
-                              }}
-                            >
-                              {price || "-"}
-                            </Typography>
-                            <Typography
-                              variant="caption"
-                              sx={{
-                                color: "#ddd",
-                                fontSize: "0.68rem",
-                                lineHeight: 1.2
-                              }}
-                            >
-                              {label}
-                            </Typography>
+                    <motion.div
+                      initial={{ y: 40, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ duration: 0.6, ease: "easeOut", delay: 0.4 }}
+                    >
+                      <Box
+                        sx={{
+                          mt: isMobile ? 4.5 : 4.4,
+                          mb: 0,
+                          background: "linear-gradient(180deg, #1E1EBA 0%, #0075FF 100%)",
+                          borderRadius: "12px",
+                          px: 2,
+                          py: isMobile ? 0.5 : 0.8,
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          width: "310px",
+                          maxWidth: "100%",
+                          mx: "auto",
+                          color: "white",
+                          boxShadow: "0 3px 12px rgba(0, 0, 0, 0.3)",
+                          position: "relative",
+                          zIndex: 3,
+                          boxSizing: "border-box",
+                          textAlign: "center",
+                          flexShrink: 0,
+                        }}
+                      >
+                        <Typography
+                          variant="body1"
+                          sx={{
+                            fontFamily: "'Mukta', sans-serif",
+                            fontWeight: 700,
+                            fontSize: isMobile ? "14px" : "15px",
+                            textTransform: "none",
+                            lineHeight: 1.1,
+                            width: "100%",
+                            textAlign: "center",
+                          }}
+                        >
+                          El valor será determinado por el negocio.
+                          <br /> {/* 👈 fuerza segunda fila */}
+                          <Box
+                            component="span"
+                            sx={{ color: "rgb(243, 210, 98)", fontWeight: "bold" }}
+                          >
+                            (Valor Estimado: {promo.price})
                           </Box>
+                        </Typography>
+
+
+                      </Box>
+
+                    </motion.div>
+
+                    <motion.div
+                      initial={{ y: 40, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ duration: 0.6, ease: "easeOut", delay: 0.4 }}
+                    >
+                      <Box
+                        sx={{
+                          mt: isMobile ? 1.7 : 1,
+                          mb: 0,
+                          background: "linear-gradient(180deg, #1E1EBA 0%, #0075FF 100%)",
+                          borderRadius: "12px",
+                          px: 2,
+                          py: isMobile ? 0.5 : 0.3,
+                          display: "flex",
+                          flex: 1,
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          width: "100%",
+                          width: "310px",
+                          maxWidth: "100%",
+                          color: "white",
+                          boxShadow: "0 3px 12px rgba(0, 0, 0, 0.3)",
+                          position: "relative",
+                          zIndex: 3,
+                          mx: "auto",
+                          alignSelf: "center",
+                          boxSizing: "border-box"
+
+                        }}
+                      >
+                        {/* DOMINIO .CL */}
+                        <Box sx={{ textAlign: "center", flex: 1, mt: isMobile ? 1.2 : 0.8 }}>
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              fontFamily: "'Mukta', sans-serif",
+                              fontWeight: 300,
+                              fontSize: "0.75rem",
+                              letterSpacing: "0.5px",
+                              textTransform: "uppercase",
+                              color: "white",
+                              lineHeight: 1.1,
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            <Box component="span" sx={{ display: "block", lineHeight: 1.1 }}>
+                              ELIGE TU DOMINIO .CL
+                            </Box>
+                          </Typography>
+
+                          <Typography
+                            sx={{
+                              fontFamily: "'Montserrat', sans-serif",
+                              fontSize: isMobile ? "1.3rem" : "1.3rem",
+                              fontWeight: "bold",
+                              color: "white",
+                              lineHeight: 1,
+                              mt: 0.5,
+                            }}
+                          >
+                            {promo.extraPrices?.[0]?.price || "$10.000"}
+                          </Typography>
+
+                          <Typography
+                            sx={{
+                              fontSize: "0.7rem",
+                              opacity: 0.85,
+                              color: "white",
+                              mt: 0.3,
+                              fontFamily: "'Mukta', sans-serif",
+                            }}
+                          >
+                            ANUAL
+                          </Typography>
                         </Box>
-                      ))}
-                    </Box>
-                    <Box sx={{ fontFamily: "'Inter', sans-serif", py: 0, px: 3, mb: 0.5, width: "100%", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "90px" }}>
+
+
+                        {/* Separador */}
+                        <Box
+                          sx={{
+                            width: "1px",
+                            height: isMobile ? "45px" : "55px", // 👈 también más compacto
+                            backgroundColor: "rgba(255, 255, 255, 0.35)",
+                            mx: 1.5,
+                          }}
+                        />
+
+                        {/* HOSTING */}
+                        <Box sx={{ textAlign: "center", flex: 1, mt: isMobile ? 1.2 : 0.8 }}>
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              fontFamily: "'Mukta', sans-serif",
+                              fontWeight: 300,
+                              fontSize: "0.75rem",
+                              letterSpacing: "0.5px",
+                              textTransform: "uppercase",
+                              color: "white",
+                              lineHeight: 1.1,
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            <Box component="span" sx={{ display: "block", lineHeight: 1.1 }}>
+                              HOSTING + SOPORTE
+                            </Box>
+                          </Typography>
+
+                          <Typography
+                            sx={{
+                              fontFamily: "'Montserrat', sans-serif",
+                              fontSize: isMobile ? "1.3rem" : "1.3rem",
+                              fontWeight: "bold",
+                              color: "white",
+                              lineHeight: 1,
+                              mt: 0.5,
+                            }}
+                          >
+                            {promo.extraPrices?.[1]?.price || "$10.000"}
+                          </Typography>
+
+                          <Typography
+                            sx={{
+                              fontSize: "0.7rem",
+                              opacity: 0.85,
+                              color: "white",
+                              mt: 0.3,
+                              fontFamily: "'Mukta', sans-serif",
+                            }}
+                          >
+                            MENSUAL
+                          </Typography>
+                        </Box>
+
+                      </Box>
+                    </motion.div>
+
+
+                    <Box sx={{ fontFamily: "'Inter', sans-serif", py: isMobile ? 0.7 : 0.2, px: 3, mb: 0.5, width: "100%", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "50px" }}>
 
                       <Box
                         component="button"
                         onClick={() => handleContactClick(promo.title)}
                         sx={{
-                          backgroundColor: "#007de0",
+                          background: "linear-gradient(90deg, #FF9800, #F57C00)", // degradado naranja
                           color: "white",
-                          border: "none",
+                          border: "2px solid #E65100", // borde sólido más oscuro
                           borderRadius: "8px",
                           width: "100%",
                           maxWidth: "290px",
@@ -773,14 +953,16 @@ const InformationsPromotions = ({
                           cursor: "pointer",
                           transition: "all 0.3s ease-in-out",
                           "&:hover": {
-                            backgroundColor: "#005bb5",
+                            background: "linear-gradient(90deg, #FFA726, #FB8C00)", // hover degradado
                             transform: "translateY(-1px)",
-                            boxShadow: "0 4px 14px rgba(0,0,0,0.3)"
-                          }
+                            boxShadow: "0 4px 14px rgba(0,0,0,0.3)",
+                            borderColor: "#FB8C00", // en hover se aclara el borde
+                          },
                         }}
                       >
                         Cotizar
                       </Box>
+
                     </Box>
                   </Box>
                 </Box>
@@ -788,9 +970,9 @@ const InformationsPromotions = ({
 
             </Box>
 
-          </SwiperSlide>
+          </SwiperSlide >
         ))}
-      </Swiper>
+      </Swiper >
 
       {
         showArrow && swiperInstance && (
