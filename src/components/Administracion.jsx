@@ -11,6 +11,8 @@ import "./css/Administracion.css"; // Importamos el CSS
 import CircularProgress from '@mui/material/CircularProgress';
 import { motion } from 'framer-motion';
 
+const MotionPaper = motion(Paper);
+
 const Administracion = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -27,12 +29,14 @@ const Administracion = () => {
   const emailRef = useRef();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const textToType = useRef("Iniciar sesión");
-  const currentIndex = useRef(0);
-  const [logo, setLogo] = useState("/logo-james.png");
   const [logoAnimacion, setLogoAnimacion] = useState("idle"); // idle | pendulo | error
   const logoTimeoutRef = useRef(null);
   const [estadoMensaje, setEstadoMensaje] = useState("idle");
   const [logoBase, setLogoBase] = useState("/logo-james.webp");
+  const showSnackbar = (type, message) => {
+    setSnackbar({ open: true, type, message });
+    setTimeout(() => setSnackbar(prev => ({ ...prev, open: false })), 4000);
+  };
 
   const handleTogglePassword = () => setShowPassword((prev) => !prev);
   const getLogoAnimado = () => {
@@ -76,56 +80,60 @@ const Administracion = () => {
         setIsSubmitting(false);
       }, 800);
 
-      setSnackbar({
-        open: true,
-        type: "error",
-        message: "Usuario o contraseña incorrectos"
-      });
+      showSnackbar("error", "Usuario o contraseña incorrectos");
     }
   };
 
 
   useEffect(() => {
     return () => {
-      if (logoTimeoutRef.current) {
-        clearTimeout(logoTimeoutRef.current);
-      }
+      if (logoTimeoutRef.current) clearTimeout(logoTimeoutRef.current);
     };
   }, []);
 
+
   useEffect(() => {
+    // Logo random inicial
     const logos = ["/logo-james.webp", "/logo-flaca.webp", "/logo-gorda.webp"];
-    const randomLogo = logos[Math.floor(Math.random() * logos.length)];
-    setLogoBase(randomLogo);
-  }, []);
+    setLogoBase(logos[Math.floor(Math.random() * logos.length)]);
 
-  useEffect(() => {
-    if (snackbar.open) {
-      const timer = setTimeout(() => setSnackbar((prev) => ({ ...prev, open: false })), 4000);
-      return () => clearTimeout(timer);
-    }
-  }, [snackbar.open]);
+    // Preload de variantes "enojada"
+    logos.forEach((logo) => {
+      const angry = new Image();
+      angry.src = logo.replace(".webp", "-enojada.webp");
+    });
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      const typing = setInterval(() => {
-        const nextChar = textToType.current[currentIndex.current];
-        if (currentIndex.current < textToType.current.length) {
-          setTypedText((prev) => prev + nextChar);
-          currentIndex.current += 1;
-        } else {
-          clearInterval(typing);
-          setShowCursor(false);
-        }
-      }, 100);
-    }, 100);
-    return () => clearTimeout(timeout);
-  }, []);
+    // Scroll al inicio
+    window.scrollTo({ top: 0, behavior: "auto" });
 
-  useEffect(() => {
+    // Bloquear scroll global
     document.body.style.overflow = "hidden";
     return () => { document.body.style.overflow = "auto"; };
   }, []);
+
+  useEffect(() => {
+    let i = 0;
+    const text = textToType.current; // "Iniciar sesión"
+
+    const typeNext = () => {
+      if (i < text.length) {
+        setTypedText(text.slice(0, i + 1)); // 👈 escribe hasta la posición actual
+        i++;
+        setTimeout(typeNext, 100);
+      } else {
+        setShowCursor(false);
+      }
+    };
+
+    typeNext();
+
+    // limpiar si el componente se desmonta
+    return () => {
+      i = text.length;
+    };
+  }, []);
+
+
 
   useEffect(() => {
     const creds = JSON.parse(localStorage.getItem("credenciales"));
@@ -134,25 +142,93 @@ const Administracion = () => {
       setPassword(creds.password);
       setRecordarme(true);
     }
-  }, []);
 
-  useEffect(() => {
-    if (email?.toLowerCase() === "iaguilera") {
+    if (creds?.email?.toLowerCase() === "iaguilera" || email?.toLowerCase() === "iaguilera") {
       sessionStorage.setItem("mostrarAdmin", "1");
     }
   }, [email]);
 
+
   return (
-    <Box sx={{
-      height: "100vh", width: "100vw", backgroundImage: "url(/fondo-administracion.webp)",
-      backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat",
-      display: "flex", justifyContent: "center", alignItems: "center", backdropFilter: "blur(4px)",
-      position: "relative", overflow: "hidden",
-    }}>
-      <Paper elevation={3} sx={{
-        backgroundColor: "rgba(0,0,0,0.6)", color: "white", p: 4, borderRadius: 3,
-        maxWidth: 350, width: "90%", textAlign: "center", mt: isMobile ? -8 : 0
-      }}>
+    <Box
+      sx={{
+        height: "100vh",
+        width: "100vw",
+        position: "relative",
+        overflow: "hidden",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        touchAction: "manipulation",
+      }}
+    >
+      {/* Fondo inferior (55%) */}
+      <Box
+        sx={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: isMobile ? "60%" : "55%",   // solo ocupa el 55% inferior
+          backgroundImage: "url(/fondo-administracion.webp)",
+          backgroundSize: "cover",
+          backgroundPosition: "center bottom",
+          backgroundRepeat: "no-repeat",
+          zIndex: 0,
+
+        }}
+      />
+
+      {/* Fondo superior (45%) */}
+      <Box
+        sx={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: isMobile ? "40%" : "45%",   // solo ocupa el 45% superior
+          backgroundImage: isMobile ? "url(/fondo-adm-1.webp)" : "url(/fondo-adm-2.webp)",
+          backgroundSize: "cover",
+          backgroundPosition: "center right 30%",
+          backgroundRepeat: "no-repeat",
+          zIndex: 0,
+          "&::after": {
+            content: '""',
+            position: "absolute",
+            inset: 0,
+            background: "rgba(0,0,0,0.1)", // oscurece un poco
+          },
+        }}
+      />
+
+      {/* Contenido (login box, etc) */}
+      <MotionPaper
+        elevation={6}
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{
+          opacity: 1,
+          scale: 1,
+          background:
+            logoAnimacion === "error"
+              ? "linear-gradient(145deg, #3b0000, #5c0000, #8b0000, #b22222, #d32f2f, #7b1fa2)"
+              : "rgba(0,0,0,0.7)"
+        }}
+        transition={{
+          duration: logoAnimacion === "error" ? 0.4 : 0.6,
+          ease: "easeOut",
+        }}
+        sx={{
+          color: "white",
+          p: isMobile ? 4 : 5,
+          borderRadius: 3,
+          maxWidth: isMobile ? 350 : 450,
+          width: isMobile ? "90%" : "100%",
+          textAlign: "center",
+          backdropFilter: "blur(6px)",
+          zIndex: 2,
+        }}
+      >
+
         <Box
           sx={{
             width: 90,
@@ -280,25 +356,47 @@ const Administracion = () => {
             margin="dense"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            InputProps={{ style: { backgroundColor: "#ffffff10", color: "white" } }}
-            InputLabelProps={{ style: { color: "#bbb" } }}
+            InputProps={{
+              style: {
+                backgroundColor: logoAnimacion === "error" ? "#fff" : "#ffffff10",
+                color: logoAnimacion === "error" ? "black" : "white",
+              },
+            }}
+            InputLabelProps={{
+              style: { color: logoAnimacion === "error" ? "#333" : "#bbb" },
+            }}
           />
+
           <TextField
-            fullWidth type={showPassword ? "text" : "password"} variant="filled"
-            label="Contraseña" margin="dense" value={password}
+            fullWidth
+            type={showPassword ? "text" : "password"}
+            variant="filled"
+            label="Contraseña"
+            margin="dense"
+            value={password}
             onChange={(e) => setPassword(e.target.value)}
             InputProps={{
-              style: { backgroundColor: "#ffffff10", color: "white" },
+              style: {
+                backgroundColor: logoAnimacion === "error" ? "#fff" : "#ffffff10",
+                color: logoAnimacion === "error" ? "black" : "white",
+              },
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton onClick={handleTogglePassword} edge="end" sx={{ color: "#fff" }}>
+                  <IconButton
+                    onClick={handleTogglePassword}
+                    edge="end"
+                    sx={{ color: logoAnimacion === "error" ? "black" : "white" }}
+                  >
                     {showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
                 </InputAdornment>
-              )
+              ),
             }}
-            InputLabelProps={{ style: { color: "white" } }}
+            InputLabelProps={{
+              style: { color: logoAnimacion === "error" ? "#333" : "white" },
+            }}
           />
+
           <FormControlLabel
             control={<Checkbox checked={recordarme} onChange={(e) => setRecordarme(e.target.checked)} sx={{ color: "white" }} />}
             label="Recordarme" sx={{ color: "#bbb", mt: 0, fontSize: "0.8rem" }}
@@ -356,7 +454,7 @@ const Administracion = () => {
             </Link>
           </Box>
         </Box>
-      </Paper>
+      </MotionPaper>
 
       <Fade in={snackbar.open} timeout={{ enter: 400, exit: 400 }} unmountOnExit>
         <Box sx={{ position: "absolute", bottom: 40, left: "50%", transform: "translateX(-50%)", width: "90%", maxWidth: 400 }}>

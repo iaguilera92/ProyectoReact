@@ -108,11 +108,11 @@ const Nosotros = () => {
                       ¿Quiénes Somos?
                     </Typography>
 
-                    <Typography variant="body2" sx={{ color: '#ccc', textAlign: 'justify', mb: 2 }}>
+                    <Typography variant="body2" sx={{ color: '#ccc', textAlign: 'left', mb: 2 }}>
                       Somos una empresa de soluciones tecnológicas con más de 9 años de experiencia desarrollando proyectos a medida para empresas de distintas industrias.
                     </Typography>
 
-                    <Typography variant="body2" sx={{ color: '#ccc', textAlign: 'justify', mb: 2 }}>
+                    <Typography variant="body2" sx={{ color: '#ccc', textAlign: 'left', mb: 2 }}>
                       Nos especializamos en la creación de páginas web, aplicaciones móviles y sistemas personalizados que se adaptan a las necesidades de cada cliente, sin importar el rubro.
                     </Typography>
 
@@ -244,7 +244,7 @@ const Nosotros = () => {
                       Brindar soluciones tecnológicas innovadoras que impulsen el crecimiento y la eficiencia de nuestros clientes, mediante el desarrollo de software, sistemas personalizados y soporte evolutivo de alto nivel.
                     </Typography>
 
-                    <Typography variant="h4" color="white" gutterBottom>
+                    <Typography variant="h5" color="white" gutterBottom>
                       Visión
                     </Typography>
                     <Typography variant="body2" sx={{ color: '#ccc', textAlign: 'left' }}>

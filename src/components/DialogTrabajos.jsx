@@ -458,6 +458,7 @@ export default function DialogTrabajos({
             variant="contained"
             onClick={onPrimaryClick}
             sx={{
+              height: 42,
               position: "relative",
               overflow: "hidden",
               minWidth: 140,

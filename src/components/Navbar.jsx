@@ -481,7 +481,7 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
                   px: 2,
                   py: 2,
                   mx: 2,
-                  mt: 2,
+                  mt: 1,
                   color: "#ffffff",
                   backdropFilter: "blur(8px)",
                   border: "1px solid rgba(255,255,255,0.1)",
@@ -491,7 +491,7 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  minHeight: 80,
+                  maxHeight: 45,
                   "&:hover": {
                     backgroundColor: "rgba(255,255,255,0.05)",
                     boxShadow: "0 0 16px rgba(144,202,249,0.2)",
