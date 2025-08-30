@@ -265,7 +265,7 @@ function App() {
         )}
 
         {/* Transición entre páginas */}
-        <Box sx={{ position: "relative", minHeight: "100vh" }}>
+        <Box sx={{ position: "relative" }}>
           <Outlet context={{ showApp, informationsRef }} />
           {isFading && (
             <motion.div

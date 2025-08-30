@@ -6,6 +6,7 @@ const Nosotros = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [scrollY, setScrollY] = useState(0);
+  const [subrayadoActivo, setSubrayadoActivo] = useState(false);
 
   const letterVariants = {
     hidden: { opacity: 0, x: -20 },
@@ -28,6 +29,10 @@ const Nosotros = () => {
     }
   }, [isMobile]);
 
+  useEffect(() => {
+    const t = setTimeout(() => setSubrayadoActivo(true), 1000); // ⏱️ delay 1s
+    return () => clearTimeout(t);
+  }, []);
 
   return (
     <Container
@@ -51,9 +56,24 @@ const Nosotros = () => {
       {/* Título */}
       <Box textAlign="center" mb={4}>
         <Typography
-          variant={isMobile ? "h4" : "h2"}
+          variant={isMobile ? "h5" : "h3"}
           fontWeight={700}
-          sx={{ color: "white", display: "inline-flex" }}
+          sx={{
+            color: "white",
+            display: "inline-flex",
+            position: "relative",
+            "&::after": {
+              content: '""',
+              position: "absolute",
+              bottom: -2,
+              left: 0,
+              width: subrayadoActivo ? "100%" : "0%", // 👈 cambia dinámicamente
+              height: "3px",
+              borderRadius: "3px",
+              background: "linear-gradient(90deg, #FF9800, #F57C00)",
+              transition: "width 0.6s ease-out",
+            },
+          }}
         >
           {"Nosotros".split("").map((char, index) => (
             <motion.span
@@ -84,19 +104,19 @@ const Nosotros = () => {
               >
                 <Card sx={{ backgroundColor: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)', borderRadius: 3, p: 2 }}>
                   <CardContent>
-                    <Typography variant="h4" color="white" gutterBottom>
+                    <Typography variant="h5" color="white" gutterBottom>
                       ¿Quiénes Somos?
                     </Typography>
 
-                    <Typography variant="body1" sx={{ color: '#ccc', textAlign: 'justify', mb: 2 }}>
+                    <Typography variant="body2" sx={{ color: '#ccc', textAlign: 'justify', mb: 2 }}>
                       Somos una empresa de soluciones tecnológicas con más de 9 años de experiencia desarrollando proyectos a medida para empresas de distintas industrias.
                     </Typography>
 
-                    <Typography variant="body1" sx={{ color: '#ccc', textAlign: 'justify', mb: 2 }}>
+                    <Typography variant="body2" sx={{ color: '#ccc', textAlign: 'justify', mb: 2 }}>
                       Nos especializamos en la creación de páginas web, aplicaciones móviles y sistemas personalizados que se adaptan a las necesidades de cada cliente, sin importar el rubro.
                     </Typography>
 
-                    <Typography variant="body1" sx={{ color: '#ccc', textAlign: 'justify' }}>
+                    <Typography variant="body2" sx={{ color: '#ccc', textAlign: 'justify' }}>
                       Brindamos soporte evolutivo, mejoras continuas y acompañamiento estratégico para que cada negocio aproveche al máximo su potencial digital.
                     </Typography>
                   </CardContent>
@@ -217,17 +237,17 @@ const Nosotros = () => {
               >
                 <Card sx={{ backgroundColor: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)', borderRadius: 3, p: 3 }}>
                   <CardContent>
-                    <Typography variant="h4" color="white" gutterBottom>
+                    <Typography variant="h5" color="white" gutterBottom>
                       Misión
                     </Typography>
-                    <Typography variant="body1" sx={{ color: '#ccc', textAlign: 'left', mb: 3 }}>
+                    <Typography variant="body2" sx={{ color: '#ccc', textAlign: 'left', mb: 3 }}>
                       Brindar soluciones tecnológicas innovadoras que impulsen el crecimiento y la eficiencia de nuestros clientes, mediante el desarrollo de software, sistemas personalizados y soporte evolutivo de alto nivel.
                     </Typography>
 
                     <Typography variant="h4" color="white" gutterBottom>
                       Visión
                     </Typography>
-                    <Typography variant="body1" sx={{ color: '#ccc', textAlign: 'left' }}>
+                    <Typography variant="body2" sx={{ color: '#ccc', textAlign: 'left' }}>
                       Ser una empresa referente en el desarrollo e implementación de soluciones informáticas a nivel nacional, reconocida por su capacidad de adaptarse a distintos rubros y por entregar resultados concretos que transforman digitalmente a las organizaciones.
                     </Typography>
                   </CardContent>

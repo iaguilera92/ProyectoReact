@@ -126,10 +126,10 @@ function Features({ videoReady }) {
         py: 2,
         paddingBottom: "15px",
         color: "white",  // Ajusta el color del texto para que sea visible sobre el fondo
-        overflowY: 'visible'
+        overflowY: 'visible',
       }}
     >
-      <Container sx={{ py: 0, maxWidth: "1500px !important", overflow: 'hidden' }}>
+      <Container sx={{ py: 0, maxWidth: "1500px !important", overflow: 'hidden', }}>
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={hasAnimated ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }
