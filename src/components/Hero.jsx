@@ -296,14 +296,14 @@ function Hero({ informationsRef, setVideoReady }) {
             border: "2px solid #ff6a00",
             display: "flex",
             alignItems: "center",
-            py: 2,
+            py: 1,
           }}
           iconMapping={{
             success: (
               <svg
                 width="36"
-                height="50"
-                viewBox="0 0 24 24"
+                height="20"
+                viewBox="0 0 20 20"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
                 style={{
@@ -350,7 +350,7 @@ function Hero({ informationsRef, setVideoReady }) {
             )
           }}
         >
-          ¡Descubre cómo se verá tu sitio web! Solicita una vista previa.
+          ¡Descubre cómo se verá tu sitio web!
         </Alert>
       </Snackbar>
 
