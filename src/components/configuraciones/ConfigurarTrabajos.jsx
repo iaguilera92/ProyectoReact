@@ -639,7 +639,7 @@ const ConfigurarTrabajos = () => {
           onSave={handleSaveTrabajo}
         />
         {/*DIALOG: ELIMINAR*/}
-        <Dialog open={dialog.open} onClose={cerrarDialog} sx={{ background: "linear-gradient(180deg, #FFF8EC, #FFEFD5)", }}>
+        <Dialog open={dialog.open} onClose={cerrarDialog} >
           <DialogTitle sx={{ fontWeight: "bold", color: "#e65100", background: "linear-gradient(180deg, #FFF8EC, #FFEFD5)", }}>
             Confirmar acción
           </DialogTitle>

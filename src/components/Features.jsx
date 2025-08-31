@@ -684,7 +684,7 @@ function Features({ videoReady }) {
           open={openTrabajos}
           onClose={handleCloseTrabajos}
           trabajos={trabajosActivos}
-          primaryLabel="Ver servicios"
+          primaryLabel="Ver Servicios"
           onPrimaryClick={() => { handleCloseTrabajos(); navigate("/servicios"); }}
         />
       </Container >
