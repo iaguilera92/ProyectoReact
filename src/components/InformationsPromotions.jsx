@@ -287,7 +287,7 @@ const InformationsPromotions = ({
                             {promo.price}
                           </Box>
                           <br />
-                          <Box component="span" sx={{ fontWeight: 600, fontSize: "0.9rem", opacity: 0.9 }}>
+                          <Box component="span" sx={{ fontWeight: 600, fontSize: "0.8rem", opacity: 0.9 }}>
                             2 cuotas (💳 $30.000 inicio • $60.000 final)
                           </Box>
                         </Typography>
