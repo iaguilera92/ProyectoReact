@@ -699,7 +699,6 @@ const ConfigurarTrabajos = () => {
         />
 
 
-
         <MenuInferior cardSize={cardSize} modo="trabajos" />
       </Box>
     </Container >

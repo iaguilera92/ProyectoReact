@@ -14,11 +14,10 @@ import InformationsPromotions from './InformationsPromotions';
 const promotions = [
   {
     id: 1,
-    title: "CREAMOS",
-    title2: "TU SITIO WEB",
-    description: "Lo que tu emprendimiento necesita.",
+    title: "🌐Sitio Web",
+    description: "Entrega en menos de 72hrs.",
     image: "/promocion-1.webp",
-    price: "$99.000",
+    price: "$90.000",
     extraPrices: [
       { label: "ELIGE TU DOMINIO .CL", price: "$10.000" },
       { label: "HOSTING + SOPORTE", price: "$10.000" }
@@ -26,10 +25,10 @@ const promotions = [
     bgColor: "linear-gradient(180deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3))",
     textColor: "white",
     descriptors: [
-      "Diseño o renovación completa de tu sitio web.",
-      "Incluye dominio .cl personalizado.",
-      "Gestión y mantenimiento técnico permanente.",
-      "Garantía de calidad, seguridad y soporte técnico."
+      "🎨 Diseño personalizado.",
+      "☁️ Base de datos (AWS).",
+      "📈 Más alcance y clientes.",
+      "🛠️ Soporte continuo."
     ]
   },
   {
@@ -45,10 +44,10 @@ const promotions = [
     bgColor: "linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.2))",
     textColor: "white",
     descriptors: [
-      "eCommerce con diseño profesional.",
-      "Carrito de compras y gestión de stock.",
-      "Panel de administración para seguimiento.",
-      "Integración con WebPay y más métodos de pago."
+      "🛍️ eCommerce profesional",
+      "🛒 Carrito + stock",
+      "📊 Panel de gestión",
+      "💳 WebPay y más pagos"
     ]
   },
   {
@@ -64,10 +63,10 @@ const promotions = [
     bgColor: "linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.2))",
     textColor: "white",
     descriptors: [
-      "Desarrollo de sistemas web o apps.",
-      "Panel de administración y base de datos incluida.",
-      "Adaptación total a tus procesos y necesidades.",
-      "Soporte técnico y mantenimiento continuo."
+      "⚙️ Sistemas web o apps",
+      "📊 Panel + base de datos",
+      "🧩 Adaptado a tu negocio",
+      "🛠️ Soporte continuo"
     ]
   }
 ];
@@ -395,7 +394,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
 
 
           {/* Informations Promotions */}
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6} sx={{ mt: isMobile ? -1 : -4 }}>
             <Typography
               component={motion.h5}
               initial={{ opacity: 0, y: 20 }}
@@ -404,7 +403,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
               sx={{
                 fontFamily: "'Poppins', sans-serif",
                 fontWeight: 800,
-                mb: 2,
+                mb: isMobile ? 2 : 0,
                 textAlign: isMobile ? "center" : "left",
                 textTransform: "uppercase",
                 letterSpacing: "2px",
@@ -418,10 +417,10 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                 "&::after": {
                   content: '""',
                   position: "absolute",
-                  bottom: -2,
+                  bottom: 0,
                   left: 0,
                   width: showPopularBadge ? "100%" : "0%", // 👈 cambiamos solo el width dinámico
-                  height: "3px",
+                  height: "2px",
                   borderRadius: "3px",
                   background: "linear-gradient(90deg, #FF9800, #F57C00)",
                   transition: "width 0.6s ease-out",
