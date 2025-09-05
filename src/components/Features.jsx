@@ -446,7 +446,7 @@ function Features({ videoReady }) {
                                     fontSize: "0.85rem",
                                   }}
                                 >
-                                  Conecta con clientes en el mundo digital.
+                                  Llega a más clientes online.
                                 </Typography>
                               </Box>
                             </Box>

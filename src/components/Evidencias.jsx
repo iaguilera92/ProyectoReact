@@ -13,10 +13,8 @@ const Evidencias = () => {
     const [scrollY, setScrollY] = useState(0);
     const { ref, inView } = useInView({ threshold: 0.3, triggerOnce: true, rootMargin: '0px 0px -30% 0px' });
     const [hasAnimated, setHasAnimated] = useState(false);
-    const { ref: imagenRef, inView: imagenInView } = useInView({
-        threshold: 0.3,
-        triggerOnce: true, // para que solo se dispare una vez
-    });
+    const { ref: imagenRef, inView: imagenInView } = useInView({ threshold: 0.3, triggerOnce: true });
+    const { ref: muchosMasRef, inView: muchosMasInView } = useInView({ threshold: 0.2, triggerOnce: true });
 
     const evidencias = [
         {
@@ -193,7 +191,7 @@ const Evidencias = () => {
                         top: '30px',
                         left: 0,
                         right: 0,
-                        zIndex: 2,
+                        zIndex: 5, // 👈 más alto que la mano (3)
                     }}
                 >
                     <motion.div
@@ -220,6 +218,7 @@ const Evidencias = () => {
                         </Typography>
                     </motion.div>
                 </Box>
+
 
                 {/* Imagen + video */}
                 <Box
@@ -588,10 +587,10 @@ const Evidencias = () => {
                                                                     display: 'block',
                                                                     mt: 1.5,
                                                                     mb: 1.5,
-                                                                    color: 'gray',
+                                                                    color: '#00bcd4',
                                                                     fontFamily: 'Poppins, sans-serif',
                                                                     textAlign: 'center',
-                                                                    textDecoration: 'line-through',
+                                                                    //textDecoration: 'line-through',
                                                                     cursor: 'not-allowed',
                                                                     pointerEvents: 'none',
                                                                 }}
@@ -606,8 +605,45 @@ const Evidencias = () => {
                                         ))}
                                     </Grid>
                                 ))}
-                            </Grid>
+                                {/* Texto final */}
+                                <Grid item xs={12}>
+                                    <Typography
+                                        ref={muchosMasRef} // 👈 le pasamos el observer
+                                        variant="body1"
+                                        align="center"
+                                        sx={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            fontStyle: 'italic',
+                                            color: 'white',
+                                            fontWeight: 700,
+                                            fontFamily: 'Poppins, sans-serif',
+                                            fontSize: '1.2rem',
+                                            mt: 0,
+                                            letterSpacing: 1,
+                                            textShadow: '0 1px 8px #b2ebf2',
+                                        }}
+                                    >
+                                        {"y muchos más...".split("").map((char, i) => (
+                                            <motion.span
+                                                key={i}
+                                                custom={i}
+                                                initial={{ opacity: 0, y: 20 }}
+                                                animate={muchosMasInView ? { opacity: 1, y: 0 } : {}} // 👈 ahora depende solo de este ref
+                                                transition={{ delay: i * 0.05, duration: 0.4 }}
+                                                style={{
+                                                    display: "inline-block",
+                                                    whiteSpace: "pre",
+                                                }}
+                                            >
+                                                {char}
+                                            </motion.span>
+                                        ))}
+                                    </Typography>
 
+                                </Grid>
+                            </Grid>
                         </Box>
                     </Box>
                 </motion.div >
