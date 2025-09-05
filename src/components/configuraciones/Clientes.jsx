@@ -110,7 +110,7 @@ const Clientes = () => {
   const [totalGanadoAnterior, setTotalGanadoAnterior] = useState(0);
   const [openDialogCobro, setOpenDialogCobro] = useState(false);
   const [mesManual, setMesManual] = useState("");
-  const modoDesarrollo = false;
+  const modoDesarrollo = true;
   const mesDialogPago = mesManual || mesCapitalizado;
   const MotionBox = motion(Box);
 
@@ -519,7 +519,7 @@ const Clientes = () => {
             variant="subtitle2"
             fontWeight={600}
             color="green"
-            sx={{ fontSize: "0.8rem", mt: 0.1 }}
+            sx={{ fontSize: "0.71rem", mt: 0.1 }}
           >
             Ganado en {mesCapitalizado}
           </Typography>
@@ -574,7 +574,7 @@ const Clientes = () => {
             variant="subtitle2"
             fontWeight={600}
             color="orange"
-            sx={{ fontSize: "0.8rem", mt: 0.1 }}
+            sx={{ fontSize: "0.71rem", mt: 0.1 }}
           >
             Deuda actual
           </Typography>
@@ -583,7 +583,7 @@ const Clientes = () => {
             fontWeight={700}
             sx={{
               fontSize: "1rem",
-              lineHeight: 1.2,
+              lineHeight: 1.1,
               color: "#d32f2f",
             }}
           >
@@ -1207,6 +1207,13 @@ const Clientes = () => {
       <Dialog
         open={mostrarDialogoUltimoDia}
         onClose={() => setMostrarDialogoUltimoDia(false)}
+        PaperProps={{
+          sx: {
+            background: "linear-gradient(180deg, #FFF8EC, #FFEFD5)",
+            borderRadius: 2,
+            boxShadow: "0 8px 30px rgba(0,0,0,0.25)",
+          },
+        }}
       >
         <DialogTitle>🔄Actualización de clientes</DialogTitle>
         <DialogContent>

@@ -184,8 +184,8 @@ const ConfigurarTrabajos = () => {
 
       const payload = {
         SitioWeb: trabajo.SitioWeb,
-        nuevoPorcentaje: Number(trabajo.Porcentaje), // 👈 usar nombre esperado
-        nuevoEstado: Number(trabajo.Estado),         // 👈 usar nombre esperado
+        nuevoPorcentaje: Number(trabajo.Porcentaje),
+        nuevoEstado: Number(trabajo.Estado),
       };
 
       const url = `${window.location.hostname === "localhost"
@@ -216,12 +216,6 @@ const ConfigurarTrabajos = () => {
       });
     } finally {
       setLoadingSaveAll(false);
-    }
-  };
-
-  const handleConfirmarFinalizar = async () => {
-    if (dialogFinalizar.trabajo) {
-      await guardarCambios(dialogFinalizar.trabajo);
     }
   };
 
@@ -409,7 +403,7 @@ const ConfigurarTrabajos = () => {
                       border: "none",   // 🚫 sin bordes
                     }}
                   >
-                    Sitios Web
+                    Sitios Web/Sistemas
                   </TableCell>
 
                   <TableCell
@@ -472,10 +466,21 @@ const ConfigurarTrabajos = () => {
 
                     {/* Sitio Web */}
                     <TableCell
+                      component="a"
+                      href={`https://${trabajo.SitioWeb}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       sx={{
                         fontWeight: 500,
-                        fontSize: { xs: "0.75rem", sm: "0.875rem" }, // 👈 más chico en móvil
-                        whiteSpace: "nowrap", // evita cortes feos
+                        fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                        whiteSpace: "nowrap",
+                        color: trabajo.tipoApp === 1 ? "#0288d1" : "#333",
+                        fontWeight: 600,
+                        cursor: trabajo.tipoApp === 1 ? "pointer" : "default",
+                        textDecoration: "none",
+                        "&:hover": {
+                          textDecoration: trabajo.tipoApp === 1 ? "underline" : "none",
+                        },
                       }}
                     >
                       {trabajo.SitioWeb}

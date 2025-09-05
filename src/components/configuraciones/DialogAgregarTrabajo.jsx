@@ -25,9 +25,12 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave }) {
 
 
   const [form, setForm] = useState({
-    nombre: "",
-    tipo: "1",
+    trabajo: "",
+    tipoApp: "1",
     progreso: 0,
+    nombreCliente: "",
+    emailCliente: "",
+    telefonoCliente: "",
   });
 
   useEffect(() => {
@@ -45,7 +48,14 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave }) {
   useEffect(() => {
     if (open) {
       setSuccess(false);
-      setForm({ nombre: "", tipo: "1", progreso: 0 }); // 👈 opcional, limpia también el form
+      setForm({
+        trabajo: "",
+        tipoApp: "1",
+        progreso: 0,
+        nombreCliente: "",
+        emailCliente: "",
+        telefonoCliente: "",
+      });
     }
   }, [open]);
 
@@ -54,9 +64,10 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave }) {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+
   const handleSave = async () => {
-    if (!form.nombre || !form.tipo) {
-      setSnackbar({ open: true, type: "error", message: "Completa los campos obligatorios" });
+    if (!form.trabajo || !form.tipoApp || !form.nombreCliente || !form.emailCliente || !form.telefonoCliente) {
+      setSnackbar({ open: true, type: "error", message: "Completa todos los campos obligatorios" });
       return;
     }
 
@@ -77,7 +88,6 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave }) {
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Error al guardar");
 
-      // 👇 en lugar de cerrar → mostrar éxito
       setLoading(false);
       setSuccess(true);
 
@@ -88,6 +98,7 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave }) {
       setLoading(false);
     }
   };
+
 
 
   return (
@@ -250,7 +261,7 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave }) {
               dividers
               sx={{
                 py: 3,
-                pb: 6,
+                pb: 5,
                 bgcolor: success ? "#e6f4ea" : "#FFF8EC",
                 position: "relative",
                 overflow: "visible",
@@ -309,47 +320,148 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave }) {
                   </motion.div>
                 ) : (
 
-                  <Box display="flex" flexDirection="column" gap={3}>
+                  <Box display="flex" flexDirection="column" gap={success ? 3 : 1}>
                     <TextField
                       label="Nombre del Trabajo"
-                      name="nombre"
-                      value={form.nombre}
+                      name="trabajo"
+                      value={form.trabajo}
                       onChange={handleChange}
                       fullWidth
                       required
                       variant="outlined"
+                      size="small"
+                      InputProps={{
+                        startAdornment: <span style={{ marginRight: 6 }}>🛠️</span>, // 👈 emoji ícono
+                      }}
                       sx={{
+                        backgroundColor: "#fff", // 👈 fondo blanco fijo
+                        borderRadius: 2.5,
                         "& .MuiOutlinedInput-root": {
-                          borderRadius: 2,
-                          "&:hover fieldset": { borderColor: "#FB8C00" },
-                          "&.Mui-focused fieldset": { borderColor: "#F57C00", borderWidth: 2 },
+                          backgroundColor: "#fff", // 👈 asegura fondo blanco también en input
+                          borderRadius: 2.5,
+                          transition: "all 0.25s ease",
+                          "&:hover fieldset": {
+                            borderColor: "#FB8C00",
+                            boxShadow: "0 0 0 2px rgba(251,140,0,0.15)",
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: "#F57C00",
+                            borderWidth: 2,
+                            boxShadow: "0 0 0 2px rgba(245,124,0,0.25)",
+                          },
+                        },
+                        "& .MuiInputLabel-root": {
+                          fontSize: "0.85rem",
+                          fontWeight: 600,
                         },
                         "& .MuiInputLabel-root.Mui-focused": {
                           color: "#F57C00",
                         },
                       }}
                     />
+                    {/* 🔥 Datos del cliente */}
+                    <Box display="flex" flexDirection="column" gap={2}>
+                      <TextField
+                        label="Nombre Cliente"
+                        name="nombreCliente"
+                        value={form.nombreCliente}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          // 👇 Solo letras (mayúsculas/minúsculas), espacios y acentos
+                          if (/^[a-zA-ZÀ-ÿ\s]*$/.test(value)) {
+                            handleChange(e); // solo actualiza si pasa la validación
+                          }
+                        }}
+                        required
+                        size="small"
+                        sx={{
+                          backgroundColor: "#fff",
+                          borderRadius: 2,
+                          "& .MuiOutlinedInput-root": {
+                            borderRadius: 2,
+                            "&:hover fieldset": { borderColor: "#FB8C00" },
+                            "&.Mui-focused fieldset": { borderColor: "#F57C00", borderWidth: 2 },
+                          },
+                          "& .MuiInputLabel-root.Mui-focused": { color: "#F57C00" },
+                        }}
+                        InputProps={{
+                          startAdornment: <span style={{ marginRight: 6 }}>👤</span>,
+                        }}
+                      />
 
+
+                      <TextField
+                        label="Email Cliente"
+                        name="emailCliente"
+                        type="email"
+                        value={form.emailCliente}
+                        onChange={handleChange}
+                        required
+                        size="small"
+                        error={
+                          form.emailCliente !== "" &&
+                          !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.emailCliente) // 👈 validador simple de email
+                        }
+                        helperText={
+                          form.emailCliente !== "" &&
+                            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.emailCliente)
+                            ? "Ingresa un correo válido (ej: cliente@gmail.com)"
+                            : ""
+                        }
+                        sx={{ backgroundColor: "#fff", borderRadius: 2 }}
+                        InputProps={{
+                          startAdornment: <span style={{ marginRight: 6 }}>📧</span>,
+                        }}
+                      />
+
+
+                      <TextField
+                        label="Teléfono Cliente"
+                        name="telefonoCliente"
+                        type="tel"
+                        value={form.telefonoCliente}
+                        onChange={(e) => {
+                          const onlyNums = e.target.value.replace(/\D/g, "");
+                          setForm((prev) => ({
+                            ...prev,
+                            telefonoCliente: onlyNums.slice(0, 12),
+                          }));
+                        }}
+                        required
+                        size="small"
+                        inputProps={{
+                          inputMode: "numeric",
+                          pattern: "[0-9]*",
+                          maxLength: 12,
+                        }}
+                        sx={{ backgroundColor: "#fff", borderRadius: 2 }}
+                        InputProps={{
+                          startAdornment: <span style={{ marginRight: 6 }}>📱</span>,
+                        }}
+                      />
+
+                    </Box>
 
                     <FormControl required>
                       <FormLabel
                         component="legend"
-                        sx={{ fontWeight: 600, color: "#E65100", mb: 1 }}
+                        sx={{ fontWeight: 700, color: "#E65100", mb: 0, display: "flex", alignItems: "center", gap: 0 }}
                       >
-                        Tipo de Aplicación
+                        💻 Tipo de Aplicación
                       </FormLabel>
                       <RadioGroup
                         row
-                        name="tipo"
-                        value={form.tipo}     // 👈 esto se enlaza al estado
+                        name="tipoApp"
+                        value={form.tipoApp}
                         onChange={handleChange}
+                        sx={{ gap: 0 }} // 👈 separación entre opciones
                       >
                         <FormControlLabel
                           value="1"
                           control={<Radio color="warning" />}
                           label={
-                            <Typography sx={{ fontWeight: 600, color: "#333" }}>
-                              Sitio Web
+                            <Typography sx={{ fontWeight: 600, color: "#333", display: "flex", alignItems: "center", gap: 0.5 }}>
+                              🌐 Sitio Web
                             </Typography>
                           }
                         />
@@ -357,8 +469,8 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave }) {
                           value="2"
                           control={<Radio color="warning" />}
                           label={
-                            <Typography sx={{ fontWeight: 600, color: "#333" }}>
-                              Sistema
+                            <Typography sx={{ fontWeight: 600, color: "#333", display: "flex", alignItems: "center", gap: 0.5 }}>
+                              ⚙️ Sistema
                             </Typography>
                           }
                         />
@@ -366,13 +478,15 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave }) {
                     </FormControl>
 
 
+
                     <Box>
                       <Typography
                         gutterBottom
-                        sx={{ fontWeight: 600, color: "#E65100", mb: 1 }}
+                        sx={{ fontWeight: 600, color: "#E65100", mb: 0 }}
                       >
-                        Progreso *
+                        📊Progreso *
                       </Typography>
+
                       <Slider
                         value={form.progreso}
                         onChange={(e, newValue) =>
@@ -450,7 +564,7 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave }) {
       )}
       {/* FOOTER */}
       <DialogActions sx={{
-        justifyContent: "center", py: 2, background: "linear-gradient(90deg,#FFF3E0,#FFE0B2)", borderTop: "1px solid rgba(255,167,38,.35)",
+        justifyContent: "center", py: 1.2, background: "linear-gradient(90deg,#FFF3E0,#FFE0B2)", borderTop: "1px solid rgba(255,167,38,.35)",
       }}>
         {success ? (
           <Button

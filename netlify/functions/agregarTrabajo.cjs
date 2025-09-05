@@ -37,13 +37,14 @@ exports.handler = async (event) => {
         console.log("📦 event.body recibido:", event.body);
 
         const body = JSON.parse(event.body || "{}");
-        const { nombre, tipo, progreso } = body;
+        const { trabajo, tipoApp, progreso, nombreCliente, emailCliente, telefonoCliente } = body;
 
-        if (!nombre || !tipo) {
+        // 🔥 Validaciones básicas
+        if (!trabajo || !tipoApp || !nombreCliente || !emailCliente || !telefonoCliente) {
             return {
                 statusCode: 400,
                 headers: corsHeaders,
-                body: JSON.stringify({ message: "Faltan campos requeridos (nombre, tipo)" }),
+                body: JSON.stringify({ message: "Faltan campos requeridos" }),
             };
         }
 
@@ -55,13 +56,15 @@ exports.handler = async (event) => {
 
         // Crear nueva fila
         const nuevoTrabajo = {
-            SitioWeb: nombre,
-            TipoApp: parseInt(tipo, 10),
+            SitioWeb: trabajo,
+            TipoApp: parseInt(tipoApp, 10),
             Porcentaje: progreso ?? 0,
+            NombreCliente: nombreCliente,
+            EmailCliente: emailCliente,
+            TelefonoCliente: telefonoCliente,
             Estado: 1, // activo
             FechaCreacion: new Date().toISOString(),
         };
-
         datos.push(nuevoTrabajo);
 
         console.log("🆕 Trabajo agregado:", nuevoTrabajo);
