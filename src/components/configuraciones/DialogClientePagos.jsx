@@ -235,7 +235,7 @@ const DialogClientePagos = ({
       >
         <Button
           onClick={onClose}
-          sx={{ fontSize: "0.75rem", px: 0.5, minWidth: "auto" }}
+          sx={{ fontSize: "0.75rem", px: 0, minWidth: "auto" }}
         >
           Cancelar
         </Button>
@@ -251,7 +251,7 @@ const DialogClientePagos = ({
               color="primary"
               variant="contained"
               disabled={botonCargando !== null}
-              sx={{ fontSize: "0.75rem", px: 1.5 }}
+              sx={{ fontSize: "0.65rem", px: 1.2 }}
             >
               {botonCargando === "confirmar" ? (
                 <CircularProgress size={18} color="inherit" />
@@ -273,7 +273,7 @@ const DialogClientePagos = ({
               color="success"
               variant="contained"
               disabled={botonCargando !== null}
-              sx={{ fontSize: "0.75rem", px: 1.5 }}
+              sx={{ fontSize: "0.65rem", px: 1.2 }}
             >
               {botonCargando === "confirmarCorreo" ? (
                 <CircularProgress size={18} color="inherit" />

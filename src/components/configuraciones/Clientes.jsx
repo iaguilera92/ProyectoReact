@@ -110,7 +110,7 @@ const Clientes = () => {
   const [totalGanadoAnterior, setTotalGanadoAnterior] = useState(0);
   const [openDialogCobro, setOpenDialogCobro] = useState(false);
   const [mesManual, setMesManual] = useState("");
-  const modoDesarrollo = true;
+  const modoDesarrollo = false;
   const mesDialogPago = mesManual || mesCapitalizado;
   const MotionBox = motion(Box);
 
@@ -498,16 +498,16 @@ const Clientes = () => {
         <MotionBox
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 2.5, duration: 0.8, ease: "easeOut" }}
+          transition={{ delay: 0, duration: 0.8, ease: "easeOut" }}
           sx={{
             backgroundColor: "#e8f5e9",
             border: "2px solid #66bb6a",
             borderRadius: 2,
-            px: 1.2,
+            px: 1.1,
             py: 0.5,
             flex: "1 1 auto",
             maxWidth: 140,
-            minWidth: 120,
+            minWidth: 130,
             textAlign: "center",
             height: "64px",
             display: "flex",
@@ -519,7 +519,7 @@ const Clientes = () => {
             variant="subtitle2"
             fontWeight={600}
             color="green"
-            sx={{ fontSize: "0.71rem", mt: 0.1 }}
+            sx={{ fontSize: "0.69rem", mt: 0.1 }}
           >
             Ganado en {mesCapitalizado}
           </Typography>
@@ -553,12 +553,12 @@ const Clientes = () => {
         <MotionBox
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 2.5, duration: 0.8, ease: "easeOut" }}
+          transition={{ delay: 0, duration: 0.8, ease: "easeOut" }}
           sx={{
             backgroundColor: "#fff3e0",
             border: "2px solid #ff9800",
             borderRadius: 2,
-            px: 1.2,
+            px: 1.1,
             py: 0.5,
             flex: "1 1 auto",
             maxWidth: 140,
@@ -1040,8 +1040,8 @@ const Clientes = () => {
             onClick={() => setOpenDialogCobro(false)}
             sx={{
               position: "absolute",
-              top: 8,
-              right: 8,
+              top: 2,
+              right: 1,
               color: "#FFF",
               zIndex: 6,
               "&:hover": { backgroundColor: "rgba(255,255,255,.15)" },
@@ -1080,7 +1080,7 @@ const Clientes = () => {
                 letterSpacing: { xs: "0.2px", sm: "0.8px" },
                 fontFamily: "'Poppins', sans-serif",
                 color: "#fff",
-                fontSize: { xs: "0.95rem", sm: "1.1rem" }, // 👈 texto más chico
+                fontSize: { xs: "0.83rem", sm: "1.1rem" }, // 👈 texto más chico
               }}
             >
               Cobro del mes de {mesManual || mesCapitalizado} {new Date().getFullYear()}
@@ -1215,7 +1215,7 @@ const Clientes = () => {
           },
         }}
       >
-        <DialogTitle>🔄Actualización de clientes</DialogTitle>
+        <DialogTitle>🔄 Actualización de clientes</DialogTitle>
         <DialogContent>
           <DialogContentText>
             Hoy es el <strong>último día del mes</strong>. Se actualizará el listado de clientes.
