@@ -407,7 +407,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                 textAlign: isMobile ? "center" : "left",
                 textTransform: "uppercase",
                 letterSpacing: "2px",
-                fontSize: { xs: "1.2rem", md: "1.6rem" },
+                fontSize: { xs: "1.2rem", md: "1.4rem" },
                 background: "linear-gradient(90deg, #ffffff, #f5f5f5)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",

@@ -137,7 +137,7 @@ export default function DialogTrabajos({
       onClose={onClose}
       maxWidth="sm"
       fullWidth
-      scroll="body"
+      scroll="paper"
       TransitionComponent={Transition}
       PaperProps={{
         sx: {
@@ -157,7 +157,7 @@ export default function DialogTrabajos({
           fontWeight: 700,
           color: "#FFF",
           fontFamily: "'Poppins', sans-serif",
-          py: 2,
+          py: 1.5,
           borderBottom: "1px solid rgba(255,167,38,.35)",
           position: "relative",
           overflow: "hidden",
@@ -221,7 +221,7 @@ export default function DialogTrabajos({
             top: 8,
             right: 8,
             color: "#FFF",
-            zIndex: 3, // 👈 más arriba que ::before y ::after
+            zIndex: 4, // 👈 más arriba que ::before y ::after
             "&:hover": { backgroundColor: "rgba(255,255,255,.15)" },
 
             // animación al abrir
@@ -273,7 +273,7 @@ export default function DialogTrabajos({
         {trabajos.length > 0 ? (
           <Box
             sx={{
-              mt: 3,
+              mt: isMobile ? 1 : 1.5,
               display: "flex",
               justifyContent: "center",
               gap: 2,
@@ -398,42 +398,21 @@ export default function DialogTrabajos({
             Sin trabajos activos por ahora
           </Typography>
         )}
-
-
-
-
       </DialogTitle>
 
       <AnimatePresence>
         {showContent && (
-          <motion.div
-            key="dialogContent"
-            initial={false}
+          <motion.div key="dialogContent" initial={false}
             animate={expanded ? { opacity: 1, height: "auto" } : { opacity: 0, height: 0 }}
-            transition={{ duration: 0.7, ease: "easeInOut" }}
-            style={{ overflow: "hidden" }} // evita que se vea raro al colapsar
-          >
-            <DialogContent
-              sx={{
-                background: "linear-gradient(180deg, #FFF8E1 0%, #FFF3E0 100%)",
-                py: isMobile ? 1 : 2.5,
-                mb: 0
-              }}
-            >
-              {trabajos.length === 0 && (
-                <Box sx={{ py: 2 }}>
-                  <Typography variant="body2" sx={{ color: "#5D4037", textAlign: "center" }}>
-                    Pronto verás aquí tus próximos desarrollos.
-                  </Typography>
-                </Box>
-              )}
-
-              <Box sx={{ mt: { xs: 1.5, sm: 2.5 } }}>
+            transition={{ duration: 0.7, ease: "easeInOut" }} style={{ overflow: "hidden" }}>
+            <DialogContent sx={{ background: "linear-gradient(180deg,#FFF8E1 0%,#FFF3E0 100%)", py: 1, px: 1.5, mb: 0 }}>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
                 {trabajos.map((t) => (
-                  <Trabajos key={`${t.SitioWeb}-${t.Id}`} trabajo={t} />
+                  <Box key={`${t.SitioWeb}-${t.Id}`} sx={{ border: "1px solid rgba(230,81,0,0.25)", borderRadius: 1, py: 0.3, px: 1.5, background: "#fff", boxShadow: "0 1px 2px rgba(0,0,0,0.06)" }}>
+                    <Trabajos trabajo={t} />
+                  </Box>
                 ))}
               </Box>
-
             </DialogContent>
           </motion.div>
         )}
@@ -444,7 +423,7 @@ export default function DialogTrabajos({
       <DialogActions
         sx={{
           px: 2,
-          py: 1.5,
+          py: 0.8,
           background: "linear-gradient(90deg,#FFF3E0,#FFE0B2)",
           borderTop: "1px solid rgba(255,167,38,.35)",
         }}
@@ -458,7 +437,7 @@ export default function DialogTrabajos({
             variant="contained"
             onClick={onPrimaryClick}
             sx={{
-              height: 42,
+              height: 36,
               position: "relative",
               overflow: "hidden",
               minWidth: 140,
@@ -475,7 +454,6 @@ export default function DialogTrabajos({
                 inset: 0,
                 borderRadius: "inherit",
                 background: "linear-gradient(90deg,#FF9800,#F57C00)",
-                // 👇 Solo se expande cuando expanded && armed (tras 1s de mount)
                 transform: armed ? "scale(1)" : "scale(0)",
                 transformOrigin: "center center",
                 transition: "transform 0.6s ease",

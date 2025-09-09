@@ -165,11 +165,11 @@ const Evidencias = () => {
                     backgroundImage: `url('fondo-telefono.webp')`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
-                    backgroundAttachment: 'scroll',
                     backgroundRepeat: 'no-repeat',
-                    zIndex: 1, // importante para layering
+                    zIndex: 1,
                 }}
             >
+
                 {/* Box para el degradado */}
                 <Box
                     sx={{
