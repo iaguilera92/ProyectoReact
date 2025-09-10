@@ -440,12 +440,30 @@ export default function DialogTrabajos({
             transition={{ duration: 0.7, ease: "easeInOut" }} style={{ overflow: "hidden" }}>
             <DialogContent sx={{ background: "linear-gradient(180deg,#FFF8E1 0%,#FFF3E0 100%)", py: 0, px: 1.5, mb: 0 }}>
               <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, mt: 1.3 }}>
-                {localTrabajos.map((t) => (
-                  <Box key={`${t.SitioWeb}-${t.Id}`} sx={{ border: "1px solid rgba(230,81,0,0.25)", borderRadius: 1, py: 0.3, px: 1.5, background: "#fff", boxShadow: "0 1px 2px rgba(0,0,0,0.06)" }}>
-                    <Trabajos trabajo={t} />
-                  </Box>
-                ))}
+                {localTrabajos.map((t) => {
+                  const porcentaje = Math.min(100, Math.max(0, t.Porcentaje || 0));
+                  const completado = porcentaje === 100;
+
+                  return (
+                    <Box
+                      key={`${t.SitioWeb}-${t.Id}`}
+                      sx={{
+                        border: "1px solid rgba(230,81,0,0.25)",
+                        borderRadius: 1,
+                        py: 0.3,
+                        px: 1.5,
+                        background: completado
+                          ? "linear-gradient(180deg, #FFEFD5 0%, #FFF5EB 100%)" // tono durazno pastel
+                          : "#fff",
+                        boxShadow: "0 1px 2px rgba(0,0,0,0.06)",
+                      }}
+                    >
+                      <Trabajos trabajo={t} />
+                    </Box>
+                  );
+                })}
               </Box>
+
               {/* Fecha última actualización */}
               {ultimaFecha && (
                 <Box sx={{ textAlign: "center", mb: 0.5 }}>
