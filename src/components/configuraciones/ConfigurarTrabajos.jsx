@@ -186,6 +186,7 @@ const ConfigurarTrabajos = () => {
         SitioWeb: trabajo.SitioWeb,
         nuevoPorcentaje: Number(trabajo.Porcentaje),
         nuevoEstado: Number(trabajo.Estado),
+        fechaCreacion: trabajo.FechaCreacion,
       };
 
       const url = `${window.location.hostname === "localhost"

@@ -8,7 +8,7 @@ import {
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { motion, AnimatePresence, useMotionValue, useTransform, animate } from "framer-motion";
 import Trabajos from "./Trabajos";
-
+import { cargarTrabajos } from "../helpers/HelperTrabajos";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -103,11 +103,29 @@ export default function DialogTrabajos({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [armed, setArmed] = React.useState(false);
+  const [localTrabajos, setLocalTrabajos] = useState(trabajos);
 
-  const sitiosWeb = trabajos.filter(t => t.TipoApp === 1).length;
-  const sistemas = trabajos.filter(t => t.TipoApp === 2).length;
+  const sitiosWeb = localTrabajos.filter(t => t.TipoApp === 1).length;
+  const sistemas = localTrabajos.filter(t => t.TipoApp === 2).length;
   const [showContent, setShowContent] = useState(false);
   const [expanded, setExpanded] = useState(false);
+
+  const ultimaFecha = React.useMemo(() => {
+    if (!localTrabajos.length) return null;
+
+    const ultimaFechaReal = new Date(
+      Math.max(...localTrabajos.map(t => new Date(t.FechaCreacion).getTime()))
+    );
+
+    const hoy = new Date();
+    const limite = new Date(hoy);
+    limite.setDate(hoy.getDate() - 3);
+
+    const fechaFinal = ultimaFechaReal < limite ? limite : ultimaFechaReal;
+    return fechaFinal.toLocaleDateString("es-CL");
+  }, [localTrabajos]);
+
+
 
   //EXPANSIÓN
   useEffect(() => {
@@ -129,6 +147,16 @@ export default function DialogTrabajos({
       t = setTimeout(() => setArmed(true), 600); // espera cada vez que se abre
     }
     return () => clearTimeout(t);
+  }, [open]);
+
+  //ACTUALIZAR TRABAJOS S3
+  useEffect(() => {
+    if (open) {
+      const timestamp = Date.now();
+      cargarTrabajos(
+        `https://plataformas-web-buckets.s3.us-east-2.amazonaws.com/Trabajos.xlsx?t=${timestamp}`
+      ).then(setLocalTrabajos);
+    }
   }, [open]);
 
   return (
@@ -270,7 +298,7 @@ export default function DialogTrabajos({
 
 
 
-        {trabajos.length > 0 ? (
+        {localTrabajos.length > 0 ? (
           <Box
             sx={{
               mt: isMobile ? 1 : 1.5,
@@ -405,14 +433,25 @@ export default function DialogTrabajos({
           <motion.div key="dialogContent" initial={false}
             animate={expanded ? { opacity: 1, height: "auto" } : { opacity: 0, height: 0 }}
             transition={{ duration: 0.7, ease: "easeInOut" }} style={{ overflow: "hidden" }}>
-            <DialogContent sx={{ background: "linear-gradient(180deg,#FFF8E1 0%,#FFF3E0 100%)", py: 1, px: 1.5, mb: 0 }}>
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
-                {trabajos.map((t) => (
+            <DialogContent sx={{ background: "linear-gradient(180deg,#FFF8E1 0%,#FFF3E0 100%)", py: 0, px: 1.5, mb: 0 }}>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, mt: 1.3 }}>
+                {localTrabajos.map((t) => (
                   <Box key={`${t.SitioWeb}-${t.Id}`} sx={{ border: "1px solid rgba(230,81,0,0.25)", borderRadius: 1, py: 0.3, px: 1.5, background: "#fff", boxShadow: "0 1px 2px rgba(0,0,0,0.06)" }}>
                     <Trabajos trabajo={t} />
                   </Box>
                 ))}
               </Box>
+              {/* Fecha última actualización */}
+              {ultimaFecha && (
+                <Box sx={{ textAlign: "center", mb: 0.5 }}>
+                  <Typography
+                    variant="caption"
+                    sx={{ fontSize: "0.65rem", fontWeight: 500, color: "#E65100", lineHeight: 1.1 }}
+                  >
+                    📅 Última actualización: {ultimaFecha}
+                  </Typography>
+                </Box>
+              )}
             </DialogContent>
           </motion.div>
         )}
