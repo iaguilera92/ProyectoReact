@@ -149,15 +149,20 @@ export default function DialogTrabajos({
     return () => clearTimeout(t);
   }, [open]);
 
-  //ACTUALIZAR TRABAJOS S3
+  // ACTUALIZAR TRABAJOS S3
   useEffect(() => {
     if (open) {
       const timestamp = Date.now();
       cargarTrabajos(
         `https://plataformas-web-buckets.s3.us-east-2.amazonaws.com/Trabajos.xlsx?t=${timestamp}`
-      ).then(setLocalTrabajos);
+      ).then((data) => {
+        // 🔹 Filtrar solo los trabajos activos (Estado = 1)
+        const activos = data.filter(t => Number(t.Estado) === 1);
+        setLocalTrabajos(activos);
+      });
     }
   }, [open]);
+
 
   return (
     <Dialog
