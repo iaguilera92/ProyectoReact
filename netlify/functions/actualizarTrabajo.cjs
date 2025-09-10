@@ -66,6 +66,7 @@ exports.handler = async (event) => {
                     ...row,
                     Porcentaje: typeof nuevoPorcentaje === "number" ? nuevoPorcentaje : row.Porcentaje,
                     Estado: typeof nuevoEstado === "number" ? nuevoEstado : row.Estado,
+                    FechaCreacion: new Date().toISOString(),
                 };
                 return trabajoFinal;
             }
