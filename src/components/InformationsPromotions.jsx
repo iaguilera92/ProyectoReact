@@ -21,8 +21,6 @@ const InformationsPromotions = ({
 }) => {
 
   const [showOriginalPriceId1, setShowOriginalPriceId1] = useState(true);
-
-
   useEffect(() => {
     if (showPopularBadge) {
       const timer = setTimeout(() => {
@@ -44,13 +42,13 @@ const InformationsPromotions = ({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount: 30000, // 💰 ahora 30.000 CLP
-          buyOrder: "ReservaSitioWeb-001", // 👈 tu identificador único
-          sessionId: "Reserva Sitio Web - Plataformas-web.cl", // 👈 descripción
+          amount: 30000, // 💰 CLP
+          buyOrder: "ReservaSitioWeb-001",
+          sessionId: "Reserva Sitio Web - Plataformas-web.cl",
           returnUrl:
             window.location.hostname === "localhost"
-              ? "https://c4d2e41af764.ngrok-free.app/resultado"
-              : "https://plataformas-web.cl/resultado",
+              ? "http://localhost:5173/reserva"
+              : "https://plataformas-web.cl/reserva",
         }),
       });
 
@@ -65,7 +63,12 @@ const InformationsPromotions = ({
     }
   };
 
-
+  //Visa TEST
+  //Número: 4051885600446623
+  //Fecha de vencimiento: 12/12
+  //CVV: 123
+  //Rut: 11.111.111-1
+  //Clave: 123
 
   return (
     <Box
@@ -500,8 +503,8 @@ const InformationsPromotions = ({
                       </Box>
                     </motion.div>
 
-                    {modoDesarrollo ? (
-                      // 🔹 Botón RESERVAR con logo Transbank
+                    {modoDesarrollo && promo.id === 1 ? (
+                      // 🔹 Botón RESERVAR Transbank
                       <Box
                         component="button"
                         onClick={handleReservar}

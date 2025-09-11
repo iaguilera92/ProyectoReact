@@ -61,6 +61,16 @@ BUCKET RECURSOS CORS:
     }
 ]
 
+TRANSBANK
+=========
+
+TEST: netlify dev
+npm install transbank-sdk
+
+npm install -g ngrok
+ngrok http 8888
+
+npm install connect-history-api-fallback --save-dev
 
 COMANDOS
 ========

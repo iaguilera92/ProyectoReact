@@ -12,6 +12,9 @@ const Dashboard = lazy(() => import("./components/Dashboard"));
 const ConfigurarServicios = lazy(() => import("./components/configuraciones/ConfigurarServicios"));
 const ConfigurarTrabajos = lazy(() => import("./components/configuraciones/ConfigurarTrabajos"));
 const Clientes = lazy(() => import("./components/configuraciones/Clientes"));
+const Reserva = lazy(() => import("./components/Reserva"));
+
+
 // ✅ HOC para envolver cualquier componente con Suspense
 const withSuspense = (Component) => (
     <Suspense fallback={null}>
@@ -53,6 +56,7 @@ const router = createBrowserRouter(
                 { path: "administracion", element: withSuspense(Administracion) },
                 { path: "catalogo", element: withSuspense(Catalogo) },
                 { path: "dashboard", element: withSuspense(Dashboard) },
+                { path: "reserva", element: withSuspense(Reserva) },
                 {
                     path: "configurar-servicios",
                     element: (
