@@ -79,7 +79,7 @@ const Dashboard = () => {
             setUsuario(usuarioGuardado);
         }
     }, []);
-    //GOOGLE ANALYTICS
+
     const [visitasTotales, setVisitasTotales] = useState(0);
     const [visitasChile, setVisitasChile] = useState(0);
     const [visitasInternacional, setVisitasInternacional] = useState(0);

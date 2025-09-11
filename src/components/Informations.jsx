@@ -39,15 +39,15 @@ const promotions = [
     price: "$250.000 a $400.000",
     extraPrices: [
       { label: "Dominio anual", price: "$15.000" },
-      { label: "Hosting mensual", price: "$150.000" }
+      { label: "Hosting mensual", price: "$80.000" }
     ],
     bgColor: "linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.2))",
     textColor: "white",
     descriptors: [
-      "🛍️ eCommerce profesional",
-      "🛒 Carrito + stock",
-      "📊 Panel de gestión",
-      "💳 WebPay y más pagos"
+      "🛍️ eCommerce profesional.",
+      "🛒 Carrito + stock.",
+      "📊 Panel de gestión.",
+      "💳 WebPay y más pagos."
     ]
   },
   {
@@ -63,10 +63,10 @@ const promotions = [
     bgColor: "linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.2))",
     textColor: "white",
     descriptors: [
-      "⚙️ Sistemas web o apps",
-      "📊 Panel + base de datos",
-      "🧩 Adaptado a tu negocio",
-      "🛠️ Soporte continuo"
+      "⚙️ Sistemas web o apps.",
+      "📊 Panel + base de datos.",
+      "🧩 Adaptado a tu negocio.",
+      "🛠️ Soporte continuo."
     ]
   }
 ];
@@ -427,7 +427,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                 },
               }}
             >
-              Precios Desarrollos
+              Nuestros Precios
             </Typography>
 
             <InformationsPromotions

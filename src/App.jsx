@@ -80,7 +80,7 @@ function App() {
     if (openBubble) {
       const timer = setTimeout(() => {
         setOpenBubble(false);
-      }, 3000);
+      }, 10000);
       return () => clearTimeout(timer);
     }
   }, [openBubble]);

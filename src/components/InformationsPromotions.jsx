@@ -17,6 +17,7 @@ const InformationsPromotions = ({
   setShowArrow,
   handleContactClick,
   showPopularBadge,
+  modoDesarrollo = false,
 }) => {
 
   const [showOriginalPriceId1, setShowOriginalPriceId1] = useState(true);
@@ -30,6 +31,41 @@ const InformationsPromotions = ({
       return () => clearTimeout(timer);
     }
   }, [showPopularBadge]);
+
+  // TRANSBANK
+  const handleReservar = async () => {
+    try {
+      const endpoint =
+        window.location.hostname === "localhost"
+          ? "http://localhost:8888/.netlify/functions/crearTransaccion"
+          : "/.netlify/functions/crearTransaccion";
+
+      const resp = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: 30000, // 💰 ahora 30.000 CLP
+          buyOrder: "ReservaSitioWeb-001", // 👈 tu identificador único
+          sessionId: "Reserva Sitio Web - Plataformas-web.cl", // 👈 descripción
+          returnUrl:
+            window.location.hostname === "localhost"
+              ? "https://c4d2e41af764.ngrok-free.app/resultado"
+              : "https://plataformas-web.cl/resultado",
+        }),
+      });
+
+      const data = await resp.json();
+      console.log("Respuesta crearTransaccion:", data);
+
+      if (data.url && data.token) {
+        window.location.href = `${data.url}?token_ws=${data.token}`;
+      }
+    } catch (err) {
+      console.error("Error en handleReservar:", err);
+    }
+  };
+
+
 
   return (
     <Box
@@ -365,7 +401,7 @@ const InformationsPromotions = ({
                             sx={{
                               fontFamily: "'Mukta', sans-serif",
                               fontWeight: 300,
-                              fontSize: "0.75rem",
+                              fontSize: "0.74rem",
                               letterSpacing: "0.5px",
                               textTransform: "uppercase",
                               color: "white",
@@ -422,7 +458,7 @@ const InformationsPromotions = ({
                             sx={{
                               fontFamily: "'Mukta', sans-serif",
                               fontWeight: 300,
-                              fontSize: "0.75rem",
+                              fontSize: "0.74rem",
                               letterSpacing: "0.5px",
                               textTransform: "uppercase",
                               color: "white",
@@ -431,7 +467,7 @@ const InformationsPromotions = ({
                             }}
                           >
                             <Box component="span" sx={{ display: "block", lineHeight: 1.1 }}>
-                              HOSTING + SOPORTE
+                              SUSCRIPCIÓN + SOPORTE
                             </Box>
                           </Typography>
 
@@ -464,49 +500,98 @@ const InformationsPromotions = ({
                       </Box>
                     </motion.div>
 
-                    <Box
-                      component="button"
-                      onClick={() => handleContactClick(promo.title)}
-                      sx={{
-                        all: "unset", // 👈 borra los estilos nativos del <button>
-                        boxSizing: "border-box",
-                        background: "linear-gradient(90deg, #FF9800, #F57C00)",
-                        color: "white",
-                        border: "2px solid #E65100",
-                        borderRadius: "8px",
-                        width: "310px",
-                        py: 0.7,
-                        fontWeight: "bold",
-                        fontSize: "0.9rem",
-                        cursor: "pointer",
-                        transition: "all 0.3s ease-in-out",
-                        textTransform: "uppercase",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: "8px",
-                        mt: 0.3,
-                        "&:hover": {
-                          background: "linear-gradient(90deg, #FFA726, #FB8C00)",
-                          transform: "translateY(-1px) scale(1.02)",
-                          boxShadow: "0 4px 14px rgba(0,0,0,0.3)",
-                          borderColor: "#FB8C00",
-                        },
-                      }}
-                    >
+                    {modoDesarrollo ? (
+                      // 🔹 Botón RESERVAR con logo Transbank
                       <Box
-                        component="img"
-                        src="/clic.jpg"
-                        alt="Ícono de clic"
+                        component="button"
+                        onClick={handleReservar}
                         sx={{
-                          width: 20,
-                          height: 20,
-                          userSelect: "none",
-                          filter: "invert(1) brightness(2)",
+                          all: "unset",
+                          boxSizing: "border-box",
+                          background: "linear-gradient(90deg, #6A1B9A, #8E24AA)", // 💜 morado degradado
+                          color: "white",
+                          border: "2px solid #4A148C",
+                          borderRadius: "8px",
+                          width: "310px",
+                          py: 0.5, // 👈 menos altura
+                          fontWeight: "bold",
+                          fontSize: "0.9rem",
+                          cursor: "pointer",
+                          transition: "all 0.3s ease-in-out",
+                          textTransform: "uppercase",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: "8px",
+                          mt: 0.3,
+                          "&:hover": {
+                            background: "linear-gradient(90deg, #7B1FA2, #9C27B0)",
+                            transform: "translateY(-1px) scale(1.02)",
+                            boxShadow: "0 4px 14px rgba(0,0,0,0.3)",
+                            borderColor: "#7B1FA2",
+                          },
                         }}
-                      />
-                      Solicitar Cotización
-                    </Box>
+                      >
+                        <Box
+                          component="img"
+                          src="/logo-webpay.png"
+                          alt="Transbank Logo"
+                          sx={{
+                            width: 60,
+                            height: "auto",
+                            userSelect: "none",
+                          }}
+                        />
+                        <span>Reservar</span>
+                      </Box>
+
+
+                    ) : (
+                      // 🔹 Botón SOLICITAR COTIZACIÓN
+                      <Box
+                        component="button"
+                        onClick={() => handleContactClick(promo.title)}
+                        sx={{
+                          all: "unset",
+                          boxSizing: "border-box",
+                          background: "linear-gradient(90deg, #FF9800, #F57C00)",
+                          color: "white",
+                          border: "2px solid #E65100",
+                          borderRadius: "8px",
+                          width: "310px",
+                          py: 0.7,
+                          fontWeight: "bold",
+                          fontSize: "0.9rem",
+                          cursor: "pointer",
+                          transition: "all 0.3s ease-in-out",
+                          textTransform: "uppercase",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: "8px",
+                          mt: 0.3,
+                          "&:hover": {
+                            background: "linear-gradient(90deg, #FFA726, #FB8C00)",
+                            transform: "translateY(-1px) scale(1.02)",
+                            boxShadow: "0 4px 14px rgba(0,0,0,0.3)",
+                            borderColor: "#FB8C00",
+                          },
+                        }}
+                      >
+                        <Box
+                          component="img"
+                          src="/clic.jpg"
+                          alt="Ícono de clic"
+                          sx={{
+                            width: 20,
+                            height: 20,
+                            userSelect: "none",
+                            filter: "invert(1) brightness(2)",
+                          }}
+                        />
+                        Solicitar Cotización
+                      </Box>
+                    )}
 
 
                   </Box>
