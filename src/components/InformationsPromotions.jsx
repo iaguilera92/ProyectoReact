@@ -4,7 +4,7 @@ import { Box, IconButton, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import AccessTimeFilledRoundedIcon from '@mui/icons-material/AccessTimeFilledRounded';
-
+import DialogTransbankCorreo from "./DialogTransbankCorreo";
 import 'swiper/css';
 
 const InformationsPromotions = ({
@@ -17,7 +17,7 @@ const InformationsPromotions = ({
   setShowArrow,
   handleContactClick,
   showPopularBadge,
-  modoDesarrollo = false,
+  modoDesarrollo = true,
 }) => {
 
   const [showOriginalPriceId1, setShowOriginalPriceId1] = useState(true);
@@ -31,6 +31,7 @@ const InformationsPromotions = ({
   }, [showPopularBadge]);
 
   // TRANSBANK
+  const [openDialog, setOpenDialog] = useState(false);
   const handleReservar = async () => {
     try {
       const endpoint =
@@ -43,8 +44,8 @@ const InformationsPromotions = ({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           amount: 30000, // 💰 CLP
-          buyOrder: "ReservaSitioWeb-001",
-          sessionId: "Reserva Sitio Web - Plataformas-web.cl",
+          buyOrder: "RSW-" + Date.now().toString().slice(-10), // <= 26 chars
+          sessionId: "SES-" + Date.now(),
           returnUrl:
             window.location.hostname === "localhost"
               ? "http://localhost:5173/reserva"
@@ -56,12 +57,24 @@ const InformationsPromotions = ({
       console.log("Respuesta crearTransaccion:", data);
 
       if (data.url && data.token) {
-        window.location.href = `${data.url}?token_ws=${data.token}`;
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = data.url;
+
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "token_ws";
+        input.value = data.token;
+        form.appendChild(input);
+
+        document.body.appendChild(form);
+        form.submit();
       }
     } catch (err) {
       console.error("Error en handleReservar:", err);
     }
   };
+
 
   //Visa TEST
   //Número: 4051885600446623
@@ -279,11 +292,12 @@ const InformationsPromotions = ({
                         background: "linear-gradient(180deg, #1E1EBA 0%, #0075FF 100%)",
                         borderRadius: "12px",
                         px: 2,
-                        py: isMobile ? 0.8 : 0.8,
+                        py: 0, // 👈 mejor quitar padding vertical si defines height fija
                         display: "flex",
-                        justifyContent: "center", // 👈 centrado en ambos casos
+                        justifyContent: "center",
                         alignItems: "center",
                         width: "310px",
+                        height: isMobile ? "48px" : "48px",   // 👈 usa height
                         mx: "auto",
                         color: "white",
                         boxShadow: "0 3px 12px rgba(0, 0, 0, 0.3)",
@@ -325,7 +339,7 @@ const InformationsPromotions = ({
                           </Box>
                           <br />
                           <Box component="span" sx={{ fontWeight: 600, fontSize: "0.8rem", opacity: 0.9 }}>
-                            2 cuotas (💳 $30.000 inicio • $60.000 final)
+                            2 cuotas (💳 $30.000 reserva • $60.000 final)
                           </Box>
                         </Typography>
 
@@ -507,16 +521,16 @@ const InformationsPromotions = ({
                       // 🔹 Botón RESERVAR Transbank
                       <Box
                         component="button"
-                        onClick={handleReservar}
+                        onClick={() => setOpenDialog(true)}
                         sx={{
                           all: "unset",
                           boxSizing: "border-box",
-                          background: "linear-gradient(90deg, #6A1B9A, #8E24AA)", // 💜 morado degradado
+                          background: "linear-gradient(90deg, #6A1B9A, #8E24AA)",
                           color: "white",
                           border: "2px solid #4A148C",
                           borderRadius: "8px",
                           width: "310px",
-                          py: 0.5, // 👈 menos altura
+                          py: 0.5,
                           fontWeight: "bold",
                           fontSize: "0.9rem",
                           cursor: "pointer",
@@ -539,13 +553,27 @@ const InformationsPromotions = ({
                           component="img"
                           src="/logo-webpay.png"
                           alt="Transbank Logo"
+                          sx={{ width: 60, height: "auto", userSelect: "none" }}
+                        />
+                        <span>Reservar</span>
+                        <Box
+                          component={motion.img}
+                          src="/clic.jpg"
+                          alt="clic"
+                          loading="lazy"
+                          initial={{ scale: 1, y: 0 }}
+                          animate={{ scale: [1, 0.9, 1], y: [0, 1, 0] }}
+                          transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+                          whileTap={{ scale: 0.85, rotate: -3 }}
+                          whileHover={{ scale: 1.03, y: -1 }}
                           sx={{
-                            width: 60,
+                            filter: "invert(1) brightness(2)",
+                            width: { xs: 23, sm: 25 },
                             height: "auto",
+                            display: "block",
                             userSelect: "none",
                           }}
                         />
-                        <span>Reservar</span>
                       </Box>
 
 
@@ -581,18 +609,25 @@ const InformationsPromotions = ({
                           },
                         }}
                       >
+                        Solicitar Cotización
                         <Box
-                          component="img"
+                          component={motion.img}
                           src="/clic.jpg"
-                          alt="Ícono de clic"
+                          alt="clic"
+                          loading="lazy"
+                          initial={{ scale: 1, y: 0 }}
+                          animate={{ scale: [1, 0.9, 1], y: [0, 1, 0] }}
+                          transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+                          whileTap={{ scale: 0.85, rotate: -3 }}
+                          whileHover={{ scale: 1.03, y: -1 }}
                           sx={{
-                            width: 20,
-                            height: 20,
-                            userSelect: "none",
                             filter: "invert(1) brightness(2)",
+                            width: { xs: 23, sm: 25 },
+                            height: "auto",
+                            display: "block",
+                            userSelect: "none",
                           }}
                         />
-                        Solicitar Cotización
                       </Box>
                     )}
 
@@ -629,6 +664,15 @@ const InformationsPromotions = ({
           </motion.div>
         )
       }
+      <DialogTransbankCorreo
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        onConfirm={(email) => {
+          // aquí llega el email validado 👌
+          handleReservar(email);
+        }}
+      />
+
     </Box >
   );
 };

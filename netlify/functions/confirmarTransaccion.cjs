@@ -1,10 +1,14 @@
-const { WebpayPlus, IntegrationApiKeys, IntegrationCommerceCodes, Options } = require("transbank-sdk");
+const { WebpayPlus, IntegrationApiKeys, IntegrationCommerceCodes, Options, Environment } = require("transbank-sdk");
+
+const isProduction =
+    (process.env.TBK_ENV || "").toLowerCase().startsWith("prd") ||
+    (process.env.TBK_ENV || "").toLowerCase().startsWith("prod");
 
 const tx = new WebpayPlus.Transaction(
     new Options(
-        IntegrationCommerceCodes.WEBPAY_PLUS,
-        IntegrationApiKeys.WEBPAY,
-        WebpayPlus.DEFAULT_API_BASE
+        isProduction ? process.env.TBK_COMMERCE_CODE : IntegrationCommerceCodes.WEBPAY_PLUS,
+        isProduction ? process.env.TBK_API_KEY_SECRET : IntegrationApiKeys.WEBPAY,
+        isProduction ? Environment.Production : Environment.Integration
     )
 );
 
@@ -23,10 +27,10 @@ exports.handler = async (event) => {
 
     try {
         const { token_ws } = JSON.parse(event.body);
-        console.log("Token recibido para confirmación:", token_ws);
+        console.log("➡️ Token recibido para confirmación:", token_ws);
 
-        const response = await tx.commit(token_ws); // 👈 Confirmar con Transbank
-        console.log("Respuesta commit:", response);
+        const response = await tx.commit(token_ws);
+        console.log("✅ Respuesta commit:", response);
 
         return {
             statusCode: 200,
@@ -34,7 +38,7 @@ exports.handler = async (event) => {
             body: JSON.stringify(response),
         };
     } catch (err) {
-        console.error("Error en confirmarTransaccion:", err);
+        console.error("❌ Error en confirmarTransaccion:", err);
         return {
             statusCode: 500,
             headers: { "Access-Control-Allow-Origin": "*" },

@@ -71,6 +71,7 @@ npm install -g ngrok
 ngrok http 8888
 
 npm install connect-history-api-fallback --save-dev
+REGISTRARSE COMO CLIENTE PARA INGRESAR BANCO transbank.cl
 
 COMANDOS
 ========
