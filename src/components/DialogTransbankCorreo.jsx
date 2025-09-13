@@ -172,7 +172,7 @@ export default function DialogTransbankCorreo({
             fontWeight: 800,
             fontFamily: "'Poppins', sans-serif",
             color: "#fff",
-            fontSize: { xs: "1.2rem", sm: "1.4rem" },
+            fontSize: { xs: "1.0rem", sm: "1.4rem" },
             px: 3,
             py: 1,
             borderRadius: "999px",
@@ -209,7 +209,7 @@ export default function DialogTransbankCorreo({
             <DialogContent
               sx={{
                 background: "linear-gradient(180deg,#F3E5F5 0%,#EDE7F6 100%)",
-                py: 3,
+                py: 2,
                 px: { xs: 2, sm: 4 },
                 display: "flex",
                 flexDirection: "column",
@@ -217,10 +217,9 @@ export default function DialogTransbankCorreo({
               }}
             >
               <Typography
-                variant="body2"
-                sx={{ mb: 2, textAlign: "center", fontWeight: 500 }}
+                sx={{ mb: 2, textAlign: "center", fontWeight: 500, fontSize: { xs: "0.7rem", sm: "1rem" }, }}
               >
-                ✨ Tu correo será usado para confirmar tu compra.
+                ✨Tu correo será usado para confirmar tu compra.
               </Typography>
 
               <TextField
@@ -232,9 +231,14 @@ export default function DialogTransbankCorreo({
                 onBlur={() => setTouched(true)}
                 fullWidth
                 required
+                autoFocus
                 size="medium"
-                error={touched && !!error}
-                helperText={touched && error ? error : " "}
+                error={touched && !!error && !isValidEmail}
+                helperText={
+                  touched && error && !isValidEmail
+                    ? error
+                    : " " // espacio en blanco para mantener altura estable
+                }
                 sx={{
                   "& .MuiOutlinedInput-root": {
                     backgroundColor: "#fff", // 👈 input blanco

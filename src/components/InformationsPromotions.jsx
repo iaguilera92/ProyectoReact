@@ -20,7 +20,9 @@ const InformationsPromotions = ({
   modoDesarrollo = true,
 }) => {
 
+  const [openDialog, setOpenDialog] = useState(false);
   const [showOriginalPriceId1, setShowOriginalPriceId1] = useState(true);
+
   useEffect(() => {
     if (showPopularBadge) {
       const timer = setTimeout(() => {
@@ -31,20 +33,19 @@ const InformationsPromotions = ({
   }, [showPopularBadge]);
 
   // TRANSBANK
-  const [openDialog, setOpenDialog] = useState(false);
   const handleReservar = async () => {
     try {
       const endpoint =
-        window.location.hostname === "localhost"
-          ? "http://localhost:8888/.netlify/functions/crearTransaccion"
-          : "/.netlify/functions/crearTransaccion";
+        modoDesarrollo
+          ? "http://localhost:8888/.netlify/functions/crearTransaccion" // 👈 siempre sandbox
+          : "/.netlify/functions/crearTransaccion"; // 👈 real
 
       const resp = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount: 30000, // 💰 CLP
-          buyOrder: "RSW-" + Date.now().toString().slice(-10), // <= 26 chars
+          amount: 30000,
+          buyOrder: "RSW-" + Date.now().toString().slice(-10),
           sessionId: "SES-" + Date.now(),
           returnUrl:
             window.location.hostname === "localhost"
