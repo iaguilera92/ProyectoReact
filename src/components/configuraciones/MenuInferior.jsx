@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import BarChartIcon from "@mui/icons-material/BarChart";
 import HomeRepairServiceIcon from "@mui/icons-material/HomeRepairService";
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import EventAvailableIcon from '@mui/icons-material/EventAvailable'; // 👈 nuevo ícono
 import { useLocation } from 'react-router-dom';
 
 const MenuInferior = ({ cardSize }) => {
@@ -40,14 +41,19 @@ const MenuInferior = ({ cardSize }) => {
             icono: <HomeRepairServiceIcon sx={{ fontSize: 45, color: "success.main" }} />,
             texto: "Trabajos",
         },
+        "/reservas": {
+            icono: <EventAvailableIcon sx={{ fontSize: 45, color: "success.main" }} />,
+            texto: "Reservas",
+        },
     };
 
-    const orden = ["/clientes", "/dashboard", "/configurar-trabajos"];
+    const orden = ["/clientes", "/dashboard", "/configurar-trabajos", "/reservas"];
     const rutaCentral = orden.find(r => pathname.startsWith(r)) || "/dashboard";
-    const rutasLaterales = orden.filter(r => r !== rutaCentral);
 
-    const renderBoton = (ruta, esCentral) => {
+    const renderBoton = (ruta) => {
         const { icono, texto } = opciones[ruta];
+        const esCentral = ruta === rutaCentral;
+
         const baseStyles = {
             flex: esCentral ? 1.3 : 1,
             height: esCentral ? 108 : 65,
@@ -134,9 +140,7 @@ const MenuInferior = ({ cardSize }) => {
                     pointerEvents: "auto",
                 }}
             >
-                {renderBoton(rutasLaterales[0], false)}
-                {renderBoton(rutaCentral, true)}
-                {renderBoton(rutasLaterales[1], false)}
+                {orden.map((ruta) => renderBoton(ruta))}
             </Box>
         </motion.div>
     );

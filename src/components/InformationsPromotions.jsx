@@ -32,12 +32,11 @@ const InformationsPromotions = ({
     }
   }, [showPopularBadge]);
 
-  // TRANSBANK
-  const handleReservar = async () => {
+  const handleReservar = async (email) => {
     try {
       const endpoint =
         modoDesarrollo
-          ? "http://localhost:8888/.netlify/functions/crearTransaccion" // 👈 siempre sandbox
+          ? "http://localhost:8888/.netlify/functions/crearTransaccion" // 👈 sandbox
           : "/.netlify/functions/crearTransaccion"; // 👈 real
 
       const resp = await fetch(endpoint, {
@@ -51,6 +50,7 @@ const InformationsPromotions = ({
             window.location.hostname === "localhost"
               ? "http://localhost:5173/reserva"
               : "https://plataformas-web.cl/reserva",
+          email, // 👈 aquí mandamos el correo capturado
         }),
       });
 
@@ -669,7 +669,6 @@ const InformationsPromotions = ({
         open={openDialog}
         onClose={() => setOpenDialog(false)}
         onConfirm={(email) => {
-          // aquí llega el email validado 👌
           handleReservar(email);
         }}
       />

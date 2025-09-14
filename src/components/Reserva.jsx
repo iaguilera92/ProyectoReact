@@ -48,27 +48,31 @@ const Reserva = () => {
       return;
     }
 
+    // recuperar email almacenado en el flujo inicial
+    const email = sessionStorage.getItem("emailReserva");
+
     fetch(
       window.location.hostname === "localhost"
-        ? "http://localhost:8888/.netlify/functions/confirmarTransaccion"
-        : "/.netlify/functions/confirmarTransaccion",
+        ? "http://localhost:8888/.netlify/functions/agregarReserva"
+        : "/.netlify/functions/agregarReserva",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token_ws }),
+        body: JSON.stringify({ token_ws, email }), // 👈 ahora mandamos ambos
       }
     )
       .then((res) => res.json())
       .then((data) => {
-        console.log("➡️ Resultado recibido del commit:", data);
+        console.log("➡️ Resultado recibido del commit+guardar:", data);
         setResultado(data);
         setLoading(false);
       })
       .catch((err) => {
-        console.error("Error confirmando:", err);
+        console.error("Error confirmando/agregando:", err);
         setLoading(false);
       });
   }, [searchParams]);
+
 
   const renderResultado = () => {
     if (loading) {

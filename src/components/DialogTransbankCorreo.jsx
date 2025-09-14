@@ -72,6 +72,9 @@ export default function DialogTransbankCorreo({
 
     setTimeout(async () => {
       try {
+        // 👇 guardar primero el email en sessionStorage
+        sessionStorage.setItem("emailReserva", email);
+
         await onConfirm?.(email);
         onClose();
       } finally {
@@ -88,8 +91,14 @@ export default function DialogTransbankCorreo({
       maxWidth="xs"
       fullWidth
       TransitionComponent={Transition}
+      sx={{
+        "& .MuiDialog-container": {
+          alignItems: { xs: "flex-start", sm: "center" }, // 📱 arriba, 🖥️ centrado
+        },
+      }}
       PaperProps={{
         sx: {
+          mt: { xs: 2, sm: 0 }, // 📱 un poco de margen arriba, 🖥️ sin margen extra
           borderRadius: 2,
           border: "1px solid rgba(106,27,154,.35)",
           boxShadow: "0 24px 64px rgba(0,0,0,.45)",
@@ -97,6 +106,7 @@ export default function DialogTransbankCorreo({
         },
       }}
     >
+
       {/* Header */}
       <DialogTitle
         sx={{

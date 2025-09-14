@@ -15,9 +15,9 @@ function Hero({ informationsRef, setVideoReady }) {
   const videoRef = useRef(null);
 
   const texts = [
-    { title: "Innovación Tecnológica", description: "Sistemas y sitios web con última tecnología." },
-    { title: "Soporte Evolutivo", description: "Materializamos tu ideas." },
-    { title: "Plataformas TI", description: "Impulsamos tu negocio con tecnología" }
+    { title: "Si no estás en la web, no existes." },
+    { title: "Tu web es la primera impresión." },
+    { title: "Un Sitio web trabaja para ti." }
   ];
 
   //PAUSAR VIDEO SI NO SE VE
@@ -221,13 +221,10 @@ function Hero({ informationsRef, setVideoReady }) {
                     gutterBottom
                     className="text"
                     sx={{
-                      fontSize: isMobile ? "1.62rem !important" : "2.5rem !important",
+                      fontSize: isMobile ? "1.35rem !important" : "2.5rem !important",
                     }}
                   >
                     {texts[currentText].title}
-                  </Typography>
-                  <Typography variant="h6" paragraph>
-                    {texts[currentText].description}
                   </Typography>
                 </motion.div>
               </AnimatePresence>
