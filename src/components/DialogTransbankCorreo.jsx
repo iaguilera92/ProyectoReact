@@ -16,7 +16,7 @@ export default function DialogTransbankCorreo({
   open,
   onClose,
   onConfirm,
-  primaryLabel = "Continuar a Webpay",
+  primaryLabel = "Pagar con Webpay",
 }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -394,6 +394,7 @@ export default function DialogTransbankCorreo({
             background: "linear-gradient(90deg,#6A1B9A,#8E24AA)",
             boxShadow: armed ? "0 6px 18px rgba(106,27,154,.35)" : "none",
             transition: "all 0.3s ease",
+            fontSize: { xs: "0.75rem", sm: "0.9rem" }, // 👈 más chico en mobile
             "&:hover": {
               background: "linear-gradient(90deg,#7B1FA2,#9C27B0)",
             },
@@ -405,6 +406,7 @@ export default function DialogTransbankCorreo({
             <>💳 {primaryLabel}</>
           )}
         </Button>
+
       </DialogActions>
     </Dialog >
   );

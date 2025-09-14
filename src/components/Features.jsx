@@ -167,7 +167,7 @@ function Features({ videoReady }) {
               position: "relative",
               overflow: "hidden",
               justifyContent: "center",
-              gap: 0.6,
+              gap: 0,
               maxWidth: { xs: "100%", md: "520px" },
               "&:hover": {
                 background: "linear-gradient(135deg,#ffb74d,#fb8c00)",
@@ -208,7 +208,7 @@ function Features({ videoReady }) {
                 ease: "easeOut",
                 delay: isMobile ? 1.5 : 1, // 🔑 espera 1s después de hasAnimated
               }}
-              style={{ display: "flex", alignItems: "center", gap: 2 }}
+              style={{ display: "flex", alignItems: "center", gap: 0.5 }}
             >
               {/* Reloj */}
               <AccessTimeFilledRoundedIcon
@@ -230,11 +230,17 @@ function Features({ videoReady }) {
                   flexWrap: "nowrap",
                   gap: { xs: 0.4, sm: 1 },
                   overflow: "hidden",
-                  fontSize: { xs: "0.71rem", sm: "0.9rem" },
+                  fontSize: { xs: "0.75rem", sm: "0.9rem" },
                 }}
               >
-                <span>EN DESARROLLO:</span>
-
+                <Typography
+                  sx={{
+                    fontSize: { xs: "0.61rem", sm: "1rem" },
+                    fontWeight: 600,
+                  }}
+                >
+                  EN DESARROLLO:
+                </Typography>
                 <Box
                   sx={{
                     minWidth: { xs: 90, sm: 120 },
