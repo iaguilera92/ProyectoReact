@@ -28,17 +28,13 @@ function Contacto() {
   const [startAnimation, setStartAnimation] = useState(false);
   const [containerHeight, setContainerHeight] = useState("50vh"); // Inicia con 50vh
   const [rotate, setRotate] = useState(0);
-  const initialZoom = 3; // Zoom inicial lejano
   const finalZoom = 17; // Zoom final al que queremos llegar
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.3 });
-
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: "",
-    type: "error", // "error", "success", etc.
-  });
+  const [activeSucursal, setActiveSucursal] = useState(0);
+  const [showBanner, setShowBanner] = useState(true);
+  const [snackbar, setSnackbar] = useState({ open: false, message: "", type: "error" });
 
   useEffect(() => {
     if (inView) {
@@ -92,12 +88,7 @@ function Contacto() {
     { coords: otraSucursalPosition2, icon: iconSucursal3, text: "¡Creamos tu Web!" },
   ];
 
-  const [activeSucursal, setActiveSucursal] = useState(0);
-  const [showBanner, setShowBanner] = useState(true);
-  const secondShownRef = useRef(false);
-
-
-  const FlyLoop = ({ sucursales, interval = 6000, firstDelay = 3000, zoom = 16, activeSucursal }) => {
+  const FlyLoop = ({ sucursales, interval = 6000, firstDelay = 4500, zoom = 16, activeSucursal }) => {
     const map = useMapEvent("load", () => { });
     const idxRef = useRef(activeSucursal);
 
@@ -115,7 +106,6 @@ function Contacto() {
         if (!nextSucursal) return;
 
         const target = nextSucursal.coords;
-        console.log(`🛫 Iniciando vuelo hacia sucursal ${nextIdx + 1} (${target[0]}, ${target[1]})`);
 
         setShowBanner(false);
 
@@ -129,7 +119,6 @@ function Contacto() {
           idxRef.current = nextIdx;
           setActiveSucursal(nextIdx);
           setShowBanner(true);
-          console.log(`✅ Llegamos a sucursal ${nextIdx + 1}`);
         }, 2000);
       };
 
@@ -498,7 +487,7 @@ const ZoomEffect = ({ zoom, startAnimation, position }) => {
 
     const delayTimer = setTimeout(() => {
       let zoomLevel = isMobile ? 7 : 5;
-      const zoomSpeed = isMobile ? 0.06 : 0.05;
+      const zoomSpeed = isMobile ? 0.05 : 0.05;
       const offsetY = isMobile ? 0.0001 : 0;
       const correctedPosition = [position[0] + offsetY, position[1]];
 
