@@ -11,7 +11,7 @@ import ContactoForm from './ContactoForm';
 // 📍 Coordenadas
 const finalPosition = [-33.435054, -70.688067]; // sucursal 1
 const otraSucursalPosition = [-33.43341720871407, -70.63634900664654];// sucursal 2
-const otraSucursalPosition2 = [-33.40, -70.72]; // sucursal 3
+const otraSucursalPosition2 = [-33.56868063044323, -70.77689075499913]; // sucursal 3
 
 const letterVariants = {
   hidden: { opacity: 0, x: -20 },
@@ -87,7 +87,7 @@ function Contacto() {
 
   // 📌 Array de sucursales
   const sucursales = [
-    { coords: finalPosition, icon: iconSucursal1, text: "Encuéntranos!" },
+    { coords: finalPosition, icon: iconSucursal1, text: "¡Visítanos aquí!" },
     { coords: otraSucursalPosition, icon: iconSucursal2, text: "Cotiza con nosotros!" },
     { coords: otraSucursalPosition2, icon: iconSucursal3, text: "¡Creamos tu Web!" },
   ];
@@ -320,96 +320,97 @@ function Contacto() {
                     >
                       <Box sx={{ flexGrow: 1, height: "100%" }}>
                         <Box sx={{ width: "100%", height: isMobile ? "40vh" : "100%", overflow: "hidden" }}>
+                          {inView && (
 
-                          <MapContainer
-                            center={sucursales[activeSucursal].coords}
-                            zoom={16}
-                            style={{
-                              width: "100%",
-                              height: isMobile ? "40vh" : "100%",
-                            }}
-                            dragging={false}
-                            scrollWheelZoom={false}
-                            touchZoom={false}
-                            doubleClickZoom={false}
-                            zoomControl={false}
-                            whenCreated={() => setMapLoaded(true)}
-                          >
-                            <TileLayer
-                              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                              subdomains={["a", "b"]}
-                              maxZoom={17}
-                              noWrap
-                              updateWhenIdle
-                            />
+                            <MapContainer
+                              center={sucursales[activeSucursal].coords}
+                              zoom={16}
+                              style={{
+                                width: "100%",
+                                height: isMobile ? "40vh" : "100%",
+                              }}
+                              dragging={false}
+                              scrollWheelZoom={false}
+                              touchZoom={false}
+                              doubleClickZoom={false}
+                              zoomControl={false}
+                              whenCreated={() => setMapLoaded(true)}
+                            >
+                              <TileLayer
+                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                                subdomains={["a", "b"]}
+                                maxZoom={17}
+                                noWrap
+                                updateWhenIdle
+                              />
 
-                            {/* 📍 Primera sucursal siempre */}
-                            <Marker position={sucursales[0].coords} icon={sucursales[0].icon} />
+                              {/* 📍 Primera sucursal siempre */}
+                              <Marker position={sucursales[0].coords} icon={sucursales[0].icon} />
 
-                            {/* 📍 Mostrar las demás cuando ya hayan sido visitadas */}
-                            {activeSucursal > 0 &&
-                              sucursales.slice(1).map((s, i) => (
-                                <Marker key={i + 1} position={s.coords} icon={s.icon} />
-                              ))}
+                              {/* 📍 Mostrar las demás cuando ya hayan sido visitadas */}
+                              {activeSucursal > 0 &&
+                                sucursales.slice(1).map((s, i) => (
+                                  <Marker key={i + 1} position={s.coords} icon={s.icon} />
+                                ))}
 
-                            <ZoomEffect zoom={finalZoom} position={sucursales[activeSucursal].coords} />
+                              <ZoomEffect zoom={finalZoom} position={sucursales[activeSucursal].coords} />
 
-                            <MapClickHandler />
+                              <MapClickHandler />
 
-                            <AnimatePresence mode="wait">
-                              {showBanner && (
-                                <motion.div
-                                  key={activeSucursal} // 👈 cambia con cada sucursal
-                                  initial={{ opacity: 0, y: -10 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  exit={{ opacity: 0, y: -10 }}
-                                  transition={{ duration: 0.6 }}
-                                  style={{
-                                    position: "absolute",
-                                    top: isMobile ? "14%" : "16%", // ✅ igual que antes
-                                    left: isMobile ? "18%" : "35%",                   // ✅ centrado horizontal
-                                    transform: "translateX(-50%)", // ✅ centrado real
-                                    backgroundColor: "black",
-                                    color: "white",
-                                    padding: "10px 20px",
-                                    textAlign: "center",
-                                    width: "220px",
-                                    borderRadius: "5px",
-                                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.5)",
-                                    fontSize: "14px",
-                                    fontWeight: "bold",
-                                    zIndex: 1000,
-                                    pointerEvents: "none",
-                                  }}
-                                >
-                                  {sucursales[activeSucursal].text}
-                                  <div
+                              <AnimatePresence mode="wait">
+                                {showBanner && (
+                                  <motion.div
+                                    key={activeSucursal} // 👈 cambia con cada sucursal
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    transition={{ duration: 0.6 }}
                                     style={{
                                       position: "absolute",
-                                      bottom: "-8px",
-                                      left: "50%",
-                                      transform: "translateX(-50%)",
-                                      width: 0,
-                                      height: 0,
-                                      borderLeft: "10px solid transparent",
-                                      borderRight: "10px solid transparent",
-                                      borderTop: "10px solid black",
+                                      top: isMobile ? "14%" : "16%", // ✅ igual que antes
+                                      left: isMobile ? "18%" : "35%",                   // ✅ centrado horizontal
+                                      transform: "translateX(-50%)", // ✅ centrado real
+                                      backgroundColor: "black",
+                                      color: "white",
+                                      padding: "10px 20px",
+                                      textAlign: "center",
+                                      width: "220px",
+                                      borderRadius: "5px",
+                                      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.5)",
+                                      fontSize: "14px",
+                                      fontWeight: "bold",
+                                      zIndex: 1000,
+                                      pointerEvents: "none",
                                     }}
-                                  />
-                                </motion.div>
-                              )}
-                            </AnimatePresence>
+                                  >
+                                    {sucursales[activeSucursal].text}
+                                    <div
+                                      style={{
+                                        position: "absolute",
+                                        bottom: "-8px",
+                                        left: "50%",
+                                        transform: "translateX(-50%)",
+                                        width: 0,
+                                        height: 0,
+                                        borderLeft: "10px solid transparent",
+                                        borderRight: "10px solid transparent",
+                                        borderTop: "10px solid black",
+                                      }}
+                                    />
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
 
-                            {/* 🚀 Loop automático */}
-                            <FlyLoop
-                              sucursales={sucursales}
-                              interval={6000}
-                              zoom={16}
-                              activeSucursal={activeSucursal}
-                            />
-                          </MapContainer>
-
+                              {/* 🚀 Loop automático */}
+                              <FlyLoop
+                                sucursales={sucursales}
+                                interval={6000}
+                                zoom={16}
+                                activeSucursal={activeSucursal}
+                              />
+                            </MapContainer>
+                          )}
                         </Box>
                       </Box>
                     </motion.div>
