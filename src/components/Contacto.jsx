@@ -1,14 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Container, Typography, Box, Snackbar, Alert, Grid, useMediaQuery, useTheme } from "@mui/material";
 import { useInView } from "react-intersection-observer";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import "./css/Contacto.css"; // Importamos el CSS
 import "leaflet/dist/leaflet.css"; // Estilo básico de Leaflet
 import { MapContainer, TileLayer, Marker, useMapEvent } from "react-leaflet";
 import L from "leaflet";
 import ContactoForm from './ContactoForm';
 
-const finalPosition = [-33.435054, -70.688067];
+// 📍 Coordenadas
+const finalPosition = [-33.435054, -70.688067]; // sucursal 1
+const otraSucursalPosition = [-33.43341720871407, -70.63634900664654];// sucursal 2
+const otraSucursalPosition2 = [-33.40, -70.72]; // sucursal 3
 
 const letterVariants = {
   hidden: { opacity: 0, x: -20 },
@@ -25,7 +28,6 @@ function Contacto() {
   const [startAnimation, setStartAnimation] = useState(false);
   const [containerHeight, setContainerHeight] = useState("50vh"); // Inicia con 50vh
   const [rotate, setRotate] = useState(0);
-  const [isHovered, setIsHovered] = useState(false); // Estado para detectar si el mouse está encima
   const initialZoom = 3; // Zoom inicial lejano
   const finalZoom = 17; // Zoom final al que queremos llegar
   const theme = useTheme();
@@ -60,21 +62,93 @@ function Contacto() {
     return null; // No renderiza nada, solo maneja el evento
   };
 
-  useEffect(() => {
-    let interval;
 
-    if (inView) { // Solo inicia la rotación si el componente es visible en pantalla
-      interval = setInterval(() => {
-        if (!isHovered) {
-          setRotate((prevRotate) => (prevRotate + 180) % 360); // Cambia la rotación cada 7 segundos si no hay hover
-        }
-      }, 6000);
-    } else {
-      clearInterval(interval); // Detiene la rotación si el usuario scrollea fuera del componente
-    }
+  // 📌 Iconos
+  const iconSucursal1 = new L.Icon({
+    iconUrl: "/logo-mapa.webp",
+    iconSize: [160, 160],
+    iconAnchor: [80, 80],
+    popupAnchor: [0, -80],
+  });
 
-    return () => clearInterval(interval); // Limpia el intervalo al desmontar o cambiar la visibilidad
-  }, [isHovered, inView]);
+  const iconSucursal2 = new L.Icon({
+    iconUrl: "/logo-mapa.webp",
+    iconSize: [160, 160],
+    iconAnchor: [80, 80],
+    popupAnchor: [0, -80],
+  });
+
+  const iconSucursal3 = new L.Icon({
+    iconUrl: "/logo-mapa.webp",
+    iconSize: [160, 160],
+    iconAnchor: [80, 80],
+    popupAnchor: [0, -80],
+  });
+
+  // 📌 Array de sucursales
+  const sucursales = [
+    { coords: finalPosition, icon: iconSucursal1, text: "Encuéntranos!" },
+    { coords: otraSucursalPosition, icon: iconSucursal2, text: "Cotiza con nosotros!" },
+    { coords: otraSucursalPosition2, icon: iconSucursal3, text: "¡Creamos tu Web!" },
+  ];
+
+  const [activeSucursal, setActiveSucursal] = useState(0);
+  const [showBanner, setShowBanner] = useState(true);
+  const secondShownRef = useRef(false);
+
+
+  const FlyLoop = ({ sucursales, interval = 6000, firstDelay = 3000, zoom = 16, activeSucursal }) => {
+    const map = useMapEvent("load", () => { });
+    const idxRef = useRef(activeSucursal);
+
+    useEffect(() => {
+      if (!map || !sucursales?.length) return;
+
+      idxRef.current = activeSucursal;
+
+      let firstTimer;
+      let loopTimer;
+
+      const doFly = () => {
+        const nextIdx = (idxRef.current + 1) % sucursales.length;
+        const nextSucursal = sucursales[nextIdx];
+        if (!nextSucursal) return;
+
+        const target = nextSucursal.coords;
+        console.log(`🛫 Iniciando vuelo hacia sucursal ${nextIdx + 1} (${target[0]}, ${target[1]})`);
+
+        setShowBanner(false);
+
+        map.flyTo(target, zoom, {
+          animate: true,
+          duration: 2,
+          easeLinearity: 0.25,
+        });
+
+        setTimeout(() => {
+          idxRef.current = nextIdx;
+          setActiveSucursal(nextIdx);
+          setShowBanner(true);
+          console.log(`✅ Llegamos a sucursal ${nextIdx + 1}`);
+        }, 2000);
+      };
+
+      // ⏱️ Primer vuelo más rápido
+      firstTimer = setTimeout(() => {
+        doFly();
+        // ⏱️ Después, iniciar loop normal
+        loopTimer = setInterval(doFly, interval);
+      }, firstDelay);
+
+      return () => {
+        clearTimeout(firstTimer);
+        clearInterval(loopTimer);
+      };
+    }, [map, sucursales, zoom, interval, firstDelay, activeSucursal]);
+
+    return null;
+  };
+
 
 
   return (
@@ -246,8 +320,9 @@ function Contacto() {
                     >
                       <Box sx={{ flexGrow: 1, height: "100%" }}>
                         <Box sx={{ width: "100%", height: isMobile ? "40vh" : "100%", overflow: "hidden" }}>
+
                           <MapContainer
-                            center={finalPosition}
+                            center={sucursales[activeSucursal].coords}
                             zoom={16}
                             style={{
                               width: "100%",
@@ -262,58 +337,78 @@ function Contacto() {
                           >
                             <TileLayer
                               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                              subdomains={['a', 'b']} // solo dos subdominios
+                              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                              subdomains={["a", "b"]}
                               maxZoom={17}
-                              noWrap={true}
-                              updateWhenIdle={true}
+                              noWrap
+                              updateWhenIdle
                             />
-                            <Marker
-                              position={finalPosition}
-                              icon={new L.Icon({
-                                iconUrl: "/logo-mapa.webp",
-                                iconSize: [160, 160],
-                                iconAnchor: [80, 80],
-                                popupAnchor: [0, -80],
-                              })}
-                            />
-                            <ZoomEffect zoom={finalZoom} />
-                            {/* ✅ Mensaje "Encuéntranos!" */}
-                            <div
-                              style={{
-                                position: "absolute",
-                                top: isMobile ? "14%" : "16%",
-                                left: "50%",
-                                transform: "translateX(-50%)",
-                                backgroundColor: "black",
-                                color: "white",
-                                padding: "10px 20px",
-                                borderRadius: "5px",
-                                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.5)",
-                                fontSize: "16px",
-                                fontWeight: "bold",
-                                zIndex: 1000,
-                                pointerEvents: "none",
-                              }}
-                            >
-                              ¡Encuéntranos!
-                              <div
-                                style={{
-                                  position: "absolute",
-                                  bottom: "-8px",
-                                  left: "50%",
-                                  transform: "translateX(-50%)",
-                                  width: 0,
-                                  height: 0,
-                                  borderLeft: "10px solid transparent",
-                                  borderRight: "10px solid transparent",
-                                  borderTop: "10px solid black",
-                                }}
-                              />
-                            </div>
-                            <MapClickHandler />
-                          </MapContainer>
 
+                            {/* 📍 Primera sucursal siempre */}
+                            <Marker position={sucursales[0].coords} icon={sucursales[0].icon} />
+
+                            {/* 📍 Mostrar las demás cuando ya hayan sido visitadas */}
+                            {activeSucursal > 0 &&
+                              sucursales.slice(1).map((s, i) => (
+                                <Marker key={i + 1} position={s.coords} icon={s.icon} />
+                              ))}
+
+                            <ZoomEffect zoom={finalZoom} position={sucursales[activeSucursal].coords} />
+
+                            <MapClickHandler />
+
+                            <AnimatePresence mode="wait">
+                              {showBanner && (
+                                <motion.div
+                                  key={activeSucursal} // 👈 cambia con cada sucursal
+                                  initial={{ opacity: 0, y: -10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  exit={{ opacity: 0, y: -10 }}
+                                  transition={{ duration: 0.6 }}
+                                  style={{
+                                    position: "absolute",
+                                    top: isMobile ? "14%" : "16%", // ✅ igual que antes
+                                    left: isMobile ? "18%" : "35%",                   // ✅ centrado horizontal
+                                    transform: "translateX(-50%)", // ✅ centrado real
+                                    backgroundColor: "black",
+                                    color: "white",
+                                    padding: "10px 20px",
+                                    textAlign: "center",
+                                    width: "220px",
+                                    borderRadius: "5px",
+                                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.5)",
+                                    fontSize: "14px",
+                                    fontWeight: "bold",
+                                    zIndex: 1000,
+                                    pointerEvents: "none",
+                                  }}
+                                >
+                                  {sucursales[activeSucursal].text}
+                                  <div
+                                    style={{
+                                      position: "absolute",
+                                      bottom: "-8px",
+                                      left: "50%",
+                                      transform: "translateX(-50%)",
+                                      width: 0,
+                                      height: 0,
+                                      borderLeft: "10px solid transparent",
+                                      borderRight: "10px solid transparent",
+                                      borderTop: "10px solid black",
+                                    }}
+                                  />
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+
+                            {/* 🚀 Loop automático */}
+                            <FlyLoop
+                              sucursales={sucursales}
+                              interval={6000}
+                              zoom={16}
+                              activeSucursal={activeSucursal}
+                            />
+                          </MapContainer>
 
                         </Box>
                       </Box>
@@ -383,11 +478,13 @@ function Contacto() {
             </Snackbar>
           </Box>
         </Box>
-      )}
+      )
+      }
     </Container >
   );
 }
-const ZoomEffect = ({ zoom, startAnimation }) => {
+const ZoomEffect = ({ zoom, startAnimation, position }) => {
+
   const map = useMapEvent("load", () => { });
   const zoomApplied = useRef(false);
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.3 });
@@ -402,7 +499,7 @@ const ZoomEffect = ({ zoom, startAnimation }) => {
       let zoomLevel = isMobile ? 7 : 5;
       const zoomSpeed = isMobile ? 0.06 : 0.05;
       const offsetY = isMobile ? 0.0001 : 0;
-      const correctedPosition = [finalPosition[0] + offsetY, finalPosition[1]];
+      const correctedPosition = [position[0] + offsetY, position[1]];
 
       map.setView(correctedPosition, zoomLevel, {
         animate: true,
@@ -434,16 +531,5 @@ const ZoomEffect = ({ zoom, startAnimation }) => {
   return <div ref={ref} style={{ width: "100%", height: "100%" }} />;
 };
 
-
-
-// Componente que redirige a Google Maps al hacer clic en el mapa
-const MapClickHandler = () => {
-  useMapEvent("click", () => {
-    const googleMapsUrl = `https://www.google.com/maps?q=${finalPosition[0]},${finalPosition[1]}`;
-    window.open(googleMapsUrl, "_blank");
-  });
-
-  return null;
-};
 
 export default Contacto;
