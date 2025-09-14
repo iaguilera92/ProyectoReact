@@ -17,7 +17,7 @@ const InformationsPromotions = ({
   setShowArrow,
   handleContactClick,
   showPopularBadge,
-  modoDesarrollo = true,
+  modoDesarrollo = false,
 }) => {
 
   const [openDialog, setOpenDialog] = useState(false);
