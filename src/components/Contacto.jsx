@@ -310,13 +310,13 @@ function Contacto() {
                       <Box sx={{ flexGrow: 1, height: "100%" }}>
                         <Box sx={{ width: "100%", height: isMobile ? "40vh" : "100%", overflow: "hidden" }}>
                           {inView && (
-
                             <MapContainer
                               center={sucursales[activeSucursal].coords}
                               zoom={16}
                               style={{
                                 width: "100%",
                                 height: isMobile ? "40vh" : "100%",
+                                position: "relative",   // 👈 Necesario para centrar el banner
                               }}
                               dragging={false}
                               scrollWheelZoom={false}
@@ -334,40 +334,39 @@ function Contacto() {
                                 updateWhenIdle
                               />
 
-                              {/* 📍 Primera sucursal siempre */}
+                              {/* 📍 Siempre visible */}
                               <Marker position={sucursales[0].coords} icon={sucursales[0].icon} />
 
-                              {/* 📍 Mostrar las demás cuando ya hayan sido visitadas */}
+                              {/* 📍 Otras sucursales cuando ya se mostraron */}
                               {activeSucursal > 0 &&
                                 sucursales.slice(1).map((s, i) => (
                                   <Marker key={i + 1} position={s.coords} icon={s.icon} />
                                 ))}
 
                               <ZoomEffect zoom={finalZoom} position={sucursales[activeSucursal].coords} />
-
                               <MapClickHandler />
 
                               <AnimatePresence mode="wait">
                                 {showBanner && (
                                   <motion.div
-                                    key={activeSucursal} // 👈 cambia con cada sucursal
+                                    key={activeSucursal}
                                     initial={{ opacity: 0, y: -10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: -10 }}
                                     transition={{ duration: 0.6 }}
                                     style={{
                                       position: "absolute",
-                                      top: isMobile ? "14%" : "16%", // ✅ igual que antes
-                                      left: isMobile ? "18%" : "35%",                   // ✅ centrado horizontal
-                                      transform: "translateX(-50%)", // ✅ centrado real
+                                      top: isMobile ? "18%" : "16%", // un poco más arriba en mobile
+                                      left: "27%",                   // 👈 siempre al 50%
+                                      transform: "translateX(-50%)", // 👈 corrección exacta
                                       backgroundColor: "black",
                                       color: "white",
                                       padding: "10px 20px",
                                       textAlign: "center",
-                                      width: "220px",
+                                      width: isMobile ? "180px" : "220px", // 👈 más angosto en mobile
                                       borderRadius: "5px",
                                       boxShadow: "0 4px 8px rgba(0, 0, 0, 0.5)",
-                                      fontSize: "14px",
+                                      fontSize: isMobile ? "12px" : "14px", // 👈 ajuste de tipografía
                                       fontWeight: "bold",
                                       zIndex: 1000,
                                       pointerEvents: "none",
@@ -391,14 +390,10 @@ function Contacto() {
                                 )}
                               </AnimatePresence>
 
-                              {/* 🚀 Loop automático */}
-                              <FlyLoop
-                                sucursales={sucursales}
-                                interval={6000}
-                                zoom={16}
-                                activeSucursal={activeSucursal}
-                              />
+
+                              <FlyLoop sucursales={sucursales} interval={6000} zoom={16} activeSucursal={activeSucursal} />
                             </MapContainer>
+
                           )}
                         </Box>
                       </Box>

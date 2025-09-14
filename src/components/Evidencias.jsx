@@ -166,6 +166,7 @@ const Evidencias = () => {
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat',
+                    backgroundAttachment: 'scroll',
                     zIndex: 1,
                 }}
             >
