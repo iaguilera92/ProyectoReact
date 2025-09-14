@@ -14,7 +14,7 @@ import InformationsPromotions from './InformationsPromotions';
 const promotions = [
   {
     id: 1,
-    title: "🌐Sitios Web",
+    title: "Sitios Web",
     description: "Entrega en menos de 72hrs.",
     image: "/promocion-1.webp",
     price: "$90.000",

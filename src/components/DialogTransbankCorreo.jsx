@@ -98,7 +98,7 @@ export default function DialogTransbankCorreo({
       }}
       PaperProps={{
         sx: {
-          mt: { xs: 2, sm: 0 }, // 📱 un poco de margen arriba, 🖥️ sin margen extra
+          mt: { xs: 5, sm: 0 },
           borderRadius: 2,
           border: "1px solid rgba(106,27,154,.35)",
           boxShadow: "0 24px 64px rgba(0,0,0,.45)",
@@ -185,6 +185,7 @@ export default function DialogTransbankCorreo({
             fontSize: { xs: "1.0rem", sm: "1.4rem" },
             px: 3,
             py: 0.5,
+            mt: 1.5,
             borderRadius: "999px",
             border: "2px solid rgba(255,255,255,0.3)",
             backgroundColor: "rgba(0,0,0,0.25)",

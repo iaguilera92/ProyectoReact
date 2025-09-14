@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Box, IconButton, Typography } from '@mui/material';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import AccessTimeFilledRoundedIcon from '@mui/icons-material/AccessTimeFilledRounded';
 import DialogTransbankCorreo from "./DialogTransbankCorreo";
@@ -205,11 +205,27 @@ const InformationsPromotions = ({
                         letterSpacing: "1.1px",
                         mb: 0,
                         position: "relative",
-                        display: "inline-block",
+                        display: "flex",          // 👈 flex para alinear imagen + texto
+                        alignItems: "center",     // 👈 centrado vertical
+                        gap: 0.5,                 // 👈 separación pequeña
                       }}
                     >
+                      {promo.id === 1 && (
+                        <Box
+                          component="img"
+                          src="/logo-sitio-web.webp"
+                          alt="Logo sitio web"
+                          sx={{
+                            height: "1.1em",       // 👈 tamaño relativo al texto (como emoji)
+                            width: "auto",
+                            objectFit: "contain",
+                            mt: "-2px",
+                          }}
+                        />
+                      )}
                       {promo.title}
                     </Typography>
+
 
                     {/* Descripción */}
                     <Typography
@@ -316,31 +332,85 @@ const InformationsPromotions = ({
                           sx={{
                             fontFamily: "'Mukta', sans-serif",
                             fontWeight: 300,
-                            fontSize: isMobile ? "1rem" : "1rem", // 👈 más grande
+                            fontSize: isMobile ? "1rem" : "1rem",
                             textTransform: "none",
                             lineHeight: 1.3,
                             width: "100%",
                             textAlign: "center",
                           }}
                         >
-                          Precio desarrollo:
                           <Box
                             component="span"
                             sx={{
-                              display: "inline-block",
-                              fontSize: isMobile ? "1rem" : "1rem", // 👈 más grande
-                              fontWeight: 800,
-                              background: "linear-gradient(90deg, #FFD700, #FFA500)", // 👈 degradado dorado
-                              WebkitBackgroundClip: "text",
-                              WebkitTextFillColor: "transparent",
-                              textShadow: "0 2px 6px rgba(0,0,0,0.4)", // 👈 sombra para resaltar
-                              ml: 0.2
+                              display: "inline-flex",
+                              alignItems: "center",
+                              ml: 6,
                             }}
                           >
-                            {promo.price}
+                            Precio desarrollo:
+                            <Box
+                              component="span"
+                              sx={{
+                                display: "inline-block",
+                                position: "relative",
+                                marginLeft: "0.2rem",
+                                minWidth: "95px",     // 👈 espacio reservado (ajústalo al ancho más largo)
+                                height: "1.2rem",
+                              }}
+                            >
+                              <AnimatePresence mode="wait">
+                                {showOriginalPriceId1 ? (
+                                  <motion.span
+                                    key="precio-original"
+                                    initial={{ opacity: 1, x: 0 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: 50 }}
+                                    transition={{ duration: 0.5 }}
+                                    style={{
+                                      position: "absolute",
+                                      left: 0,
+                                      top: 0,
+                                      fontSize: isMobile ? "1rem" : "1rem",
+                                      fontWeight: 700,
+                                      color: "#ccc",
+                                      textDecoration: "line-through",
+                                      whiteSpace: "nowrap",
+                                    }}
+                                  >
+                                    $120.000
+                                  </motion.span>
+                                ) : (
+                                  <motion.span
+                                    key="precio-final"
+                                    initial={{ opacity: 0, x: 50 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0 }}
+                                    transition={{ duration: 0.5 }}
+                                    style={{
+                                      position: "absolute",
+                                      left: 0,
+                                      top: 0,
+                                      fontSize: isMobile ? "1rem" : "1rem",
+                                      fontWeight: 800,
+                                      background: "linear-gradient(90deg, #FFD700, #FFA500)",
+                                      WebkitBackgroundClip: "text",
+                                      WebkitTextFillColor: "transparent",
+                                      textShadow: "0 2px 6px rgba(0,0,0,0.4)",
+                                      whiteSpace: "nowrap",
+                                    }}
+                                  >
+                                    {promo.price}
+                                  </motion.span>
+                                )}
+                              </AnimatePresence>
+                            </Box>
                           </Box>
+
                           <br />
-                          <Box component="span" sx={{ fontWeight: 600, fontSize: "0.8rem", opacity: 0.9 }}>
+                          <Box
+                            component="span"
+                            sx={{ fontWeight: 600, fontSize: "0.8rem", opacity: 0.9 }}
+                          >
                             2 cuotas (💳 $30.000 reserva • $60.000 final)
                           </Box>
                         </Typography>
@@ -368,6 +438,7 @@ const InformationsPromotions = ({
                           </Box>
                         </Typography>
                       )}
+
 
 
                     </Box>
