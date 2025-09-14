@@ -521,7 +521,7 @@ const Clientes = () => {
             color="green"
             sx={{ fontSize: "0.69rem", mt: 0.1 }}
           >
-            Ganado en {mesCapitalizado}
+            Ganado {mesCapitalizado}
           </Typography>
 
           <Box
