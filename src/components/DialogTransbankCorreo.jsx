@@ -9,7 +9,7 @@ import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { motion, AnimatePresence } from "framer-motion";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
+  return <Slide direction="down" ref={ref} {...props} />;
 });
 
 export default function DialogTransbankCorreo({
@@ -184,7 +184,7 @@ export default function DialogTransbankCorreo({
             color: "#fff",
             fontSize: { xs: "1.0rem", sm: "1.4rem" },
             px: 3,
-            py: 1,
+            py: 0.5,
             borderRadius: "999px",
             border: "2px solid rgba(255,255,255,0.3)",
             backgroundColor: "rgba(0,0,0,0.25)",
@@ -220,6 +220,7 @@ export default function DialogTransbankCorreo({
               sx={{
                 background: "linear-gradient(180deg,#F3E5F5 0%,#EDE7F6 100%)",
                 py: 2,
+                pb: 0,
                 px: { xs: 2, sm: 4 },
                 display: "flex",
                 flexDirection: "column",
@@ -251,17 +252,24 @@ export default function DialogTransbankCorreo({
                 }
                 sx={{
                   "& .MuiOutlinedInput-root": {
-                    backgroundColor: "#fff", // 👈 input blanco
+                    backgroundColor: "#fff",
                     borderRadius: 2,
                   },
+                  "& .MuiInputBase-input": {
+                    fontSize: { xs: "0.8rem", sm: "1rem" }, // 👈 input text responsivo
+                  },
+                  "& .MuiInputLabel-root": {
+                    fontSize: { xs: "0.8rem", sm: "1rem" }, // 👈 label responsivo
+                  },
                   "& .MuiFormHelperText-root": {
-                    background: "linear-gradient(180deg,#F3E5F5 0%,#EDE7F6 100%)", // 👈 degradado
+                    background: "linear-gradient(180deg,#F3E5F5 0%,#EDE7F6 100%)",
                     borderRadius: "6px",
                     padding: "4px 8px",
                     margin: "6px 0 0 0",
                     lineHeight: 1.3,
                     fontWeight: 500,
-                    color: touched && !!error ? "#b71c1c" : "#4a148c", // rojo si error, morado neutro si no
+                    color: touched && !!error ? "#b71c1c" : "#4a148c",
+                    fontSize: { xs: "0.7rem", sm: "0.85rem" }, // 👈 helper text más chico en mobile
                   },
                 }}
                 inputProps={{ maxLength: 50 }}
