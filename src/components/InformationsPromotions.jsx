@@ -34,10 +34,12 @@ const InformationsPromotions = ({
 
   const handleReservar = async (email) => {
     try {
-      const endpoint =
-        modoDesarrollo
-          ? "http://localhost:8888/.netlify/functions/crearTransaccion" // 👈 sandbox
-          : "/.netlify/functions/crearTransaccion"; // 👈 real
+      // Detectar entorno por hostname
+      const isLocal = window.location.hostname === "localhost";
+
+      const endpoint = isLocal
+        ? "http://localhost:8888/.netlify/functions/crearTransaccion" // sandbox local
+        : "/.netlify/functions/crearTransaccion"; // producción
 
       const resp = await fetch(endpoint, {
         method: "POST",
@@ -46,11 +48,10 @@ const InformationsPromotions = ({
           amount: 30000,
           buyOrder: "RSW-" + Date.now().toString().slice(-10),
           sessionId: "SES-" + Date.now(),
-          returnUrl:
-            window.location.hostname === "localhost"
-              ? "http://localhost:5173/reserva"
-              : "https://plataformas-web.cl/reserva",
-          email, // 👈 aquí mandamos el correo capturado
+          returnUrl: isLocal
+            ? "http://localhost:5173/reserva"
+            : "https://plataformas-web.cl/reserva",
+          email, // 👈 correo capturado
         }),
       });
 
