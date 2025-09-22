@@ -8,12 +8,10 @@ import {
     useTheme, Snackbar, Alert
 } from "@mui/material";
 import { motion } from "framer-motion";
-import ViewCarouselIcon from "@mui/icons-material/ViewCarousel";
-import BarChartIcon from "@mui/icons-material/BarChart";
-import Face6Icon from '@mui/icons-material/Face6';
 import { useLocation, useNavigate } from "react-router-dom";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Cell, Legend, ResponsiveContainer } from 'recharts';
+import DialogPaseMensual from "./DialogPaseMensual";
 import MenuInferior from './configuraciones/MenuInferior';
 
 const Contador = ({ valorFinal, texto, subtexto, delay = 0, variant = "h5", iniciar }) => {
@@ -99,6 +97,7 @@ const Dashboard = () => {
     const [chartKey, setChartKey] = useState(0);
     const [datosGrafico, setDatosGrafico] = useState([]);
     const navigate = useNavigate();
+    const [openPase, setOpenPase] = useState(false);
 
     //GOOGLE ANALYTICS
     useEffect(() => {
@@ -127,6 +126,14 @@ const Dashboard = () => {
     }, []);
 
 
+    //PASE MENSUAL
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setOpenPase(true);
+        }, 1000); // ⏱️ 1 segundo después de cargar
+        return () => clearTimeout(timer);
+    }, []);
 
 
     return (
@@ -469,7 +476,10 @@ const Dashboard = () => {
                     🚧 En Construcción...
                 </Alert>
             </Snackbar>
-
+            <DialogPaseMensual
+                open={openPase}
+                onClose={() => setOpenPase(false)}
+            />
         </Box >
 
     );
