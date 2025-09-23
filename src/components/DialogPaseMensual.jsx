@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Dialog, DialogTitle, DialogContent, IconButton, Typography, Box, Button, Grid, Card } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, IconButton, Typography, Box, Button, Grid, Card, useMediaQuery, useTheme } from "@mui/material";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import AccessTimeFilledRoundedIcon from '@mui/icons-material/AccessTimeFilledRounded';
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,14 +15,15 @@ export default function DialogPaseMensual({ open, onClose }) {
   const montoBase = 10000;
   const [monto, setMonto] = useState(montoBase);
   const [misiones, setMisiones] = useState([
-    { id: 1, descuento: 0.025, recompensa: "2,5%", descripcion: "Compartir un anuncio de Plataformas web", estado: "pendiente", color: "linear-gradient(135deg,#6EC6FF,#2196F3,#1565C0)", tipo: "pequeña", imagen: "/facebook-insta.png", width: 70, height: 40 },
-    { id: 2, descuento: 0.025, recompensa: "2,5%", descripcion: "Pagar suscripción antes de fin de mes", estado: "pendiente", color: "linear-gradient(135deg,#81C784,#43A047,#1B5E20)", tipo: "pequeña", imagen: "/logo-pagar.png", width: 50, height: 50 },
-    { id: 3, descuento: 0.025, recompensa: "2,5%", descripcion: "Conexión mensual a la administración", estado: "pendiente", color: "linear-gradient(135deg,#80DEEA,#26C6DA,#00838F)", tipo: "pequeña", imagen: "/conexion.png", width: 55, height: 45 },
-    { id: 4, descuento: 0.025, recompensa: "2,5%", descripcion: "Llegar a 100 visitas mensual", estado: "pendiente", color: "linear-gradient(135deg,#BA68C8,#8E24AA,#4A148C)", tipo: "pequeña", imagen: "/visitas.png", width: 45, height: 45 },
+    { id: 1, descuento: 0.025, recompensa: "2,5% descuento", descripcion: "Compartir un anuncio de Plataformas web", estado: "pendiente", color: "linear-gradient(135deg,#6EC6FF,#2196F3,#1565C0)", tipo: "pequeña", imagen: "/facebook-insta.png", width: 70, height: 40 },
+    { id: 2, descuento: 0.025, recompensa: "2,5% descuento", descripcion: "Pagar suscripción antes de fin de mes", estado: "pendiente", color: "linear-gradient(135deg,#81C784,#43A047,#1B5E20)", tipo: "pequeña", imagen: "/logo-pagar.png", width: 50, height: 50 },
+    { id: 3, descuento: 0.025, recompensa: "2,5% descuento", descripcion: "Conexión mensual a la administración", estado: "pendiente", color: "linear-gradient(135deg,#80DEEA,#26C6DA,#00838F)", tipo: "pequeña", imagen: "/conexion.png", width: 55, height: 45 },
+    { id: 4, descuento: 0.025, recompensa: "2,5% descuento", descripcion: "Llegar a 100 visitas mensual", estado: "pendiente", color: "linear-gradient(135deg,#BA68C8,#8E24AA,#4A148C)", tipo: "pequeña", imagen: "/visitas.png", width: 45, height: 45 },
     { id: 5, descuento: 1, recompensa: "100%", descripcion: "Conseguir un Cliente para Plataformas web", estado: "pendiente", color: "linear-gradient(135deg,#FFF176,#FFD54F,#FFA000,#FF6F00)", tipo: "grande", imagen: "/mision5.png", width: 90, height: 60 }
   ]);
 
-
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const motionValue = useMotionValue(monto);
   const [displayMonto, setDisplayMonto] = useState(monto);
 
@@ -49,9 +50,12 @@ export default function DialogPaseMensual({ open, onClose }) {
             .reduce((acc, x) => acc + x.descuento, 0);
 
           // monto = montoBase - (montoBase * totalDescuento)
-          const nuevoMonto = montoBase - Math.round(montoBase * totalDescuento);
+          const nuevoMonto =
+            montoBase - Math.round(montoBase * totalDescuento);
 
-          setMonto(nuevoMonto);
+          // nunca menos de 0
+          setMonto(Math.max(nuevoMonto, 0));
+
           return { ...m, estado: "revision" };
         }
         return m;
@@ -59,15 +63,19 @@ export default function DialogPaseMensual({ open, onClose }) {
     );
   };
 
+
   return (
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="sm"
       fullWidth
+      maxWidth={false} // 🚀 quitamos el límite de MUI
       PaperProps={{
         sx: {
+          width: { xs: "100%", sm: "90%", md: "600px" }, // 📱 mobile ocupa casi todo
+          maxWidth: "none", // 🔓 sin límite del sistema
           borderRadius: 4,
+          m: 1.5,
           overflow: "hidden",
           background: "linear-gradient(180deg,#2c3e50,#34495e)",
           border: "4px solid #FFD700",
@@ -132,7 +140,7 @@ export default function DialogPaseMensual({ open, onClose }) {
             exit={{ opacity: 0, scale: 0.9 }}
             transition={{ duration: 0.4 }}
           >
-            <DialogContent sx={{ py: 1, px: 0.5 }}>
+            <DialogContent sx={{ py: 1, px: 1.3 }}>
               {/* Texto de suscripción actual con borde */}
               <Box
                 sx={{
@@ -313,7 +321,7 @@ export default function DialogPaseMensual({ open, onClose }) {
                             variant="caption"
                             sx={{ fontWeight: 700, fontSize: "0.75rem", color: "#fff" }}
                           >
-                            -{m.recompensa}
+                            {m.recompensa}
                           </Typography>
 
                           <Button
@@ -386,7 +394,7 @@ export default function DialogPaseMensual({ open, onClose }) {
                         <Typography
                           variant="body2"
                           sx={{
-                            mt: 0.3,
+                            mt: 0.8,
                             mb: 0.8,
                             fontWeight: 600,
                             fontSize: { xs: "0.8rem", sm: "0.95rem" },
@@ -473,7 +481,7 @@ export default function DialogPaseMensual({ open, onClose }) {
                             textShadow: "0 1px 2px rgba(0,0,0,0.8)",
                           }}
                         >
-                          🎁 SUSCRIPCIÓN GRATIS UN MES
+                          🎁 2 SUSCRIPCIONES GRATIS
                         </Typography>
 
                         <Button
@@ -497,7 +505,7 @@ export default function DialogPaseMensual({ open, onClose }) {
 
 
               {/* Swiper anuncio */}
-              <Grid item xs={12}>
+              <Grid item xs={12} sx={{ mt: 1 }}>
                 <motion.div initial="hidden" animate={"visible"}>
                   <Swiper
                     spaceBetween={10}
@@ -530,15 +538,39 @@ export default function DialogPaseMensual({ open, onClose }) {
                           overflow: "visible",
                           borderRadius: "30px",
                           boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
-                          minHeight: { xs: 100, sm: 160, md: 200 },
+                          minHeight: isMobile ? 100 : 110,
                           display: "flex",
                           alignItems: "flex-end",
                           backgroundColor: "transparent",
-                          boxShadow: "none",
                           border: "none",
                         }}
                         elevation={0}
                       >
+                        {/* 📌 Precio extensión del Box verde */}
+                        <Box
+                          sx={{
+                            position: "absolute",
+                            top: isMobile ? "calc(35% - 28px)" : "calc(35% - 38px)", // 👈 se pega justo arriba del verde (ajusta 22px al alto del cuadro)
+                            left: "10px",
+                            px: 1.5,
+                            py: 0.4,
+                            borderTopLeftRadius: "8px",
+                            borderTopRightRadius: "8px",
+                            borderBottomLeftRadius: 0,
+                            borderBottomRightRadius: 0,
+                            background: "rgba(0,0,0,0.75)",
+                            color: "white",
+                            fontWeight: 800,
+                            fontSize: { xs: "0.75rem", sm: "0.85rem" },
+                            boxShadow: "0 2px 6px rgba(0,0,0,0.5)",
+                            zIndex: 1, // 👈 debajo de la imagen de mascotas
+                          }}
+                        >
+                          $10.000 CLP
+                        </Box>
+
+
+
                         {/* Box verde */}
                         <Box
                           sx={{
@@ -546,13 +578,14 @@ export default function DialogPaseMensual({ open, onClose }) {
                             background:
                               "linear-gradient(135deg, hsl(142,70%,49%), hsl(142,80%,35%))",
                             borderRadius: "30px",
-                            p: { xs: 2, sm: 3 },
-                            height: "65%",
+                            p: isMobile ? 1.8 : 2,
+                            height: isMobile ? "45px" : "55px",
                             display: "flex",
                             flexDirection: "column",
                             justifyContent: "center",
                             width: "100%",
                             cursor: "pointer",
+                            zIndex: 1,
                           }}
                           onClick={(e) => {
                             e.preventDefault();
@@ -565,20 +598,22 @@ export default function DialogPaseMensual({ open, onClose }) {
                               variant="h6"
                               sx={{
                                 fontWeight: "bold",
-                                mb: 0.3,
+                                mb: 0.2,
                                 textAlign: "left",
                                 color: "#fff",
-                                fontSize: { xs: "0.95rem", sm: "1.2rem", md: "1.5rem" },
+                                fontSize: isMobile ? "0.95rem" : "1.5rem",
                               }}
                             >
                               TUS MÁSCOTAS🐾
                             </Typography>
+
                             <Typography
                               variant="body2"
                               sx={{
                                 color: "#fff",
                                 textAlign: "left",
-                                fontSize: { xs: "0.75rem", sm: "0.85rem" },
+                                fontSize: { xs: "0.7rem", sm: "0.8rem" },
+                                lineHeight: 1.2,
                               }}
                             >
                               🐶🐱Aparecerán en tu Web.
@@ -590,45 +625,29 @@ export default function DialogPaseMensual({ open, onClose }) {
                         <Box
                           sx={{
                             position: "absolute",
-                            right: -5,
-                            bottom: -5,
-                            height: { xs: "100%", sm: "115%", md: "120%" },
-                            aspectRatio: "572 / 788",
+                            right: 10,
+                            bottom: isMobile ? -30 : -30,
+                            height: "160%",
                             zIndex: 2,
+                            display: "flex",
+                            alignItems: "flex-end",
                           }}
                         >
                           <Box
                             component="img"
-                            src="/sitios-web.webp"
-                            alt="Preview Sitios Web"
+                            src="/mascotas.webp"
+                            alt="Mascotas"
                             sx={{
-                              position: "absolute",
-                              top: "5%",
-                              left: "12%",
-                              width: "54.4%",
-                              height: "81.7%",
-                              objectFit: "cover",
-                              borderRadius: "10px",
-                              zIndex: 0,
-                              backgroundColor: "black",
-                            }}
-                          />
-                          <Box
-                            component="img"
-                            src="/mano-celular.webp"
-                            alt="Mano con celular"
-                            sx={{
-                              width: "100%",
-                              height: "auto",
-                              position: "absolute",
-                              top: 0,
-                              left: 0,
+                              height: "100%",
+                              width: "auto",
+                              objectFit: "contain",
                               zIndex: 1,
                               pointerEvents: "none",
                             }}
                           />
                         </Box>
                       </Card>
+
                     </SwiperSlide>
 
                     {/* Slide 2: Sistemas */}
@@ -639,7 +658,7 @@ export default function DialogPaseMensual({ open, onClose }) {
                           overflow: "visible",
                           borderRadius: "30px",
                           boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
-                          minHeight: { xs: 100, sm: 160, md: 200 },
+                          minHeight: isMobile ? 100 : 110,
                           display: "flex",
                           alignItems: "flex-end",
                           backgroundColor: "transparent",
@@ -648,6 +667,29 @@ export default function DialogPaseMensual({ open, onClose }) {
                         }}
                         elevation={0}
                       >
+                        {/* 📌 Precio extensión del Box verde */}
+                        <Box
+                          sx={{
+                            position: "absolute",
+                            top: isMobile ? "calc(35% - 28px)" : "calc(35% - 35px)", // 👈 se pega justo arriba del verde (ajusta 22px al alto del cuadro)
+                            right: 15,
+                            alignItems: "right",
+                            px: 1.5,
+                            py: 0.4,
+                            borderTopLeftRadius: "8px",
+                            borderTopRightRadius: "8px",
+                            borderBottomLeftRadius: 0,
+                            borderBottomRightRadius: 0,
+                            background: "rgba(0,0,0,0.75)",
+                            color: "white",
+                            fontWeight: 800,
+                            fontSize: { xs: "0.75rem", sm: "0.85rem" },
+                            boxShadow: "0 2px 6px rgba(0,0,0,0.5)",
+                            zIndex: 1, // 👈 debajo de la imagen de mascotas
+                          }}
+                        >
+                          $10.000 CLP
+                        </Box>
                         {/* Box azul */}
                         <Box
                           sx={{
@@ -655,14 +697,15 @@ export default function DialogPaseMensual({ open, onClose }) {
                             background:
                               "linear-gradient(135deg, hsl(210,80%,55%), hsl(220,70%,35%))",
                             borderRadius: "30px",
-                            p: { xs: 2, sm: 3 },
-                            height: "65%",
+                            p: isMobile ? 1.8 : 1.5,
+                            height: isMobile ? "45px" : "55px",
                             display: "flex",
                             flexDirection: "column",
                             justifyContent: "center",
                             width: "100%",
                             alignItems: "flex-end",
                             cursor: "pointer",
+                            zIndex: 2,
                           }}
                           onClick={(e) => {
                             e.preventDefault();
@@ -698,9 +741,9 @@ export default function DialogPaseMensual({ open, onClose }) {
                         <Box
                           sx={{
                             position: "absolute",
-                            left: -5,
-                            bottom: -5,
-                            height: { xs: "100%", sm: "115%", md: "120%" },
+                            left: -30,
+                            bottom: -85,
+                            height: "250%",
                             aspectRatio: "572 / 788",
                             zIndex: 2,
                             transform: "scaleX(-1)",
@@ -708,31 +751,12 @@ export default function DialogPaseMensual({ open, onClose }) {
                         >
                           <Box
                             component="img"
-                            src="/sistemas.webp"
-                            alt="Preview Sistemas"
+                            src="/modulos.png"
+                            alt="Modulos"
                             sx={{
-                              position: "absolute",
-                              top: "5%",
-                              left: "12%",
-                              width: "54.4%",
-                              height: "81.7%",
-                              objectFit: "cover",
-                              borderRadius: "10px",
-                              zIndex: 0,
-                              backgroundColor: "black",
-                              transform: "scaleX(-1)",
-                            }}
-                          />
-                          <Box
-                            component="img"
-                            src="/mano-celular.webp"
-                            alt="Mano con celular"
-                            sx={{
-                              width: "100%",
-                              height: "auto",
-                              position: "absolute",
-                              top: 0,
-                              left: 0,
+                              height: "100%",          // siempre ocupa todo el alto
+                              width: "auto",           // mantiene proporción
+                              objectFit: "contain",    // no recorta
                               zIndex: 1,
                               pointerEvents: "none",
                             }}
