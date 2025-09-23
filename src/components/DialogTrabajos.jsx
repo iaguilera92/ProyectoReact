@@ -192,7 +192,7 @@ export default function DialogTrabajos({
           fontFamily: "'Poppins', sans-serif",
           py: 1.5,
           borderBottom: "1px solid rgba(255,167,38,.35)",
-          position: "relative",
+          position: "relative", // 👈 mantiene ancla para el botón
           overflow: "hidden",
 
           "&::before": {
@@ -206,24 +206,10 @@ export default function DialogTrabajos({
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
             zIndex: 0,
-
-            // Desktop
-            backgroundSize: "130%",
-            animation: "zoomInDesktop 2.5s ease-out forwards",
-
-            // Mobile override
-            "@media (max-width:600px)": {
-              backgroundSize: "250%",              // 👈 inicia súper cerca
-              animation: "zoomInMobile 2.5s ease-out forwards",
-            },
-
-            "@keyframes zoomInDesktop": {
-              "0%": { backgroundSize: "150%" },
-              "100%": { backgroundSize: "110%" },
-            },
-            "@keyframes zoomInMobile": {
-              "0%": { backgroundSize: "270%" },   // 👈 más zoom inicial en mobile
-              "100%": { backgroundSize: "140%" }, // 👈 termina aún con presencia
+            backgroundSize: { xs: "250%", sm: "130%" },
+            animation: {
+              xs: "zoomInMobile 2.5s ease-out forwards",
+              sm: "zoomInDesktop 2.5s ease-out forwards",
             },
           },
 
@@ -242,9 +228,17 @@ export default function DialogTrabajos({
             position: "relative",
             zIndex: 2,
           },
+
+          "@keyframes zoomInDesktop": {
+            "0%": { backgroundSize: "150%" },
+            "100%": { backgroundSize: "110%" },
+          },
+          "@keyframes zoomInMobile": {
+            "0%": { backgroundSize: "270%" },
+            "100%": { backgroundSize: "140%" },
+          },
         }}
       >
-
         {/* Botón cerrar */}
         <IconButton
           aria-label="Cerrar"
@@ -254,12 +248,11 @@ export default function DialogTrabajos({
             top: 8,
             right: 8,
             color: "#FFF",
-            zIndex: 4, // 👈 más arriba que ::before y ::after
+            zIndex: 3, // 👈 encima del overlay
             "&:hover": { backgroundColor: "rgba(255,255,255,.15)" },
 
-            // animación al abrir
+            // animación solo al montar
             animation: open ? "spinTwice 0.6s ease-in-out" : "none",
-            animationFillMode: "forwards",
             "@keyframes spinTwice": {
               "0%": { transform: "rotate(0deg)" },
               "100%": { transform: "rotate(720deg)" },
@@ -418,18 +411,7 @@ export default function DialogTrabajos({
 
           </Box>
         ) : (
-          <Typography
-            variant="body2"
-            sx={{
-              color: "#5D4037",
-              mt: 2,
-              display: "block",
-              textAlign: "center",
-              fontWeight: 500,
-            }}
-          >
-            Sin trabajos activos por ahora
-          </Typography>
+          <></>
         )}
       </DialogTitle>
 
