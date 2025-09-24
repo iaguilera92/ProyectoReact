@@ -315,8 +315,8 @@ function Contacto() {
                               zoom={16}
                               style={{
                                 width: "100%",
-                                height: isMobile ? "40vh" : "100%",
-                                position: "relative",   // 👈 Necesario para centrar el banner
+                                height: isMobile ? "40vh" : "60vh", // 👈 altura clara en desktop
+                                position: "relative",
                               }}
                               dragging={false}
                               scrollWheelZoom={false}
@@ -325,6 +325,7 @@ function Contacto() {
                               zoomControl={false}
                               whenCreated={() => setMapLoaded(true)}
                             >
+
                               <TileLayer
                                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -356,8 +357,8 @@ function Contacto() {
                                     transition={{ duration: 0.6 }}
                                     style={{
                                       position: "absolute",
-                                      top: isMobile ? "18%" : "16%", // un poco más arriba en mobile
-                                      left: "27%",                   // 👈 siempre al 50%
+                                      top: isMobile ? "18%" : "24%", // un poco más arriba en mobile
+                                      left: isMobile ? "27%" : "35%",                   // 👈 siempre al 50%
                                       transform: "translateX(-50%)", // 👈 corrección exacta
                                       backgroundColor: "black",
                                       color: "white",
@@ -482,7 +483,7 @@ const ZoomEffect = ({ zoom, startAnimation, position }) => {
 
     const delayTimer = setTimeout(() => {
       let zoomLevel = isMobile ? 7 : 5;
-      const zoomSpeed = isMobile ? 0.05 : 0.05;
+      const zoomSpeed = isMobile ? 0.08 : 0.1;
       const offsetY = isMobile ? 0.0001 : 0;
       const correctedPosition = [position[0] + offsetY, position[1]];
 

@@ -14,6 +14,7 @@ import { useMotionValue, animate } from "framer-motion";
 export default function DialogPaseMensual({ open, onClose }) {
   const montoBase = 10000;
   const [monto, setMonto] = useState(montoBase);
+
   const [misiones, setMisiones] = useState([
     { id: 1, descuento: 0.025, recompensa: "2,5% descuento", descripcion: "Compartir un anuncio de Plataformas web", estado: "pendiente", color: "linear-gradient(135deg,#6EC6FF,#2196F3,#1565C0)", tipo: "pequeña", imagen: "/facebook-insta.png", width: 70, height: 40 },
     { id: 2, descuento: 0.025, recompensa: "2,5% descuento", descripcion: "Pagar suscripción antes de fin de mes", estado: "pendiente", color: "linear-gradient(135deg,#81C784,#43A047,#1B5E20)", tipo: "pequeña", imagen: "/logo-pagar.png", width: 50, height: 50 },
