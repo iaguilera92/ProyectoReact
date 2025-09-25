@@ -85,6 +85,11 @@ const meses = [
   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
 ];
 
+const variantes = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+};
+
 const Clientes = () => {
   const [iniciarAnimacionContador, setIniciarAnimacionContador] = useState(false);
   const [clientes, setClientes] = useState([]);
@@ -112,6 +117,9 @@ const Clientes = () => {
   const [mesManual, setMesManual] = useState("");
   const modoDesarrollo = false;
   const mesDialogPago = mesManual || mesCapitalizado;
+  const [animar, setAnimar] = useState(true);
+  const [animacionTerminada, setAnimacionTerminada] = useState(false);
+
   const MotionBox = motion(Box);
 
 
@@ -218,7 +226,7 @@ const Clientes = () => {
   const enviarCorreoPagoRecibido = async (cliente, mesFinal) => {
     try {
       const urlBase = window.location.hostname === "localhost"
-        ? "http://localhost:9999"
+        ? "http://localhost:8888"
         : "";
 
       let pdfUrl = "https://plataformas-web-buckets.s3.us-east-2.amazonaws.com/comprobantes/comprobante-pago.pdf";
@@ -382,6 +390,15 @@ const Clientes = () => {
     setPaginaActual(1);
   }, [clientes]);
 
+
+
+  useEffect(() => {
+    const timer = setTimeout(() => setAnimar(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+
+
   //TOTAL GANADO
   const ContadorGanado = ({ valorFinal, valorInicial, tipoCambio }) => {
     const motionValor = useMotionValue(valorInicial);
@@ -531,9 +548,11 @@ const Clientes = () => {
       >
         {/* Cuadro Ganado */}
         <MotionBox
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0, duration: 0.8, ease: "easeOut" }}
+          variants={variantes}
+          initial={animacionTerminada ? false : "hidden"}
+          animate="visible"
+          transition={{ delay: 2, duration: 0.8, ease: "easeOut" }}
+          onAnimationComplete={() => setAnimacionTerminada(true)}
           sx={{
             backgroundColor: "#e8f5e9",
             border: "2px solid #66bb6a",
@@ -586,9 +605,11 @@ const Clientes = () => {
 
         {/* Cuadro Deuda */}
         <MotionBox
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0, duration: 0.8, ease: "easeOut" }}
+          variants={variantes}
+          initial={animacionTerminada ? false : "hidden"}
+          animate="visible"
+          transition={{ delay: 2, duration: 0.8, ease: "easeOut" }}
+          onAnimationComplete={() => setAnimacionTerminada(true)}
           sx={{
             backgroundColor: "#fff3e0",
             border: "2px solid #ff9800",
@@ -1200,21 +1221,30 @@ const Clientes = () => {
         <DialogActions
           sx={{
             justifyContent: "flex-end",
-            px: 3,
+            px: 2,
             pb: 2,
+            gap: 0,
             background: "linear-gradient(90deg, #FFF3E0, #FFE0B2)", // footer en contraste
             borderTop: "1px solid rgba(255,167,38,.35)",
           }}
         >
-          <Button onClick={() => setOpenDialogCobro(false)}>Cancelar</Button>
           <Button
+            size={isMobile ? "small" : "medium"}
+            sx={{ fontSize: isMobile ? "0.6rem" : "0.875rem" }}
+            onClick={() => setOpenDialogCobro(false)}
+          >
+            Cancelar
+          </Button>
+
+          <Button
+            size={isMobile ? "small" : "medium"}
+            sx={{ fontSize: isMobile ? "0.7rem" : "0.875rem" }}
             onClick={() => {
               enviarCorreoSuspension(clienteSeleccionado);
 
               const mensaje = `⚠️ Estimado ${clienteSeleccionado.cliente}, su servicio de HOSTING para ${clienteSeleccionado.sitioWeb} será suspendido en menos de 24 hrs si no regulariza el pago.`;
               const numero = clienteSeleccionado.telefono || "56946873014";
               const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
-
               window.open(url, "_blank");
 
               setOpenDialogCobro(false);
@@ -1224,15 +1254,18 @@ const Clientes = () => {
           >
             🚫 Suspensión
           </Button>
+
           <Button
+            size={isMobile ? "small" : "medium"}
+            sx={{ fontSize: isMobile ? "0.7rem" : "0.875rem" }}
             onClick={() => {
               const mesFinal = mesManual || mesCapitalizado;
-              const mesFinalCapitalizado = mesFinal.charAt(0).toUpperCase() + mesFinal.slice(1);
+              const mesFinalCapitalizado =
+                mesFinal.charAt(0).toUpperCase() + mesFinal.slice(1);
 
               const mensaje = `Buenas! recordar el pago del HOSTING de ${clienteSeleccionado.sitioWeb} de *${clienteSeleccionado.valor}* del mes de ${mesFinalCapitalizado}.`;
               const numero = clienteSeleccionado.telefono || "56946873014";
               const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
-
               window.open(url, "_blank");
 
               enviarCorreoCobro(clienteSeleccionado, mesFinalCapitalizado);
@@ -1248,8 +1281,8 @@ const Clientes = () => {
           >
             💰 Cobrar
           </Button>
-
         </DialogActions>
+
       </Dialog>
 
 
@@ -1284,7 +1317,7 @@ const Clientes = () => {
 
               try {
                 const url = `${window.location.hostname === "localhost"
-                  ? "http://localhost:9999"
+                  ? "http://localhost:8888"
                   : ""
                   }/.netlify/functions/reiniciarPagos`;
 
