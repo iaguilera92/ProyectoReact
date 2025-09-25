@@ -143,10 +143,11 @@ const Administracion = () => {
       setRecordarme(true);
     }
 
-    if (creds?.email?.toLowerCase() === "iaguilera" || email?.toLowerCase() === "iaguilera") {
+    if (creds?.email?.toLowerCase() === "iaguilera") {
       sessionStorage.setItem("mostrarAdmin", "1");
     }
-  }, [email]);
+  }, []); // 👈 se ejecuta solo al montar
+
 
 
   return (

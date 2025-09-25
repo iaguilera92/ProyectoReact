@@ -12,7 +12,7 @@ console.log("🔍 Ambiente detectado:", {
 const tx = new WebpayPlus.Transaction(
     new Options(
         isProduction
-            ? process.env.TBK_COMMERCE_CODE
+            ? process.env.TBK_COMMERCE_CODE //PRD 5970 53013880
             : "597055555532", // integración
         isProduction
             ? process.env.TBK_API_KEY_SECRET

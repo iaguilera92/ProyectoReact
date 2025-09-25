@@ -334,6 +334,41 @@ const Clientes = () => {
       });
   };
 
+  const enviarCorreoSuspension = (cliente) => {
+    const fechaSuspension = new Date();
+    fechaSuspension.setDate(fechaSuspension.getDate() + 1); // +24 hrs
+    const fechaFormateada = fechaSuspension.toLocaleDateString("es-CL", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+
+    const templateParams = {
+      sitioWeb: `www.${cliente.sitioWeb}`,
+      nombre: cliente.cliente || cliente.sitioWeb || "Cliente",
+      fechaSuspension: fechaFormateada, // 👈 para mostrar la fecha límite
+      email: modoDesarrollo
+        ? "plataformas.web.cl@gmail.com"
+        : (cliente.correo || "plataformas.web.cl@gmail.com"),
+      cc: "plataformas.web.cl@gmail.com", // copia interna
+    };
+
+    emailjs
+      .send(
+        "service_ocjgtpc",             // mismo service ID
+        "template_rrv14p8",      // 👈 NUEVO template en EmailJS
+        templateParams,
+        "byR6suwAx2-x6ddVp"            // tu public key
+      )
+      .then(() => {
+        console.log("⚠️ Correo de suspensión enviado a", templateParams.email);
+      })
+      .catch((error) => {
+        console.error("❌ Error al enviar correo de suspensión:", error);
+      });
+  };
+
+
   const bloquearBotonTemporalmente = (index) => {
     setBotonesBloqueados((prev) => [...prev, index]);
 
@@ -1172,6 +1207,23 @@ const Clientes = () => {
           }}
         >
           <Button onClick={() => setOpenDialogCobro(false)}>Cancelar</Button>
+          <Button
+            onClick={() => {
+              enviarCorreoSuspension(clienteSeleccionado);
+
+              const mensaje = `⚠️ Estimado ${clienteSeleccionado.cliente}, su servicio de HOSTING para ${clienteSeleccionado.sitioWeb} será suspendido en menos de 24 hrs si no regulariza el pago.`;
+              const numero = clienteSeleccionado.telefono || "56946873014";
+              const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
+
+              window.open(url, "_blank");
+
+              setOpenDialogCobro(false);
+            }}
+            color="warning"
+            variant="contained"
+          >
+            🚫 Suspensión
+          </Button>
           <Button
             onClick={() => {
               const mesFinal = mesManual || mesCapitalizado;
