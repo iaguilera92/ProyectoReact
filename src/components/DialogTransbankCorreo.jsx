@@ -239,7 +239,7 @@ export default function DialogTransbankCorreo({
                 label="Correo electrónico"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value.toLowerCase())}
                 onBlur={() => setTouched(true)}
                 fullWidth
                 required

@@ -61,88 +61,136 @@ exports.handler = async (event) => {
             };
         }
 
-        // Confirmar transacción con Transbank
-        const response = await tx.commit(token_ws);
-        console.log("✅ Respuesta commit:", response);
+        // 🔹 Confirmar transacción con Transbank
+        let response;
+        try {
+            response = await tx.commit(token_ws);
+            console.log("✅ Respuesta commit:", response);
+        } catch (commitErr) {
+            console.error("❌ Error en tx.commit:", commitErr);
 
-        // Solo guardar si está autorizada
-        if (response.status === "AUTHORIZED") {
-            // Leer Excel desde S3
-            const s3Data = await s3
-                .getObject({ Bucket: BUCKET_NAME, Key: FILE_KEY })
-                .promise();
-            const workbook = XLSX.read(s3Data.Body, { type: "buffer" });
-            const hoja = workbook.Sheets[workbook.SheetNames[0]];
-            const datos = XLSX.utils.sheet_to_json(hoja, { defval: "" });
+            const detail =
+                commitErr?.response?.data?.detail ||
+                commitErr?.message ||
+                "Error desconocido";
 
-            // Validar duplicados por BuyOrder o TokenWS
-            const existe = datos.some(
-                (r) => r.BuyOrder === response.buy_order || r.TokenWS === token_ws
-            );
-
-            if (existe) {
-                console.log(
-                    "⚠️ Reserva duplicada detectada, no se agrega de nuevo:",
-                    response.buy_order
-                );
-            } else {
-                // Crear nueva fila con los datos
-                const nuevaReserva = {
-                    IdReserva: datos.length + 1,
-                    Email: email || "N/D",
-                    BuyOrder: response.buy_order,
-                    SessionId: response.session_id,
-                    TokenWS: token_ws,
-                    Amount: response.amount,
-                    Status: response.status,
-                    AuthorizationCode: response.authorization_code,
-                    PaymentType: response.payment_type_code,
-                    InstallmentsNumber: response.installments_number || 0,
-                    CardNumber: response.card_detail?.card_number || "",
-                    TransactionDate: response.transaction_date,
-                    AccountingDate: response.accounting_date,
-                    ResponseCode: response.response_code,
-                    CommerceCode: response.commerce_code,
-                    Environment: isProduction ? "Production" : "Integration",
-                    CreatedAt: new Date().toISOString(),
+            // Caso abortada → devolvemos controlado
+            if (detail.includes("aborted")) {
+                return {
+                    statusCode: 200,
+                    headers: corsHeaders,
+                    body: JSON.stringify({
+                        status: "ABORTED",
+                        message:
+                            "La transacción fue abortada por el usuario o no se finalizó en Webpay",
+                        detail,
+                    }),
                 };
+            }
 
-                datos.push(nuevaReserva);
-                console.log("🆕 Reserva agregada:", nuevaReserva);
+            // Otros errores → error real
+            return {
+                statusCode: 502,
+                headers: corsHeaders,
+                body: JSON.stringify({
+                    message: "Error en commit con Transbank",
+                    detail,
+                }),
+            };
+        }
 
-                // Subir a S3
-                const nuevaHoja = XLSX.utils.json_to_sheet(datos);
-                workbook.Sheets[workbook.SheetNames[0]] = nuevaHoja;
-                const buffer = XLSX.write(workbook, {
-                    type: "buffer",
-                    bookType: "xlsx",
-                });
-
-                console.log("⏫ Subiendo Reservas.xlsx a S3...");
-                await s3
-                    .putObject({
-                        Bucket: BUCKET_NAME,
-                        Key: FILE_KEY,
-                        Body: buffer,
-                        ContentType:
-                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    })
+        // 🔹 Guardar en S3 solo si está autorizada
+        if (response.status === "AUTHORIZED") {
+            try {
+                const s3Data = await s3
+                    .getObject({ Bucket: BUCKET_NAME, Key: FILE_KEY })
                     .promise();
-                console.log("✅ Subida completada");
+
+                const workbook = XLSX.read(s3Data.Body, { type: "buffer" });
+                const hoja = workbook.Sheets[workbook.SheetNames[0]];
+                const datos = XLSX.utils.sheet_to_json(hoja, { defval: "" });
+
+                // Validar duplicados
+                const existe = datos.some(
+                    (r) => r.BuyOrder === response.buy_order || r.TokenWS === token_ws
+                );
+
+                if (existe) {
+                    console.log(
+                        "⚠️ Reserva duplicada detectada, no se agrega de nuevo:",
+                        response.buy_order
+                    );
+                } else {
+                    const nuevaReserva = {
+                        IdReserva: datos.length + 1,
+                        Email: email || "N/D",
+                        BuyOrder: response.buy_order,
+                        SessionId: response.session_id,
+                        TokenWS: token_ws,
+                        Amount: response.amount,
+                        Status: response.status,
+                        AuthorizationCode: response.authorization_code,
+                        PaymentType: response.payment_type_code,
+                        InstallmentsNumber: response.installments_number || 0,
+                        CardNumber: response.card_detail?.card_number || "",
+                        TransactionDate: response.transaction_date,
+                        AccountingDate: response.accounting_date,
+                        ResponseCode: response.response_code,
+                        CommerceCode: response.commerce_code,
+                        Environment: isProduction ? "Production" : "Integration",
+                        CreatedAt: new Date().toISOString(),
+                    };
+
+                    datos.push(nuevaReserva);
+                    console.log("🆕 Reserva agregada:", nuevaReserva);
+
+                    const nuevaHoja = XLSX.utils.json_to_sheet(datos);
+                    workbook.Sheets[workbook.SheetNames[0]] = nuevaHoja;
+                    const buffer = XLSX.write(workbook, {
+                        type: "buffer",
+                        bookType: "xlsx",
+                    });
+
+                    console.log("⏫ Subiendo Reservas.xlsx a S3...");
+                    await s3
+                        .putObject({
+                            Bucket: BUCKET_NAME,
+                            Key: FILE_KEY,
+                            Body: buffer,
+                            ContentType:
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        })
+                        .promise();
+                    console.log("✅ Subida completada");
+                }
+            } catch (s3Err) {
+                console.error("❌ Error guardando en S3:", s3Err);
+                return {
+                    statusCode: 500,
+                    headers: corsHeaders,
+                    body: JSON.stringify({
+                        message: "Error guardando la reserva en S3",
+                        detail: s3Err.message || s3Err,
+                    }),
+                };
             }
         }
 
+        // 🔹 Siempre responder con el resultado de Transbank
         return {
             statusCode: 200,
             headers: corsHeaders,
             body: JSON.stringify({ ...response, email }),
         };
     } catch (error) {
-        console.error("❌ Error en agregarReserva:", error);
+        console.error("❌ Error inesperado:", error);
         return {
             statusCode: 500,
             headers: corsHeaders,
-            body: JSON.stringify({ message: "Error interno del servidor" }),
+            body: JSON.stringify({
+                message: "Error inesperado en agregarReserva",
+                detail: error.message || error,
+            }),
         };
     }
 };

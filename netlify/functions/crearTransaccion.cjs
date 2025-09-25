@@ -6,13 +6,8 @@ const isProduction =
 
 console.log("🔍 Ambiente detectado:", {
     TBK_ENV: process.env.TBK_ENV,
-    isProduction,
-    commerceCode: process.env.TBK_COMMERCE_CODE,
-    apiKeyPrefix: process.env.TBK_API_KEY_SECRET
-        ? process.env.TBK_API_KEY_SECRET.substring(0, 6) + "..."
-        : null,
+    isProduction
 });
-
 
 const tx = new WebpayPlus.Transaction(
     new Options(
