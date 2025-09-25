@@ -80,7 +80,7 @@ const ConfigurarServicios = () => {
     setEliminando(true);
     try {
       const id = services[servicioAEliminar]?.IdServicio;
-      const url = `${window.location.hostname === "localhost" ? "http://localhost:9999" : ""}/.netlify/functions/eliminarServicio`;
+      const url = `${window.location.hostname === "localhost" ? "http://localhost:8888" : ""}/.netlify/functions/eliminarServicio`;
       const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ IdServicio: id }) });
       if (!res.ok) throw new Error("Error al eliminar");
       setServices(prev => prev.filter(s => s.IdServicio !== id));
@@ -112,7 +112,7 @@ const ConfigurarServicios = () => {
     actualizados[selected] = servicio;
     setServices(actualizados);
 
-    const url = `${window.location.hostname === "localhost" ? "http://localhost:9999" : ""}/.netlify/functions/actualizarServicio`;
+    const url = `${window.location.hostname === "localhost" ? "http://localhost:8888" : ""}/.netlify/functions/actualizarServicio`;
     setActualizando(true);
     try {
       const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ servicio }) });
@@ -133,7 +133,7 @@ const ConfigurarServicios = () => {
   const handleConfirmarRestaurar = async () => {
     setRestaurando(true);
     try {
-      const url = `${window.location.hostname === "localhost" ? "http://localhost:9999" : ""}/.netlify/functions/restaurarServicios`;
+      const url = `${window.location.hostname === "localhost" ? "http://localhost:8888" : ""}/.netlify/functions/restaurarServicios`;
       const res = await fetch(url, { method: "POST" });
       const result = await res.text();
       const parsed = result ? JSON.parse(result) : { message: "Excel restaurado" };

@@ -164,7 +164,7 @@ const Clientes = () => {
       return;
     }
 
-    const url = `${window.location.hostname === "localhost" ? "http://localhost:9999" : ""}/.netlify/functions/actualizarCliente`;
+    const url = `${window.location.hostname === "localhost" ? "http://localhost:8888" : ""}/.netlify/functions/actualizarCliente`;
     setActualizando(true);
 
     try {

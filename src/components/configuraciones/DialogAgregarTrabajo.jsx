@@ -75,7 +75,7 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave }) {
       setLoading(true);
 
       const url = `${window.location.hostname === "localhost"
-        ? "http://localhost:9999"
+        ? "http://localhost:8888"
         : ""
         }/.netlify/functions/agregarTrabajo`;
 

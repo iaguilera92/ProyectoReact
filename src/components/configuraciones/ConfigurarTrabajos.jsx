@@ -76,7 +76,7 @@ const ConfigurarTrabajos = () => {
       setLoadingDialogAction("eliminar"); // 🔒 marca acción
 
       const url = `${window.location.hostname === "localhost"
-        ? "http://localhost:9999"
+        ? "http://localhost:8888"
         : ""
         }/.netlify/functions/eliminarTrabajo`;
 
@@ -105,7 +105,7 @@ const ConfigurarTrabajos = () => {
       setLoadingDialogAction("deshabilitar"); // 🔒 marca acción
 
       const url = `${window.location.hostname === "localhost"
-        ? "http://localhost:9999"
+        ? "http://localhost:8888"
         : ""
         }/.netlify/functions/actualizarTrabajo`;
 
@@ -190,7 +190,7 @@ const ConfigurarTrabajos = () => {
       };
 
       const url = `${window.location.hostname === "localhost"
-        ? "http://localhost:9999"
+        ? "http://localhost:8888"
         : ""
         }/.netlify/functions/actualizarTrabajo`;
 
@@ -226,7 +226,7 @@ const ConfigurarTrabajos = () => {
       setLoadingSaveAll(true); // 🔒 bloquea toda la tabla
 
       const url = `${window.location.hostname === "localhost"
-        ? "http://localhost:9999"
+        ? "http://localhost:8888"
         : ""
         }/.netlify/functions/actualizarTrabajo`;
 
