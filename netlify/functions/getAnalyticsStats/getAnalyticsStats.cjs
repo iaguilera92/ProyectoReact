@@ -1,6 +1,10 @@
+// netlify/functions/getAnalyticsStats.cjs
 require("dotenv").config();
 const path = require("path");
 const { BetaAnalyticsDataClient } = require("@google-analytics/data");
+
+// ⚡ Variable de control
+const modoDesarrollo = false; // cambia a false en producción
 
 exports.handler = async function (event, context) {
   if (event.httpMethod === "OPTIONS") {
@@ -12,6 +16,20 @@ exports.handler = async function (event, context) {
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
       },
       body: "OK",
+    };
+  }
+
+  // 🚨 Si estamos en modo desarrollo, simulamos que GA no existe
+  if (modoDesarrollo) {
+    console.log("⚡ MODO DESARROLLO ACTIVADO → devolviendo 404 sin GA");
+    return {
+      statusCode: 404,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify({
+        message: "Google Analytics no disponible en modo desarrollo",
+      }),
     };
   }
 

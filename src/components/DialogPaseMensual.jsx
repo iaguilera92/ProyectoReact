@@ -11,20 +11,27 @@ import "./css/DialogPaseMensual.css";
 import { useMotionValue, animate } from "framer-motion";
 
 
-export default function DialogPaseMensual({ open, onClose }) {
+export default function DialogPaseMensual({ open, onClose, analyticsDisponible }) {
   const montoBase = 10000;
   const [monto, setMonto] = useState(montoBase);
 
   const [misiones, setMisiones] = useState([
     { id: 1, descuento: 0.025, recompensa: "2,5% descuento", descripcion: "Compartir un anuncio de Plataformas web", estado: "pendiente", color: "linear-gradient(135deg,#6EC6FF,#2196F3,#1565C0)", tipo: "pequeña", imagen: "/facebook-insta.png", width: 70, height: 40 },
-    { id: 2, descuento: 0.025, recompensa: "2,5% descuento", descripcion: "Pagar suscripción antes de fin de mes", estado: "pendiente", color: "linear-gradient(135deg,#81C784,#43A047,#1B5E20)", tipo: "pequeña", imagen: "/logo-pagar.png", width: 50, height: 50 },
-    { id: 3, descuento: 0.025, recompensa: "2,5% descuento", descripcion: "Conexión mensual a la administración", estado: "pendiente", color: "linear-gradient(135deg,#80DEEA,#26C6DA,#00838F)", tipo: "pequeña", imagen: "/conexion.png", width: 55, height: 45 },
-    { id: 4, descuento: 0.025, recompensa: "2,5% descuento", descripcion: "Llegar a 100 visitas mensual", estado: "pendiente", color: "linear-gradient(135deg,#BA68C8,#8E24AA,#4A148C)", tipo: "pequeña", imagen: "/visitas.png", width: 45, height: 45 },
+    { id: 2, descuento: 0.025, recompensa: "2,5% descuento", descripcion: "Pagar suscripción antes de fin de mes", estado: "pendiente", color: "linear-gradient(135deg,#6EC6FF,#2196F3,#1565C0)", tipo: "pequeña", imagen: "/logo-pagar.png", width: 50, height: 50 },
+    { id: 3, descuento: 0.025, recompensa: "2,5% descuento", descripcion: "Conexión mensual a la administración", estado: "pendiente", color: "linear-gradient(135deg,#6EC6FF,#2196F3,#1565C0)", tipo: "pequeña", imagen: "/conexion.png", width: 55, height: 45 },
+    { id: 4, descuento: 0.025, recompensa: "2,5% descuento", descripcion: "Llegar a 100 visitas mensual", estado: "pendiente", color: "linear-gradient(135deg,#6EC6FF,#2196F3,#1565C0)", tipo: "pequeña", imagen: "/visitas.png", width: 45, height: 45 },
     { id: 5, descuento: 1, recompensa: "100%", descripcion: "Conseguir un Cliente para Plataformas web", estado: "pendiente", color: "linear-gradient(135deg,#FFF176,#FFD54F,#FFA000,#FF6F00)", tipo: "grande", imagen: "/mision5.png", width: 90, height: 60 }
   ]);
 
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));     // ≤600px
+  const isSmallMobile = useMediaQuery("(max-width:360px)");         // iPhone SE y similares
+  const isLargeMobile = useMediaQuery("(min-width:430px) and (max-width:600px)"); // iPhone 14 Pro Max
+
+  // 📐 Ajuste global de escala
+  const scaleFactor = isSmallMobile ? 0.85 : isLargeMobile ? 1 : isMobile ? 0.9 : 1;
+
+
   const motionValue = useMotionValue(monto);
   const [displayMonto, setDisplayMonto] = useState(monto);
 
@@ -88,7 +95,7 @@ export default function DialogPaseMensual({ open, onClose }) {
       <DialogTitle
         sx={{
           textAlign: "center",
-          background: "linear-gradient(90deg,#1565C0,#1E88E5,#42A5F5)",
+          background: "linear-gradient(90deg,#00695C,#26A69A,#80CBC4)",
           color: "#fff",
           borderBottom: "3px solid #FFD700",
           fontFamily: "'Poppins', sans-serif",
@@ -141,7 +148,14 @@ export default function DialogPaseMensual({ open, onClose }) {
             exit={{ opacity: 0, scale: 0.9 }}
             transition={{ duration: 0.4 }}
           >
-            <DialogContent sx={{ py: 1, px: 1.3 }}>
+            <DialogContent
+              sx={{
+                py: 1,
+                px: 1.3,
+                transform: `scale(${scaleFactor})`, // 👈 escala todo el contenido
+                transformOrigin: "top center",       // se ajusta desde arriba
+              }}
+            >
               {/* Texto de suscripción actual con borde */}
               <Box
                 sx={{
@@ -188,7 +202,10 @@ export default function DialogPaseMensual({ open, onClose }) {
                       <Box sx={{ position: "relative" }}>
                         {/* Tarjeta misión */}
                         <Box
-                          onClick={() => m.estado === "pendiente" && handleAccion(m.id)}
+                          onClick={() => {
+                            if (m.id === 4 && !analyticsDisponible) return; // 🚫 bloqueado
+                            if (m.estado === "pendiente") handleAccion(m.id);
+                          }}
                           sx={{
                             p: 1,
                             borderRadius: 2,
@@ -200,38 +217,42 @@ export default function DialogPaseMensual({ open, onClose }) {
                             flexDirection: "column",
                             justifyContent: "center",
                             alignItems: "center",
-                            cursor: m.estado === "pendiente" ? "pointer" : "not-allowed",
-                            transition: "transform 0.12s ease, box-shadow 0.12s ease",
-
-                            // 🎨 Estilo 3D más fuerte
+                            cursor:
+                              m.id === 4 && !analyticsDisponible
+                                ? "not-allowed"
+                                : m.estado === "pendiente"
+                                  ? "pointer"
+                                  : "not-allowed",
+                            position: "relative",
+                            overflow: "hidden", // evita que el brillo se salga
                             boxShadow: `
-                inset 0 3px 6px rgba(255,255,255,0.4),   /* brillo superior */
-                inset 0 -4px 6px rgba(0,0,0,0.5),        /* sombra interna abajo */
-                0 6px 0 #222,                            /* base sólida */
-                0 10px 12px rgba(0,0,0,0.6)              /* sombra externa */
-              `,
-
-                            "&:hover": {
-                              transform: m.estado === "pendiente" ? "translateY(-5px)" : "none",
-                              boxShadow: `
-                  inset 0 3px 6px rgba(255,255,255,0.5),
-                  inset 0 -4px 6px rgba(0,0,0,0.6),
-                  0 8px 0 #222,
-                  0 14px 16px rgba(0,0,0,0.7)
-                `,
+      inset 0 2px 4px rgba(255,255,255,0.25),
+      inset 0 -3px 5px rgba(0,0,0,0.5),
+      0 4px 0 #222,
+      0 8px 10px rgba(0,0,0,0.6)
+    `,
+                            "&::before": {
+                              content: '""',
+                              position: "absolute",
+                              top: 0,
+                              left: "-50%",
+                              width: "40%",
+                              height: "100%",
+                              background:
+                                "linear-gradient(120deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.35) 50%, rgba(255,255,255,0) 100%)",
+                              filter: "blur(4px)", // ✨ brillo más suave
+                              transform: "skewX(-15deg)",
+                              animation: m.estado === "pendiente" && !(m.id === 4 && !analyticsDisponible)
+                                ? "shine 3.5s infinite"
+                                : "none", // 🚫 si está bloqueado, no brilla
                             },
-                            "&:active": {
-                              transform: m.estado === "pendiente" ? "translateY(4px)" : "none",
-                              boxShadow: `
-                  inset 0 2px 3px rgba(255,255,255,0.3),
-                  inset 0 -2px 3px rgba(0,0,0,0.7),
-                  0 2px 0 #222,
-                  0 4px 6px rgba(0,0,0,0.6)
-                `,
+                            "@keyframes shine": {
+                              "0%": { left: "-50%" },
+                              "100%": { left: "120%" },
                             },
                           }}
                         >
-                          {/* Imagen de misión */}
+                          {/* Imagen */}
                           <Box
                             component="img"
                             src={m.imagen}
@@ -239,12 +260,12 @@ export default function DialogPaseMensual({ open, onClose }) {
                             sx={{
                               width: m.width,
                               height: m.height,
-                              objectFit: "contain", // evita que se deforme
-                              mb: 0.5
+                              objectFit: "contain",
+                              mb: 0.5,
                             }}
                           />
 
-                          {/* Texto misión */}
+                          {/* Texto */}
                           <Typography
                             variant="caption"
                             sx={{
@@ -257,45 +278,30 @@ export default function DialogPaseMensual({ open, onClose }) {
                             {m.descripcion}
                           </Typography>
 
-                          {/* Overlay revisión */}
-                          {m.estado === "revision" && (
-
+                          {/* Overlay si está bloqueada */}
+                          {m.id === 4 && !analyticsDisponible && (
                             <Box
                               sx={{
                                 position: "absolute",
                                 inset: 0,
-                                background: "rgba(0,0,0,0.6)",
+                                background: "rgba(0,0,0,0.7)",
+                                borderRadius: 2,
                                 display: "flex",
-                                flexDirection: "column",
                                 justifyContent: "center",
                                 alignItems: "center",
-                                color: "#fff",
-                                borderRadius: 2,
+                                flexDirection: "column",
+                                color: "red",
+                                fontWeight: 900,
+                                fontSize: "0.8rem",
+                                textAlign: "center",
+                                px: 1,
                               }}
                             >
-                              <AccessTimeFilledRoundedIcon
-                                sx={{
-                                  fontSize: { xs: 28, sm: 34 },
-                                  animation: "clockTick 12s steps(12) infinite",
-                                  transformOrigin: "center center", // fijo al centro
-                                  mt: "-1px",
-                                  "@keyframes clockTick": {
-                                    from: { transform: "rotate(0deg)" },
-                                    to: { transform: "rotate(360deg)" },
-                                  },
-                                  "@media (prefers-reduced-motion: reduce)": {
-                                    animation: "none",
-                                  },
-                                }}
-                              />
-
-
-                              <Typography variant="caption" sx={{ fontWeight: 700 }}>
-                                En revisión
-                              </Typography>
+                              🔒 Bloqueada <br /> Requiere Google Analytics
                             </Box>
                           )}
                         </Box>
+
 
                         {/* Footer negro pegado */}
                         <Box
@@ -345,7 +351,7 @@ export default function DialogPaseMensual({ open, onClose }) {
 
 
               {/* Misión grande */}
-              <Box sx={{ mt: 1 }}>
+              <Box sx={{ mt: 2 }}>
                 {misiones
                   .filter((m) => m.tipo === "grande")
                   .map((m) => (
@@ -362,32 +368,44 @@ export default function DialogPaseMensual({ open, onClose }) {
                           background: m.color,
                           textAlign: "center",
                           cursor: m.estado === "pendiente" ? "pointer" : "not-allowed",
-                          transition: "transform 0.2s ease, box-shadow 0.2s ease",
+                          transition: "transform 0.25s ease, box-shadow 0.25s ease",
                           overflow: "hidden",
+                          position: "relative",
 
-                          // ✨ Brillo interior blanco
+                          // ✨ Brillo base elegante
                           boxShadow: `
-              inset 0 2px 6px rgba(255,255,255,0.6),
-              inset 0 -2px 6px rgba(0,0,0,0.4),
-              inset 0 0 12px rgba(255,255,255,0.4)
-            `,
-                          animation: "innerShine 3s ease-in-out infinite",
+      inset 0 2px 5px rgba(255,255,255,0.4),
+      inset 0 -2px 6px rgba(0,0,0,0.5),
+      0 6px 14px rgba(0,0,0,0.4)
+    `,
 
-                          "@keyframes innerShine": {
-                            "0%, 100%": {
-                              boxShadow: `
-                  inset 0 2px 6px rgba(255,255,255,0.5),
-                  inset 0 -2px 6px rgba(0,0,0,0.2),
-                  inset 0 0 8px rgba(255,255,255,0.3)
-                `,
-                            },
-                            "50%": {
-                              boxShadow: `
-                  inset 0 4px 10px rgba(255,255,255,0.9),
-                  inset 0 -3px 8px rgba(0,0,0,0.5),
-                  inset 0 0 16px rgba(255,255,255,0.6)
-                `,
-                            },
+                          "&:hover": {
+                            transform: m.estado === "pendiente" ? "translateY(-3px) scale(1.02)" : "none",
+                            boxShadow: `
+        inset 0 3px 7px rgba(255,255,255,0.6),
+        inset 0 -3px 8px rgba(0,0,0,0.6),
+        0 8px 16px rgba(0,0,0,0.55)
+      `,
+                          },
+
+                          // ✨ Overlay animado de shine
+                          "&::before": {
+                            content: '""',
+                            position: "absolute",
+                            top: 0,
+                            left: "-50%",
+                            width: "40%",
+                            height: "100%",
+                            background:
+                              "linear-gradient(120deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.35) 50%, rgba(255,255,255,0) 100%)",
+                            filter: "blur(6px)", // brillo difuminado
+                            transform: "skewX(-15deg)",
+                            animation: m.estado === "pendiente" ? "shineMove 4s infinite" : "none",
+                          },
+
+                          "@keyframes shineMove": {
+                            "0%": { left: "-50%" },
+                            "100%": { left: "130%" },
                           },
                         }}
                       >
@@ -531,7 +549,123 @@ export default function DialogPaseMensual({ open, onClose }) {
                     }}
                     className="custom-swiper"
                   >
-                    {/* Slide 1: Mascotas */}
+
+                    {/* Slide 1: Modulos */}
+                    <SwiperSlide>
+                      <Card
+                        sx={{
+                          position: "relative",
+                          overflow: "visible",
+                          borderRadius: "30px",
+                          boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
+                          minHeight: isMobile ? 100 : 110,
+                          display: "flex",
+                          alignItems: "flex-end",
+                          backgroundColor: "transparent",
+                          boxShadow: "none",
+                          border: "none",
+                        }}
+                        elevation={0}
+                      >
+                        {/* 📌 Precio extensión del Box verde */}
+                        <Box
+                          sx={{
+                            position: "absolute",
+                            top: isMobile ? "calc(35% - 28px)" : "calc(35% - 35px)", // 👈 se pega justo arriba del verde (ajusta 22px al alto del cuadro)
+                            right: 15,
+                            alignItems: "right",
+                            px: 1.5,
+                            py: 0.4,
+                            borderTopLeftRadius: "8px",
+                            borderTopRightRadius: "8px",
+                            borderBottomLeftRadius: 0,
+                            borderBottomRightRadius: 0,
+                            background: "rgba(0,0,0,0.75)",
+                            color: "white",
+                            fontWeight: 800,
+                            fontSize: { xs: "0.75rem", sm: "0.85rem" },
+                            boxShadow: "0 2px 6px rgba(0,0,0,0.5)",
+                            zIndex: 1, // 👈 debajo de la imagen de mascotas
+                          }}
+                        >
+                          CONSULTAR
+                        </Box>
+                        {/* Box azul */}
+                        <Box
+                          sx={{
+                            flex: 1,
+                            background:
+                              "linear-gradient(135deg, hsl(210,80%,55%), hsl(220,70%,35%))",
+                            borderRadius: "30px",
+                            p: isMobile ? 1.8 : 1.5,
+                            height: isMobile ? "45px" : "55px",
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                            width: "100%",
+                            alignItems: "flex-end",
+                            cursor: "pointer",
+                            zIndex: 2,
+                          }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleContactClick("Sistemas");
+                          }}
+                        >
+                          <Box sx={{ maxWidth: "65%", textAlign: "right" }}>
+                            <Typography
+                              variant="h6"
+                              sx={{
+                                fontWeight: "bold",
+                                mb: 0.3,
+                                color: "#fff",
+                                fontSize: { xs: "0.95rem", sm: "1.2rem", md: "1.5rem" },
+                              }}
+                            >
+                              ⚙️Nuevos Módulos
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                color: "#fff",
+                                fontSize: { xs: "0.7rem", sm: "0.85rem" },
+                              }}
+                            >
+                              Solicítanos nuevos desarrollos.
+                            </Typography>
+                          </Box>
+                        </Box>
+
+                        {/* Imagen mockup izquierda */}
+                        <Box
+                          sx={{
+                            position: "absolute",
+                            left: -30,
+                            bottom: -85,
+                            height: "250%",
+                            aspectRatio: "572 / 788",
+                            zIndex: 2,
+                            transform: "scaleX(-1)",
+                          }}
+                        >
+                          <Box
+                            component="img"
+                            src="/modulos.png"
+                            alt="Modulos"
+                            sx={{
+                              height: "100%",          // siempre ocupa todo el alto
+                              width: "auto",           // mantiene proporción
+                              objectFit: "contain",    // no recorta
+                              zIndex: 1,
+                              pointerEvents: "none",
+                            }}
+                          />
+                        </Box>
+                      </Card>
+                    </SwiperSlide>
+
+                    {/* Slide 2: Mascotas */}
                     <SwiperSlide>
                       <Card
                         sx={{
@@ -651,120 +785,6 @@ export default function DialogPaseMensual({ open, onClose }) {
 
                     </SwiperSlide>
 
-                    {/* Slide 2: Sistemas */}
-                    <SwiperSlide>
-                      <Card
-                        sx={{
-                          position: "relative",
-                          overflow: "visible",
-                          borderRadius: "30px",
-                          boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
-                          minHeight: isMobile ? 100 : 110,
-                          display: "flex",
-                          alignItems: "flex-end",
-                          backgroundColor: "transparent",
-                          boxShadow: "none",
-                          border: "none",
-                        }}
-                        elevation={0}
-                      >
-                        {/* 📌 Precio extensión del Box verde */}
-                        <Box
-                          sx={{
-                            position: "absolute",
-                            top: isMobile ? "calc(35% - 28px)" : "calc(35% - 35px)", // 👈 se pega justo arriba del verde (ajusta 22px al alto del cuadro)
-                            right: 15,
-                            alignItems: "right",
-                            px: 1.5,
-                            py: 0.4,
-                            borderTopLeftRadius: "8px",
-                            borderTopRightRadius: "8px",
-                            borderBottomLeftRadius: 0,
-                            borderBottomRightRadius: 0,
-                            background: "rgba(0,0,0,0.75)",
-                            color: "white",
-                            fontWeight: 800,
-                            fontSize: { xs: "0.75rem", sm: "0.85rem" },
-                            boxShadow: "0 2px 6px rgba(0,0,0,0.5)",
-                            zIndex: 1, // 👈 debajo de la imagen de mascotas
-                          }}
-                        >
-                          $10.000 CLP
-                        </Box>
-                        {/* Box azul */}
-                        <Box
-                          sx={{
-                            flex: 1,
-                            background:
-                              "linear-gradient(135deg, hsl(210,80%,55%), hsl(220,70%,35%))",
-                            borderRadius: "30px",
-                            p: isMobile ? 1.8 : 1.5,
-                            height: isMobile ? "45px" : "55px",
-                            display: "flex",
-                            flexDirection: "column",
-                            justifyContent: "center",
-                            width: "100%",
-                            alignItems: "flex-end",
-                            cursor: "pointer",
-                            zIndex: 2,
-                          }}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleContactClick("Sistemas");
-                          }}
-                        >
-                          <Box sx={{ maxWidth: "65%", textAlign: "right" }}>
-                            <Typography
-                              variant="h6"
-                              sx={{
-                                fontWeight: "bold",
-                                mb: 0.3,
-                                color: "#fff",
-                                fontSize: { xs: "0.95rem", sm: "1.2rem", md: "1.5rem" },
-                              }}
-                            >
-                              ⚙️Nuevos Módulos
-                            </Typography>
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                color: "#fff",
-                                fontSize: { xs: "0.7rem", sm: "0.85rem" },
-                              }}
-                            >
-                              Solicítanos nuevos desarrollos.
-                            </Typography>
-                          </Box>
-                        </Box>
-
-                        {/* Imagen mockup izquierda */}
-                        <Box
-                          sx={{
-                            position: "absolute",
-                            left: -30,
-                            bottom: -85,
-                            height: "250%",
-                            aspectRatio: "572 / 788",
-                            zIndex: 2,
-                            transform: "scaleX(-1)",
-                          }}
-                        >
-                          <Box
-                            component="img"
-                            src="/modulos.png"
-                            alt="Modulos"
-                            sx={{
-                              height: "100%",          // siempre ocupa todo el alto
-                              width: "auto",           // mantiene proporción
-                              objectFit: "contain",    // no recorta
-                              zIndex: 1,
-                              pointerEvents: "none",
-                            }}
-                          />
-                        </Box>
-                      </Card>
-                    </SwiperSlide>
                   </Swiper>
                 </motion.div>
               </Grid>

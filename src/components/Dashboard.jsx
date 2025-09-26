@@ -60,10 +60,12 @@ const Contador = ({ valorFinal, texto, subtexto, delay = 0, variant = "h5", inic
 
 const Dashboard = () => {
     const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    const isSmallMobile = useMediaQuery("(max-width:360px)");     // iPhone SE / muy compacto
+    const isLargeMobile = useMediaQuery("(min-width:400px) and (max-width:480px)"); // iPhone 14 Pro Max
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // ≤600px en general
+    const cardSize = isSmallMobile ? "200px" : isLargeMobile ? "320px" : isMobile ? "280px" : "340px";
+    const smallCardSize = isSmallMobile ? "90px" : isLargeMobile ? "150px" : isMobile ? "130px" : "165px";
 
-    const cardSize = isMobile ? "300px" : "340px";
-    const smallCardSize = isMobile ? "140px" : "165px";
 
     const [mostrarContadorPrincipal, setMostrarContadorPrincipal] = useState(false);
     const [mostrarContadorChile, setMostrarContadorChile] = useState(false);
@@ -71,13 +73,6 @@ const Dashboard = () => {
     const [snackbarServicios, setSnackbarServicios] = useState(false);
     const location = useLocation();
     const [usuario, setUsuario] = useState(null);
-    useEffect(() => {
-        const usuarioGuardado = JSON.parse(sessionStorage.getItem("usuario"));
-        if (usuarioGuardado) {
-            setUsuario(usuarioGuardado);
-        }
-    }, []);
-
     const [visitasTotales, setVisitasTotales] = useState(0);
     const [visitasChile, setVisitasChile] = useState(0);
     const [visitasInternacional, setVisitasInternacional] = useState(0);
@@ -98,6 +93,7 @@ const Dashboard = () => {
     const [datosGrafico, setDatosGrafico] = useState([]);
     const navigate = useNavigate();
     const [openPase, setOpenPase] = useState(false);
+    const [analyticsDisponible, setAnalyticsDisponible] = useState(true);
 
     //GOOGLE ANALYTICS
     useEffect(() => {
@@ -109,6 +105,13 @@ const Dashboard = () => {
                         : "/.netlify/functions/getAnalyticsStats";
 
                 const res = await fetch(endpoint);
+
+                if (!res.ok) {
+                    // 🚨 Si el backend devolvió 404 o 500
+                    setAnalyticsDisponible(false);
+                    return;
+                }
+
                 const data = await res.json();
 
                 setVisitasChile(data.chile || 0);
@@ -116,22 +119,36 @@ const Dashboard = () => {
                 setVisitasTotales(data.total || 0);
                 setDispositivos(data.dispositivos || { mobile: 0, desktop: 0, tablet: 0 });
 
-                setMostrarContadorPrincipal(true); // ✅ activa animación del contador total
+                setMostrarContadorPrincipal(true);
+                setAnalyticsDisponible(true);
             } catch (err) {
                 console.error("Error cargando visitas:", err);
+                setAnalyticsDisponible(false);
             }
         };
 
         obtenerVisitas();
     }, []);
 
+    //CONTRATAR GOOGLE ANALYTICS
+    const handleContactClick = (title) => {
+        const mensaje = `¡Hola! Me interesa contratar ${encodeURIComponent(title)} ¿Me comentas?`;
+        window.open(`https://api.whatsapp.com/send?phone=56946873014&text=${mensaje}`, "_blank");
+    };
+
+    //GUARDAR USUARIO EN SESIÓN
+    useEffect(() => {
+        const usuarioGuardado = JSON.parse(sessionStorage.getItem("usuario"));
+        if (usuarioGuardado) {
+            setUsuario(usuarioGuardado);
+        }
+    }, []);
 
     //PASE MENSUAL
-
     useEffect(() => {
         const timer = setTimeout(() => {
             setOpenPase(true);
-        }, 1000); // ⏱️ 1 segundo después de cargar
+        }, 1500); // ⏱️ 1 segundo después de cargar
         return () => clearTimeout(timer);
     }, []);
 
@@ -225,19 +242,15 @@ const Dashboard = () => {
             >
                 {/* Cuadro principal con animación */}
                 <Grid item>
-                    <Box
-                        sx={{
-                            perspective: 1000,
-                            width: cardSize,
-                            height: cardSize,
-                        }}
+                    <Box sx={{ perspective: 1000, width: cardSize, height: cardSize }}
                         onClick={() => {
-                            // Solo si estamos viendo la cara frontal
+                            if (!analyticsDisponible) return; // 🚫 no girar si no hay GA
+
                             if (!flip) {
                                 setFlip(true);
                                 setMostrarGrafico(false);
                                 setMostrarPorcentajes(false);
-                                setDatosGrafico([]); // reinicia
+                                setDatosGrafico([]);
 
                                 setTimeout(() => {
                                     setMostrarGrafico(true);
@@ -252,11 +265,11 @@ const Dashboard = () => {
                                     setMostrarPorcentajes(true);
                                 }, 1000);
                             } else {
-                                setFlip(false); // Volver a la cara frontal sin animar nada
+                                setFlip(false);
                             }
                         }}
-
                     >
+
                         <Box
                             component={motion.div}
                             animate={{ rotateY: flip ? 180 : 0 }}
@@ -278,30 +291,94 @@ const Dashboard = () => {
                                 }}
                             >
                                 <Paper
-                                    elevation={4}
+                                    elevation={6}
                                     sx={{
                                         width: "100%",
                                         height: "100%",
-                                        backgroundColor: "rgba(255, 255, 255, 0.08)",
-                                        backdropFilter: "blur(4px)",
-                                        color: "white",
+                                        background: analyticsDisponible
+                                            ? "linear-gradient(135deg, rgba(255,255,255,0.15), rgba(200,200,200,0.05))" // elegante translúcido con brillo sutil
+                                            : "linear-gradient(145deg, #FFD700, #FFA500)", // no contratado = dorado
+                                        color: analyticsDisponible ? "white" : "black",
                                         display: "flex",
                                         flexDirection: "column",
                                         justifyContent: "center",
                                         alignItems: "center",
-                                        borderRadius: 3,
+                                        borderRadius: 4,
                                         textAlign: "center",
                                         cursor: "pointer",
+                                        border: analyticsDisponible ? "2px solid white" : "3px solid #FFD700", // borde blanco sólido si está contratado
+                                        boxShadow: analyticsDisponible
+                                            ? "0 0 18px rgba(255,255,255,0.25)" // glow blanco elegante
+                                            : "0 0 15px rgba(255, 215, 0, 0.7)", // glow dorado
+                                        backdropFilter: "blur(6px)", // efecto glass
+                                        transition: "transform 0.2s, box-shadow 0.2s",
+                                        "&:hover": {
+                                            transform: "scale(1.05)",
+                                            boxShadow: analyticsDisponible
+                                                ? "0 0 28px rgba(255,255,255,0.5)" // más brillo en hover
+                                                : "0 0 25px rgba(255, 215, 0, 1)",
+                                        },
+                                        p: 2,
+                                    }}
+                                    onClick={() => {
+                                        if (!analyticsDisponible) {
+                                            handleContactClick("Google Analytics por $10.000 CLP");
+                                        }
                                     }}
                                 >
-                                    <Contador
-                                        valorFinal={visitasTotales || 0}
-                                        texto="Visitas"
-                                        subtexto="Visitas totales"
-                                        variant="h4"
-                                        iniciar={mostrarContadorPrincipal}
-                                    />
+                                    {analyticsDisponible ? (
+                                        <Contador
+                                            valorFinal={visitasTotales || 0}
+                                            texto="Visitas"
+                                            subtexto="Visitas totales"
+                                            variant="h4"
+                                            iniciar={mostrarContadorPrincipal}
+                                        />
+                                    ) : (
+                                        <>
+                                            <Box
+                                                component="img"
+                                                src="/logo-google-analytics.png"
+                                                alt="Google Analytics"
+                                                sx={{
+                                                    width: 200,
+                                                    mb: 1,
+                                                    filter: "drop-shadow(0 0 5px rgba(255, 215, 0, 0.8))",
+                                                }}
+                                            />
+                                            <Typography
+                                                variant="h6"
+                                                fontWeight="bold"
+                                                sx={{
+                                                    color: "white",
+                                                    textShadow: "0px 0px 4px #FFD700, 0px 0px 8px #FFA500",
+                                                    mb: 1,
+                                                }}
+                                            >
+                                                Contrata Google Analytics
+                                            </Typography>
+                                            <Typography
+                                                variant="body1"
+                                                fontWeight="bold"
+                                                sx={{
+                                                    color: "white",
+                                                    border: "2px solid white",
+                                                    borderRadius: "12px",
+                                                    px: 2,
+                                                    py: 0.5,
+                                                    textAlign: "center",
+                                                    boxShadow: "0 0 8px rgba(255, 255, 255, 0.7)",
+                                                    background: "rgba(255, 255, 255, 0.15)",
+                                                }}
+                                            >
+                                                $10.000 CLP
+                                            </Typography>
+                                        </>
+                                    )}
                                 </Paper>
+
+
+
                             </Box>
 
                             {/* Cara trasera */}
@@ -391,6 +468,7 @@ const Dashboard = () => {
                 {/* Dos cuadros pequeños */}
                 <Grid item>
                     <Box sx={{ display: "flex", gap: 2 }}>
+                        {/* Paper pequeño 1 */}
                         <motion.div
                             initial={{ opacity: 0, x: -80 }}
                             animate={{ opacity: 1, x: 0 }}
@@ -402,26 +480,50 @@ const Dashboard = () => {
                                 sx={{
                                     width: smallCardSize,
                                     height: smallCardSize,
-                                    backgroundColor: "rgba(255, 255, 255, 0.08)",
-                                    backdropFilter: "blur(4px)",
-                                    color: "white",
+                                    background: analyticsDisponible
+                                        ? "linear-gradient(135deg, rgba(255,255,255,0.15), rgba(200,200,200,0.05))"
+                                        : "linear-gradient(145deg, #E6C200, #C49000)", // dorado más tenue
+                                    color: analyticsDisponible ? "white" : "black",
                                     display: "flex",
                                     flexDirection: "column",
                                     justifyContent: "center",
                                     alignItems: "center",
                                     borderRadius: 3,
                                     textAlign: "center",
+                                    border: analyticsDisponible ? "2px solid white" : "2px solid #E6C200",
+                                    boxShadow: analyticsDisponible
+                                        ? "0 0 12px rgba(255,255,255,0.25)"
+                                        : "0 0 10px rgba(230, 194, 0, 0.5)",
+                                    backdropFilter: "blur(6px)",
+                                    p: 0.5,
                                 }}
                             >
-                                <Contador
-                                    valorFinal={visitasChile || 0}
-                                    subtexto="Chile"
-                                    delay={100}
-                                    iniciar={mostrarContadorChile}
-                                />
+                                {analyticsDisponible ? (
+                                    <Contador
+                                        valorFinal={visitasChile || 0}
+                                        subtexto="Chile"
+                                        delay={100}
+                                        iniciar={mostrarContadorChile}
+                                    />
+                                ) : (
+                                    <>
+                                        <Typography variant="h4" component="div" sx={{ mb: 0.5 }}>
+                                            🖥️
+                                        </Typography>
+                                        <Typography
+                                            variant="body2"
+                                            fontSize={isMobile ? "0.8rem" : "1rem"}
+                                            fontWeight="bold"
+                                            sx={{ textAlign: "center" }}
+                                        >
+                                            Monitorea visitas de tu sitio web
+                                        </Typography>
+                                    </>
+                                )}
                             </Paper>
                         </motion.div>
 
+                        {/* Paper pequeño 2 */}
                         <motion.div
                             initial={{ opacity: 0, x: 80 }}
                             animate={{ opacity: 1, x: 0 }}
@@ -433,26 +535,51 @@ const Dashboard = () => {
                                 sx={{
                                     width: smallCardSize,
                                     height: smallCardSize,
-                                    backgroundColor: "rgba(255, 255, 255, 0.08)",
-                                    backdropFilter: "blur(4px)",
-                                    color: "white",
+                                    background: analyticsDisponible
+                                        ? "linear-gradient(135deg, rgba(255,255,255,0.15), rgba(200,200,200,0.05))"
+                                        : "linear-gradient(145deg, #E6C200, #C49000)", // dorado más tenue
+                                    color: analyticsDisponible ? "white" : "black",
                                     display: "flex",
                                     flexDirection: "column",
                                     justifyContent: "center",
                                     alignItems: "center",
                                     borderRadius: 3,
                                     textAlign: "center",
+                                    border: analyticsDisponible ? "2px solid white" : "2px solid #E6C200",
+                                    boxShadow: analyticsDisponible
+                                        ? "0 0 12px rgba(255,255,255,0.25)"
+                                        : "0 0 10px rgba(230, 194, 0, 0.5)",
+                                    backdropFilter: "blur(6px)",
+                                    p: 0.5,
                                 }}
                             >
-                                <Contador
-                                    valorFinal={visitasInternacional || 0}
-                                    subtexto="Internacionales"
-                                    delay={100}
-                                    iniciar={mostrarContadorInt}
-                                />
+                                {analyticsDisponible ? (
+                                    <Contador
+                                        valorFinal={visitasInternacional || 0}
+                                        subtexto="Internacionales"
+                                        delay={100}
+                                        iniciar={mostrarContadorInt}
+                                    />
+                                ) : (
+                                    <>
+                                        <Typography variant="h4" component="div" sx={{ mb: 0.5 }}>
+                                            📊
+                                        </Typography>
+                                        <Typography
+                                            variant="body2"
+                                            fontSize={isMobile ? "0.8rem" : "1rem"}
+                                            fontWeight="bold"
+                                            sx={{ textAlign: "center" }}
+                                        >
+                                            Analiza interacción de tus clientes
+                                        </Typography>
+                                    </>
+                                )}
                             </Paper>
                         </motion.div>
                     </Box>
+
+
                     <Box sx={{ height: isMobile ? 100 : 110 }} />
                 </Grid>
 
@@ -479,7 +606,9 @@ const Dashboard = () => {
             <DialogPaseMensual
                 open={openPase}
                 onClose={() => setOpenPase(false)}
+                analyticsDisponible={analyticsDisponible}
             />
+
         </Box >
 
     );
