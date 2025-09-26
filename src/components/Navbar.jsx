@@ -406,7 +406,7 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
                       fontFamily: 'Poppins, sans-serif',
                     }}
                   >
-                    Conecta con nuestro equipo y trabaja con nosotros.
+                    Conecta y trabaja con nosotros.
                   </Typography>
 
 

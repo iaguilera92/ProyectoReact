@@ -192,7 +192,8 @@ export default function DialogTrabajos({
           fontFamily: "'Poppins', sans-serif",
           py: 1.5,
           borderBottom: "1px solid rgba(255,167,38,.35)",
-          position: "relative", // 👈 mantiene ancla para el botón
+          position: "relative", // 👈 ancla para el botón
+          minHeight: 64,        // 👈 asegura altura fija (ajústalo según tu diseño)
           overflow: "hidden",
 
           "&::before": {
@@ -245,13 +246,12 @@ export default function DialogTrabajos({
           onClick={onClose}
           sx={{
             position: "absolute",
-            top: 8,
-            right: 8,
+            top: 2,
+            right: 2,
             color: "#FFF",
-            zIndex: 3, // 👈 encima del overlay
+            zIndex: 5,
             "&:hover": { backgroundColor: "rgba(255,255,255,.15)" },
 
-            // animación solo al montar
             animation: open ? "spinTwice 0.6s ease-in-out" : "none",
             "@keyframes spinTwice": {
               "0%": { transform: "rotate(0deg)" },

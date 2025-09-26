@@ -119,17 +119,22 @@ const Clientes = () => {
   const mesDialogPago = mesManual || mesCapitalizado;
   const [animar, setAnimar] = useState(true);
   const [animacionTerminada, setAnimacionTerminada] = useState(false);
-
   const MotionBox = motion(Box);
 
+  //DÍAS ATRASO
+  const hoy = new Date();
+  const primerDiaMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+  const diffMs = hoy - primerDiaMes;
+  const diasAtraso = Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
 
-
+  //GANADO
   const totalGanado = clientes.reduce((acc, c) => {
     const valorLimpio = c.valor?.replace(/[$.\s\r\n]/g, "") || "0";
     const valor = parseInt(valorLimpio, 10) || 0;
     return c.pagado ? acc + valor : acc;
   }, 0);
 
+  //DEUDA
   const totalDeuda = clientes.reduce((acc, c) => {
     const valorLimpio = c.valor?.replace(/[$.\s\r\n]/g, "") || "0";
     const valor = parseInt(valorLimpio, 10) || 0;
@@ -253,12 +258,10 @@ const Clientes = () => {
           throw new Error(resultado.message || resultado.detalle || "Error al generar el comprobante");
         }
 
-        // PDF generado correctamente, la URL es la misma (ya que siempre se sobrescribe)
         console.log("✅ PDF generado exitosamente");
 
       } catch (err) {
         console.warn("⚠️ No se pudo generar el comprobante, se enviará correo sin adjunto:", err.message);
-        // puedes dejar pdfUrl como está (última versión generada) o poner un placeholder
       }
 
       // 🔹 Parámetros del correo
@@ -294,7 +297,6 @@ const Clientes = () => {
   };
 
 
-
   //ÚLTIMO DÍA DEL MES
   useEffect(() => {
 
@@ -309,7 +311,7 @@ const Clientes = () => {
   }, []);
 
 
-
+  //COBRO
   const enviarCorreoCobro = (cliente, mesCapitalizado) => {
     const year = new Date().getFullYear();
 
@@ -326,7 +328,6 @@ const Clientes = () => {
       cc: "plataformas.web.cl@gmail.com", // copia interna
     };
 
-
     emailjs
       .send(
         "service_ocjgtpc",
@@ -342,34 +343,30 @@ const Clientes = () => {
       });
   };
 
+  // SUSPENSIÓN
   const enviarCorreoSuspension = (cliente) => {
-    const fechaSuspension = new Date();
-    fechaSuspension.setDate(fechaSuspension.getDate() + 1); // +24 hrs
-    const fechaFormateada = fechaSuspension.toLocaleDateString("es-CL", {
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-    });
+
+    const diasAtrasoDesc = `${diasAtraso} día${diasAtraso === 1 ? "" : "s"}.`;
 
     const templateParams = {
       sitioWeb: `www.${cliente.sitioWeb}`,
       nombre: cliente.cliente || cliente.sitioWeb || "Cliente",
-      fechaSuspension: fechaFormateada, // 👈 para mostrar la fecha límite
+      diasAtraso: diasAtrasoDesc,
       email: modoDesarrollo
         ? "plataformas.web.cl@gmail.com"
-        : (cliente.correo || "plataformas.web.cl@gmail.com"),
-      cc: "plataformas.web.cl@gmail.com", // copia interna
+        : cliente.correo || "plataformas.web.cl@gmail.com",
+      cc: "plataformas.web.cl@gmail.com",
     };
 
     emailjs
       .send(
-        "service_ocjgtpc",             // mismo service ID
-        "template_rrv14p8",      // 👈 NUEVO template en EmailJS
+        "service_kz3yaug",
+        "template_rrv14p8",
         templateParams,
-        "byR6suwAx2-x6ddVp"            // tu public key
+        "lwCAuhptLOofypnhx"
       )
       .then(() => {
-        console.log("⚠️ Correo de suspensión enviado a", templateParams.email);
+        console.log("📧 Correo de suspensión enviado a", templateParams.email);
       })
       .catch((error) => {
         console.error("❌ Error al enviar correo de suspensión:", error);
@@ -1242,7 +1239,7 @@ const Clientes = () => {
             onClick={() => {
               enviarCorreoSuspension(clienteSeleccionado);
 
-              const mensaje = `⚠️ Estimado ${clienteSeleccionado.cliente}, su servicio de HOSTING para ${clienteSeleccionado.sitioWeb} será suspendido en menos de 24 hrs si no regulariza el pago.`;
+              const mensaje = `🔴 Estimado ${clienteSeleccionado.cliente}, su Suscripción (${clienteSeleccionado.sitioWeb}) tiene ${diasAtraso} día${diasAtraso === 1 ? "" : "s"} de atraso. Se debe regularizar o será suspendido en 24 hrs.`;
               const numero = clienteSeleccionado.telefono || "56946873014";
               const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
               window.open(url, "_blank");
