@@ -463,7 +463,7 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
           </AnimatePresence>
 
           {/* Administración */}
-          {open && mostrarAdmin && (
+          {open && (
             <motion.div
               variants={bienvenidaVariants}
               initial="hidden"

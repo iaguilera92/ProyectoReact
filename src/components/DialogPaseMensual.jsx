@@ -9,7 +9,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "./css/DialogPaseMensual.css";
 import { useMotionValue, animate } from "framer-motion";
-
+import { cargarPaseMensual } from "../helpers/HelperPaseMensual";
 
 export default function DialogPaseMensual({ open, onClose, analyticsDisponible }) {
   const montoBase = 10000;
@@ -24,16 +24,31 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
   ]);
 
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));     // ≤600px
-  const isSmallMobile = useMediaQuery("(max-width:360px)");         // iPhone SE y similares
-  const isLargeMobile = useMediaQuery("(min-width:430px) and (max-width:600px)"); // iPhone 14 Pro Max
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isSmallMobile = useMediaQuery("(max-width:360px)");
+  const isLargeMobile = useMediaQuery("(min-width:389px) and (max-width:600px)");
 
   // 📐 Ajuste global de escala
   const scaleFactor = isSmallMobile ? 0.85 : isLargeMobile ? 1 : isMobile ? 0.9 : 1;
 
 
+
   const motionValue = useMotionValue(monto);
   const [displayMonto, setDisplayMonto] = useState(monto);
+
+  // S3 PASE MENSUAL
+  useEffect(() => {
+    const fetchPase = async () => {
+      const { misiones: misionesExcel } = await cargarPaseMensual(
+        `https://plataformas-web-buckets.s3.us-east-2.amazonaws.com/PaseMensual.xlsx?t=${Date.now()}`,
+        misiones,
+        true // debug
+      );
+      setMisiones(misionesExcel);
+    };
+    fetchPase();
+  }, []);
+
 
   useEffect(() => {
     const controls = animate(motionValue, monto, {
@@ -44,33 +59,68 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
     return () => controls.stop();
   }, [monto]);
 
-  const handleAccion = (id) => {
-    setMisiones((prev) =>
-      prev.map((m) => {
-        if (m.id === id && m.estado === "pendiente") {
-          const updated = prev.map((x) =>
-            x.id === id ? { ...x, estado: "revision" } : x
-          );
+  const handleAccion = async (id) => {
+    setMisiones((prev) => {
+      // Si ya está en revisión/aprobado/rechazado → no hago nada
+      const mision = prev.find((m) => m.id === id);
+      if (!mision || mision.estado !== "pendiente") return prev;
 
-          // calcular descuento total de todas las misiones en revisión
-          const totalDescuento = updated
-            .filter((x) => x.estado === "revision")
-            .reduce((acc, x) => acc + x.descuento, 0);
+      // ⚡ Actualizo localmente a "revision" (optimistic UI)
+      const updated = prev.map((m) =>
+        m.id === id ? { ...m, estado: "revision" } : m
+      );
 
-          // monto = montoBase - (montoBase * totalDescuento)
-          const nuevoMonto =
-            montoBase - Math.round(montoBase * totalDescuento);
+      // 🔄 Llamo al backend para reflejar en el Excel de S3
+      const misionMap = {
+        1: "CompartirAnuncio",
+        2: "PagarSuscripcionAntes",
+        3: "ConexionMensual",
+        4: "VisitasMensual",
+        5: "ConseguirCliente",
+      };
+      const campo = misionMap[id];
+      const SitioWeb = window.location.hostname;
 
-          // nunca menos de 0
-          setMonto(Math.max(nuevoMonto, 0));
+      (async () => {
+        try {
+          const url = `${window.location.hostname === "localhost"
+            ? "http://localhost:8888"
+            : ""
+            }/.netlify/functions/actualizarPaseMensual`;
 
-          return { ...m, estado: "revision" };
+          const response = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              SitioWeb,
+              campo,
+              valor: 1, // 1 = usuario marcó la misión (en revisión)
+            }),
+          });
+
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.message || "Error al actualizar misión");
+          console.log("✅ Excel actualizado:", data);
+        } catch (err) {
+          console.error("❌ Error al actualizar misión:", err);
         }
-        return m;
-      })
-    );
+      })();
+
+      return updated;
+    });
   };
 
+
+
+  // 💰 Recalcular monto automáticamente cuando llegan misiones (aprobadas/revisión)
+  useEffect(() => {
+    const totalDescuento = misiones
+      .filter((m) => m.estado === "aprobado") // ✅ solo aprobados
+      .reduce((acc, m) => acc + m.descuento, 0);
+
+    const nuevoMonto = montoBase - Math.round(montoBase * totalDescuento);
+    setMonto(Math.max(nuevoMonto, 0));
+  }, [misiones]);
 
   return (
     <Dialog
@@ -222,7 +272,7 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
                                 ? "not-allowed"
                                 : m.estado === "pendiente"
                                   ? "pointer"
-                                  : "not-allowed",
+                                  : "default",
                             position: "relative",
                             overflow: "hidden", // evita que el brillo se salga
                             boxShadow: `
@@ -242,9 +292,10 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
                                 "linear-gradient(120deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.35) 50%, rgba(255,255,255,0) 100%)",
                               filter: "blur(4px)", // ✨ brillo más suave
                               transform: "skewX(-15deg)",
-                              animation: m.estado === "pendiente" && !(m.id === 4 && !analyticsDisponible)
-                                ? "shine 3.5s infinite"
-                                : "none", // 🚫 si está bloqueado, no brilla
+                              animation:
+                                m.estado === "pendiente" && !(m.id === 4 && !analyticsDisponible)
+                                  ? "shine 3.5s infinite"
+                                  : "none",
                             },
                             "@keyframes shine": {
                               "0%": { left: "-50%" },
@@ -278,7 +329,7 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
                             {m.descripcion}
                           </Typography>
 
-                          {/* Overlay si está bloqueada */}
+                          {/* 🔒 Bloqueada */}
                           {m.id === 4 && !analyticsDisponible && (
                             <Box
                               sx={{
@@ -300,49 +351,118 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
                               🔒 Bloqueada <br /> Requiere Google Analytics
                             </Box>
                           )}
-                        </Box>
+
+                          {/* ⏳ En revisión */}
+                          {m.estado === "revision" && (
+                            <Box
+                              sx={{
+                                position: "absolute",
+                                inset: 0,
+                                background: "rgba(0,0,0,0.65)",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                borderRadius: 2,
+                                color: "#fff",
+                              }}
+                            >
+                              <AccessTimeFilledRoundedIcon
+                                sx={{
+                                  fontSize: { xs: 28, sm: 34 },
+                                  animation: "clockTick 12s steps(12) infinite",
+                                  transformOrigin: "center center",
+                                  "@keyframes clockTick": {
+                                    from: { transform: "rotate(0deg)" },
+                                    to: { transform: "rotate(360deg)" },
+                                  },
+                                }}
+                              />
+                              <Typography variant="caption" sx={{ fontWeight: 700 }}>
+                                En revisión
+                              </Typography>
+                            </Box>
+                          )}
+
+                          {/* ✅ Aprobado */}
+                          {m.estado === "aprobado" && (
+                            <Box
+                              sx={{
+                                position: "absolute",
+                                inset: 0,
+                                background: "linear-gradient(180deg, rgba(0,200,0,0.8) 0%, rgba(0,200,0,0.5) 50%, rgba(0,200,0,0.2) 100%)",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                borderRadius: 2,
+                                color: "#fff",
+                                backdropFilter: "blur(2px)", // 🔥 un pelín de blur detrás
+                              }}
+                            >
+                              <Typography
+                                component="div"
+                                sx={{
+                                  fontSize: { xs: "2rem", sm: "2.5rem" },
+                                  mb: 0.5,
+                                  textShadow: "0 0 8px rgba(0,0,0,0.6)",
+                                }}
+                              >
+                                ✅
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  fontWeight: 800,
+                                  fontSize: "0.95rem",
+                                  textShadow: "1px 1px 4px rgba(0,0,0,0.8)",
+                                }}
+                              >
+                                Aprobado
+                              </Typography>
+                            </Box>
+                          )}
+
+                          {/* ❌ Rechazado */}
+                          {m.estado === "rechazado" && (
+                            <Box
+                              sx={{
+                                position: "absolute",
+                                inset: 0,
+                                background: "linear-gradient(180deg, rgba(200,0,0,0.8) 0%, rgba(200,0,0,0.5) 50%, rgba(200,0,0,0.2) 100%)",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                borderRadius: 2,
+                                color: "#fff",
+                                backdropFilter: "blur(2px)", // 🔥 mismo blur
+                              }}
+                            >
+                              <Typography
+                                component="div"
+                                sx={{
+                                  fontSize: { xs: "2rem", sm: "2.5rem" },
+                                  mb: 0.5,
+                                  textShadow: "0 0 8px rgba(0,0,0,0.6)",
+                                }}
+                              >
+                                ❌
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  fontWeight: 800,
+                                  fontSize: "0.95rem",
+                                  textShadow: "1px 1px 4px rgba(0,0,0,0.8)",
+                                }}
+                              >
+                                Rechazado
+                              </Typography>
+                            </Box>
+                          )}
 
 
-                        {/* Footer negro pegado */}
-                        <Box
-                          sx={{
-                            mt: 0,
-                            borderBottomLeftRadius: 6,
-                            borderBottomRightRadius: 6,
-                            background: "rgba(0,0,0,0.85)",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            px: 1,
-                            py: 0.3,
-                          }}
-                        >
-                          <Typography
-                            variant="caption"
-                            sx={{ fontWeight: 700, fontSize: "0.7rem", color: "#FFD700" }}
-                          >
-                            1/1
-                          </Typography>
-
-                          <Typography
-                            variant="caption"
-                            sx={{ fontWeight: 700, fontSize: "0.75rem", color: "#fff" }}
-                          >
-                            {m.recompensa}
-                          </Typography>
-
-                          <Button
-                            size="small"
-                            sx={{
-                              minWidth: "auto",
-                              p: 0.2,
-                              color: "#FFD700",
-                              fontSize: "0.75rem",
-                              fontWeight: 800,
-                            }}
-                          >
-                            ℹ️
-                          </Button>
                         </Box>
                       </Box>
                     </Grid>
@@ -380,14 +500,15 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
     `,
 
                           "&:hover": {
-                            transform: m.estado === "pendiente" ? "translateY(-3px) scale(1.02)" : "none",
+                            transform: m.estado === "pendiente" ? "translateY(-5px)" : "none",
                             boxShadow: `
-        inset 0 3px 7px rgba(255,255,255,0.6),
-        inset 0 -3px 8px rgba(0,0,0,0.6),
-        0 8px 16px rgba(0,0,0,0.55)
-      `,
+    inset 0 3px 6px rgba(255,255,255,0.5),
+    inset 0 -4px 6px rgba(0,0,0,0.6),
+    0 8px 0 #222,
+    0 14px 16px rgba(0,0,0,0.7)
+  `,
+                            filter: m.estado === "revision" ? "brightness(1.05)" : "none", // 👈 revisión con un brillito sutil
                           },
-
                           // ✨ Overlay animado de shine
                           "&::before": {
                             content: '""',
@@ -429,7 +550,7 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
                           {m.descripcion}
                         </Typography>
 
-                        {/* Overlay En revisión */}
+                        {/* ⏳ En revisión */}
                         {m.estado === "revision" && (
                           <Box
                             sx={{
@@ -440,8 +561,7 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
                               flexDirection: "column",
                               justifyContent: "center",
                               alignItems: "center",
-                              borderTopLeftRadius: 6,
-                              borderTopRightRadius: 6,
+                              borderRadius: 2,
                               color: "#fff",
                             }}
                           >
@@ -449,20 +569,57 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
                               sx={{
                                 fontSize: { xs: 28, sm: 34 },
                                 animation: "clockTick 12s steps(12) infinite",
-                                transformOrigin: "center center", // fijo al centro
-                                mt: "-1px",
+                                transformOrigin: "center center",
                                 "@keyframes clockTick": {
                                   from: { transform: "rotate(0deg)" },
                                   to: { transform: "rotate(360deg)" },
                                 },
-                                "@media (prefers-reduced-motion: reduce)": {
-                                  animation: "none",
-                                },
                               }}
                             />
-
                             <Typography variant="caption" sx={{ fontWeight: 700 }}>
                               En revisión
+                            </Typography>
+                          </Box>
+                        )}
+
+                        {/* ✅ Aprobado */}
+                        {m.estado === "aprobado" && (
+                          <Box
+                            sx={{
+                              position: "absolute",
+                              inset: 0,
+                              background: "rgba(0,128,0,0.75)", // verde translúcido
+                              display: "flex",
+                              flexDirection: "column",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              borderRadius: 2,
+                              color: "#fff",
+                            }}
+                          >
+                            <Typography variant="h6" sx={{ fontWeight: 800 }}>
+                              ✅ Aprobado
+                            </Typography>
+                          </Box>
+                        )}
+
+                        {/* ❌ Rechazado */}
+                        {m.estado === "rechazado" && (
+                          <Box
+                            sx={{
+                              position: "absolute",
+                              inset: 0,
+                              background: "rgba(139,0,0,0.75)", // rojo oscuro translúcido
+                              display: "flex",
+                              flexDirection: "column",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              borderRadius: 2,
+                              color: "#fff",
+                            }}
+                          >
+                            <Typography variant="h6" sx={{ fontWeight: 800 }}>
+                              ❌ Rechazado
                             </Typography>
                           </Box>
                         )}
@@ -588,7 +745,7 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
                             zIndex: 1, // 👈 debajo de la imagen de mascotas
                           }}
                         >
-                          CONSULTAR
+                          COTIZAR
                         </Box>
                         {/* Box azul */}
                         <Box

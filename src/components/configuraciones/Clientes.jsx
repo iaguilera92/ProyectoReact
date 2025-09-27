@@ -6,11 +6,12 @@ import MenuInferior from './MenuInferior';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import GroupIcon from "@mui/icons-material/Group";
 import emailjs from "@emailjs/browser";
-import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { FormControl, InputLabel, Select, MenuItem, Tooltip } from "@mui/material";
 import { motion, AnimatePresence, useMotionValue, animate } from "framer-motion";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
-import { CircularProgress } from "@mui/material";
+import { Brush } from "@mui/icons-material";
 import DialogClientePagos from "./DialogClientePagos";
+import DialogClientesPaseMensual from "./DialogClientesPaseMensual";
 
 const baseDelay = 1.5; // segundos antes de comenzar la animación
 const letterDelay = 0.04;
@@ -119,6 +120,11 @@ const Clientes = () => {
   const mesDialogPago = mesManual || mesCapitalizado;
   const [animar, setAnimar] = useState(true);
   const [animacionTerminada, setAnimacionTerminada] = useState(false);
+  const [openDialogCliente, setOpenDialogCliente] = useState(false);
+  const datosCliente = (cliente) => {
+    setClienteSeleccionado(cliente);
+    setOpenDialogCliente(true);
+  };
   const MotionBox = motion(Box);
 
   //DÍAS ATRASO
@@ -762,19 +768,64 @@ const Clientes = () => {
                         wordBreak: "break-word",
                       }}
                     >
-                      <Typography
+                      <TableCell
                         sx={{
-                          color: "#1a0dab",
-                          textDecoration: "underline",
-                          fontWeight: 500,
-                          fontSize: isMobile ? "0.75rem" : "1rem",
-                          cursor: "pointer",
-                          "&:hover": { color: "#0b0080" },
+                          minWidth: isMobile ? 160 : 160,
+                          maxWidth: isMobile ? 160 : 200,
+                          whiteSpace: "normal",
+                          wordBreak: "break-word",
+                          borderBottom: "unset", // 👈 quita solo aquí
                         }}
-                        onClick={() => window.open(`https://${cliente.sitioWeb}`, "_blank")}
                       >
-                        {cliente.sitioWeb || "Sin sitio"}
-                      </Typography>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 0.5, // 👈 mucho más compacto
+                          }}
+                        >
+                          {/* Link del sitio */}
+                          <Typography
+                            sx={{
+                              color: "#1a0dab",
+                              textDecoration: "underline",
+                              fontWeight: 500,
+                              fontSize: isMobile ? "0.75rem" : "1rem",
+                              cursor: "pointer",
+                              "&:hover": { color: "#0b0080" },
+                            }}
+                            onClick={() =>
+                              cliente.sitioWeb
+                                ? window.open(`https://${cliente.sitioWeb}`, "_blank")
+                                : null
+                            }
+                          >
+                            {cliente.sitioWeb || "Sin sitio"}
+                          </Typography>
+
+                          {/* Botón circular pincel al lado */}
+                          <Tooltip title="Editar sitio" arrow>
+                            <IconButton
+                              onClick={() => datosCliente(cliente)}
+                              size="small"
+                              sx={{
+                                backgroundColor: "#fff",
+                                width: 15,
+                                height: 15,
+                                p: 0.3,
+                                "&:hover": {
+                                  backgroundColor: "#f7f7f7",
+                                },
+                                border: "none", // 👈 sin borde para no duplicar la línea
+                              }}
+                            >
+                              <Brush fontSize="inherit" sx={{ fontSize: 14 }} />
+                            </IconButton>
+                          </Tooltip>
+
+                        </Box>
+
+                      </TableCell>
                     </TableCell>
 
 
@@ -1352,6 +1403,13 @@ const Clientes = () => {
 
         </DialogActions>
       </Dialog>
+
+      {/* PASE MENSUAL CLIENTE */}
+      <DialogClientesPaseMensual
+        open={openDialogCliente}
+        onClose={() => setOpenDialogCliente(false)}
+        cliente={clienteSeleccionado}
+      />
 
       <Snackbar
         open={snackbar.open}
