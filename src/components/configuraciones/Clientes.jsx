@@ -12,6 +12,7 @@ import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { Brush } from "@mui/icons-material";
 import DialogClientePagos from "./DialogClientePagos";
 import DialogClientesPaseMensual from "./DialogClientesPaseMensual";
+import * as XLSX from "xlsx";
 
 const baseDelay = 1.5; // segundos antes de comenzar la animación
 const letterDelay = 0.04;
@@ -85,11 +86,7 @@ const meses = [
   "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
 ];
-
-const variantes = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
+const variantes = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 }, };
 
 const Clientes = () => {
   const [iniciarAnimacionContador, setIniciarAnimacionContador] = useState(false);
@@ -121,11 +118,11 @@ const Clientes = () => {
   const [animar, setAnimar] = useState(true);
   const [animacionTerminada, setAnimacionTerminada] = useState(false);
   const [openDialogCliente, setOpenDialogCliente] = useState(false);
-  const datosCliente = (cliente) => {
-    setClienteSeleccionado(cliente);
-    setOpenDialogCliente(true);
-  };
-  const MotionBox = motion(Box);
+  const [enRevision, setEnRevision] = useState(false);
+
+  const datosCliente = (cliente) => { setClienteSeleccionado(cliente); setOpenDialogCliente(true); };
+  const MotionBox = motion.create(Box);
+
 
   //DÍAS ATRASO
   const hoy = new Date();
@@ -147,17 +144,69 @@ const Clientes = () => {
     return !c.pagado ? acc + valor : acc;
   }, 0);
 
+
+  //CLIENTES
+  // CLIENTES
   useEffect(() => {
     const fetchData = async () => {
-      const data = await cargarClientesDesdeExcel();
-      const clientesConEstado = data.map((c) => ({
-        ...c,
-        pagado: !!c.pagado,
-      }));
-      setClientes(clientesConEstado);
+      try {
+        // 1. Cargar clientes (fuente principal)
+        const data = await cargarClientesDesdeExcel();
+        let clientesConEstado = data.map((c) => ({
+          ...c,
+          pagado: !!c.pagado,
+          enRevision: false, // por defecto
+        }));
+
+        try {
+          // 2. Intentar cargar PaseMensual.xlsx
+          const resp = await fetch(
+            `https://plataformas-web-buckets.s3.us-east-2.amazonaws.com/PaseMensual.xlsx?t=${Date.now()}`
+          );
+          if (resp.ok) {
+            const buffer = await resp.arrayBuffer();
+            const workbook = XLSX.read(buffer, { type: "buffer" });
+            const hoja = workbook.Sheets[workbook.SheetNames[0]];
+            const paseMensual = XLSX.utils.sheet_to_json(hoja, { defval: "" });
+
+            // 3. Hacer el "left join"
+            clientesConEstado = clientesConEstado.map((c) => {
+              const filaPase = paseMensual.find(
+                (row) => String(row.SitioWeb || "").trim() === String(c.sitioWeb || "").trim()
+              );
+
+              let enRevision = false;
+              if (filaPase) {
+                enRevision =
+                  parseInt(filaPase.CompartirAnuncio) === 1 ||
+                  parseInt(filaPase.PagarSuscripcionAntes) === 1 ||
+                  parseInt(filaPase.ConexionMensual) === 1 ||
+                  parseInt(filaPase.VisitasMensual) === 1 ||
+                  parseInt(filaPase.ConseguirCliente) === 1;
+              } else {
+                console.warn(`⚠️ No match para cliente: ${c.sitioWeb}`);
+              }
+
+              return { ...c, enRevision };
+            });
+          } else {
+            console.warn("⚠️ No se pudo cargar PaseMensual.xlsx, seguimos sin enRevision");
+          }
+        } catch (err) {
+          console.warn("⚠️ Error cargando PaseMensual.xlsx:", err);
+        }
+
+        // 4. Guardar en estado
+        setClientes(clientesConEstado);
+
+      } catch (err) {
+        console.error("❌ Error cargando Clientes.xlsx:", err);
+      }
     };
+
     fetchData();
   }, []);
+
 
 
   const abrirDialogoConfirmacion = (cliente, revertir = false) => {
@@ -388,11 +437,9 @@ const Clientes = () => {
     }, 10000); // ← 10 segundos
   };
 
-
   useEffect(() => {
     setPaginaActual(1);
   }, [clientes]);
-
 
 
   useEffect(() => {
@@ -768,70 +815,64 @@ const Clientes = () => {
                         wordBreak: "break-word",
                       }}
                     >
-                      <TableCell
+                      <Box
                         sx={{
-                          minWidth: isMobile ? 160 : 160,
-                          maxWidth: isMobile ? 160 : 200,
-                          whiteSpace: "normal",
-                          wordBreak: "break-word",
-                          borderBottom: "unset", // 👈 quita solo aquí
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 0.5, // 👈 mucho más compacto
                         }}
                       >
-                        <Box
+                        {/* Link del sitio */}
+                        <Typography
                           sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 0.5, // 👈 mucho más compacto
+                            color: "#1a0dab",
+                            textDecoration: "underline",
+                            fontWeight: 500,
+                            fontSize: isMobile ? "0.75rem" : "1rem",
+                            cursor: "pointer",
+                            "&:hover": { color: "#0b0080" },
                           }}
+                          onClick={() =>
+                            cliente.sitioWeb
+                              ? window.open(`https://${cliente.sitioWeb}`, "_blank")
+                              : null
+                          }
                         >
-                          {/* Link del sitio */}
-                          <Typography
+                          {cliente.sitioWeb || "Sin sitio"}
+                        </Typography>
+
+                        {/* Botón circular pincel al lado */}
+                        <Tooltip title="Acciones Cliente" arrow>
+                          <IconButton
+                            onClick={() => datosCliente(cliente)}
+                            size="small"
                             sx={{
-                              color: "#1a0dab",
-                              textDecoration: "underline",
-                              fontWeight: 500,
-                              fontSize: isMobile ? "0.75rem" : "1rem",
-                              cursor: "pointer",
-                              "&:hover": { color: "#0b0080" },
+                              background: cliente.enRevision
+                                ? "linear-gradient(135deg, #e74c3c, #c0392b)" // rojo
+                                : "linear-gradient(135deg, #2ecc71, #27ae60)", // verde
+                              width: 22,
+                              height: 22,
+                              p: 0.3,
+                              borderRadius: "8px",
+                              boxShadow: "0 2px 6px rgba(0,0,0,0.25)",
+                              color: "#fff",
+                              "&:hover": {
+                                background: cliente.enRevision
+                                  ? "linear-gradient(135deg, #ec7063, #e74c3c)"
+                                  : "linear-gradient(135deg, #58d68d, #2ecc71)",
+                                transform: "scale(1.1)",
+                                transition: "all 0.2s ease",
+                              },
                             }}
-                            onClick={() =>
-                              cliente.sitioWeb
-                                ? window.open(`https://${cliente.sitioWeb}`, "_blank")
-                                : null
-                            }
                           >
-                            {cliente.sitioWeb || "Sin sitio"}
-                          </Typography>
-
-                          {/* Botón circular pincel al lado */}
-                          <Tooltip title="Editar sitio" arrow>
-                            <IconButton
-                              onClick={() => datosCliente(cliente)}
-                              size="small"
-                              sx={{
-                                background: "linear-gradient(135deg, #2ecc71, #27ae60)", // Esmeralda
-                                width: 22,
-                                height: 22,
-                                p: 0.3,
-                                borderRadius: "8px",
-                                boxShadow: "0 2px 6px rgba(0,0,0,0.25)",
-                                color: "#fff",
-                                "&:hover": {
-                                  background: "linear-gradient(135deg, #58d68d, #2ecc71)", // más claro en hover
-                                  transform: "scale(1.1)",
-                                  transition: "all 0.2s ease",
-                                },
-                              }}
-                            >
-                              <Brush fontSize="inherit" sx={{ fontSize: 14 }} />
-                            </IconButton>
-                          </Tooltip>
+                            <Brush fontSize="inherit" sx={{ fontSize: 14 }} />
+                          </IconButton>
+                        </Tooltip>
 
 
 
-                        </Box>
+                      </Box>
 
-                      </TableCell>
                     </TableCell>
 
 
