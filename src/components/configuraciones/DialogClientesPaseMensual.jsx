@@ -11,7 +11,6 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 // Emojis por misión
 const emojiMap = { 1: "📢", 2: "💳", 3: "🔗", 4: "👥", 5: "🎯", };
 
-// Gradientes dinámicos según estado
 const getGradient = (id, estado) => {
   if (estado === "aprobado") {
     return "linear-gradient(135deg,#81C784,#4CAF50,#2E7D32)"; // verde
@@ -19,18 +18,23 @@ const getGradient = (id, estado) => {
   if (estado === "rechazado") {
     return "linear-gradient(135deg,#EF9A9A,#F44336,#B71C1C)"; // rojo
   }
-  if (id === 5) {
-    return "linear-gradient(135deg,#FFF176,#FFD54F,#FFA000,#FF6F00)"; // dorado solo grande
+  if (estado === "pendiente") {
+    return "linear-gradient(135deg,#9E9E9E,#757575,#616161)"; // gris
   }
-  // pendiente o revision
-  return "linear-gradient(135deg,#6EC6FF,#2196F3,#1565C0)"; // azul
+  if (estado === "revision") {
+    return "linear-gradient(135deg,#6EC6FF,#2196F3,#1565C0)"; // azul
+  }
+  if (id === 5) {
+    return "linear-gradient(135deg,#FFF176,#FFD54F,#FFA000,#FF6F00)"; // dorado
+  }
+  return "linear-gradient(135deg,#9E9E9E,#757575,#616161)"; // fallback gris
 };
 
 // 📦 Cuadro individual
 const Cuadro = ({ id, titulo, estado, onDecision, loadingId }) => {
   const fondo = getGradient(id, estado);
-  const disabled =
-    estado === "aprobado" || estado === "rechazado" || loadingId === id;
+  const disabled = estado === "aprobado" || estado === "rechazado" || loadingId === id;
+  const disabledRechazar = estado === "aprobado" || estado === "rechazado" || estado === "pendiente" || loadingId === id;
 
   return (
     <Box
@@ -110,15 +114,14 @@ const Cuadro = ({ id, titulo, estado, onDecision, loadingId }) => {
           variant="contained"
           color="error"
           size="small"
-          disabled={disabled}
+          disabled={disabledRechazar}
           sx={{
             textTransform: "none",
             fontWeight: 600,
-            backgroundColor: disabled
-              ? "rgba(244,67,54,0.5)"
+            backgroundColor: disabledRechazar
+              ? "rgba(158,158,158,0.6)"   // gris apagado cuando está bloqueado
               : "rgba(244,67,54,0.9)",
-            "&:hover": disabled ? {} : { backgroundColor: "rgba(211,47,47,0.9)" },
-            // 🔽 Responsive
+            "&:hover": disabledRechazar ? {} : { backgroundColor: "rgba(211,47,47,0.9)" },
             fontSize: { xs: "0.6rem", sm: "0.7rem" },
             px: { xs: 0.8, sm: 1.2 },
             py: { xs: 0.2, sm: 0.3 },
@@ -138,7 +141,7 @@ const Cuadro = ({ id, titulo, estado, onDecision, loadingId }) => {
 };
 
 export default function DialogPaseMensual({ open, onClose, cliente }) {
-  const [fechaEdicion, setFechaEdicion] = useState("");
+  const [FechaEdicion, setFechaEdicion] = useState("");
   const montoBase = 10000;
   const [monto, setMonto] = useState(montoBase);
   const [displayMonto, setDisplayMonto] = useState(monto);
@@ -246,7 +249,7 @@ export default function DialogPaseMensual({ open, onClose, cliente }) {
       );
 
       setMisiones(result.misiones);
-      setFechaEdicion(result.fechaEdicion);
+      setFechaEdicion(result.FechaEdicion);
     };
     if (open) fetchPase();
   }, [open, cliente]);
@@ -379,7 +382,7 @@ export default function DialogPaseMensual({ open, onClose, cliente }) {
         </Grid>
 
         {/* 👇 Fecha más estilizada */}
-        {fechaEdicion && (
+        {FechaEdicion && (
           <Box sx={{ textAlign: "center", mt: 1 }}>
             <Typography
               variant="caption"
@@ -390,7 +393,7 @@ export default function DialogPaseMensual({ open, onClose, cliente }) {
                 lineHeight: 1.1,
               }}
             >
-              📅 Última actualización: {fechaEdicion}
+              📅 Última actualización: {FechaEdicion}
             </Typography>
           </Box>
         )}
@@ -443,7 +446,7 @@ export default function DialogPaseMensual({ open, onClose, cliente }) {
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({
                     SitioWeb: cliente.sitioWeb,
-                    campo,
+                    campo: "CompartirAnuncio", // o cualquiera del map
                     valor: 0,
                   }),
                 });
@@ -468,11 +471,13 @@ export default function DialogPaseMensual({ open, onClose, cliente }) {
             borderRadius: 2,
             color: "#fff",
             border: "1px solid rgba(255,255,255,0.4)",
-            background: "linear-gradient(90deg,#1E88E5,#1565C0)",
+            background: "linear-gradient(90deg,#7E57C2,#4527A0)",
             "&:hover": {
-              background: "linear-gradient(90deg,#42A5F5,#1E88E5)",
+              background: "linear-gradient(90deg,#9575CD,#7E57C2)",
               borderColor: "rgba(255,255,255,0.7)",
             },
+            minWidth: "110px",
+            minHeight: "33px",
           }}
         >
           {loadingRestablecer ? (

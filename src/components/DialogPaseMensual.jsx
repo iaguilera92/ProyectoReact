@@ -14,6 +14,9 @@ import { cargarPaseMensual } from "../helpers/HelperPaseMensual";
 export default function DialogPaseMensual({ open, onClose, analyticsDisponible }) {
   const montoBase = 10000;
   const [monto, setMonto] = useState(montoBase);
+  const motionValue = useMotionValue(monto);
+  const [displayMonto, setDisplayMonto] = useState(monto);
+
 
   const [misiones, setMisiones] = useState([
     { id: 1, descuento: 0.025, recompensa: "2,5% descuento", descripcion: "Compartir un anuncio de Plataformas web", estado: "pendiente", color: "linear-gradient(135deg,#6EC6FF,#2196F3,#1565C0)", tipo: "pequeña", imagen: "/facebook-insta.png", width: 70, height: 40 },
@@ -24,17 +27,19 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
   ]);
 
   const theme = useTheme();
+
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const isSmallMobile = useMediaQuery("(max-width:360px)");
-  const isLargeMobile = useMediaQuery("(min-width:389px) and (max-width:600px)");
+  const isSmallMobile = useMediaQuery("(max-width:375px)");      // iPhone SE y similares
+  const isIphone14 = useMediaQuery("(device-width:390px)");      // iPhone 14 / 14 Plus
+  const isLargeMobile = useMediaQuery("(min-width:394px) and (max-width:600px)"); // iPhone 14 Pro Max y otros grandes
 
-  // 📐 Ajuste global de escala
-  const scaleFactor = isSmallMobile ? 0.85 : isLargeMobile ? 1 : isMobile ? 0.9 : 1;
+  const scaleFactor =
+    isSmallMobile || isIphone14 ? 0.85 : // 👈 iPhone SE y iPhone 14
+      isLargeMobile ? 1 :                  // 👈 iPhone 14 Pro Max y otros grandes
+        isMobile ? 0.9 :                      // 👈 resto de móviles
+          1;                                   // 👈 desktop
 
 
-
-  const motionValue = useMotionValue(monto);
-  const [displayMonto, setDisplayMonto] = useState(monto);
 
   // S3 PASE MENSUAL
   useEffect(() => {
@@ -59,18 +64,16 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
     return () => controls.stop();
   }, [monto]);
 
-  const handleAccion = async (id) => {
+  //ACTUALIZAR PASE MENSUAL
+  const handleAccion = async (id, cliente) => {
     setMisiones((prev) => {
-      // Si ya está en revisión/aprobado/rechazado → no hago nada
       const mision = prev.find((m) => m.id === id);
       if (!mision || mision.estado !== "pendiente") return prev;
 
-      // ⚡ Actualizo localmente a "revision" (optimistic UI)
       const updated = prev.map((m) =>
         m.id === id ? { ...m, estado: "revision" } : m
       );
 
-      // 🔄 Llamo al backend para reflejar en el Excel de S3
       const misionMap = {
         1: "CompartirAnuncio",
         2: "PagarSuscripcionAntes",
@@ -79,23 +82,17 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
         5: "ConseguirCliente",
       };
       const campo = misionMap[id];
-      const SitioWeb = window.location.hostname;
+      const SitioWeb = cliente?.sitioWeb || window.location.hostname;
 
       (async () => {
         try {
-          const url = `${window.location.hostname === "localhost"
-            ? "http://localhost:8888"
-            : ""
+          const url = `${window.location.hostname === "localhost" ? "http://localhost:8888" : ""
             }/.netlify/functions/actualizarPaseMensual`;
 
           const response = await fetch(url, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              SitioWeb,
-              campo,
-              valor: 1, // 1 = usuario marcó la misión (en revisión)
-            }),
+            body: JSON.stringify({ SitioWeb, campo, valor: 1 }),
           });
 
           const data = await response.json();
@@ -110,9 +107,7 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
     });
   };
 
-
-
-  // 💰 Recalcular monto automáticamente cuando llegan misiones (aprobadas/revisión)
+  // 💰 RECALCULAR MONTO
   useEffect(() => {
     const totalDescuento = misiones
       .filter((m) => m.estado === "aprobado") // ✅ solo aprobados

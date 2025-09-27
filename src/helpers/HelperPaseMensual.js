@@ -54,7 +54,7 @@ export const cargarPaseMensual = async (
     const hoja = workbook.Sheets[workbook.SheetNames[0]];
     const data = XLSX.utils.sheet_to_json(hoja, { defval: "" });
 
-    if (data.length === 0) return { misiones: misionesBase, fechaEdicion: "" };
+    if (data.length === 0) return { misiones: misionesBase, FechaEdicion: "" };
 
     const dominioActual = sitioOverride
       ? normalizeHost(sitioOverride)
@@ -66,7 +66,7 @@ export const cargarPaseMensual = async (
 
     if (!fila) {
       console.warn(`⚠️ No se encontró fila para ${dominioActual}`);
-      return { misiones: misionesBase, fechaEdicion: "" };
+      return { misiones: misionesBase, FechaEdicion: "" };
     }
 
     const misionesActualizadas = misionesBase.map((m) => {
@@ -74,13 +74,16 @@ export const cargarPaseMensual = async (
       const estadoAdmin = toInt(fila[campoEstado], 0);
       const valorUsuario = toInt(fila[campo], 0);
 
-      let estado = "pendiente";
+      //ESTADOS TAREAS
+      let estado;
       if (estadoAdmin === 1) {
         estado = "aprobado";
       } else if (estadoAdmin === 2) {
         estado = "rechazado";
       } else if (valorUsuario === 1) {
         estado = "revision";
+      } else {
+        estado = "pendiente";
       }
 
       if (debug) {
@@ -94,11 +97,11 @@ export const cargarPaseMensual = async (
 
     return {
       misiones: misionesActualizadas,
-      fechaEdicion: excelSerialToDateString(fila["FechaEdicion"]),
+      FechaEdicion: fila["FechaEdicion"] || "",
     };
 
   } catch (error) {
     console.error("❌ Error cargando Pase Mensual desde Excel:", error);
-    return { misiones: misionesBase, fechaEdicion: "" };
+    return { misiones: misionesBase, FechaEdicion: "" };
   }
 };
