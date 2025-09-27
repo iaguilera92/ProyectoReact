@@ -27,13 +27,18 @@ const toInt = (v, fallback = 0) => {
   return Number.isFinite(n) ? n : fallback;
 };
 
-/**
- * Carga y transforma los datos del Pase Mensual desde Excel (S3).
- * @param {string} urlExcel  URL pública de S3
- * @param {Array} misionesBase  Estado base (const inicial)
- * @param {boolean} debug  Loguea a consola lo leído
- * @param {string} sitioOverride  (opcional) fuerza el SitioWeb en vez de window.location
- */
+// Convierte serial de Excel a Date legible
+const excelSerialToDateString = (serial) => {
+  if (!serial || isNaN(serial)) return "";
+  const baseDate = new Date(1900, 0, 1);
+  const date = new Date(baseDate.getTime() + (serial - 2) * 86400000);
+  return date.toLocaleDateString("es-CL", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+};
+
 export const cargarPaseMensual = async (
   urlExcel,
   misionesBase,
@@ -89,8 +94,9 @@ export const cargarPaseMensual = async (
 
     return {
       misiones: misionesActualizadas,
-      fechaEdicion: fila["FechaEdicion"] || "",
+      fechaEdicion: excelSerialToDateString(fila["FechaEdicion"]),
     };
+
   } catch (error) {
     console.error("❌ Error cargando Pase Mensual desde Excel:", error);
     return { misiones: misionesBase, fechaEdicion: "" };

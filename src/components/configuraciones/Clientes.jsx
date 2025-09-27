@@ -809,19 +809,25 @@ const Clientes = () => {
                               onClick={() => datosCliente(cliente)}
                               size="small"
                               sx={{
-                                backgroundColor: "#fff",
-                                width: 15,
-                                height: 15,
+                                background: "linear-gradient(135deg, #2ecc71, #27ae60)", // Esmeralda
+                                width: 22,
+                                height: 22,
                                 p: 0.3,
+                                borderRadius: "8px",
+                                boxShadow: "0 2px 6px rgba(0,0,0,0.25)",
+                                color: "#fff",
                                 "&:hover": {
-                                  backgroundColor: "#f7f7f7",
+                                  background: "linear-gradient(135deg, #58d68d, #2ecc71)", // más claro en hover
+                                  transform: "scale(1.1)",
+                                  transition: "all 0.2s ease",
                                 },
-                                border: "none", // 👈 sin borde para no duplicar la línea
                               }}
                             >
                               <Brush fontSize="inherit" sx={{ fontSize: 14 }} />
                             </IconButton>
                           </Tooltip>
+
+
 
                         </Box>
 

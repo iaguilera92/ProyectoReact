@@ -149,8 +149,10 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
           color: "#fff",
           borderBottom: "3px solid #FFD700",
           fontFamily: "'Poppins', sans-serif",
+          pb: 1.5, // 👈 un poquito más de padding abajo
         }}
       >
+        {/* Título principal */}
         <Typography
           component="div"
           sx={{
@@ -158,7 +160,7 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
             alignItems: "center",
             justifyContent: "center",
             fontWeight: 800,
-            fontSize: { xs: "1rem", sm: "1.3rem" }, // compacto
+            fontSize: { xs: "1rem", sm: "1.3rem" },
             whiteSpace: "nowrap",
             textShadow: "2px 2px 6px rgba(0,0,0,.6)",
           }}
@@ -176,16 +178,52 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
             .toLocaleString("es-ES", { month: "long" })
             .charAt(0)
             .toUpperCase() +
-            new Date().toLocaleString("es-ES", { month: "long" }).slice(1).toLowerCase()}
+            new Date()
+              .toLocaleString("es-ES", { month: "long" })
+              .slice(1)
+              .toLowerCase()}
         </Typography>
 
-        <IconButton
-          onClick={onClose}
-          sx={{ position: "absolute", right: 8, top: 8, color: "#fff" }}
+        {/* Subtítulo informativo */}
+        <Typography
+          variant="subtitle2"
+          sx={{
+            mt: 0.4,
+            fontSize: { xs: "0.6rem", sm: "0.8rem" },
+            fontWeight: 400,
+            color: "rgba(255,255,255,0.85)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 0.5,
+            textShadow: "1px 1px 3px rgba(0,0,0,.5)",
+          }}
         >
-          <CloseRoundedIcon />
+          ℹ️ Completa tareas y gana descuentos
+        </Typography>
+
+        {/* Botón cerrar */}
+        <IconButton
+          aria-label="Cerrar"
+          onClick={onClose}
+          sx={{
+            position: "absolute",
+            top: 8,
+            right: 8,
+            color: "#FFF",
+            zIndex: 3,
+            "&:hover": { backgroundColor: "rgba(255,255,255,.15)" },
+            animation: open ? "spinTwice 0.6s ease-in-out" : "none",
+            "@keyframes spinTwice": {
+              "0%": { transform: "rotate(0deg)" },
+              "100%": { transform: "rotate(720deg)" },
+            },
+          }}
+        >
+          <CloseRoundedIcon sx={{ fontSize: 28 }} />
         </IconButton>
       </DialogTitle>
+
 
 
       {/* CONTENIDO */}
@@ -461,8 +499,36 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
                               </Typography>
                             </Box>
                           )}
-
-
+                        </Box>
+                        {/* Footer negro para misiones pequeñas */}
+                        <Box
+                          sx={{
+                            borderTop: "2px solid rgba(255,255,255,0.2)",
+                            borderBottomLeftRadius: 6,
+                            borderBottomRightRadius: 6,
+                            background: "rgba(0,0,0,0.9)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            px: 1,
+                            py: 0.4,
+                            mt: 0, // 👈 sin margen arriba
+                            boxShadow: "inset 0 2px 3px rgba(255,255,255,0.15)",
+                          }}
+                        >
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              fontWeight: 800,
+                              fontSize: "0.7rem",
+                              color: "#FFD700",
+                              textAlign: "center",
+                              letterSpacing: 0.3,
+                              textShadow: "0 1px 2px rgba(0,0,0,0.8)",
+                            }}
+                          >
+                            🎁 {Math.round(m.descuento * 1000) / 10}% DESCUENTO
+                          </Typography>
                         </Box>
                       </Box>
                     </Grid>

@@ -37,7 +37,9 @@ const Cuadro = ({ id, titulo, estado, onDecision, loadingId }) => {
       sx={{
         borderRadius: 2,
         p: 1.5,
-        height: id === 5 ? "100px" : "100%",
+        height: id === 5
+          ? (window.innerWidth >= 900 ? "120px" : "100px") // >=900px lo tomamos como desktop
+          : "100%",
         background: fondo,
         color: "#fff",
         display: "flex",
@@ -46,6 +48,7 @@ const Cuadro = ({ id, titulo, estado, onDecision, loadingId }) => {
         gap: 1,
         boxShadow: "0 3px 8px rgba(0,0,0,0.25)",
         textAlign: "center",
+
       }}
     >
       <Box textAlign="center">
@@ -267,7 +270,7 @@ export default function DialogPaseMensual({ open, onClose, cliente }) {
       TransitionComponent={Transition}
       PaperProps={{
         sx: {
-          width: { xs: "100%", sm: "95%", md: "1100px" }, // 👉 más ancho en desktop
+          width: { xs: "100%", sm: "95%", md: "800px" }, // 👉 más ancho en desktop
           maxWidth: "none", // 🔑 elimina límite interno de MUI
           borderRadius: 2,
           overflow: "hidden",
@@ -291,6 +294,7 @@ export default function DialogPaseMensual({ open, onClose, cliente }) {
         }}
       >
         Pase Mensual — {cliente?.sitioWeb || cliente?.nombre || "Cliente"}
+        {/* Botón cerrar */}
         <IconButton
           aria-label="Cerrar"
           onClick={onClose}
@@ -298,10 +302,17 @@ export default function DialogPaseMensual({ open, onClose, cliente }) {
             position: "absolute",
             top: 8,
             right: 8,
-            color: "#fff",
+            color: "#FFF",
+            zIndex: 3,
+            "&:hover": { backgroundColor: "rgba(255,255,255,.15)" },
+            animation: open ? "spinTwice 0.6s ease-in-out" : "none",
+            "@keyframes spinTwice": {
+              "0%": { transform: "rotate(0deg)" },
+              "100%": { transform: "rotate(720deg)" },
+            },
           }}
         >
-          <CloseRoundedIcon />
+          <CloseRoundedIcon sx={{ fontSize: 28 }} />
         </IconButton>
       </DialogTitle>
 
@@ -310,7 +321,7 @@ export default function DialogPaseMensual({ open, onClose, cliente }) {
         dividers
         sx={{
           px: { xs: 2, sm: 4, md: 6 },
-          py: { xs: 2, sm: 3, md: 4 },
+          py: { xs: 1, sm: 1, md: 2 },
         }}
       >
         <Box
