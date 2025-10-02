@@ -38,7 +38,7 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
       isMediumMobile ? 0.9 :         // 👉 iPhones medios
         isLargeMobile ? 1 :            // 👉 grandes
           isMobile ? 0.9 :               // 👉 fallback móviles
-            1;                             // 👉 desktop
+            0.965;                             // 👉 desktop
 
 
 
@@ -498,36 +498,57 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
                             </Box>
                           )}
                         </Box>
-                        {/* Footer negro para misiones pequeñas */}
+
+                        {/* Footer negro */}
                         <Box
                           sx={{
-                            borderTop: "2px solid rgba(255,255,255,0.2)",
                             borderBottomLeftRadius: 6,
                             borderBottomRightRadius: 6,
                             background: "rgba(0,0,0,0.9)",
                             display: "flex",
                             alignItems: "center",
-                            justifyContent: "center",
+                            justifyContent: "space-between",
                             px: 1,
                             py: 0.4,
-                            mt: 0, // 👈 sin margen arriba
                             boxShadow: "inset 0 2px 3px rgba(255,255,255,0.15)",
                           }}
                         >
                           <Typography
                             variant="caption"
+                            sx={{ fontWeight: 700, fontSize: "0.6rem", color: "#FFD700" }}
+                          >
+                            1/1
+                          </Typography>
+
+                          <Typography
+                            variant="caption"
                             sx={{
                               fontWeight: 800,
-                              fontSize: "0.7rem",
+                              fontSize: "0.63rem",
                               color: "#FFD700",
                               textAlign: "center",
                               letterSpacing: 0.3,
                               textShadow: "0 1px 2px rgba(0,0,0,0.8)",
                             }}
                           >
-                            🎁 {Math.round(m.descuento * 1000) / 10}% DESCUENTO
+                            🎁{Math.round(m.descuento * 1000) / 10}% DESCUENTO
                           </Typography>
+
+                          <Button
+                            size="small"
+                            sx={{
+                              minWidth: "auto",
+                              p: 0.2,
+                              color: "#FFD700",
+                              fontSize: "0.6rem",
+                              fontWeight: 800,
+                            }}
+                          >
+                            ℹ️
+                          </Button>
                         </Box>
+
+
                       </Box>
                     </Grid>
                   ))}
@@ -721,7 +742,7 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
                             textShadow: "0 1px 2px rgba(0,0,0,0.8)",
                           }}
                         >
-                          🎁 2 SUSCRIPCIONES GRATIS
+                          🎁 3 SUSCRIPCIONES GRATIS
                         </Typography>
 
                         <Button
@@ -778,7 +799,7 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
                           position: "relative",
                           overflow: "visible",
                           borderRadius: "30px",
-                          boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
+                          boxShadow: "none",
                           minHeight: isMobile ? 100 : 110,
                           display: "flex",
                           alignItems: "flex-end",
@@ -787,6 +808,12 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
                           border: "none",
                         }}
                         elevation={0}
+                        onClick={() => {
+                          window.open(
+                            "https://api.whatsapp.com/send?phone=56946873014&text=Hola! quiero cotizar un nuevo modulo para mi sitio web.",
+                            "_blank"
+                          );
+                        }}
                       >
                         {/* 📌 Precio extensión del Box verde */}
                         <Box
@@ -809,7 +836,7 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
                             zIndex: 1, // 👈 debajo de la imagen de mascotas
                           }}
                         >
-                          COTIZAR
+                          CLICK PARA COTIZAR
                         </Box>
                         {/* Box azul */}
                         <Box
@@ -850,7 +877,9 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
                               variant="body2"
                               sx={{
                                 color: "#fff",
-                                fontSize: { xs: "0.7rem", sm: "0.85rem" },
+                                textAlign: "left",
+                                fontSize: `${(isMobile ? 0.70 : 0.85) * scaleFactor}rem`, // 👈 escalado dinámico
+                                lineHeight: 1.2,
                               }}
                             >
                               Solicítanos nuevos desarrollos.
@@ -893,7 +922,7 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
                           position: "relative",
                           overflow: "visible",
                           borderRadius: "30px",
-                          boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
+                          boxShadow: "none",
                           minHeight: isMobile ? 100 : 110,
                           display: "flex",
                           alignItems: "flex-end",
@@ -901,12 +930,21 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
                           border: "none",
                         }}
                         elevation={0}
+                        onClick={() => {
+                          const mensaje = encodeURIComponent(
+                            "Hola! Me interesa contratar Transbank WebPay para convertir mi sitio web en un Ecommerce. ¿Me puedes dar más información?"
+                          );
+                          window.open(
+                            `https://api.whatsapp.com/send?phone=56946873014&text=${mensaje}`,
+                            "_blank"
+                          );
+                        }}
                       >
-                        {/* 📌 Precio extensión del Box verde */}
+                        {/* 📌 Precio o plan */}
                         <Box
                           sx={{
                             position: "absolute",
-                            top: isMobile ? "calc(35% - 28px)" : "calc(35% - 38px)", // 👈 se pega justo arriba del verde (ajusta 22px al alto del cuadro)
+                            top: isMobile ? "calc(35% - 28px)" : "calc(35% - 38px)",
                             left: "10px",
                             px: 1.5,
                             py: 0.4,
@@ -919,15 +957,13 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
                             fontWeight: 800,
                             fontSize: { xs: "0.75rem", sm: "0.85rem" },
                             boxShadow: "0 2px 6px rgba(0,0,0,0.5)",
-                            zIndex: 1, // 👈 debajo de la imagen de mascotas
+                            zIndex: 1,
                           }}
                         >
-                          $10.000 CLP
+                          $100.000 CLP APROX.
                         </Box>
 
-
-
-                        {/* Box verde */}
+                        {/* Box con gradiente principal */}
                         <Box
                           sx={{
                             flex: 1,
@@ -946,10 +982,10 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            handleContactClick("Sitios Web");
+                            handleContactClick("Transbank Webpay eCommerce");
                           }}
                         >
-                          <Box sx={{ maxWidth: "65%" }}>
+                          <Box sx={{ maxWidth: "70%" }}>
                             <Typography
                               variant="h6"
                               sx={{
@@ -960,7 +996,7 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
                                 fontSize: isMobile ? "0.95rem" : "1.5rem",
                               }}
                             >
-                              TUS MÁSCOTAS🐾
+                              🛒Contrata Transbank
                             </Typography>
 
                             <Typography
@@ -968,12 +1004,13 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
                               sx={{
                                 color: "#fff",
                                 textAlign: "left",
-                                fontSize: { xs: "0.7rem", sm: "0.8rem" },
+                                fontSize: `${(isMobile ? 0.70 : 0.85) * scaleFactor}rem`, // 👈 escalado dinámico
                                 lineHeight: 1.2,
                               }}
                             >
-                              🐶🐱Aparecerán en tu Web.
+                              Recibe pagos en línea de forma segura.
                             </Typography>
+
                           </Box>
                         </Box>
 
@@ -981,9 +1018,9 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
                         <Box
                           sx={{
                             position: "absolute",
-                            right: 10,
-                            bottom: isMobile ? -30 : -30,
-                            height: "160%",
+                            right: 20,
+                            top: isMobile ? 38 : 28,
+                            height: isMobile ? "50%" : "75%",
                             zIndex: 2,
                             display: "flex",
                             alignItems: "flex-end",
@@ -991,8 +1028,8 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
                         >
                           <Box
                             component="img"
-                            src="/mascotas.webp"
-                            alt="Mascotas"
+                            src="/logo-webpay.png"
+                            alt="Webpay eCommerce"
                             sx={{
                               height: "100%",
                               width: "auto",
@@ -1003,6 +1040,7 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
                           />
                         </Box>
                       </Card>
+
 
                     </SwiperSlide>
 

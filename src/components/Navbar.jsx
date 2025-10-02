@@ -117,7 +117,16 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
   const handleClick = (item) => {
     setOpen(false);
     const actions = {
-      Contacto: () => scrollToRef(contactoRef),
+      Contacto: () => {
+        if (location.pathname === "/") {
+          scrollToRef(contactoRef);
+        } else {
+          navigate("/");
+          setTimeout(() => {
+            scrollToRef(contactoRef);
+          }, 400);
+        }
+      },
       Inicio: () => location.pathname !== "/" ? navigate("/") : scrollToTop(),
       Servicios: () => navigate("/servicios"),
       Catálogo: () => navigate("/catalogo"),

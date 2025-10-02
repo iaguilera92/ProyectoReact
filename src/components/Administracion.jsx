@@ -33,6 +33,8 @@ const Administracion = () => {
   const logoTimeoutRef = useRef(null);
   const [estadoMensaje, setEstadoMensaje] = useState("idle");
   const [logoBase, setLogoBase] = useState("/logo-james.webp");
+  const modoDesarrollo = true;
+
   const showSnackbar = (type, message) => {
     setSnackbar({ open: true, type, message });
     setTimeout(() => setSnackbar(prev => ({ ...prev, open: false })), 4000);
@@ -40,7 +42,7 @@ const Administracion = () => {
 
   const handleTogglePassword = () => setShowPassword((prev) => !prev);
   const getLogoAnimado = () => {
-    if (logoAnimacion === "error") return logoBase.replace(".webp", "-enojada.webp");
+    if (logoAnimacion === "error") return logoBase.replace(".webp", "-enojada.webp").replace(".png", "-enojada.png");
     return logoBase;
   };
 
@@ -93,15 +95,24 @@ const Administracion = () => {
 
 
   useEffect(() => {
-    // Logo random inicial
-    const logos = ["/logo-james.webp", "/logo-flaca.webp", "/logo-gorda.webp"];
-    setLogoBase(logos[Math.floor(Math.random() * logos.length)]);
+    if (modoDesarrollo) {
+      // Si es desarrollo, siempre usar user.png
+      setLogoBase("/user.webp");
 
-    // Preload de variantes "enojada"
-    logos.forEach((logo) => {
+      // Preload de variante enojada
       const angry = new Image();
-      angry.src = logo.replace(".webp", "-enojada.webp");
-    });
+      angry.src = "/user-enojada.webp";
+    } else {
+      // Modo normal (random entre james, flaca, gorda)
+      const logos = ["/logo-james.webp", "/logo-flaca.webp", "/logo-gorda.webp"];
+      setLogoBase(logos[Math.floor(Math.random() * logos.length)]);
+
+      // Preload variantes enojadas
+      logos.forEach((logo) => {
+        const angry = new Image();
+        angry.src = logo.replace(".webp", "-enojada.webp");
+      });
+    }
 
     // Scroll al inicio
     window.scrollTo({ top: 0, behavior: "auto" });
