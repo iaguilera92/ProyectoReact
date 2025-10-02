@@ -152,6 +152,15 @@ const Dashboard = () => {
         return () => clearTimeout(timer);
     }, []);
 
+    //AJUSTAR COMPONENTE
+    useEffect(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+        document.body.style.zoom = "100%";
+        return () => {
+            document.body.style.zoom = "100%";
+        };
+    }, []);
+
 
     return (
         <Box
@@ -203,19 +212,18 @@ const Dashboard = () => {
                         ))}
 
                         {/* Si hay usuario, mostramos su nombre animado */}
-                        {usuario &&
-                            usuario.alias.split("").map((char, index) => (
-                                <motion.span
-                                    key={`nombre-${index}`}
-                                    custom={index + 10}
-                                    variants={letterVariants}
-                                    initial="hidden"
-                                    animate="visible"
-                                    style={{ display: "inline-block" }}
-                                >
-                                    {char === " " ? "\u00A0" : char}
-                                </motion.span>
-                            ))}
+                        {usuario && (usuario.alias || usuario.nombre || usuario.usuario)?.split("").map((char, index) => (
+                            <motion.span
+                                key={`nombre-${index}`}
+                                custom={index + 10}
+                                variants={letterVariants}
+                                initial="hidden"
+                                animate="visible"
+                                style={{ display: "inline-block" }}
+                            >
+                                {char === " " ? "\u00A0" : char}
+                            </motion.span>
+                        ))}
                     </Typography>
 
                     <motion.div
