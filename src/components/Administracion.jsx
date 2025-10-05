@@ -33,7 +33,7 @@ const Administracion = () => {
   const logoTimeoutRef = useRef(null);
   const [estadoMensaje, setEstadoMensaje] = useState("idle");
   const [logoBase, setLogoBase] = useState("/logo-james.webp");
-  const modoDesarrollo = true;
+  const modoDesarrollo = false;
 
   const showSnackbar = (type, message) => {
     setSnackbar({ open: true, type, message });
