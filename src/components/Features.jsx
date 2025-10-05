@@ -123,12 +123,40 @@ function Features({ videoReady }) {
         backgroundSize: 'cover',  // Asegura que la imagen cubra todo el contenedor
         backgroundPosition: 'center',  // Centra la imagen en el fondo
         backgroundAttachment: 'fixed',  // Asegura que la imagen de fondo no se mueva al hacer scroll
-        py: 2,
+        py: 0,
         paddingBottom: "15px",
         color: "white",  // Ajusta el color del texto para que sea visible sobre el fondo
         overflowY: 'visible',
       }}
     >
+      {/* 🌧️ Cascada Matrix (borde inferior, sin fondo) */}
+      <Box
+        className="matrix-rain"
+        sx={{
+          position: "relative",
+          width: "100%",
+          height: isMobile ? "15px" : "15px", // 👈 altura ajustada
+          overflow: "hidden",
+          mt: "-1px", // 👈 se une perfectamente al borde del video
+        }}
+      >
+        {[...Array(40)].map((_, i) => (
+          <span
+            key={i}
+            className="matrix-stream"
+            style={{
+              "--delay": `${Math.random() * 3}s`,
+              "--duration": `${3 + Math.random() * 2}s`,
+              "--height": `${25 + Math.random() * 40}px`,
+            }}
+          >
+            {Array.from({ length: 15 })
+              .map(() => (Math.random() > 0.5 ? "1" : "0"))
+              .join("\n")}
+          </span>
+        ))}
+      </Box>
+
       <Container sx={{ py: 0, maxWidth: "1500px !important", overflow: 'hidden', }}>
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -143,7 +171,7 @@ function Features({ videoReady }) {
             minHeight: "60px",
             display: "flex",
             justifyContent: "center",
-            marginTop: "10px",
+            marginTop: "0px",
             marginBottom: "16px",
           }}
         >
@@ -160,7 +188,8 @@ function Features({ videoReady }) {
               fontFamily: "Albert Sans, sans-serif",
               fontWeight: 600,
               color: "#fff",
-              background: "linear-gradient(135deg, #ffd54f, #ff9800 45%, #f57c00 85%)",
+              background:
+                "linear-gradient(135deg, #ffd54f, #ff9800 45%, #f57c00 85%)",
               backgroundSize: "200% 200%",
               animation: "gradientShift 8s ease infinite",
               boxShadow: "0 6px 16px rgba(255,152,0,.4)",
@@ -169,33 +198,64 @@ function Features({ videoReady }) {
               justifyContent: "center",
               gap: 0,
               maxWidth: { xs: "100%", md: "520px" },
+              border: "2px solid rgba(255, 213, 79, 0.9)",
+              zIndex: 1,
+
               "&:hover": {
                 background: "linear-gradient(135deg,#ffb74d,#fb8c00)",
                 boxShadow:
                   "0 0 6px rgba(255,167,38,.6), inset 0 0 6px rgba(255,255,255,0.25)",
               },
+
+              /* ✨ BRILLO EXTERNO — Border Sweep */
+              "&::before": {
+                content: '""',
+                position: "absolute",
+                inset: "-2px",
+                borderRadius: "inherit",
+                background:
+                  "linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.9) 10%, #fff59d 20%, rgba(255,255,255,0.9) 30%, transparent 40%)",
+                backgroundRepeat: "no-repeat",
+                backgroundSize: "300% 300%",
+                animation: "shineBorderSweep 3s linear infinite",
+                pointerEvents: "none",
+                zIndex: 2,
+                mask:
+                  "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+                maskComposite: "exclude",
+                WebkitMask:
+                  "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+                WebkitMaskComposite: "xor",
+              },
+
+              /* ✨ BRILLO INTERNO — Sheen diagonal */
               "&::after": {
                 content: '""',
                 position: "absolute",
                 inset: 0,
                 background:
-                  "linear-gradient(120deg, transparent 0%, rgba(255,255,255,.35) 50%, transparent 100%)",
+                  "linear-gradient(130deg, transparent 40%, rgba(255,255,255,0.8) 50%, transparent 60%)",
                 transform: "translateX(-100%)",
-                animation: "sheen 3.5s ease-in-out infinite",
+                animation: "shineDiagonal 4s ease-in-out infinite",
+                borderRadius: "inherit",
                 pointerEvents: "none",
+                zIndex: 1,
               },
+
+              "@keyframes shineBorderSweep": {
+                "0%": { backgroundPosition: "-300% 0" },
+                "100%": { backgroundPosition: "300% 0" },
+              },
+
+              "@keyframes shineDiagonal": {
+                "0%": { transform: "translateX(-120%) rotate(0deg)" },
+                "100%": { transform: "translateX(120%) rotate(0deg)" },
+              },
+
               "@keyframes gradientShift": {
                 "0%": { backgroundPosition: "0% 50%" },
                 "50%": { backgroundPosition: "100% 50%" },
                 "100%": { backgroundPosition: "0% 50%" },
-              },
-              "@keyframes sheen": {
-                "0%": { transform: "translateX(-120%)" },
-                "100%": { transform: "translateX(120%)" },
-              },
-              "@keyframes clock": {
-                "0%": { transform: "rotate(0deg)" },
-                "100%": { transform: "rotate(360deg)" },
               },
             }}
           >
@@ -362,7 +422,6 @@ function Features({ videoReady }) {
                               position: "relative",
                               overflow: "visible",
                               borderRadius: "50px",
-                              boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
                               height: 200,
                               display: "flex",
                               alignItems: "flex-end",
@@ -466,7 +525,6 @@ function Features({ videoReady }) {
                               position: "relative",
                               overflow: "visible",
                               borderRadius: "50px",
-                              boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
                               height: 200,
                               display: "flex",
                               alignItems: "flex-end",

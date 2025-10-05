@@ -437,12 +437,15 @@ const ContactoForm = ({ setSnackbar }) => {
                                 <Box sx={{ textAlign: "left", alignItems: "flex-start" }}>
                                     <Typography
                                         variant="body1"
-                                        sx={{ fontSize: "0.9rem", mb: 1, color: "#000", marginLeft: 1 }}
+                                        sx={{ fontSize: "0.8rem", mb: 1, mt: 1, color: "#000", marginLeft: 1 }}
                                     >
-                                        Ponte en contacto con uno de nuestros ejecutivos para asistirte.
+                                        Escríbenos a <strong>plataformas.web.cl@gmail.com</strong>
                                     </Typography>
+
+
+                                    {/* Botón de contacto vía email */}
                                     <Button
-                                        href="tel:56946873014"
+                                        href="mailto:plataformas.web.cl@gmail.com"
                                         size="small"
                                         variant="text"
                                         sx={{
@@ -460,7 +463,7 @@ const ContactoForm = ({ setSnackbar }) => {
                                         }}
                                     >
                                         <SupportAgentIcon sx={{ fontSize: 18 }} />
-                                        Contactar ahora
+                                        Escríbenos ahora
                                         <ArrowForwardIcon sx={{ fontSize: 16 }} />
                                     </Button>
                                 </Box>
@@ -518,9 +521,9 @@ const ContactoForm = ({ setSnackbar }) => {
                                 <Box>
                                     <Typography
                                         variant="body1"
-                                        sx={{ fontSize: "0.9rem", mb: 1, marginLeft: 1 }}
+                                        sx={{ fontSize: "0.9rem", mb: 1, mt: 1, marginLeft: 1 }}
                                     >
-                                        Escríbenos directamente por WhatsApp para resolver tus dudas.
+                                        Escríbenos a <strong>+(569) 4687 3014.</strong>
                                     </Typography>
                                     <Button
                                         href="https://api.whatsapp.com/send?phone=56946873014"
