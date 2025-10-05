@@ -1,9 +1,8 @@
-import { Container, Grid, Badge, Card, Tooltip, CardActionArea, CardMedia, Typography, Box, Button, useTheme, useMediaQuery, } from "@mui/material";
+import { Container, Grid, Card, CardActionArea, CardMedia, Typography, Box, Button, useTheme, useMediaQuery, } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import { styled } from "@mui/system";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import AccessTimeFilledRoundedIcon from '@mui/icons-material/AccessTimeFilledRounded';
-import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
 import DialogTrabajos from "./DialogTrabajos";
 import { cargarTrabajos } from "../helpers/HelperTrabajos";
 import { useInView } from "react-intersection-observer";
@@ -62,6 +61,15 @@ function Features({ videoReady }) {
   const [hasAnimated, setHasAnimated] = useState(false);
   const navigate = useNavigate();
   const [trabajos, setTrabajos] = useState([]);
+  const [showMatrix, setShowMatrix] = useState(false);
+  // TRABAJOS ACTIVOS
+  const trabajosActivos = trabajos.filter(t => Number(t.Estado) === 1);
+
+  //TRABAJOS
+  const sitiosWebDesarrollo = trabajosActivos.filter(t => Number(t.TipoApp) === 1).length;
+  const sistemasDesarrollo = trabajosActivos.filter(t => Number(t.TipoApp) === 2).length;
+  const [openTrabajos, setOpenTrabajos] = useState(false);
+
 
   //TRABAJOS S3
   useEffect(() => {
@@ -98,23 +106,15 @@ function Features({ videoReady }) {
     }),
   };
 
-  // TRABAJOS ACTIVOS
-  const trabajosActivos = trabajos.filter(t => Number(t.Estado) === 1);
-
-  // Ahora cuentas sobre los activos
-  const sitiosWebDesarrollo = trabajosActivos.filter(t => Number(t.TipoApp) === 1).length;
-  const sistemasDesarrollo = trabajosActivos.filter(t => Number(t.TipoApp) === 2).length;
-  const hasTrabajos = trabajosActivos.length > 0;
-
-
-  const handleSolucionesClick = () => {
-    navigate("/servicios");
-  };
-  const [openTrabajos, setOpenTrabajos] = useState(false);
-
   // handlers
   const handleTrabajosClick = () => setOpenTrabajos(true);
   const handleCloseTrabajos = () => setOpenTrabajos(false);
+
+  //ATRASO MATRIX
+  useEffect(() => {
+    const timer = setTimeout(() => setShowMatrix(true), 5000);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <Box
@@ -129,33 +129,52 @@ function Features({ videoReady }) {
         overflowY: 'visible',
       }}
     >
-      {/* 🌧️ Cascada Matrix (borde inferior, sin fondo) */}
+      {/* 🌧️ CASCADA MATRIX */}
       <Box
         className="matrix-rain"
         sx={{
           position: "relative",
           width: "100%",
-          height: isMobile ? "15px" : "15px", // 👈 altura ajustada
+          height: isMobile ? "15px" : "15px", // 👈 espacio siempre reservado
           overflow: "hidden",
-          mt: "-1px", // 👈 se une perfectamente al borde del video
+          mt: "-1px",
         }}
       >
-        {[...Array(40)].map((_, i) => (
-          <span
-            key={i}
-            className="matrix-stream"
-            style={{
-              "--delay": `${Math.random() * 3}s`,
-              "--duration": `${3 + Math.random() * 2}s`,
-              "--height": `${25 + Math.random() * 40}px`,
-            }}
-          >
-            {Array.from({ length: 15 })
-              .map(() => (Math.random() > 0.5 ? "1" : "0"))
-              .join("\n")}
-          </span>
-        ))}
+        <AnimatePresence>
+          {showMatrix && (
+            <motion.div
+              key="matrix"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              style={{
+                position: "absolute",
+                inset: 0, // ocupa toda la caja
+                display: "flex",
+                justifyContent: "space-around",
+              }}
+            >
+              {[...Array(isMobile ? 30 : 80)].map((_, i) => (
+                <span
+                  key={i}
+                  className="matrix-stream"
+                  style={{
+                    "--delay": `${Math.random() * 3}s`,
+                    "--duration": `${3 + Math.random() * 2}s`,
+                    "--height": `${25 + Math.random() * 40}px`,
+                  }}
+                >
+                  {Array.from({ length: 15 })
+                    .map(() => (Math.random() > 0.5 ? "1" : "0"))
+                    .join("\n")}
+                </span>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </Box>
+
 
       <Container sx={{ py: 0, maxWidth: "1500px !important", overflow: 'hidden', }}>
         <motion.div
@@ -341,8 +360,8 @@ function Features({ videoReady }) {
               </motion.div>
 
               <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={hasAnimated ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0, scale: 1 }}
+                animate={hasAnimated ? { opacity: 1 } : { opacity: 0 }}
                 transition={{
                   delay: 2.8, // ⏱ aparece justo al terminar el movimiento del reloj
                   duration: 0.8,
