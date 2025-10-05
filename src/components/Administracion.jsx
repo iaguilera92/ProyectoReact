@@ -47,6 +47,9 @@ const Administracion = () => {
   };
 
   const handleSubmit = async (e) => {
+
+    if (logoTimeoutRef.current) clearTimeout(logoTimeoutRef.current);
+
     if (logoAnimacion === "error" || isSubmitting) return;
 
     e.preventDefault();
@@ -57,12 +60,10 @@ const Administracion = () => {
     if (usuarioValido) {
       setLogoAnimacion("pendulo");
 
+      // Guarda credenciales
       sessionStorage.setItem("credenciales", JSON.stringify({ email, password }));
-      if (recordarme) {
-        localStorage.setItem("credenciales", JSON.stringify({ email, password }));
-      } else {
-        localStorage.removeItem("credenciales");
-      }
+      if (recordarme) localStorage.setItem("credenciales", JSON.stringify({ email, password }));
+      else localStorage.removeItem("credenciales");
 
       sessionStorage.setItem("snackbar", JSON.stringify({
         open: true,
@@ -71,10 +72,12 @@ const Administracion = () => {
       }));
       sessionStorage.setItem("usuario", JSON.stringify(usuarioValido));
 
-      setTimeout(() => {
+      // ⚠️ Importante: usar useRef para guardar el timeout y poder limpiarlo en unmount
+      logoTimeoutRef.current = setTimeout(() => {
         navigate("/dashboard", { replace: true });
-      }, 1000);
-    } else {
+      }, 800);
+    }
+    else {
       setLogoAnimacion("error");
 
       setTimeout(() => {
@@ -92,7 +95,6 @@ const Administracion = () => {
       if (logoTimeoutRef.current) clearTimeout(logoTimeoutRef.current);
     };
   }, []);
-
 
   useEffect(() => {
     if (modoDesarrollo) {
@@ -468,15 +470,35 @@ const Administracion = () => {
         </Box>
       </MotionPaper>
 
-      <Fade in={snackbar.open} timeout={{ enter: 400, exit: 400 }} unmountOnExit>
-        <Box sx={{ position: "absolute", bottom: 40, left: "50%", transform: "translateX(-50%)", width: "90%", maxWidth: 400 }}>
-          <Alert severity={snackbar.type} onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))} sx={{
-            fontSize: "0.9rem", borderRadius: 2, boxShadow: 3
-          }}>
-            {snackbar.message}
-          </Alert>
-        </Box>
-      </Fade>
+      {snackbar.open && (
+        <Fade in={snackbar.open} timeout={{ enter: 400, exit: 400 }}>
+          <Box
+            sx={{
+              position: "absolute",
+              bottom: 40,
+              left: "50%",
+              transform: "translateX(-50%)",
+              width: "90%",
+              maxWidth: 400,
+              zIndex: 9999,
+            }}
+          >
+            <Alert
+              severity={snackbar.type}
+              onClose={() => setSnackbar(prev => ({ ...prev, open: false }))}
+              sx={{
+                fontSize: "0.9rem",
+                borderRadius: 2,
+                boxShadow: 3,
+              }}
+            >
+              {snackbar.message}
+            </Alert>
+          </Box>
+        </Fade>
+      )}
+
+
     </Box>
   );
 };

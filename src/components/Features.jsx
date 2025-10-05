@@ -207,7 +207,7 @@ function Features({ videoReady }) {
                   "0 0 6px rgba(255,167,38,.6), inset 0 0 6px rgba(255,255,255,0.25)",
               },
 
-              /* ✨ BRILLO EXTERNO — Border Sweep */
+              /* ✨ BRILLO EXTERNO — Border Sweep + Pulse */
               "&::before": {
                 content: '""',
                 position: "absolute",
@@ -217,7 +217,8 @@ function Features({ videoReady }) {
                   "linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.9) 10%, #fff59d 20%, rgba(255,255,255,0.9) 30%, transparent 40%)",
                 backgroundRepeat: "no-repeat",
                 backgroundSize: "300% 300%",
-                animation: "shineBorderSweep 3s linear infinite",
+                animation:
+                  "shineBorderSweep 3s linear infinite, pulseGlow 4s ease-in-out infinite",
                 pointerEvents: "none",
                 zIndex: 2,
                 mask:
@@ -242,9 +243,20 @@ function Features({ videoReady }) {
                 zIndex: 1,
               },
 
+              /* ⚡ Destello rápido al pasar el mouse */
+              "&:hover::after": {
+                animation: "shineDiagonal 1.2s ease-in-out",
+              },
+
+              /* 🔥 ANIMACIONES */
               "@keyframes shineBorderSweep": {
                 "0%": { backgroundPosition: "-300% 0" },
                 "100%": { backgroundPosition: "300% 0" },
+              },
+
+              "@keyframes pulseGlow": {
+                "0%, 100%": { filter: "drop-shadow(0 0 6px rgba(255,223,0,.35))" },
+                "50%": { filter: "drop-shadow(0 0 14px rgba(255,223,0,.75))" },
               },
 
               "@keyframes shineDiagonal": {
@@ -259,120 +271,168 @@ function Features({ videoReady }) {
               },
             }}
           >
-            {/* ⏩ Pop al contenido */}
-            <motion.div
-              initial={{ scale: 0.9 }} // parte un poco más chico
-              animate={hasAnimated ? { scale: 1 } : {}}
-              transition={{
-                duration: 0.5,
-                ease: "easeOut",
-                delay: isMobile ? 1.5 : 1, // 🔑 espera 1s después de hasAnimated
+            {/* 🌟 Animación principal del reloj + contenido */}
+            <Box
+              sx={{
+                position: "relative",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "100%",
+                overflow: "visible",
+                zIndex: 3,
               }}
-              style={{ display: "flex", alignItems: "center", gap: 0.5 }}
             >
-              {/* Reloj */}
-              <AccessTimeFilledRoundedIcon
-                sx={{
-                  fontSize: { xs: 18, sm: 22 },
-                  animation: "clock 12s steps(12) infinite",
-                  transformOrigin: "50% 50%",
-                  mt: "-1px",
-                  filter: "drop-shadow(0 0 4px rgba(255,167,38,.35))",
-                  "@media (prefers-reduced-motion: reduce)": { animation: "none" },
+              {/* 🕓 Reloj centrado al inicio y luego se mueve a la izquierda */}
+              <motion.div
+                key="reloj"
+                initial={{ opacity: 0, scale: 1.2 }}
+                animate={
+                  hasAnimated
+                    ? {
+                      opacity: 1,
+                      scale: 1.2,
+                    }
+                    : { opacity: 0, scale: 0.7 }
+                }
+                transition={{ duration: 0.6, ease: "easeOut" }}
+                style={{
+                  position: "absolute",
+                  left: "48%",
+                  top: "0%",
+                  transform: "translate(-50%, -50%)",
                 }}
-              />
+              >
+                <motion.div
+                  initial={{ x: 0, y: 0, scale: 1.5 }}
+                  animate={
+                    hasAnimated
+                      ? {
+                        x: [0, 0, isMobile ? "-112px" : "-140px"],
+                        y: [0, 0, "0px"], // 🔼 mantiene alineado con el texto
+                        scale: [1.4, 1.3, 0.7]
+                      }
+                      : { x: 0, y: 0, scale: 1.5 }
+                  }
+                  transition={{
+                    duration: 3,
+                    ease: "easeInOut",
+                    times: [0, 0.66, 1],
+                  }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <AccessTimeFilledRoundedIcon
+                    sx={{
+                      fontSize: { xs: 26, sm: 28 },
+                      color: "#fff",
+                      filter: "drop-shadow(0 0 8px rgba(255,167,38,.8))",
+                      animation: "clock 12s steps(12) infinite",
+                      "@keyframes clock": {
+                        "0%": { transform: "rotate(0deg)" },
+                        "100%": { transform: "rotate(360deg)" },
+                      },
+                    }}
+                  />
+                </motion.div>
+              </motion.div>
 
-              {/* Texto + chips */}
-              <Box
-                sx={{
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={hasAnimated ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
+                transition={{
+                  delay: 2.8, // ⏱ aparece justo al terminar el movimiento del reloj
+                  duration: 0.8,
+                  ease: "easeOut",
+                }}
+                style={{
                   display: "flex",
                   alignItems: "center",
-                  flexWrap: "nowrap",
-                  gap: { xs: 0.4, sm: 1 },
-                  overflow: "hidden",
-                  fontSize: { xs: "0.75rem", sm: "0.9rem" },
+                  gap: 6,
+                  marginLeft: "35px",
+                  zIndex: 2,
                 }}
               >
                 <Typography
                   sx={{
-                    fontSize: { xs: "0.61rem", sm: "1rem" },
+                    fontSize: { xs: "0.65rem", sm: "0.85rem" },
                     fontWeight: 600,
+                    whiteSpace: "nowrap",
+                    fontFamily: "Poppins, sans-serif",
                   }}
                 >
                   EN DESARROLLO:
                 </Typography>
+
+                {/* 🧱 Chip 1 */}
                 <Box
                   sx={{
-                    minWidth: { xs: 90, sm: 120 },
+                    minWidth: { xs: 70, sm: 90 },
                     textAlign: "center",
-                    px: { xs: 0.6, sm: 1.2 },
-                    py: 0.4,
-                    borderRadius: "8px",
+                    px: { xs: 0.4, sm: 0.8 },
+                    py: 0.2,
+                    borderRadius: "6px",
                     fontWeight: 700,
+                    fontFamily: "Poppins, sans-serif",
+                    fontSize: { xs: "0.65rem", sm: "0.8rem" },
                     background: "linear-gradient(135deg,#ffa726,#fb8c00)",
                     border: "2px solid rgba(255,255,255,.8)",
                     boxShadow:
-                      "0 0 6px rgba(255,167,38,.5), inset 0 0 6px rgba(255,255,255,0.25)",
+                      "0 0 4px rgba(255,167,38,.4), inset 0 0 4px rgba(255,255,255,0.2)",
                     whiteSpace: "nowrap",
-                    position: "relative",
-                    zIndex: 1,
-                    transition: "all .25s ease",
-                    "&:hover": {
-                      borderColor: "#fff",
-                      boxShadow:
-                        "0 0 10px rgba(255,193,7,.8), inset 0 0 8px rgba(255,255,255,0.35)",
-                    },
                   }}
                 >
-                  {sitiosWebDesarrollo} {sitiosWebDesarrollo === 1 ? "Sitio web" : "Sitios web"}
+                  {sitiosWebDesarrollo}{" "}
+                  {sitiosWebDesarrollo === 1 ? "Sitio web" : "Sitios web"}
                 </Box>
 
+                {/* 🧱 Chip 2 */}
                 <Box
                   sx={{
-                    minWidth: { xs: 90, sm: 120 },
+                    minWidth: { xs: 70, sm: 90 },
                     textAlign: "center",
-                    px: { xs: 0.6, sm: 1.2 },
-                    py: 0.4,
-                    borderRadius: "8px",
+                    px: { xs: 0.4, sm: 0.8 },
+                    py: 0.2,
+                    borderRadius: "6px",
                     fontWeight: 700,
+                    fontFamily: "Poppins, sans-serif",
+                    fontSize: { xs: "0.65rem", sm: "0.8rem" },
                     background: "linear-gradient(135deg,#ffa726,#fb8c00)",
                     border: "2px solid rgba(255,255,255,.8)",
                     boxShadow:
-                      "0 0 6px rgba(255,167,38,.5), inset 0 0 6px rgba(255,255,255,0.25)",
+                      "0 0 4px rgba(255,167,38,.4), inset 0 0 4px rgba(255,255,255,0.2)",
                     whiteSpace: "nowrap",
-                    position: "relative",
-                    zIndex: 1,
-                    transition: "all .25s ease",
-                    "&:hover": {
-                      borderColor: "#fff",
-                      boxShadow:
-                        "0 0 10px rgba(255,193,7,.8), inset 0 0 8px rgba(255,255,255,0.35)",
-                    },
                   }}
                 >
-                  {sistemasDesarrollo} {sistemasDesarrollo === 1 ? "Sistema" : "Sistemas"}
+                  {sistemasDesarrollo}{" "}
+                  {sistemasDesarrollo === 1 ? "Sistema" : "Sistemas"}
                 </Box>
-              </Box>
 
-              <Box
-                component={motion.img}
-                src="/clic.jpg"
-                alt="clic"
-                loading="lazy"
-                initial={{ scale: 1, y: 0 }}
-                animate={{ scale: [1, 0.9, 1], y: [0, 1, 0] }}
-                transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-                whileTap={{ scale: 0.85, rotate: -3 }}
-                whileHover={{ scale: 1.03, y: -1 }}
-                sx={{
-                  filter: "invert(1) brightness(2)",
-                  width: { xs: 23, sm: 25 },
-                  height: "auto",
-                  display: "block",
-                  userSelect: "none",
-                }}
-              />
-            </motion.div>
+                {/* 🖱️ Clic animado */}
+                <Box
+                  component={motion.img}
+                  src="/clic.jpg"
+                  alt="clic"
+                  loading="lazy"
+                  initial={{ scale: 1, y: 0 }}
+                  animate={{ scale: [1, 0.9, 1], y: [0, 1, 0] }}
+                  transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+                  whileTap={{ scale: 0.85, rotate: -3 }}
+                  whileHover={{ scale: 1.03, y: -1 }}
+                  sx={{
+                    filter: "invert(1) brightness(2)",
+                    width: { xs: 23, sm: 25 },
+                    height: "auto",
+                    display: "block",
+                    userSelect: "none",
+                  }}
+                />
+              </motion.div>
+            </Box>
+
           </Button>
 
         </motion.div>
@@ -486,7 +546,7 @@ function Features({ videoReady }) {
                             >
                               <Box
                                 component="img"
-                                src="/sitios-web.webp"
+                                src="/sitio-web.webp"
                                 alt="Preview Sitios Web"
                                 sx={{
                                   position: "absolute",
