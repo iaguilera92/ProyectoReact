@@ -297,123 +297,119 @@ export default function DialogTrabajos({
 
 
 
-        {localTrabajos.length > 0 ? (
+        <Box
+          sx={{
+            mt: isMobile ? 1 : 1.5,
+            display: "flex",
+            justifyContent: "center",
+            gap: 2,
+            flexDirection: "row",   // 👈 siempre fila
+            flexWrap: "nowrap",     // 👈 evita salto a segunda línea
+          }}
+        >
+          {/* Web en desarrollo */}
           <Box
             sx={{
-              mt: isMobile ? 1 : 1.5,
-              display: "flex",
-              justifyContent: "center",
-              gap: 2,
-              flexDirection: "row",   // 👈 siempre fila
-              flexWrap: "nowrap",     // 👈 evita salto a segunda línea
+              flex: 1,
+              minWidth: { xs: 120, sm: 160 },
+              textAlign: "center",
+              px: { xs: 1, sm: 2 },
+              py: { xs: 1.2, sm: 2 },
+              borderRadius: 3,
+              background:
+                "linear-gradient(135deg, rgba(230,81,0,0.9), rgba(255,152,0,0.7))",
+              boxShadow: { xs: "0 4px 14px rgba(0,0,0,.35)", sm: "0 6px 20px rgba(0,0,0,.45)" },
+              color: "#fff",
             }}
           >
-            {/* Web en desarrollo */}
             <Box
               sx={{
-                flex: 1,
-                minWidth: { xs: 120, sm: 160 }, // más pequeño en mobile
-                textAlign: "center",
-                px: { xs: 1, sm: 2 },
-                py: { xs: 1.2, sm: 2 },
-                borderRadius: 3,
-                background:
-                  "linear-gradient(135deg, rgba(230,81,0,0.9), rgba(255,152,0,0.7))",
-                boxShadow: { xs: "0 4px 14px rgba(0,0,0,.35)", sm: "0 6px 20px rgba(0,0,0,.45)" },
-                color: "#fff",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: { xs: 55, sm: 70 },
+                height: { xs: 55, sm: 70 },
+                borderRadius: "50%",
+                bgcolor: "rgba(255,255,255,0.15)",
+                border: { xs: "2px solid #fff", sm: "3px solid #fff" },
+                mb: 1,
               }}
             >
-              <Box
-                sx={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: { xs: 55, sm: 70 },
-                  height: { xs: 55, sm: 70 },
-                  borderRadius: "50%",
-                  bgcolor: "rgba(255,255,255,0.15)",
-                  border: { xs: "2px solid #fff", sm: "3px solid #fff" },
-                  mb: 1,
-                }}
-              >
-                <Typography
-                  variant="h4"
-                  sx={{
-                    fontWeight: 900,
-                    color: "#fff",
-                    fontSize: { xs: "1.5rem", sm: "2rem" },
-                  }}
-                >
-                  <ContadorAnimado value={sitiosWeb} delay={0.5} duration={2} />
-                </Typography>
-              </Box>
               <Typography
-                variant="body2"
+                variant="h4"
                 sx={{
-                  fontWeight: 600,
-                  whiteSpace: "nowrap",
-                  fontSize: { xs: "0.7rem", sm: "0.875rem" },
+                  fontWeight: 900,
+                  color: "#fff",
+                  fontSize: { xs: "1.5rem", sm: "2rem" },
                 }}
               >
-                Web en desarrollo
+                <ContadorAnimado value={sitiosWeb} delay={0.5} duration={2} />
               </Typography>
             </Box>
-
-            {/* Sistemas en desarrollo */}
-            <Box
+            <Typography
+              variant="body2"
               sx={{
-                flex: 1,
-                minWidth: { xs: 120, sm: 160 },
-                textAlign: "center",
-                px: { xs: 1, sm: 2 },
-                py: { xs: 1.2, sm: 2 },
-                borderRadius: 3,
-                background:
-                  "linear-gradient(135deg, rgba(251,140,0,0.9), rgba(255,202,40,0.7))",
-                boxShadow: { xs: "0 4px 14px rgba(0,0,0,.35)", sm: "0 6px 20px rgba(0,0,0,.45)" },
-                color: "#fff",
+                fontWeight: 600,
+                whiteSpace: "nowrap",
+                fontSize: { xs: "0.7rem", sm: "0.875rem" },
               }}
             >
-              <Box
-                sx={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: { xs: 55, sm: 70 },
-                  height: { xs: 55, sm: 70 },
-                  borderRadius: "50%",
-                  bgcolor: "rgba(255,255,255,0.15)",
-                  border: { xs: "2px solid #fff", sm: "3px solid #fff" },
-                  mb: 1,
-                }}
-              >
-                <Typography
-                  variant="h4"
-                  sx={{
-                    fontWeight: 900,
-                    color: "#fff",
-                    fontSize: { xs: "1.5rem", sm: "2rem" },
-                  }}
-                >
-                  <ContadorAnimado value={sistemas} delay={0.5} duration={2} />
-                </Typography>
-              </Box>
-              <Typography
-                variant="body2"
-                sx={{
-                  fontWeight: 600,
-                  whiteSpace: "nowrap",
-                  fontSize: { xs: "0.7rem", sm: "0.875rem" },
-                }}
-              >
-                Sistemas en desarrollo
-              </Typography>
-            </Box>
-
+              Web en desarrollo
+            </Typography>
           </Box>
-        ) : (
-          <></>
-        )}
+
+          {/* Sistemas en desarrollo */}
+          <Box
+            sx={{
+              flex: 1,
+              minWidth: { xs: 120, sm: 160 },
+              textAlign: "center",
+              px: { xs: 1, sm: 2 },
+              py: { xs: 1.2, sm: 2 },
+              borderRadius: 3,
+              background:
+                "linear-gradient(135deg, rgba(251,140,0,0.9), rgba(255,202,40,0.7))",
+              boxShadow: { xs: "0 4px 14px rgba(0,0,0,.35)", sm: "0 6px 20px rgba(0,0,0,.45)" },
+              color: "#fff",
+            }}
+          >
+            <Box
+              sx={{
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: { xs: 55, sm: 70 },
+                height: { xs: 55, sm: 70 },
+                borderRadius: "50%",
+                bgcolor: "rgba(255,255,255,0.15)",
+                border: { xs: "2px solid #fff", sm: "3px solid #fff" },
+                mb: 1,
+              }}
+            >
+              <Typography
+                variant="h4"
+                sx={{
+                  fontWeight: 900,
+                  color: "#fff",
+                  fontSize: { xs: "1.5rem", sm: "2rem" },
+                }}
+              >
+                <ContadorAnimado value={sistemas} delay={0.5} duration={2} />
+              </Typography>
+            </Box>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 600,
+                whiteSpace: "nowrap",
+                fontSize: { xs: "0.7rem", sm: "0.875rem" },
+              }}
+            >
+              Sistemas en desarrollo
+            </Typography>
+          </Box>
+        </Box>
+
       </DialogTitle>
 
       <AnimatePresence>
