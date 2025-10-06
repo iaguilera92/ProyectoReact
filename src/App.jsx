@@ -20,6 +20,7 @@ import "./components/css/App.css";
 import { initGoogleAnalytics, trackPageView } from "./helpers/HelperAnalytics.js"; //GOOGLE ANALYTICS
 
 function App() {
+  const [showContacto, setShowContacto] = useState(false);
   const [showArrow, setShowArrow] = useState(false);
   const [openBubble, setOpenBubble] = useState(false);
   const contactoRef = useRef(null);
