@@ -20,20 +20,15 @@ import "./components/css/App.css";
 import { initGoogleAnalytics, trackPageView } from "./helpers/HelperAnalytics.js"; //GOOGLE ANALYTICS
 
 function App() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [showContacto, setShowContacto] = useState(false);
   const [showArrow, setShowArrow] = useState(false);
   const [openBubble, setOpenBubble] = useState(false);
-  const [hasInteracted, setHasInteracted] = useState(false);
   const contactoRef = useRef(null);
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const informationsRef = useRef(null);
   const location = useLocation();
   const [videoReady, setVideoReady] = useState(false);
-
   const [showApp, setShowApp] = useState(false);
   const [snackbarVersion, setSnackbarVersion] = useState({ open: false, version: "", });
-
   const [shouldAnimateInformations, setShouldAnimateInformations] = useState(false);
   const triggerInformations = (value) => setShouldAnimateInformations(value);
   const [hasSeenInformations, setHasSeenInformations] = useState(false);
@@ -69,13 +64,15 @@ function App() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  //ABRIR DIALOGO WSP
   useEffect(() => {
     const timer = setTimeout(() => {
       setOpenBubble(true);
-    }, 5000);
+    }, 6000);
     return () => clearTimeout(timer);
   }, []);
 
+  //CERRAR DIALOGO WSP
   useEffect(() => {
     if (openBubble) {
       const timer = setTimeout(() => {
@@ -84,14 +81,6 @@ function App() {
       return () => clearTimeout(timer);
     }
   }, [openBubble]);
-
-  const scrollToTop = () => {
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  };
 
   //location.pathname
   useEffect(() => {
@@ -118,7 +107,7 @@ function App() {
 
     const maxTimeout = setTimeout(() => {
       setShowApp(true); // fuerza mostrar app
-    }, 4000); // máximo espera
+    }, 3600); // máximo espera
 
     return () => {
       clearTimeout(minTimeout);
@@ -323,7 +312,7 @@ function App() {
         {/* Botón WhatsApp */}
         {location.pathname !== "/administracion" && location.pathname !== "/dashboard" && location.pathname !== "/configurar-servicios" && location.pathname !== "/configurar-trabajos" && location.pathname !== "/clientes" && location.pathname !== "/reservas" && (
           <Box sx={{ position: "fixed", bottom: "75px", right: "15px", zIndex: 100, transition: "bottom 0.3s ease", }}>
-            <IconButton onClick={() => { window.open("https://api.whatsapp.com/send?phone=56946873014", "_blank"); setHasInteracted(true); }} sx={{
+            <IconButton onClick={() => { window.open("https://api.whatsapp.com/send?phone=56946873014", "_blank"); }} sx={{
               width: 60, height: 60, backgroundColor: "#25d366", color: "#FFF", borderRadius: "50%", boxShadow: "2px 2px 3px #999", "&:hover": { backgroundColor: "#1ebe5d" }, zIndex: 101
             }}>
               <WhatsAppIcon sx={{ fontSize: 30 }} />

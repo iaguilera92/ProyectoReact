@@ -11,29 +11,21 @@ function Hero({ informationsRef, setVideoReady }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [loadingVideo, setLoadingVideo] = useState(true);
-  const intervalRef = useRef(null);
   const videoRef = useRef(null);
+  const [mostrarContenido, setMostrarContenido] = useState(false);
 
   const texts = [
-    { title: "Si no estás en la web, no existes." },
-    { title: "Tu web es la primera impresión." },
-    { title: "Un Sitio web trabaja para ti." }
+    { title: "Si no estás en la web no existes.", palabraClave: "no existes." },
+    { title: "Tu web es la primera impresión.", palabraClave: "primera impresión." },
+    { title: "Un Sitio web trabaja para ti.", palabraClave: "trabaja" }
   ];
 
-  //PAUSAR VIDEO SI NO SE VE
+  //MOSTRAR CONTENIDO
   useEffect(() => {
-    if (loadingVideo) return;
-    const video = videoRef.current;
-    if (!video) return;
+    const timer = setTimeout(() => setMostrarContenido(true), 3400); //⏱️
+    return () => clearTimeout(timer);
+  }, []);
 
-    const observer = new IntersectionObserver(
-      ([entry]) => entry.isIntersecting ? video.play() : video.pause(),
-      { threshold: 0.3 }
-    );
-
-    observer.observe(video);
-    return () => observer.disconnect();
-  }, [loadingVideo]);
 
   useEffect(() => {
     if (document.visibilityState !== "visible") return;
@@ -43,67 +35,57 @@ function Hero({ informationsRef, setVideoReady }) {
     return () => clearInterval(id);
   }, [texts.length]);
 
+  // 🎬 CONTROL ÚNICO DEL VIDEO
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
 
-  //MONITOREAR - COMENTAR PRD
-  /*useEffect(() => {
-    const video = document.getElementById("background-video");
+    let hasStarted = false; // 👈 evita reinicios
 
-    const onPlay = () => console.log("▶️ El video está reproduciéndose");
-    const onPause = () => console.log("⏸ El video fue pausado");
+    const startTimer = setTimeout(() => {
+      if (!hasStarted) {
+        video.play().then(() => {
+          hasStarted = true;
+          setLoadingVideo(false);
+          setVideoReady?.(true);
+          console.log("▶️ Video iniciado tras 3.3s");
+        }).catch(err => console.warn("⚠️ Autoplay bloqueado:", err));
+      }
+    }, 3300);
 
-    if (video) {
-      video.addEventListener("play", onPlay);
-      video.addEventListener("pause", onPause);
-    }
-
-    return () => {
-      if (video) {
-        video.removeEventListener("play", onPlay);
-        video.removeEventListener("pause", onPause);
+    // 🔁 Reanudar si se pausa o cambia visibilidad
+    const handlePause = () => {
+      if (hasStarted && !video.ended && !video.seeking) {
+        video.play().catch(() => { });
       }
     };
-  }, []);*/
-
-
-  useEffect(() => {
-    const fallbackTimer = setTimeout(() => {
-      if (loadingVideo) {
-        setLoadingVideo(false);
-      }
-    }, 5000); // 5 segundos de espera
-
-    return () => clearTimeout(fallbackTimer);
-  }, [loadingVideo]);
-
-
-  // Forzar inicio cuando loader termina
-  useEffect(() => {
-    if (!loadingVideo && videoRef.current) {
-      videoRef.current.currentTime = 0;
-      videoRef.current.play().then(() => {
-        console.log("▶️ Video empezó.");
-      }).catch(err => {
-        console.warn("No se pudo reproducir automáticamente:", err);
-      });
-    }
-  }, [loadingVideo]);
-
-  useEffect(() => {
-    const unlock = () => {
-      if (videoRef.current) {
-        videoRef.current.currentTime = 0; // 👈 arranca desde el inicio
-        videoRef.current.play().catch(err => {
-          console.warn("⚠️ Autoplay bloqueado:", err);
-        });
+    const handleVisibility = () => {
+      if (hasStarted && document.visibilityState === "visible") {
+        video.play().catch(() => { });
       }
     };
-    window.addEventListener("touchstart", unlock, { once: true });
-    window.addEventListener("click", unlock, { once: true });
+
+    video.addEventListener("pause", handlePause);
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    // ⏸️ Pausar si no está visible en pantalla
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!hasStarted) return;
+        entry.isIntersecting ? video.play() : video.pause();
+      },
+      { threshold: 0.25 }
+    );
+    observer.observe(video);
+
     return () => {
-      window.removeEventListener("touchstart", unlock);
-      window.removeEventListener("click", unlock);
+      clearTimeout(startTimer);
+      video.removeEventListener("pause", handlePause);
+      document.removeEventListener("visibilitychange", handleVisibility);
+      observer.disconnect();
     };
   }, []);
+
 
   return (
     <>
@@ -126,6 +108,7 @@ function Hero({ informationsRef, setVideoReady }) {
             left: 0,
             width: "100%",
             height: "100%",
+            backgroundColor: "#000", // 👈 fondo sólido
             overflow: "hidden",
           }}
         >
@@ -136,7 +119,7 @@ function Hero({ informationsRef, setVideoReady }) {
                 position: "absolute",
                 top: 0,
                 left: 0,
-                zIndex: 2,
+                zIndex: 1,
                 width: "100%",
                 height: "100%",
                 backgroundColor: "rgba(0,0,0,0.85)",
@@ -145,28 +128,34 @@ function Hero({ informationsRef, setVideoReady }) {
                 justifyContent: "center",
               }}
             >
-              <CircularProgress size={60} sx={{ color: "#ffffff" }} />
+              <CircularProgress size={60} sx={{ color: "rgba(255,255,255,0.4)" }} />
             </Box>
           )}
           <video
             muted
             loop
-            ref={videoRef}
             playsInline
-            onLoadedData={() => {
-              console.log("🎥 Video cargado");
-              if (setVideoReady) setVideoReady(true);
-              setLoadingVideo(false);
+            preload="auto"
+            ref={videoRef}
+            onPlaying={() => {
+              if (loadingVideo) {
+                setLoadingVideo(false);
+                setVideoReady?.(true);
+              }
             }}
             style={{
-              width: "100%",
-              height: "100%",
+              width: "102%",
+              height: "102%",
               objectFit: "cover",
+              objectPosition: "center",
+              position: "absolute",
+              top: "-1%",
+              left: "-1%",
               pointerEvents: "none",
+              display: "block",
             }}
-            disablePictureInPicture
-            controlsList="nodownload nofullscreen noremoteplayback"
           >
+
             <source
               src={isMobile ? "video-inicio-oficial.mp4" : "video-inicio.mp4"}
               type="video/mp4"
@@ -176,7 +165,7 @@ function Hero({ informationsRef, setVideoReady }) {
         </Box>
 
         {/* Contenido sobre el video */}
-        {!loadingVideo && (
+        {mostrarContenido && (
           <Container
             sx={{
               position: "relative",
@@ -222,13 +211,51 @@ function Hero({ informationsRef, setVideoReady }) {
                       gutterBottom
                       className="text"
                       sx={{
-                        fontSize: isMobile ? "1.35rem !important" : "2.5rem !important",
+                        fontSize: isMobile ? "1.2rem !important" : "2.5rem !important",
+                        fontWeight: 600,
+                        textAlign: "center",
+                        fontFamily: "'Poppins', sans-serif",
+                        lineHeight: 1.2,
                       }}
                     >
-                      {texts[currentText].title}
+                      {(() => {
+                        const { title, palabraClave } = texts[currentText];
+                        const [before, after] = title.split(palabraClave);
+                        return (
+                          <>
+                            {before}
+                            <motion.span
+                              key={palabraClave}
+                              initial={{ y: -40, opacity: 0 }}
+                              animate={{ y: 0, opacity: 1 }}
+                              transition={{
+                                duration: 0.8,
+                                ease: "easeOut",
+                                delay: 0.7,
+                              }}
+                              style={{
+                                display: "inline-block",
+                                fontWeight: 700,
+                                fontFamily: "'Poppins', sans-serif",
+                                fontSize: "inherit",
+                                background: "linear-gradient(0deg, rgba(0,172,238,1) 0%, rgba(2,126,251,1) 100%)",
+                                color: "#fff", // 👈 texto blanco sobre el gradiente
+                                padding: "2px 5px",
+                                borderRadius: "8px", // 👈 esquinas redondeadas
+                                border: "1px solid rgba(255,255,255,0.3)", // 👈 borde sutil translúcido
+                                boxShadow: "0 0 10px rgba(2,126,251,0.4)", // 👈 leve brillo
+                              }}
+                            >
+                              {palabraClave}
+                            </motion.span>
+                            {after}
+                          </>
+                        );
+                      })()}
                     </Typography>
                   </motion.div>
                 </AnimatePresence>
+
               </Box>
 
               {/* Botón debajo */}

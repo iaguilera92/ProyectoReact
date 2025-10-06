@@ -191,7 +191,7 @@ function Features({ videoReady }) {
             display: "flex",
             justifyContent: "center",
             marginTop: "0px",
-            marginBottom: "16px",
+            marginBottom: "12px",
           }}
         >
 

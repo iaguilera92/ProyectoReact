@@ -146,7 +146,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed',
         py: isMobile ? 8 : 3,
-        pt: 5,
+        pt: 3,
         marginTop: "0",
         marginBottom: "-10px",
         color: "white",
