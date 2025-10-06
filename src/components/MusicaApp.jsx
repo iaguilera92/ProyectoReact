@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 export default function MusicaApp({
   src = "/musica-app.mp3",
-  volume = 0.25,
+  volume = 1,
   loop = true,
   btnSize = 36,
   consentKey = "bgmConsent", // guarda consentimiento tras primer unmute manual
