@@ -504,6 +504,7 @@ function Features({ videoReady }) {
                               height: 200,
                               display: "flex",
                               alignItems: "flex-end",
+                              backgroundColor: "transparent",
                             }}
                           >
                             {/* Box verde */}
@@ -607,6 +608,7 @@ function Features({ videoReady }) {
                               height: 200,
                               display: "flex",
                               alignItems: "flex-end",
+                              backgroundColor: "transparent",
                             }}
                           >
                             {/* Box degradado azul */}

@@ -171,6 +171,7 @@ export default function DialogTrabajos({
       maxWidth="sm"
       fullWidth
       scroll="paper"
+
       TransitionComponent={Transition}
       PaperProps={{
         sx: {
@@ -193,7 +194,7 @@ export default function DialogTrabajos({
           py: 1.5,
           borderBottom: "1px solid rgba(255,167,38,.35)",
           position: "relative", // 👈 ancla para el botón
-          minHeight: 64,        // 👈 asegura altura fija (ajústalo según tu diseño)
+          height: isMobile ? "175px" : "210px",
           overflow: "hidden",
 
           "&::before": {
@@ -202,7 +203,7 @@ export default function DialogTrabajos({
             top: 0,
             left: 0,
             width: "100%",
-            height: "100%",
+            height: isMobile ? "175px" : "210px",
             backgroundImage: "url('/servicio1.webp')",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
@@ -220,7 +221,7 @@ export default function DialogTrabajos({
             top: 0,
             left: 0,
             width: "100%",
-            height: "100%",
+            height: isMobile ? "175px" : "210px",
             bgcolor: "rgba(0,0,0,0.45)", // overlay oscuro
             zIndex: 1,
           },
@@ -249,7 +250,7 @@ export default function DialogTrabajos({
             top: 2,
             right: 2,
             color: "#FFF",
-            zIndex: 5,
+            zIndex: 7,
             "&:hover": { backgroundColor: "rgba(255,255,255,.15)" },
 
             animation: open ? "spinTwice 0.6s ease-in-out" : "none",
