@@ -22,20 +22,24 @@
   src: url("https://cdn-jeogh.nitrocdn.com/svPVqNThfGfQjwyBRxWYUktDoEOCGAjs/assets/static/source/rev-30dd8fd/www.tichile.cl/wp-content/themes/enfold/config-templatebuilder/avia-template-builder/assets/fonts/entypo-fontello.woff2") format("woff2");
 }
 
-@keyframes pulsacion {
+@keyframes onda {
   0% {
-    opacity: .3;
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.6;
+    border-color: rgba(0, 191, 255, 0.7);
+    box-shadow: 0 0 10px rgba(0, 191, 255, 0.4);
   }
 
-  40% {
-    opacity: .5;
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, .1), 0 0 10px 10px #fff, 0 0 0 10px rgba(255, 255, 255, .5);
+  50% {
+    border-color: rgba(0, 255, 255, 0.4);
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
   }
 
   100% {
+    transform: translate(-50%, -50%) scale(1.9);
     opacity: 0;
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, .1), 0 0 10px 10px #fff, 0 0 0 10px rgba(255, 255, 255, .5);
-    transform: scale(1.5);
+    border-color: rgba(0, 191, 255, 0);
+    box-shadow: 0 0 40px rgba(0, 191, 255, 0);
   }
 }
 

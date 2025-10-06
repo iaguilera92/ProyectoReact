@@ -347,37 +347,45 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                             height: 70,
                             borderRadius: "50%",
                             border: "2px solid white",
-                            backgroundColor: "#072138",
+                            background: "radial-gradient(circle, #0a2b4d 60%, #061a2e 100%)",
+                            boxShadow: "0 0 15px rgba(255,255,255,0.25)",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
                             position: "relative",
+                            overflow: "visible",
                             zIndex: 2,
                           }}
                         >
                           {item.icon}
-                          <motion.div
-                            style={{
+
+                          {/* 🌊 Onda expansiva */}
+                          <Box
+                            sx={{
                               position: "absolute",
-                              top: 0,
-                              left: 0,
-                              width: "100%",
-                              height: "100%",
+                              top: "50%",
+                              left: "50%",
+                              width: 75, // 👈 ligeramente más grande que el círculo base
+                              height: 75,
                               borderRadius: "50%",
-                              backgroundColor: "rgba(255, 255, 255, 0.2)",
+                              border: "3px solid rgba(0, 191, 255, 0.7)", // 👈 borde más grueso y con color base
+                              transform: "translate(-50%, -50%)",
+                              animation: itemInView ? "onda 2.8s ease-out infinite" : "none",
                               zIndex: 1,
-                              animation: "pulsacion 1s ease-in-out 0.1s infinite",
                             }}
                           />
                         </Box>
+
+
                       </Box>
                     </ListItemIcon>
 
                     <ListItemText
                       sx={{
                         fontFamily: "'Montserrat', Helvetica, Arial, sans-serif !important",
+                        pr: { xs: 2, sm: 2, md: 3 }, // 👈 padding responsivo
                         "& .MuiListItemText-primary": {
-                          fontSize: isMobile ? "0.99rem" : "1.2rem",
+                          fontSize: isMobile ? "1rem" : "1.2rem",
                         },
                         "& .MuiListItemText-secondary": {
                           color: "white",
@@ -386,6 +394,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                       primary={item.text}
                       secondary={item.desc}
                     />
+
                   </ListItem>
                 </motion.div>
               );

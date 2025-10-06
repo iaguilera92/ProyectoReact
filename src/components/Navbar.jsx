@@ -196,20 +196,47 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
                         duration: 1,
                         delay: mostrarAnimacion ? 1 : 0,
                       }}
+                      onAnimationComplete={() => {
+                        // ✅ activar movimiento cuando termina de llegar
+                        const logo = document.querySelector(".logo-animado");
+                        if (logo) {
+                          logo.animate(
+                            [
+                              { transform: "rotate(0deg)" },
+                              { transform: "rotate(3deg)" },
+                              { transform: "rotate(-3deg)" },
+                              { transform: "rotate(2deg)" },
+                              { transform: "rotate(-2deg)" },
+                              { transform: "rotate(0deg)" },
+                            ],
+                            {
+                              duration: 1000, // 1s de movimiento total
+                              easing: "ease-in-out",
+                            }
+                          );
+                        }
+                      }}
                       style={{ cursor: "pointer" }}
                     >
                       <motion.img
                         src="/logo-plataformas-web.png"
                         alt="Logo"
+                        className="logo-animado"
                         onClick={LogoInicio}
                         initial={{ scale: 1 }}
                         animate={{ scale: isScrolled ? 0.8 : 1 }}
                         transition={{ duration: 0.3, ease: "easeOut" }}
-                        style={{ height: "55px", marginTop: "10px", cursor: "pointer" }}
+                        style={{
+                          height: "55px",
+                          marginTop: "10px",
+                          cursor: "pointer",
+                          transformOrigin: "center center", // 🔹 el eje de balanceo
+                        }}
                       />
                     </motion.div>
                   )}
                 </AnimatePresence>
+
 
 
               </Box>
