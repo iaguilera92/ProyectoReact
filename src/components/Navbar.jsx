@@ -96,7 +96,6 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
   const mostrarAnimacion = videoReady || (location.pathname !== '/' && location.pathname !== '');
   const [animacionMostrada, setAnimacionMostrada] = useState(false);
   const mostrarLogo = mostrarAnimacion || animacionMostrada;
-  const [mostrarAdmin, setMostrarAdmin] = useState(false);
 
 
   useEffect(() => {
@@ -150,13 +149,6 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
     }
   }, [mostrarAnimacion]);
 
-
-  useEffect(() => {
-    const flag = sessionStorage.getItem("mostrarAdmin");
-    if (flag === "1") {
-      setMostrarAdmin(true);
-    }
-  }, []);
   return (
     <>
       <Box

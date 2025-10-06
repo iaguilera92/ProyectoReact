@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Container, Typography, Box, Snackbar, Alert, useMediaQuery, useTheme } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
-import "./css/Hero.css"; // Asegúrate de importar el CSS
+import "./css/Hero.css";
 import CircularProgress from "@mui/material/CircularProgress";
 
 function Hero({ informationsRef, setVideoReady }) {
@@ -196,14 +196,23 @@ function Hero({ informationsRef, setVideoReady }) {
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={currentText}
-                    initial={{ rotateY: -180, opacity: 0 }}
+                    initial={{ rotateY: -90, opacity: 0 }}
                     animate={{ rotateY: 0, opacity: 1 }}
-                    exit={{ rotateY: 180, opacity: 0 }}
-                    transition={{ duration: 1, ease: "easeInOut" }}
+                    exit={{ rotateY: 90, opacity: 0 }}
+                    transition={{ duration: 0.8, ease: "easeInOut" }}
                     style={{
                       position: "absolute",
-                      transformStyle: "preserve-3d",
+                      top: 0,
+                      left: 0,
                       width: "100%",
+                      height: "100%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      transformStyle: "preserve-3d",
+                      transformOrigin: "center center",
+                      backfaceVisibility: "hidden",
+                      willChange: "transform, opacity", // 👈 optimización para GPU
                     }}
                   >
                     <Typography
@@ -211,11 +220,13 @@ function Hero({ informationsRef, setVideoReady }) {
                       gutterBottom
                       className="text"
                       sx={{
-                        fontSize: isMobile ? "1.2rem !important" : "2.5rem !important",
+                        fontSize: isMobile ? "1.2rem !important" : "2.3rem !important",
                         fontWeight: 600,
                         textAlign: "center",
                         fontFamily: "'Poppins', sans-serif",
                         lineHeight: 1.2,
+                        minHeight: isMobile ? "3.2rem" : "5rem", // 👈 altura fija según viewport
+                        display: "inline-block",
                       }}
                     >
                       {(() => {
@@ -226,24 +237,25 @@ function Hero({ informationsRef, setVideoReady }) {
                             {before}
                             <motion.span
                               key={palabraClave}
-                              initial={{ y: -40, opacity: 0 }}
+                              initial={{ y: -20, opacity: 0 }}
                               animate={{ y: 0, opacity: 1 }}
                               transition={{
-                                duration: 0.8,
+                                duration: 0.6,
                                 ease: "easeOut",
-                                delay: 0.7,
+                                delay: 0.6,
                               }}
                               style={{
                                 display: "inline-block",
                                 fontWeight: 700,
                                 fontFamily: "'Poppins', sans-serif",
                                 fontSize: "inherit",
-                                background: "linear-gradient(0deg, rgba(0,172,238,1) 0%, rgba(2,126,251,1) 100%)",
-                                color: "#fff", // 👈 texto blanco sobre el gradiente
-                                padding: "2px 5px",
-                                borderRadius: "8px", // 👈 esquinas redondeadas
-                                border: "1px solid rgba(255,255,255,0.3)", // 👈 borde sutil translúcido
-                                boxShadow: "0 0 10px rgba(2,126,251,0.4)", // 👈 leve brillo
+                                padding: "2px 6px",
+                                borderRadius: "10px",
+                                background: "linear-gradient(180deg, rgba(50,130,200,0.85) 0%, rgba(30,90,160,0.85) 100%)",
+                                color: "#f5f5f5",
+                                boxShadow: "0 0 6px rgba(21,101,192,0.25)",
+
+                                textShadow: "none",
                               }}
                             >
                               {palabraClave}
@@ -255,6 +267,7 @@ function Hero({ informationsRef, setVideoReady }) {
                     </Typography>
                   </motion.div>
                 </AnimatePresence>
+
 
               </Box>
 

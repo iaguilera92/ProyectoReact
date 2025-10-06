@@ -94,8 +94,8 @@
 .text {
   color: white;
   font-size: 4vw;
-  /* Escala con el tamaño de la pantalla */
   text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+  /* 👈 ESTA línea genera la sombra */
   font-weight: 1000 !important;
   line-height: 1 !important;
 }
