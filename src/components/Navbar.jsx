@@ -23,6 +23,7 @@ import { keyframes } from "@emotion/react";
 import ViewListIcon from '@mui/icons-material/ViewList';
 import GroupsIcon from '@mui/icons-material/Groups';
 import SlideshowIcon from '@mui/icons-material/Slideshow';
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import "@fontsource/poppins";
 import { useNavigate } from "react-router-dom";
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
@@ -85,7 +86,8 @@ const SocialButton = ({ href, Icon, bgColor, hoverStyles }) => (
 const menuItems = [
   { name: "Inicio", icon: <Home /> }, { name: "Servicios", icon: <ViewListIcon /> },
   { name: "Presentación", icon: <SlideshowIcon /> }, //{ name: "Catálogo", icon: <ViewCarouselIcon /> }
-  { name: "Nosotros", icon: <GroupsIcon /> }, { name: "Contacto", icon: <Mail /> }
+  { name: "Nosotros", icon: <GroupsIcon /> }, { name: "Contacto", icon: <Mail /> },
+  { name: "Suscribirse", icon: <NotificationsNoneIcon /> }
 ];
 
 function Navbar({ contactoRef, informationsRef, videoReady }) {
@@ -130,7 +132,8 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
       Servicios: () => navigate("/servicios"),
       Catálogo: () => navigate("/catalogo"),
       Nosotros: () => navigate("/nosotros"),
-      Presentación: handleOpenPDF
+      Presentación: handleOpenPDF,
+      Suscribirse: () => handleSuscribirse("Ignacio Aguilera", "plataformas.web.cl@gmail.com"),
     };
     actions[item.name]?.();
   };
@@ -148,6 +151,43 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
       setAnimacionMostrada(true);
     }
   }, [mostrarAnimacion]);
+
+  //PATPASS
+  const handleSuscribirse = async (nombre, email) => {
+    try {
+      const isLocal = window.location.hostname === "localhost";
+      const endpoint = isLocal
+        ? "http://localhost:8888/.netlify/functions/suscribirse"
+        : "/.netlify/functions/suscribirse";
+
+      const resp = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombre, email }),
+      });
+
+      const data = await resp.json();
+      console.log("Respuesta suscribirse OneClick:", data);
+
+      if (data.url && data.token) {
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = data.url;
+
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "TBK_TOKEN";
+        input.value = data.token;
+        form.appendChild(input);
+
+        document.body.appendChild(form);
+        form.submit();
+      }
+    } catch (err) {
+      console.error("Error en handleSuscribirse:", err);
+    }
+  };
+
 
   return (
     <>
@@ -196,48 +236,20 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
                         duration: 1,
                         delay: mostrarAnimacion ? 1 : 0,
                       }}
-                      onAnimationComplete={() => {
-                        // ✅ activar movimiento cuando termina de llegar
-                        const logo = document.querySelector(".logo-animado");
-                        if (logo) {
-                          logo.animate(
-                            [
-                              { transform: "rotate(0deg)" },
-                              { transform: "rotate(3deg)" },
-                              { transform: "rotate(-3deg)" },
-                              { transform: "rotate(2deg)" },
-                              { transform: "rotate(-2deg)" },
-                              { transform: "rotate(0deg)" },
-                            ],
-                            {
-                              duration: 1000, // 1s de movimiento total
-                              easing: "ease-in-out",
-                            }
-                          );
-                        }
-                      }}
                       style={{ cursor: "pointer" }}
                     >
                       <motion.img
                         src="/logo-plataformas-web.png"
                         alt="Logo"
-                        className="logo-animado"
                         onClick={LogoInicio}
                         initial={{ scale: 1 }}
                         animate={{ scale: isScrolled ? 0.8 : 1 }}
                         transition={{ duration: 0.3, ease: "easeOut" }}
-                        style={{
-                          height: "55px",
-                          marginTop: "10px",
-                          cursor: "pointer",
-                          transformOrigin: "center center", // 🔹 el eje de balanceo
-                        }}
+                        style={{ height: "55px", marginTop: "10px", cursor: "pointer" }}
                       />
                     </motion.div>
                   )}
                 </AnimatePresence>
-
-
 
               </Box>
 
