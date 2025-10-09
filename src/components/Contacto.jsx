@@ -223,7 +223,7 @@ function Contacto() {
 
             {!formSubmitted && (
               <Typography
-                variant={isMobile ? "h4" : "h4"}
+                variant={isMobile ? "h5" : "h4"}
                 align="left"
                 gutterBottom
                 sx={{

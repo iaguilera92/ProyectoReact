@@ -124,9 +124,18 @@ const Areas = () => {
         <Grid item xs={12} md={6}>
           <motion.div
             ref={refGrid}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: inViewGrid ? 1 : 1 }}
+            initial={{ opacity: 0, scale: 0.95, y: 40 }}
+            animate={{
+              opacity: inViewGrid ? 1 : 0,
+              scale: inViewGrid ? 1 : 0.95,
+              y: inViewGrid ? 0 : 40,
+            }}
+            transition={{
+              duration: 0.8,
+              ease: "easeOut",
+            }}
           >
+
             <Grid container spacing={4}>
               {data.map((item, index) => (
                 <Grid item xs={6} sm={6} md={6} key={index}>

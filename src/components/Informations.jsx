@@ -368,9 +368,9 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                               width: 75, // 👈 ligeramente más grande que el círculo base
                               height: 75,
                               borderRadius: "50%",
-                              border: "3px solid rgba(0, 191, 255, 0.7)", // 👈 borde más grueso y con color base
+                              border: "5px solid rgba(0, 191, 255, 0.7)", // 👈 borde más grueso y con color base
                               transform: "translate(-50%, -50%)",
-                              animation: itemInView ? "onda 2.8s ease-out infinite" : "none",
+                              animation: itemInView ? "onda 2.5s ease-out infinite" : "none",
                               zIndex: 1,
                             }}
                           />
