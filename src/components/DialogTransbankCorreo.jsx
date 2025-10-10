@@ -35,14 +35,23 @@ export default function DialogTransbankCorreo({
   useEffect(() => {
     let timer;
     if (open) {
+      // ✅ Reinicia todos los estados cuando el diálogo se abre
+      setLoading(false);
+      setError("");
+      setTouched(false);
       setShowContent(true);
       setExpanded(false);
+
+      // Retrasa la expansión del contenido
       timer = setTimeout(() => setExpanded(true), 800);
     } else {
+      // 🧹 Limpia el contenido al cerrarse
       setShowContent(false);
     }
+
     return () => clearTimeout(timer);
   }, [open]);
+
 
   useEffect(() => {
     let t;
