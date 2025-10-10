@@ -74,7 +74,7 @@ const Evidencias = () => {
             transition: { delay: 0.4 + i * 0.04 }, // puedes ajustar el tiempo
         }),
     };
-    const textoAnimado = "Nuestros trabajos";
+    const textoAnimado = "Trabajos recientes";
     const handleSnackbarClose = (_, reason) => {
         if (reason === 'clickaway') return;
         setSnackbarOpen(false);
@@ -370,8 +370,8 @@ const Evidencias = () => {
                                     style={{
                                         color: "#8B4513",
                                         fontWeight: "bold",
-                                        marginRight: "4px",
-                                        marginTop: "-4px",
+                                        marginRight: "2px",
+                                        marginTop: "-1px",
                                         fontSize: "0.9em",
                                         lineHeight: 1,
                                         display: "inline-block",

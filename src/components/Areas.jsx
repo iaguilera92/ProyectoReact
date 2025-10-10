@@ -12,7 +12,7 @@ const data = [
   { count: 9, text: "Años de Experiencia como desarrolladores", image: "Experience.mp4" },
   { count: 7, text: "Tazas de café en el día ☕", image: "Cafe.mp4" },
 ];
-const images = ["servicios.webp", "computador.webp"];
+
 const letterVariants = {
   hidden: { opacity: 0, x: -20 },
   visible: (i) => ({
@@ -21,9 +21,8 @@ const letterVariants = {
     transition: { delay: 0.4 + i * 0.04 }, // puedes ajustar el tiempo
   }),
 };
-const textoAnimado = "Contratarás con nosotros";
+const textoAnimado = "Tecnología que integramos";
 
-// 💚 Animación real de pulsación (latido expansivo)
 const pulse = keyframes`
   0% {
     transform: scale(1);
@@ -132,17 +131,31 @@ function OrbitSystem({ isMobile, orbitInViewRef, orbitInView, controls }) {
           ml: isMobile ? 5 : 6,
         }}
       >
-        <GreenDot />
+        {/* 💚 Animación del GreenDot controlada por orbitInView */}
+        <motion.div
+          initial={{ scale: 0, opacity: 0 }}
+          animate={
+            orbitInView
+              ? { scale: 1, opacity: 1 }
+              : { scale: 0, opacity: 0 }
+          }
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+        >
+          <GreenDot />
+        </motion.div>
+
         <Typography
           variant="h4"
           component="div"
           sx={{
             fontFamily: '"Poppins", sans-serif',
             fontSize: { xs: "1.2rem", md: "1.8rem" },
-            letterSpacing: "1px",
+            letterSpacing: "0.5px",
             color: "white",
             display: "inline-flex",
             flexWrap: "wrap",
+            overflow: "hidden",
           }}
         >
           {textoAnimado.split("").map((char, i) => (
@@ -151,7 +164,7 @@ function OrbitSystem({ isMobile, orbitInViewRef, orbitInView, controls }) {
               custom={i}
               variants={letterVariants}
               initial="hidden"
-              animate={orbitInView ? "visible" : "hidden"} // ✅ usar el booleano correcto
+              animate={orbitInView ? "visible" : "hidden"}
               style={{ display: "inline-block", whiteSpace: "pre" }}
             >
               {char}
@@ -159,6 +172,7 @@ function OrbitSystem({ isMobile, orbitInViewRef, orbitInView, controls }) {
           ))}
         </Typography>
       </Box>
+
 
       <Box
         sx={{
@@ -349,7 +363,7 @@ const Areas = () => {
   const [scrollY, setScrollY] = useState(0);
   const [hasAnimated, setHasAnimated] = useState(false);
   const videosRef = useRef([]);
-  const { ref: refGrid, inView: inViewGrid } = useInView({ threshold: 0.3, triggerOnce: false });
+  const { ref: refGrid, inView: inViewGrid } = useInView({ threshold: 0.25, triggerOnce: false });
   const [hasEntered, setHasEntered] = useState(false);
   const controls = useAnimation();
   const { ref: orbitInViewRef, inView: orbitInView } = useInView({ threshold: 0.25, triggerOnce: false, });
@@ -404,13 +418,6 @@ const Areas = () => {
     ));
   };
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImage((prevImage) => (prevImage + 1) % images.length); // Cambia la imagen cada vez
-    }, 5000); // Cambia cada 5 segundos
-
-    return () => clearInterval(interval); // Limpia el intervalo cuando el componente se desmonta
-  }, []);
 
   useEffect(() => {
     if (isMobile) {
@@ -464,7 +471,7 @@ const Areas = () => {
         minHeight: isMobile ? "85vh" : "auto",
         paddingTop: "10px !important",
         padding: { xs: 4, md: 16 },
-        paddingBottom: { xs: 14, md: 5 },
+        paddingBottom: { xs: 16, md: 5 },
         marginTop: "-100px",
       }}
     >

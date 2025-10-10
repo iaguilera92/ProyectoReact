@@ -53,7 +53,7 @@ export default function DialogTransbankCorreo({
     return () => clearTimeout(t);
   }, [open]);
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     setTouched(true);
 
     if (!email) {
@@ -67,17 +67,22 @@ export default function DialogTransbankCorreo({
       return;
     }
 
+    // ✅ Correo válido
     setError("");
     setLoading(true);
 
+    // 👇 Cierra el contenido con animación
+    setShowContent(false);
+
     setTimeout(async () => {
       try {
-        // 👇 guardar primero el email en sessionStorage
         sessionStorage.setItem("emailReserva", email);
-
         await onConfirm?.(email);
-        onClose();
-      } finally {
+        // ❌ No volvemos a setLoading(false) — dejamos el estado activo hasta que Webpay redirija
+      } catch (error) {
+        console.error("Error en onConfirm:", error);
+        setError("Ocurrió un error al iniciar la reserva.");
+        setShowContent(true); // ✅ vuelve a mostrar contenido si hubo error
         setLoading(false);
       }
     }, 1000);
@@ -103,6 +108,7 @@ export default function DialogTransbankCorreo({
           border: "1px solid rgba(106,27,154,.35)",
           boxShadow: "0 24px 64px rgba(0,0,0,.45)",
           overflow: "hidden",
+          background: "linear-gradient(180deg,#F3E5F5 0%,#EDE7F6 100%) !important", // ✅ fondo constante
         },
       }}
     >
@@ -159,13 +165,18 @@ export default function DialogTransbankCorreo({
         <IconButton
           aria-label="Cerrar"
           onClick={onClose}
+          disabled={loading} // 🔒 bloquea mientras loading = true
           sx={{
             position: "absolute",
             top: 8,
             right: 8,
-            color: "#FFF",
-            zIndex: 3, // 👈 encima del overlay
-            "&:hover": { backgroundColor: "rgba(255,255,255,.15)" },
+            color: loading ? "rgba(255,255,255,0.4)" : "#FFF",
+            zIndex: 4,
+            cursor: loading ? "not-allowed" : "pointer",
+            pointerEvents: loading ? "none" : "auto", // 🔒 evita clics
+            "&:hover": {
+              backgroundColor: loading ? "transparent" : "rgba(255,255,255,.15)",
+            },
 
             // animación solo al montar
             animation: open ? "spinTwice 0.6s ease-in-out" : "none",
@@ -181,15 +192,17 @@ export default function DialogTransbankCorreo({
         {/* Título con bounce en el ícono */}
         <Typography
           variant="h6"
-          component="div"   // 👈 ya no necesitas motion.div
+          component="div"
           sx={{
             display: "inline-flex",
             alignItems: "center",
-            gap: 1.2,
+            gap: 0.5,
             fontWeight: 800,
             fontFamily: "'Poppins', sans-serif",
             color: "#fff",
-            fontSize: { xs: "1.0rem", sm: "1.4rem" },
+            fontSize: loading
+              ? { xs: "0.85rem", sm: "1.15rem" }
+              : { xs: "1.0rem", sm: "1.4rem" },
             px: 3,
             py: 0.5,
             mt: 1.5,
@@ -201,42 +214,80 @@ export default function DialogTransbankCorreo({
           }}
         >
           <motion.span
-            initial={{ scale: 0.8 }}
-            animate={{ scale: 1 }}
+            key={loading ? "webpay" : "cart"} // 💫 re-render suave
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
           >
-            🛒
+            {loading ? "💳" : "🛒"}
           </motion.span>
-          Reserva tu Sitio Web
+
+          {loading ? "Redirigiendo a Webpay..." : "Reserva tu Sitio Web"}
         </Typography>
 
       </DialogTitle>
 
       {/* Contenido */}
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {showContent && (
           <motion.div
             key="dialogContent"
-            initial={false}
-            animate={
-              expanded ? { opacity: 1, height: "auto" } : { opacity: 0, height: 0 }
-            }
-            transition={{ duration: 0.6, ease: "easeInOut" }}
-            style={{ overflow: "hidden" }}
+            initial={{ opacity: 0, height: 0, paddingTop: 0 }}
+            animate={{
+              opacity: 1,
+              height: "auto",
+              transition: {
+                delay: 0.4, // leve retardo al aparecer
+                duration: 1.0, // apertura lenta y elegante
+                ease: [0.25, 0.1, 0.25, 1],
+              },
+            }}
+            exit={{
+              opacity: 0,
+              height: 0,
+              paddingTop: 0,
+              transition: {
+                duration: 1.2, // cierre lento
+                ease: [0.25, 0.1, 0.25, 1],
+              },
+            }}
+            style={{
+              overflow: "hidden",
+              transformOrigin: "top center",
+              background: "linear-gradient(180deg,#F3E5F5 0%,#EDE7F6 100%)",
+            }}
           >
+
             <DialogContent
               sx={{
+                position: "relative",
                 background: "linear-gradient(180deg,#F3E5F5 0%,#EDE7F6 100%)",
-                py: 2,
                 pb: 0,
                 px: { xs: 2, sm: 4 },
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
+                borderTop: "none",
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: 8,
+                  background: "linear-gradient(180deg,#F3E5F5 0%,#EDE7F6 100%)",
+                  pointerEvents: "none",
+                },
               }}
             >
               <Typography
-                sx={{ mb: 2, textAlign: "center", fontWeight: 500, fontSize: { xs: "0.7rem", sm: "1rem" }, }}
+                sx={{
+                  mb: 2,
+                  textAlign: "center",
+                  fontWeight: 500,
+                  fontSize: { xs: "0.7rem", sm: "1rem" },
+                }}
               >
                 ✨Tu correo será usado para confirmar tu compra.
               </Typography>
@@ -389,13 +440,22 @@ export default function DialogTransbankCorreo({
           borderTop: "1px solid rgba(106,27,154,.35)",
         }}
       >
+        {/* Botón Cancelar */}
         <Button
           onClick={onClose}
           aria-label="Cancelar reserva"
-          sx={{ color: "#4A148C", fontWeight: 700 }}
+          disabled={loading} // 🔒 bloquea cuando loading = true
+          sx={{
+            color: loading ? "#9c9c9c" : "#4A148C",
+            fontWeight: 700,
+            textTransform: "none",
+            transition: "all 0.3s ease",
+            cursor: loading ? "not-allowed" : "pointer",
+          }}
         >
-          Cancelar
+          {loading ? "Procesando..." : "Cancelar"}
         </Button>
+        {/* Botón Confirmar */}
         <Button
           variant="contained"
           onClick={handleConfirm}
@@ -410,7 +470,7 @@ export default function DialogTransbankCorreo({
             background: "linear-gradient(90deg,#6A1B9A,#8E24AA)",
             boxShadow: armed ? "0 6px 18px rgba(106,27,154,.35)" : "none",
             transition: "all 0.3s ease",
-            fontSize: { xs: "0.75rem", sm: "0.9rem" }, // 👈 más chico en mobile
+            fontSize: { xs: "0.75rem", sm: "0.9rem" },
             "&:hover": {
               background: "linear-gradient(90deg,#7B1FA2,#9C27B0)",
             },
