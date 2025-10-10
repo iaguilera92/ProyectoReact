@@ -14,7 +14,7 @@ import {
   useTheme,
   useMediaQuery, Dialog, DialogTitle, DialogContent
 } from "@mui/material";
-import { Menu as MenuIcon, Home, Mail, Close } from "@mui/icons-material"; // Agregamos Close para la "X"
+import { WhatsApp as WhatsAppIcon, Menu as MenuIcon, Home, Mail, Close } from "@mui/icons-material"; // Agregamos Close para la "X"
 import InstagramIcon from "@mui/icons-material/Instagram";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
@@ -98,7 +98,18 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
   const mostrarAnimacion = videoReady || (location.pathname !== '/' && location.pathname !== '');
   const [animacionMostrada, setAnimacionMostrada] = useState(false);
   const mostrarLogo = mostrarAnimacion || animacionMostrada;
+  const [scrollY, setScrollY] = useState(0);
+  const maxScroll = 80; // hasta dónde se desvanece
+  const translateY = Math.min(scrollY, maxScroll);
+  const [mostrarTexto, setMostrarTexto] = useState(true);
 
+  // ⏱️ ALERTA PRINCIPAL
+  useEffect(() => {
+    const intervalo = setInterval(() => {
+      setMostrarTexto((prev) => !prev);
+    }, 4000);
+    return () => clearInterval(intervalo);
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -191,6 +202,119 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
 
   return (
     <>
+      <motion.div
+        style={{
+          transform: `translateY(-${translateY}px)`,
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          zIndex: 1200,
+        }}
+      >
+        <Box
+          onClick={() => {
+            window.open("https://api.whatsapp.com/send?phone=56946873014", "_blank");
+          }}
+          sx={{
+            background: "linear-gradient(135deg, #ff3b3b, #b71c1c)",
+            boxShadow: "0px 3px 10px rgba(183,28,28,0.5)",
+            height: { xs: 30, sm: 32 },
+            px: 2,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            overflow: "hidden",
+            boxShadow: scrollY < maxScroll
+              ? "0px 2px 10px rgba(255,0,0,0.4)"
+              : "none",
+            transition: "box-shadow 0.3s ease, transform 0.2s ease",
+            cursor: "pointer",
+            "&:hover": {
+              transform: "scale(1.05)",
+              boxShadow: "0px 4px 14px rgba(255,0,0,0.6)",
+              background: "linear-gradient(135deg, hsl(0deg 90% 60%), hsl(0deg 80% 45%))",
+            },
+          }}
+        >
+          <AnimatePresence mode="wait">
+            {(mostrarAnimacion || animacionMostrada) && (
+              <motion.div
+                key={mostrarTexto ? "llamanos" : "telefono"}
+                initial={{ x: 100, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: -100, opacity: 0 }}
+                transition={{ duration: 0.4, ease: "easeInOut" }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  color: "white",
+                  fontWeight: 600,
+                  fontFamily: "Poppins, sans-serif",
+                  fontSize: "0.95rem",
+                  lineHeight: "1",
+                }}
+              >
+                <span
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    fontWeight: "bold",
+                    color: "white",
+                    textShadow: `
+        -1px -1px 0 #000,  
+         1px -1px 0 #000,
+        -1px  1px 0 #000,
+         1px  1px 0 #000
+      `,
+                  }}
+                >
+                  {/* Ícono fijo */}
+                  {mostrarTexto ? (
+                    <img
+                      src="/logo-sitio-web.webp"
+                      alt="Bandera"
+                      style={{
+                        width: "18px",
+                        height: "auto",
+                        borderRadius: "2px",
+                        display: "inline-block",
+                      }}
+                    />
+                  ) : (
+                    <IconButton
+                      sx={{
+                        width: 20,
+                        height: 20,
+                        p: 0,
+                        backgroundColor: "#25d366",
+                        color: "#FFF",
+                        borderRadius: "50%",
+                        boxShadow: "2px 2px 3px #999",
+                        "&:hover": { backgroundColor: "#1ebe5d" },
+                        zIndex: 101,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <WhatsAppIcon sx={{ fontSize: 14 }} />
+                    </IconButton>
+                  )}
+
+                  {/* Texto fijo */}
+                  <span>
+                    {mostrarTexto ? "¡QUEDAN 5 CUPOS!" : "¡SOLICITA TU WEB!"}
+                  </span>
+                </span>
+              </motion.div>
+
+            )}
+          </AnimatePresence>
+        </Box>
+      </motion.div >
       <Box
         sx={{
           position: "fixed",
@@ -200,7 +324,7 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
           zIndex: 1100,
           borderRadius: "50px",
           overflow: "hidden",
-          marginTop: "15px",
+          marginTop: `${Math.max(40 - translateY, 15)}px`,
         }}
       >
         <AppBar
@@ -256,29 +380,34 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
               <Box sx={{ flexGrow: 1 }} />
 
               <Box sx={{ display: { xs: "none", md: "flex" }, gap: 1 }}>
-                {menuItems.map((item, index) => (
-                  <Button
-                    key={item.name}
-                    component={motion.button}
-                    custom={index}
-                    initial="hidden"
-                    animate="visible"
-                    variants={menuItemVariants}
-                    onClick={() => handleClick(item)}
-                    sx={{
-                      color: "white",
-                      fontFamily: "Poppins, sans-serif",
-                      padding: "10px 14px",
-                      background: "transparent",
-                      border: "none",
-                      "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" }
-                    }}
-                  >
-                    {item.name}
-                  </Button>
-                ))}
-
+                {menuItems
+                  .filter((item) => item.name !== "Suscribirse") // 🚫 oculta el ítem
+                  .map((item, index) => (
+                    <Button
+                      key={item.name}
+                      component={motion.button}
+                      custom={index}
+                      initial="hidden"
+                      animate="visible"
+                      variants={menuItemVariants}
+                      onClick={() => handleClick(item)}
+                      sx={{
+                        color: "#fff",
+                        fontFamily: "Poppins, sans-serif",
+                        padding: "10px 14px",
+                        background: "transparent",
+                        border: "none",
+                        borderRadius: "6px",
+                        cursor: "pointer",
+                        "&:hover": { backgroundColor: "rgba(255,255,255,0.1)" },
+                        transition: "all 0.3s ease",
+                      }}
+                    >
+                      {item.name}
+                    </Button>
+                  ))}
               </Box>
+
 
               <IconButton color="inherit" edge="end" onClick={() => setOpen(!open)} sx={{ display: { xs: "block", md: "none" } }}>
                 <motion.div
@@ -344,40 +473,73 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
                 variants={listVariants}
                 style={{ listStyle: "none", padding: 0, margin: 0, width: "100%" }}
               >
-                {menuItems.map((item, index) => (
-                  <ListItem
-                    key={item.name}
-                    component={motion.li}
-                    variants={itemVariants}
-                    disablePadding
-                  >
-                    <ListItemButton
-                      onClick={() => handleClick(item)}
-                      sx={{
-                        px: 2,
-                        py: 0.5,
-                        borderBottom: "1px solid rgba(255,255,255,0.1)",
-                        borderTop: index === 0 ? "1px solid rgba(255,255,255,0.2)" : "none",
-                        "&:hover": { backgroundColor: "rgba(255,255,255,0.05)" },
-                      }}
+                {menuItems.map((item, index) => {
+                  const isDisabled = item.name === "Suscribirse"; // 🔒 detecta el ítem a bloquear
+
+                  return (
+                    <ListItem
+                      key={item.name}
+                      component={motion.li}
+                      variants={itemVariants}
+                      disablePadding
                     >
-                      <ListItemText
-                        primary={
-                          <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                            <Box sx={{ color: "#7ab7ff", fontSize: "1.7rem", marginBottom: "-5px" }}>
-                              {item.icon}
+                      <ListItemButton
+                        onClick={() => !isDisabled && handleClick(item)} // 🚫 no hace nada si está bloqueado
+                        disabled={isDisabled} // desactiva visualmente
+                        sx={{
+                          px: 2,
+                          py: 0.5,
+                          borderBottom: "1px solid rgba(255,255,255,0.1)",
+                          borderTop:
+                            index === 0 ? "1px solid rgba(255,255,255,0.2)" : "none",
+                          backgroundColor: isDisabled
+                            ? "rgba(255,0,0,0.1)" // 🔴 leve fondo rojo desactivado
+                            : "transparent",
+                          "&:hover": {
+                            backgroundColor: isDisabled
+                              ? "rgba(255,0,0,0.15)" // hover rojo apagado
+                              : "rgba(255,255,255,0.05)",
+                            cursor: isDisabled ? "not-allowed" : "pointer",
+                          },
+                          opacity: isDisabled ? 0.6 : 1,
+                          pointerEvents: isDisabled ? "none" : "auto",
+                        }}
+                      >
+                        <ListItemText
+                          primary={
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "10px",
+                              }}
+                            >
+                              <Box
+                                sx={{
+                                  color: isDisabled ? "#ff5252" : "#7ab7ff", // rojo si está bloqueado
+                                  fontSize: "1.7rem",
+                                  marginBottom: "-5px",
+                                }}
+                              >
+                                {item.icon}
+                              </Box>
+                              <span
+                                style={{
+                                  color: isDisabled ? "#ffb3b3" : "#fff",
+                                  fontWeight: "500",
+                                  fontSize: "1.05rem",
+                                }}
+                              >
+                                {item.name}
+                                {isDisabled && " (Próximamente)"} {/* 👈 mensaje opcional */}
+                              </span>
                             </Box>
-                            <span style={{ color: "#fff", fontWeight: "500", fontSize: "1.05rem" }}>
-                              {item.name}
-                            </span>
-                          </Box>
-                        }
-                      />
-                    </ListItemButton>
-                  </ListItem>
-                ))}
-
-
+                          }
+                        />
+                      </ListItemButton>
+                    </ListItem>
+                  );
+                })}
               </motion.ul>
             )}
           </AnimatePresence>
