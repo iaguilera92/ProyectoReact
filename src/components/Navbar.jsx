@@ -271,44 +271,44 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
       `,
                   }}
                 >
-                  {/* Ícono fijo */}
-                  {mostrarTexto ? (
-                    <img
-                      src="/logo-sitio-web.webp"
-                      alt="Bandera"
-                      style={{
-                        width: "18px",
-                        height: "auto",
-                        borderRadius: "2px",
-                        display: "inline-block",
-                      }}
-                    />
-                  ) : (
-                    <IconButton
-                      sx={{
-                        width: 20,
-                        height: 20,
-                        p: 0,
-                        backgroundColor: "#25d366",
-                        color: "#FFF",
-                        borderRadius: "50%",
-                        boxShadow: "2px 2px 3px #999",
-                        "&:hover": { backgroundColor: "#1ebe5d" },
-                        zIndex: 101,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <WhatsAppIcon sx={{ fontSize: 14 }} />
-                    </IconButton>
-                  )}
 
                   {/* Texto fijo */}
                   <span>
                     {mostrarTexto ? "¡QUEDAN 5 CUPOS!" : "¡SOLICITA TU WEB!"}
                   </span>
                 </span>
+                {/* Ícono fijo */}
+                {mostrarTexto ? (
+                  <img
+                    src="/logo-sitio-web.webp"
+                    alt="Bandera"
+                    style={{
+                      width: "18px",
+                      height: "auto",
+                      borderRadius: "2px",
+                      display: "inline-block",
+                    }}
+                  />
+                ) : (
+                  <IconButton
+                    sx={{
+                      width: 20,
+                      height: 20,
+                      p: 0,
+                      backgroundColor: "#25d366",
+                      color: "#FFF",
+                      borderRadius: "50%",
+                      boxShadow: "2px 2px 3px #999",
+                      "&:hover": { backgroundColor: "#1ebe5d" },
+                      zIndex: 101,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <WhatsAppIcon sx={{ fontSize: 14 }} />
+                  </IconButton>
+                )}
               </motion.div>
 
             )}

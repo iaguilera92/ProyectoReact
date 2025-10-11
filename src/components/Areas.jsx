@@ -107,12 +107,12 @@ function OrbitSystem({ isMobile, orbitInViewRef, orbitInView, controls }) {
   const imgs = [
     "logos-productos/aws.png",
     "logos-productos/SSL.png",
-    "logos-productos/google-ads.jpg",
     "logos-productos/webpay.png",
+    "logos-productos/google-ads.jpg",
     "logos-productos/google-analytics.png",
     "logos-productos/SEO.png",
-    "logos-productos/SQL.png",
-    "logos-productos/correos.png",
+    "logos-productos/SQL.jpg",
+    "logos-productos/correos.jpg",
     "logos-productos/hosting.jpg", // central
   ];
 
@@ -472,7 +472,9 @@ const Areas = () => {
         paddingTop: "10px !important",
         padding: { xs: 4, md: 16 },
         paddingBottom: { xs: 16, md: 5 },
-        marginTop: "-100px",
+        zIndex: 0, // 👈 se mantiene por debajo del borde del componente anterior
+        mt: "-90px", // 👈 puedes ajustar entre -80px y -120px para encaje perfecto
+        overflow: "visible",  // 👈 permite que el borde de arriba se vea
       }}
     >
       <Grid

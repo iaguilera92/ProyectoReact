@@ -16,7 +16,7 @@ const letterVariants = {
         transition: { delay: 0.4 + i * 0.04 }, // puedes ajustar el tiempo
     }),
 };
-const textoAnimado = "Nuestros trabajos";
+const textoAnimado = "Trabajos recientes";
 const evidencias = [
     {
         url: "https://www.ivelpink.cl",
@@ -237,8 +237,8 @@ const SeccionDestacada = () => {
                                     color: "#8B4513",           // Café
                                     fontWeight: "bold",
                                     marginRight: "1px",         // 🔸 Más pegado a la 'N'
-                                    marginTop: "-4px",
-                                    fontSize: "0.9em",          // 🔸 Un poco más bajo que el texto
+                                    marginTop: "-6px",
+                                    fontSize: "0.8em",          // 🔸 Un poco más bajo que el texto
                                     lineHeight: 1,              // 🔸 Alineación vertical más precisa
                                     display: "inline-block",
                                     transform: "translateY(2px)" // 🔸 Ligero ajuste vertical si lo ves muy arriba/abajo

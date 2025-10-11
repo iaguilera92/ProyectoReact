@@ -140,22 +140,68 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
     <Box
       sx={{
         position: "relative",
-        zIndex: 10,
-        backgroundImage: 'url(fondo-blizz.avif)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
+        zIndex: 3,
         py: isMobile ? 8 : 3,
         pt: 3,
-        marginTop: "0",
-        marginBottom: "-10px",
         color: "white",
-        overflow: 'hidden',
-        borderBottomLeftRadius: isMobile ? '90px' : '120px',
-        borderBottomRightRadius: isMobile ? '90px' : '120px',
+
+        // 🌌 Fondo cuadriculado tipo "cyber-grid"
+        backgroundImage: `
+      linear-gradient(rgba(0, 212, 255, 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 212, 255, 0.1) 1px, transparent 1px)
+    `,
+        backgroundSize: "50px 50px",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+        backgroundColor: "rgba(6,31,53,0.95)", // base oscura para contraste
+
+        borderBottomLeftRadius: isMobile ? "90px" : "120px",
+        borderBottomRightRadius: isMobile ? "90px" : "120px",
+        overflow: "hidden",
+        isolation: "isolate",
+
+        // 💎 Contenido sobre el fondo
+        "& > *": {
+          position: "relative",
+          zIndex: 3,
+        },
+
+        // 🌈 Borde inferior con degradado y brillo
+        "&::after": {
+          content: '""',
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: isMobile ? "140px" : "160px",
+          borderBottomLeftRadius: isMobile ? "90px" : "120px",
+          borderBottomRightRadius: isMobile ? "90px" : "120px",
+          borderBottom: "3px solid rgba(0,255,255,0.85)",
+
+          // ✨ Degradado para fundirse con el fondo
+          background:
+            "linear-gradient(to bottom, rgba(6,31,53,0) 0%, rgba(0,40,80,0.9) 100%)",
+          zIndex: 2,
+          pointerEvents: "none",
+        },
+
+        // 🌫️ Suaviza el borde exterior
+        "&::before": {
+          content: '""',
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: "120px",
+          borderBottomLeftRadius: isMobile ? "90px" : "120px",
+          borderBottomRightRadius: isMobile ? "90px" : "120px",
+          background:
+            "linear-gradient(to bottom, rgba(6,31,53,0) 0%, rgba(6,31,53,0.85) 100%)",
+          zIndex: 1,
+          pointerEvents: "none",
+        },
       }}
     >
-
       <Container sx={{ textAlign: "center", color: "white", maxWidth: "1400px !important", paddingLeft: isMobile ? "0" : "24px", paddingRight: isMobile ? "0" : "24px" }}>
 
         <Box sx={{ position: "relative", textAlign: "center", mb: 2 }} ref={ref}>
@@ -347,7 +393,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                             height: 70,
                             borderRadius: "50%",
                             border: "2px solid white",
-                            background: "radial-gradient(circle, #0a2b4d 60%, #061a2e 100%)",
+                            background: "rgb(6 31 53)",
                             boxShadow: "0 0 15px rgba(255,255,255,0.25)",
                             display: "flex",
                             alignItems: "center",
@@ -431,7 +477,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
                   width: showPopularBadge ? "100%" : "0%", // 👈 cambiamos solo el width dinámico
                   height: "2px",
                   borderRadius: "3px",
-                  background: "linear-gradient(90deg, #FF9800, #F57C00)",
+                  background: "linear-gradient(90deg, #7B1FA2, #9C27B0)",
                   transition: "width 0.6s ease-out",
                 },
               }}

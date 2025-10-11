@@ -119,14 +119,14 @@ function Features({ videoReady }) {
   return (
     <Box
       sx={{
-        backgroundImage: 'url(fondo-blizz.avif)',
-        backgroundSize: 'cover',  // Asegura que la imagen cubra todo el contenedor
-        backgroundPosition: 'center',  // Centra la imagen en el fondo
-        backgroundAttachment: 'fixed',  // Asegura que la imagen de fondo no se mueva al hacer scroll
+        position: "relative",
         py: 0,
-        paddingBottom: "15px",
-        color: "white",  // Ajusta el color del texto para que sea visible sobre el fondo
-        overflowY: 'visible',
+        pb: "15px",
+        color: "white",
+        overflowY: "visible",
+        backgroundColor: "transparent !important", // 👈 fuerza transparencia
+        backdropFilter: "none !important",         // 👈 evita filtros accidentales
+        zIndex: 2,                                 // 👈 encima del glow
       }}
     >
       {/* 🌧️ CASCADA MATRIX */}
@@ -176,7 +176,16 @@ function Features({ videoReady }) {
       </Box>
 
 
-      <Container sx={{ py: 0, maxWidth: "1500px !important", overflow: 'hidden', }}>
+      <Container
+        sx={{
+          py: 0,
+          maxWidth: "1500px !important",
+          overflow: "visible",
+          backgroundColor: "transparent !important", // ✅ fondo transparente
+          backdropFilter: "none !important",         // ✅ sin blur
+          zIndex: 3,
+        }}
+      >
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={hasAnimated ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }

@@ -254,9 +254,10 @@ function App() {
           </Suspense>
         )}
 
-        {/* Transición entre páginas */}
+        {/* 🧭 Transición entre rutas */}
         <Box sx={{ position: "relative" }}>
-          <Outlet context={{ showApp, informationsRef }} />
+          <Outlet context={{ showApp, informationsRef, triggerInformations, setHasSeenInformations }} />
+
           {isFading && (
             <motion.div
               initial={{ opacity: 0 }}
@@ -267,27 +268,16 @@ function App() {
                 position: "fixed",
                 inset: 0,
                 background: "#061F35",
-                zIndex: 2000
+                zIndex: 2000,
               }}
             />
           )}
         </Box>
 
 
-
         {/* Secciones visibles solo en la página de inicio */}
         {["/", ""].includes(location.pathname) && (
           <>
-            <Suspense fallback={null}>
-              <div ref={informationsRef}>
-                <Informations
-                  informationsRef={informationsRef}
-                  triggerInformations={triggerInformations}
-                  setHasSeenInformations={setHasSeenInformations}
-                />
-              </div>
-            </Suspense>
-
             <Suspense fallback={null}>
               <Box id="areas-section">
                 <Areas />
