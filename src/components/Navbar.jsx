@@ -202,119 +202,124 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
 
   return (
     <>
-      <motion.div
-        style={{
-          transform: `translateY(-${translateY}px)`,
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100%",
-          zIndex: 1200,
-        }}
-      >
-        <Box
-          onClick={() => {
-            window.open("https://api.whatsapp.com/send?phone=56946873014", "_blank");
-          }}
-          sx={{
-            background: "linear-gradient(135deg, #ff3b3b, #b71c1c)",
-            boxShadow: "0px 3px 10px rgba(183,28,28,0.5)",
-            height: { xs: 30, sm: 32 },
-            px: 2,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            overflow: "hidden",
-            boxShadow: scrollY < maxScroll
-              ? "0px 2px 10px rgba(255,0,0,0.4)"
-              : "none",
-            transition: "box-shadow 0.3s ease, transform 0.2s ease",
-            cursor: "pointer",
-            "&:hover": {
-              transform: "scale(1.05)",
-              boxShadow: "0px 4px 14px rgba(255,0,0,0.6)",
-              background: "linear-gradient(135deg, hsl(0deg 90% 60%), hsl(0deg 80% 45%))",
-            },
+      {location.pathname === "/" && (
+        <motion.div
+          style={{
+            transform: `translateY(-${translateY}px)`,
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            zIndex: 1200,
           }}
         >
-          <AnimatePresence mode="wait">
-            {(mostrarAnimacion || animacionMostrada) && (
-              <motion.div
-                key={mostrarTexto ? "llamanos" : "telefono"}
-                initial={{ x: 100, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: -100, opacity: 0 }}
-                transition={{ duration: 0.4, ease: "easeInOut" }}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  color: "white",
-                  fontWeight: 600,
-                  fontFamily: "Poppins, sans-serif",
-                  fontSize: "0.95rem",
-                  lineHeight: "1",
-                }}
-              >
-                <span
+          <Box
+            onClick={() => {
+              window.open("https://api.whatsapp.com/send?phone=56946873014", "_blank");
+            }}
+            sx={{
+              background: "linear-gradient(135deg, #ff3b3b, #b71c1c)",
+              boxShadow: "0px 3px 10px rgba(183,28,28,0.5)",
+              height: { xs: 30, sm: 32 },
+              px: 2,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              overflow: "hidden",
+              boxShadow:
+                scrollY < maxScroll
+                  ? "0px 2px 10px rgba(255,0,0,0.4)"
+                  : "none",
+              transition: "box-shadow 0.3s ease, transform 0.2s ease",
+              cursor: "pointer",
+              "&:hover": {
+                transform: "scale(1.05)",
+                boxShadow: "0px 4px 14px rgba(255,0,0,0.6)",
+                background:
+                  "linear-gradient(135deg, hsl(0deg 90% 60%), hsl(0deg 80% 45%))",
+              },
+            }}
+          >
+            <AnimatePresence mode="wait">
+              {(mostrarAnimacion || animacionMostrada) && (
+                <motion.div
+                  key={mostrarTexto ? "llamanos" : "telefono"}
+                  initial={{ x: 100, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  exit={{ x: -100, opacity: 0 }}
+                  transition={{ duration: 0.4, ease: "easeInOut" }}
                   style={{
                     display: "flex",
                     alignItems: "center",
                     gap: "6px",
-                    fontWeight: "bold",
                     color: "white",
-                    textShadow: `
-        -1px -1px 0 #000,  
-         1px -1px 0 #000,
-        -1px  1px 0 #000,
-         1px  1px 0 #000
-      `,
+                    fontWeight: 600,
+                    fontFamily: "Poppins, sans-serif",
+                    fontSize: "0.95rem",
+                    lineHeight: "1",
                   }}
                 >
-
-                  {/* Texto fijo */}
-                  <span>
-                    {mostrarTexto ? "¡QUEDAN 5 CUPOS!" : "¡SOLICITA TU WEB!"}
-                  </span>
-                </span>
-                {/* Ícono fijo */}
-                {mostrarTexto ? (
-                  <img
-                    src="/logo-sitio-web.webp"
-                    alt="Bandera"
+                  <span
                     style={{
-                      width: "18px",
-                      height: "auto",
-                      borderRadius: "2px",
-                      display: "inline-block",
-                    }}
-                  />
-                ) : (
-                  <IconButton
-                    sx={{
-                      width: 20,
-                      height: 20,
-                      p: 0,
-                      backgroundColor: "#25d366",
-                      color: "#FFF",
-                      borderRadius: "50%",
-                      boxShadow: "2px 2px 3px #999",
-                      "&:hover": { backgroundColor: "#1ebe5d" },
-                      zIndex: 101,
                       display: "flex",
                       alignItems: "center",
-                      justifyContent: "center",
+                      gap: "6px",
+                      fontWeight: "bold",
+                      color: "white",
+                      textShadow: `
+                  -1px -1px 0 #000,  
+                   1px -1px 0 #000,
+                  -1px  1px 0 #000,
+                   1px  1px 0 #000
+                `,
                     }}
                   >
-                    <WhatsAppIcon sx={{ fontSize: 14 }} />
-                  </IconButton>
-                )}
-              </motion.div>
+                    <span>
+                      {mostrarTexto ? "¡QUEDAN 5 CUPOS!" : "¡SOLICITA TU WEB!"}
+                    </span>
+                  </span>
 
-            )}
-          </AnimatePresence>
-        </Box>
-      </motion.div >
+                  {mostrarTexto ? (
+                    <img
+                      src="/logo-sitio-web.webp"
+                      alt="Bandera"
+                      style={{
+                        width: "18px",
+                        height: "auto",
+                        borderRadius: "2px",
+                        display: "inline-block",
+                      }}
+                    />
+                  ) : (
+                    <IconButton
+                      sx={{
+                        width: 20,
+                        height: 20,
+                        p: 0,
+                        backgroundColor: "#25d366",
+                        color: "#FFF",
+                        borderRadius: "50%",
+                        boxShadow: "2px 2px 3px #999",
+                        "&:hover": { backgroundColor: "#1ebe5d" },
+                        zIndex: 101,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <WhatsAppIcon sx={{ fontSize: 14 }} />
+                    </IconButton>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </Box>
+        </motion.div>
+      )}
+
+
+
+
       <Box
         sx={{
           position: "fixed",

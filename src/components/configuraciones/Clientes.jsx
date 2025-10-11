@@ -6,12 +6,17 @@ import MenuInferior from './MenuInferior';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import GroupIcon from "@mui/icons-material/Group";
 import emailjs from "@emailjs/browser";
-import { FormControl, InputLabel, Select, MenuItem, Tooltip } from "@mui/material";
+import { FormControl, InputLabel, Select, MenuItem, Tooltip, CircularProgress } from "@mui/material";
 import { motion, AnimatePresence, useMotionValue, animate } from "framer-motion";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
-import { Brush } from "@mui/icons-material";
+import ConfirmationNumberRoundedIcon from "@mui/icons-material/ConfirmationNumberRounded";
+import DeleteForeverRoundedIcon from "@mui/icons-material/DeleteForeverRounded";
+import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
+
 import DialogClientePagos from "./DialogClientePagos";
 import DialogClientesPaseMensual from "./DialogClientesPaseMensual";
+import DialogAgregarCliente from "./DialogAgregarCliente";
+import AddIcon from "@mui/icons-material/Add";
 import * as XLSX from "xlsx";
 
 const baseDelay = 1.5; // segundos antes de comenzar la animación
@@ -119,6 +124,10 @@ const Clientes = () => {
   const [animacionTerminada, setAnimacionTerminada] = useState(false);
   const [openDialogCliente, setOpenDialogCliente] = useState(false);
   const [enRevision, setEnRevision] = useState(false);
+  const [openAgregarCliente, setOpenAgregarCliente] = useState(false);
+  const [dialog, setDialog] = useState({ open: false, sitioWeb: "" });
+  const [loadingDialogAction, setLoadingDialogAction] = useState(null);
+
 
   const datosCliente = (cliente) => { setClienteSeleccionado(cliente); setOpenDialogCliente(true); };
   const MotionBox = motion.create(Box);
@@ -146,7 +155,6 @@ const Clientes = () => {
 
 
   //CLIENTES
-  // CLIENTES
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -206,7 +214,6 @@ const Clientes = () => {
 
     fetchData();
   }, []);
-
 
 
   const abrirDialogoConfirmacion = (cliente, revertir = false) => {
@@ -530,6 +537,92 @@ const Clientes = () => {
     }
   }, [openDialog, esReversion, mesCapitalizado]);
 
+  //DIALOG AGREGAR CLIENTE
+  const agregarCliente = () => {
+    setOpenAgregarCliente(true);
+  };
+
+  //DIALOG CERRAR
+  const handleCloseAgregarCliente = () => {
+    setOpenAgregarCliente(false);
+  };
+
+  //DIALOG DESPUES DE GUARDAR
+  const handleSaveCliente = async () => {
+    try {
+      // 🔁 Releer desde Excel para obtener el cliente recién agregado
+      const data = await cargarClientesDesdeExcel();
+      let clientesConEstado = data.map((c) => ({
+        ...c,
+        pagado: !!c.pagado,
+        enRevision: false,
+      }));
+      setClientes(clientesConEstado);
+      setSnackbar({
+        open: true,
+        type: "success",
+        message: `Cliente agregado correctamente`,
+      });
+    } catch (error) {
+      console.error("❌ Error al recargar clientes:", error);
+      setSnackbar({
+        open: true,
+        type: "error",
+        message: "Error al actualizar la grilla",
+      });
+    }
+  };
+
+
+
+  //ELIMINAR CLIENTE
+  const abrirDialog = (sitioWeb) => {
+    setDialog({ open: true, sitioWeb });
+  };
+
+  const cerrarDialog = () => {
+    setDialog({ open: false, sitioWeb: "" });
+    setLoadingDialogAction(null);
+  };
+
+  const handleEliminar = async () => {
+    setLoadingDialogAction("eliminar");
+
+    try {
+      const url = `${window.location.hostname === "localhost"
+        ? "http://localhost:8888"
+        : ""
+        }/.netlify/functions/eliminarCliente`;
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sitioWeb: dialog.sitioWeb }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Error al eliminar");
+
+      // ✅ Actualiza la lista en pantalla
+      setClientes((prev) => prev.filter((c) => c.sitioWeb !== dialog.sitioWeb));
+      setSnackbar({
+        open: true,
+        type: "success",
+        message: `Cliente "${dialog.sitioWeb}" eliminado correctamente`,
+      });
+    } catch (error) {
+      console.error("❌ Error al eliminar cliente:", error);
+      setSnackbar({
+        open: true,
+        type: "error",
+        message: "Hubo un problema al eliminar el cliente",
+      });
+    } finally {
+      setLoadingDialogAction(null);
+      cerrarDialog();
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -543,45 +636,9 @@ const Clientes = () => {
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
         overflow: "hidden",
-        paddingTop: isMobile ? 10 : 11,
+        paddingTop: isMobile ? 14 : 15,
       }}
     >
-      <Typography
-        variant={isMobile ? "h6" : "h5"}
-        fontWeight={700}
-        sx={{
-          color: "#e3f2fd",
-          display: "inline-flex",
-          flexWrap: "wrap",
-          justifyContent: "center",
-          alignItems: "center",
-          textShadow: "2px 2px 6px rgba(0,0,0,0.5)",
-          mb: 1,
-        }}
-      >
-        {"Gestión Mensual de Clientes".split("").map((char, i) => (
-          <motion.span
-            key={i}
-            custom={i}
-            variants={letterVariants}
-            initial="hidden"
-            animate="visible"
-            style={{ display: "inline-block" }}
-          >
-            {char === " " ? "\u00A0" : char}
-          </motion.span>
-        ))}
-
-        <motion.div
-          style={{ display: 'flex', alignItems: 'center' }}
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: iconDelay, duration: 0.4, type: "spring" }}
-        >
-          <GroupIcon sx={{ fontSize: isMobile ? 28 : 34, ml: 1.5, color: "#90caf9" }} />
-        </motion.div>
-
-      </Typography>
 
       <Box
         sx={{
@@ -709,13 +766,84 @@ const Clientes = () => {
       <Box
         sx={{
           width: "100%",
-          maxWidth: isMobile ? "100%" : "80%", // ← centrar en desktop
+          maxWidth: isMobile ? "100%" : "80%",
           px: isMobile ? 1 : 4,
           display: "flex",
-          flexDirection: "column", // ← importante para alinear la tabla y la paginación abajo
-          alignItems: "center", // ← centra horizontalmente
+          flexDirection: "column",
+          alignItems: "center",
         }}
       >
+        {/* 🔹 Contenedor del título + botón */}
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          flexDirection="row" // ✅ invierte el orden visual
+          pb={2}
+          sx={{ width: isMobile ? "100%" : "70%", }}
+        >
+          {/* 🔸 Título a la derecha */}
+          <Box display="flex" alignItems="center" gap={{ xs: 0.5, sm: 1 }}>
+            <GroupIcon
+              sx={{
+                color: "white",
+                fontSize: { xs: 22, sm: 28 },
+                mt: "-2px",
+                mr: { xs: "-2px", sm: 0 },
+              }}
+            />
+            <Typography
+              variant="h6"
+              sx={{
+                color: "white",
+                fontWeight: 700,
+                fontSize: { xs: "0.9rem", sm: "1.15rem" },
+                whiteSpace: "nowrap",
+              }}
+            >
+              {"Gestión Mensual de Clientes".split("").map((char, i) => (
+                <motion.span
+                  key={i}
+                  custom={i}
+                  variants={letterVariants}
+                  initial="hidden"
+                  animate="visible"
+                  style={{ display: "inline-block" }}
+                >
+                  {char === " " ? "\u00A0" : char}
+                </motion.span>
+              ))}
+            </Typography>
+          </Box>
+
+          {/* 🔸 Botón a la izquierda */}
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              onClick={() => agregarCliente()}
+              variant="outlined"
+              color="inherit"
+              startIcon={<AddIcon sx={{ mr: -0.5 }} />} // 👈 reduce el espacio entre ícono y texto
+              sx={{
+                color: "white",
+                borderColor: "white",
+                fontSize: { xs: "0.7rem", sm: "0.85rem" },
+                px: { xs: 1, sm: 1.5 },
+                py: { xs: 0.25, sm: 0.5 },
+                minWidth: "auto",
+                "& .MuiButton-startIcon": {
+                  marginRight: "2px", // 👈 aún más fino que el default (8px)
+                  marginLeft: "-2px",
+                },
+                "&:hover": {
+                  backgroundColor: "#ffffff22",
+                  borderColor: "#ffffffcc",
+                },
+              }}
+            >
+              Agregar Cliente
+            </Button>
+          </motion.div>
+        </Box>
 
         <TableContainer
           component={Paper}
@@ -865,7 +993,32 @@ const Clientes = () => {
                               },
                             }}
                           >
-                            <Brush fontSize="inherit" sx={{ fontSize: 14 }} />
+                            <ConfirmationNumberRoundedIcon fontSize="inherit" sx={{ fontSize: 14 }} />
+
+                          </IconButton>
+                        </Tooltip>
+                        {/* 🗑️ Botón eliminar cliente */}
+                        <Tooltip title="Eliminar Cliente" arrow>
+                          <IconButton
+                            onClick={() => abrirDialog(cliente.sitioWeb)} // 👈 abre el diálogo
+                            size="small"
+                            sx={{
+                              background: "linear-gradient(135deg, #f44336, #d32f2f)",
+                              width: 22,
+                              height: 22,
+                              p: 0.3,
+                              borderRadius: "8px",
+                              boxShadow: "0 2px 6px rgba(0,0,0,0.25)",
+                              color: "#fff",
+                              ml: 0.5,
+                              "&:hover": {
+                                background: "linear-gradient(135deg, #ef5350, #e53935)",
+                                transform: "scale(1.1)",
+                                transition: "all 0.2s ease",
+                              },
+                            }}
+                          >
+                            <DeleteForeverRoundedIcon fontSize="inherit" sx={{ fontSize: 14 }} />
                           </IconButton>
                         </Tooltip>
 
@@ -1457,6 +1610,91 @@ const Clientes = () => {
         onClose={() => setOpenDialogCliente(false)}
         cliente={clienteSeleccionado}
       />
+
+      {/* DIALOG Agregar Cliente */}
+      <DialogAgregarCliente
+        open={openAgregarCliente}
+        onClose={handleCloseAgregarCliente}
+        onSave={handleSaveCliente}
+      />
+
+      {/* DIALOG CONFIRMAR ELIMINACIÓN */}
+      <Dialog open={dialog.open} onClose={cerrarDialog}>
+        <DialogTitle
+          sx={{
+            fontWeight: "bold",
+            color: "#B71C1C",
+            background: "linear-gradient(180deg, #FFF8E1, #FFE0B2)",
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+          }}
+        >
+          <WarningAmberRoundedIcon sx={{ color: "#E65100" }} />
+          Confirmar eliminación
+        </DialogTitle>
+
+        <DialogContent
+          sx={{
+            background: "linear-gradient(180deg, #FFF8E1, #FFF3E0)",
+          }}
+        >
+          <Typography sx={{ fontWeight: 500, color: "#5D4037" }}>
+            ¿Deseas eliminar el cliente con sitio web{" "}
+            <b style={{ color: "#D84315" }}>{dialog.sitioWeb}</b>?
+            <br />
+            <span style={{ fontSize: "0.85rem", color: "#795548" }}>
+              Esta acción no se puede deshacer.
+            </span>
+          </Typography>
+        </DialogContent>
+
+        <DialogActions
+          sx={{
+            background: "linear-gradient(180deg, #FFF8E1, #FFF3E0)",
+            borderTop: "1px solid rgba(0,0,0,0.08)",
+            py: 1.2,
+          }}
+        >
+          <Button
+            onClick={cerrarDialog}
+            color="inherit"
+            disabled={loadingDialogAction !== null}
+            sx={{
+              fontWeight: 600,
+              color: "#5D4037",
+              "&:hover": { backgroundColor: "rgba(0,0,0,0.05)" },
+            }}
+          >
+            Cerrar
+          </Button>
+
+          <Button
+            onClick={handleEliminar}
+            color="error"
+            variant="contained"
+            disabled={loadingDialogAction !== null}
+            startIcon={
+              loadingDialogAction === "eliminar" ? (
+                <CircularProgress size={18} color="inherit" />
+              ) : (
+                <DeleteForeverRoundedIcon />
+              )
+            }
+            sx={{
+              fontWeight: 700,
+              textTransform: "none",
+              px: 3,
+              boxShadow: "0 2px 6px rgba(244,67,54,0.3)",
+              "&:hover": {
+                background: "linear-gradient(135deg, #ef5350, #e53935)",
+              },
+            }}
+          >
+            Eliminar
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Snackbar
         open={snackbar.open}
