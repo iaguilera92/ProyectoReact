@@ -157,7 +157,7 @@ function Hero({ informationsRef, setVideoReady }) {
           >
 
             <source
-              src={isMobile ? "video-inicio-oficial.mp4" : "video-inicio.mp4"}
+              src={isMobile ? "video-inicio-oficial.mp4" : "video-oficial.mp4"}
               type="video/mp4"
             />
           </video>
