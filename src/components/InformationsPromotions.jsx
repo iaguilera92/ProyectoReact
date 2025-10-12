@@ -45,7 +45,7 @@ const InformationsPromotions = ({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount: 30000,
+          amount: 50,
           buyOrder: "RSW-" + Date.now().toString().slice(-10),
           sessionId: "SES-" + Date.now(),
           returnUrl: isLocal
