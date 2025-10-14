@@ -334,7 +334,7 @@ const InformationsPromotions = ({
                           px: 0.6,
                           py: 0.2,
                           cursor: "pointer",
-                          width: isMobile ? "60px" : "65px", // 📐 ancho fijo más natural
+                          width: isMobile ? "65px" : "65px", // 📐 ancho fijo más natural
                           textAlign: "center",
                           justifyContent: "center",
                           boxShadow:
@@ -660,7 +660,7 @@ const InformationsPromotions = ({
                           <Typography
                             sx={{
                               fontFamily: "'Montserrat', sans-serif",
-                              fontSize: isMobile ? "1.3rem" : "1.3rem",
+                              fontSize: isMobile ? "1.1rem" : "1.3rem",
                               fontWeight: "bold",
                               color: "white",
                               lineHeight: 1,
@@ -731,7 +731,7 @@ const InformationsPromotions = ({
                           <Typography
                             sx={{
                               fontFamily: "'Montserrat', sans-serif",
-                              fontSize: isMobile ? "1.3rem" : "1.3rem",
+                              fontSize: isMobile ? "1.1rem" : "1.3rem",
                               fontWeight: "bold",
                               color: "white",
                               lineHeight: 1,
