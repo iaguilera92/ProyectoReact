@@ -334,7 +334,7 @@ const InformationsPromotions = ({
                           px: 0.6,
                           py: 0.2,
                           cursor: "pointer",
-                          width: isMobile ? "65px" : "65px", // 📐 ancho fijo más natural
+                          width: isMobile ? "70px" : "65px", // 📐 ancho fijo más natural
                           textAlign: "center",
                           justifyContent: "center",
                           boxShadow:
@@ -534,9 +534,9 @@ const InformationsPromotions = ({
                             sx={{
                               fontFamily: "'Mukta', sans-serif",
                               fontWeight: 700,
-                              fontSize: isMobile ? "14px" : "15px",
+                              fontSize: isMobile ? "13px" : "15px",
                               textTransform: "none",
-                              lineHeight: 1.3,
+                              lineHeight: 1.2,
                               width: "100%",
                               textAlign: "center",
                             }}
