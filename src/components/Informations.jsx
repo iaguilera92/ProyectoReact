@@ -17,18 +17,19 @@ const promotions = [
     title: "Sitios Web",
     description: "Entrega en menos de 72hrs.",
     image: "/promocion-1.webp",
-    price: "$90.000",
+    price: "$90.000 CLP",
+    priceUSD: "$95 USD", // 💲 agregado
     extraPrices: [
-      { label: "ELIGE TU DOMINIO .CL", price: "$10.000" },
-      { label: "HOSTING + SOPORTE", price: "$10.000" }
+      { label: "ELIGE TU DOMINIO .CL", price: "$10.000 CLP", priceUSD: "$10 USD" },
+      { label: "HOSTING + SOPORTE", price: "$10.000 CLP", priceUSD: "$10 USD" }
     ],
     bgColor: "linear-gradient(180deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3))",
     textColor: "white",
     descriptors: [
       "🎨 Diseño personalizado.",
-      "☁️ Base de datos (AWS).",
+      "☁️ Admininstración y Base de datos.",
       "📈 Más alcance y clientes.",
-      "🛠️ Soporte continuo."
+      "🛠️ Soporte evolutivo."
     ]
   },
   {
@@ -36,10 +37,11 @@ const promotions = [
     title: "🛒Tienda online",
     description: "Vende tus productos online de forma segura.",
     image: "/Informations-2.jpg",
-    price: "$250.000 a $400.000",
+    price: "$250.000 a $400.000 CLP",
+    priceUSD: "$265 a $425 USD",
     extraPrices: [
-      { label: "Dominio anual", price: "$15.000" },
-      { label: "Hosting mensual", price: "$80.000" }
+      { label: "Dominio anual", price: "$15.000 CLP", priceUSD: "$16 USD" },
+      { label: "Hosting mensual", price: "$80.000 CLP", priceUSD: "$85 USD" }
     ],
     bgColor: "linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.2))",
     textColor: "white",
@@ -55,10 +57,11 @@ const promotions = [
     title: "🖥️Sistemas a la medida",
     description: "Desarrollo adaptados para tu negocio.",
     image: "/Informations-3.jpg",
-    price: "$600.000 a $4.000.000",
+    price: "$600.000 a $4.000.000 CLP",
+    priceUSD: "$635 a $4.200 USD",
     extraPrices: [
-      { label: "Dominio anual", price: "$30.000" },
-      { label: "Hosting mensual", price: "$600.000" }
+      { label: "Dominio anual", price: "$30.000 CLP", priceUSD: "$32 USD" },
+      { label: "Hosting mensual", price: "$600.000 CLP", priceUSD: "$635 USD" }
     ],
     bgColor: "linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.2))",
     textColor: "white",
