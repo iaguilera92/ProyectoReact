@@ -165,8 +165,6 @@ const Evidencias = () => {
                     backgroundImage: `url('fondo-telefono.webp')`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
-                    backgroundRepeat: 'no-repeat',
-                    backgroundAttachment: 'scroll',
                     zIndex: 1,
                 }}
             >

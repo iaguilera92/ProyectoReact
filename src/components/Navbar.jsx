@@ -218,8 +218,8 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
               window.open("https://api.whatsapp.com/send?phone=56946873014", "_blank");
             }}
             sx={{
-              background: "linear-gradient(135deg, #ff3b3b, #b71c1c)",
-              boxShadow: "0px 3px 10px rgba(183,28,28,0.5)",
+              background: "linear-gradient(135deg, #00ACEE, #027EFB)",
+              boxShadow: "0px 3px 10px rgba(2,126,251,0.4)",
               height: { xs: 30, sm: 32 },
               px: 2,
               display: "flex",
@@ -228,15 +228,15 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
               overflow: "hidden",
               boxShadow:
                 scrollY < maxScroll
-                  ? "0px 2px 10px rgba(255,0,0,0.4)"
+                  ? "0px 2px 10px rgba(2,126,251,0.4)"
                   : "none",
               transition: "box-shadow 0.3s ease, transform 0.2s ease",
               cursor: "pointer",
               "&:hover": {
                 transform: "scale(1.05)",
-                boxShadow: "0px 4px 14px rgba(255,0,0,0.6)",
+                boxShadow: "0px 4px 14px rgba(0,172,238,0.6)",
                 background:
-                  "linear-gradient(135deg, hsl(0deg 90% 60%), hsl(0deg 80% 45%))",
+                  "linear-gradient(135deg, hsl(204deg 100% 50%), hsl(214deg 95% 48%))",
               },
             }}
           >

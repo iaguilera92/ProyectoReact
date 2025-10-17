@@ -8,8 +8,8 @@ import { motion, useAnimation } from "framer-motion";
 
 const data = [
   { count: 20, text: "Proyectos terminados en distintas empresas", image: "ProyectoTerminado.mp4" },
-  { count: 45, text: "Proyectos a Pymes e Independientes", image: "ProyectoPymes.mp4" },
-  { count: 9, text: "Años de Experiencia como desarrolladores", image: "Experience.mp4" },
+  { count: 46, text: "Proyectos a Pymes e Independientes", image: "ProyectoPymes.mp4" },
+  { count: 10, text: "Años de Experiencia como desarrolladores", image: "Experience.mp4" },
   { count: 7, text: "Tazas de café en el día ☕", image: "Cafe.mp4" },
 ];
 
@@ -91,7 +91,8 @@ function OrbitSystem({ isMobile, orbitInViewRef, orbitInView, controls }) {
     minFromNeighbors = Math.max(minFromNeighbors, (a + b) / (2 * halfStepSin));
   }
   const minFromCenter = rCenterEff + Math.max(...rEff) + padRadial;
-  const Rring = Math.ceil(Math.max(minFromNeighbors, minFromCenter));
+  const Rring = Math.ceil(Math.max(minFromNeighbors, minFromCenter)) * 0.95;
+
 
   let theta = -Math.PI / 2;
   const toDeg = (rad) => (rad * 180) / Math.PI;
@@ -127,7 +128,7 @@ function OrbitSystem({ isMobile, orbitInViewRef, orbitInView, controls }) {
           justifyContent: "center",
           width: "100%",
           textAlign: "center",
-          mb: -1.2,
+          mb: 0.2,
           ml: isMobile ? 5 : 6,
         }}
       >
@@ -181,16 +182,14 @@ function OrbitSystem({ isMobile, orbitInViewRef, orbitInView, controls }) {
           alignItems: "center",
           justifyContent: "center",
           textAlign: "center",
-          mt: -0.5,
         }}
       >
         <motion.div
           ref={orbitInViewRef}
-          animate={controls}
           style={{
             position: "absolute",
             inset: 0,
-            transformOrigin: `${isMobile ? "63%" : "59%"} ${isMobile ? "59%" : "54%"}`,
+            transformOrigin: "center center",
           }}
         >
           {layout.map((n, i) => {
@@ -374,7 +373,7 @@ const Areas = () => {
     if (inView && !hasAnimated) {
       const timer = setTimeout(() => {
         setHasAnimated(true); //
-      }, 2600);
+      }, 1600);
       return () => clearTimeout(timer);
     }
   }, [inView, hasAnimated]);
@@ -384,7 +383,7 @@ const Areas = () => {
     if (inView) {
       const timer = setTimeout(() => {
         setDelayed(true);
-      }, 1700); // ⏳ Ahora el contador se activa después de 1.2 segundos
+      }, 1500); // ⏳ Ahora el contador se activa después de 1.2 segundos
 
       return () => clearTimeout(timer); // Limpia el temporizador al desmontarse
     }
@@ -408,7 +407,7 @@ const Areas = () => {
         }}
         transition={{
           delay: 0.2 + index * 0.2, // Retraso escalonado para cada palabra
-          duration: 1,
+          duration: 0.7,
           ease: "easeOut",
         }}
         style={{ display: "inline-block", marginRight: "5px" }} // Espaciado entre palabras
@@ -448,7 +447,7 @@ const Areas = () => {
         controls.start({
           rotate: [0, 360],
           transition: {
-            duration: 3.8,
+            duration: 2.8,
             ease: [0.33, 1, 0.68, 1],
           },
         });
@@ -473,7 +472,7 @@ const Areas = () => {
         padding: { xs: 4, md: 16 },
         paddingBottom: { xs: 16, md: 5 },
         zIndex: 0, // 👈 se mantiene por debajo del borde del componente anterior
-        mt: "-90px", // 👈 puedes ajustar entre -80px y -120px para encaje perfecto
+        mt: "-100px", // 👈 puedes ajustar entre -80px y -120px para encaje perfecto
         overflow: "visible",  // 👈 permite que el borde de arriba se vea
       }}
     >
@@ -536,11 +535,11 @@ const Areas = () => {
               y: inViewGrid ? 0 : 40,
             }}
             transition={{
-              duration: 0.8,
+              duration: 0.5,
               ease: "easeOut",
             }}
           >
-            <Grid container spacing={4}>
+            <Grid container spacing={4} mt={isMobile ? -4 : 6}>
               {data.map((item, index) => (
                 <Grid item xs={6} sm={6} md={6} key={index}>
                   <motion.div
@@ -550,7 +549,7 @@ const Areas = () => {
                       opacity: hasEntered ? 1 : 0,
                     }}
                     transition={{
-                      duration: 0.6,
+                      duration: 0.3,
                       ease: "easeOut",
                       delay: 0.1 * index,
                     }}
@@ -627,7 +626,7 @@ const Areas = () => {
                               }}
                             >
                               +{delayed ? (
-                                <CountUp start={0} end={item.count} duration={3.1} />
+                                <CountUp start={0} end={item.count} duration={2.1} />
                               ) : (
                                 "0"
                               )}

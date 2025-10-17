@@ -65,15 +65,24 @@ const Footer = () => {
   return (
     <Box
       sx={{
+        position: "relative",
         backgroundColor: "rgba(23, 24, 25, 0.97)",
         padding: "20px 0",
         color: "white",
         backgroundImage: "url(/fondo-footer.jpg)",
         backgroundSize: "cover",
         backgroundPosition: "center -150px",
+        overflow: "hidden",
         "@media (max-width: 600px)": {
           backgroundPosition: "center center",
           padding: "10px 0",
+        },
+        "&::before": {
+          content: '""',
+          position: "absolute",
+          inset: 0,
+          backdropFilter: "blur(5px)",
+          zIndex: 0,
         },
       }}
     >
