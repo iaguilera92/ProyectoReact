@@ -288,11 +288,12 @@ function Hero({ informationsRef, setVideoReady }) {
                       const isMobile = window.innerWidth < 768;
                       const offset = isMobile ? 490 : -50;
 
-                      const y =
-                        informationsRef.current.getBoundingClientRect().top +
-                        window.scrollY +
-                        offset;
-                      window.scrollTo({ top: y, behavior: "smooth" });
+                      if (informationsRef?.current) {
+                        const y = informationsRef.current.getBoundingClientRect().top + window.scrollY + offset;
+                        window.scrollTo({ top: y, behavior: "smooth" });
+                      } else {
+                        console.warn("⚠️ informationsRef.current es null. Verifica que el ref esté correctamente asignado.");
+                      }
                     }}
                   >
                     <span>Nuestros Precios</span>

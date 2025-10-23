@@ -626,7 +626,7 @@ const Areas = () => {
                               }}
                             >
                               +{delayed ? (
-                                <CountUp start={0} end={item.count} duration={2.1} />
+                                <CountUp start={0} end={item.count} duration={3.1} />
                               ) : (
                                 "0"
                               )}

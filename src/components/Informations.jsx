@@ -141,6 +141,7 @@ function Informations({ informationsRef, triggerInformations, setHasSeenInformat
 
   return (
     <Box
+      ref={informationsRef}
       sx={{
         position: "relative",
         zIndex: 3,
