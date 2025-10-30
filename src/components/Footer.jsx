@@ -66,27 +66,28 @@ const Footer = () => {
     <Box
       sx={{
         position: "relative",
-        backgroundColor: "rgba(23, 24, 25, 0.97)",
-        padding: "20px 0",
+        backgroundColor: "rgba(23, 24, 25, 0.9)", // capa oscura encima del fondo
         color: "white",
-        backgroundImage: "url(/fondo-footer.jpg)",
-        backgroundSize: "cover",
-        backgroundPosition: "center -150px",
         overflow: "hidden",
+        padding: "20px 0",
         "@media (max-width: 600px)": {
-          backgroundPosition: "center center",
           padding: "10px 0",
         },
         "&::before": {
           content: '""',
           position: "absolute",
           inset: 0,
-          backdropFilter: "blur(5px)",
+          backgroundImage: "url(/fondo-footer.jpg)",
+          backgroundSize: "cover",
+          backgroundPosition: "center -150px",
+          filter: "blur(8px)",
+          transform: "scale(1.05)",
           zIndex: 0,
+          pointerEvents: "none",
         },
       }}
     >
-      <Container maxWidth="lg">
+      <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1 }}>
         {/* 🔹 Diseño para Escritorio con 3 Columnas */}
         {!isMobile && (
           <Box

@@ -501,9 +501,35 @@ function Features({ videoReady }) {
                             }, 2000);
                           }
                         }}
-                        className="custom-swiper">
+                        className="custom-swiper"
+                      >
+                        {/* ✅ Slide 1: Imagen fija */}
+                        <SwiperSlide>
+                          <Box
+                            sx={{
+                              position: "relative",
+                              width: "100%",
+                              height: 200,
+                              borderRadius: "40px",
+                              overflow: "hidden",
+                            }}
+                          >
+                            <Box
+                              component="img"
+                              src="/trabajos-features.webp"
+                              alt="Trabajos recientes"
+                              sx={{
+                                width: "100%",
+                                height: "120%",          // 🔹 Hace que la imagen se expanda un poco
+                                objectFit: "cover",
+                                objectPosition: "center top", // 🔹 Muestra más la parte superior
+                                transform: "translateY(0%)", // 🔹 Baja visualmente la imagen
+                              }}
+                            />
+                          </Box>
+                        </SwiperSlide>
 
-                        {/* Slide 1: Sitios Web */}
+                        {/* ✅ Slide 2: Sitios Web (fondo verde) */}
                         <SwiperSlide>
                           <Card
                             sx={{
@@ -516,11 +542,11 @@ function Features({ videoReady }) {
                               backgroundColor: "transparent",
                             }}
                           >
-                            {/* Box verde */}
+                            {/* Box verde degradado */}
                             <Box
                               sx={{
                                 flex: 1,
-                                background: "linear-gradient(135deg, hsl(142.63deg 70.28% 48.82%), hsl(142.63deg 80% 35%))",
+                                background: "linear-gradient(135deg, hsl(210, 80%, 55%), hsl(220, 70%, 35%))",
                                 borderRadius: "30px",
                                 p: 3,
                                 height: "65%",
@@ -544,20 +570,20 @@ function Features({ videoReady }) {
                                     mb: 0.5,
                                     textAlign: "left",
                                     color: "#fff",
-                                    fontSize: "1.9rem",
+                                    fontSize: "1.1rem",
                                   }}
                                 >
-                                  Sitios Web
+                                  Contrata tu Sitio web
                                 </Typography>
                                 <Typography
                                   variant="body2"
                                   sx={{
                                     color: "#fff",
                                     textAlign: "left",
-                                    fontSize: "0.85rem",
+                                    fontSize: "0.65rem",
                                   }}
                                 >
-                                  Llega a más clientes online.
+                                  Agendamiento, Cartas, Planes y más!
                                 </Typography>
                               </Box>
                             </Box>
@@ -606,112 +632,8 @@ function Features({ videoReady }) {
                             </Box>
                           </Card>
                         </SwiperSlide>
-
-                        {/* Slide 2: Sistemas */}
-                        <SwiperSlide>
-                          <Card
-                            sx={{
-                              position: "relative",
-                              overflow: "visible",
-                              borderRadius: "50px",
-                              height: 200,
-                              display: "flex",
-                              alignItems: "flex-end",
-                              backgroundColor: "transparent",
-                            }}
-                          >
-                            {/* Box degradado azul */}
-                            <Box
-                              sx={{
-                                flex: 1,
-                                background: "linear-gradient(135deg, hsl(210, 80%, 55%), hsl(220, 70%, 35%))",
-                                borderRadius: "30px",
-                                p: 3,
-                                height: "65%",
-                                display: "flex",
-                                flexDirection: "column",
-                                justifyContent: "center",
-                                width: "100%",
-                                alignItems: "flex-end",
-                                cursor: "pointer",
-                              }}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleContactClick("Sistemas");
-                              }}
-                            >
-                              <Box sx={{ maxWidth: "60%", textAlign: "right" }}>
-                                <Typography
-                                  variant="h4"
-                                  sx={{
-                                    fontWeight: "bold",
-                                    mb: 0.5,
-                                    color: "#fff",
-                                    fontSize: "1.9rem",
-                                  }}
-                                >
-                                  Sistemas
-                                </Typography>
-                                <Typography
-                                  variant="body2"
-                                  sx={{
-                                    color: "#fff",
-                                    fontSize: "0.85rem",
-                                  }}
-                                >
-                                  Control total sobre tu negocio.
-                                </Typography>
-                              </Box>
-                            </Box>
-
-                            {/* Imagen mockup izquierda */}
-                            <Box
-                              sx={{
-                                position: "absolute",
-                                left: 10,
-                                bottom: 0,
-                                height: "100%",
-                                aspectRatio: "572 / 788",
-                                zIndex: 2,
-                                transform: "scaleX(-1)",
-                              }}
-                            >
-                              <Box
-                                component="img"
-                                src="/sistemas.webp"
-                                alt="Preview Sistemas"
-                                sx={{
-                                  position: "absolute",
-                                  top: "5%",
-                                  left: "12%",
-                                  width: "54.4%",
-                                  height: "81.7%",
-                                  objectFit: "cover",
-                                  borderRadius: "10px",
-                                  zIndex: 0,
-                                  backgroundColor: "black",
-                                  transform: "scaleX(-1)",
-                                }}
-                              />
-                              <Box
-                                component="img"
-                                src="/mano-celular.webp"
-                                alt="Mano con celular"
-                                sx={{
-                                  width: "100%",
-                                  height: "auto",
-                                  position: "absolute",
-                                  top: 0,
-                                  left: 0,
-                                  zIndex: 1,
-                                  pointerEvents: "none",
-                                }}
-                              />
-                            </Box>
-                          </Card>
-                        </SwiperSlide>
                       </Swiper>
+
                     </motion.div>
                   </Grid>
                 );

@@ -157,7 +157,7 @@ const InformationsPromotions = ({
                     border: "2px solid #ff6a00",
                   }}
                 >
-                  Popular
+                  Más vendido
                 </motion.div>
               )}
 
@@ -660,7 +660,7 @@ const InformationsPromotions = ({
                           <Typography
                             sx={{
                               fontFamily: "'Montserrat', sans-serif",
-                              fontSize: isMobile ? "1.1rem" : "1.3rem",
+                              fontSize: isMobile ? "1.1rem" : "1.15rem",
                               fontWeight: "bold",
                               color: "white",
                               lineHeight: 1,
@@ -731,7 +731,7 @@ const InformationsPromotions = ({
                           <Typography
                             sx={{
                               fontFamily: "'Montserrat', sans-serif",
-                              fontSize: isMobile ? "1.1rem" : "1.3rem",
+                              fontSize: isMobile ? "1.1rem" : "1.15rem",
                               fontWeight: "bold",
                               color: "white",
                               lineHeight: 1,
