@@ -114,32 +114,51 @@ export default function DialogOneClickMall({
       return;
     }
 
+    // Mantiene el diálogo abierto, solo cambia al modo “cargando”
     setLoading(true);
     setShowContent(false);
 
-    setTimeout(async () => {
-      try {
-        sessionStorage.setItem("sitioWebReserva", sitioWeb);
-        sessionStorage.setItem("clienteNombre", cliente.nombre);
-        sessionStorage.setItem("clienteCorreo", cliente.correo);
-        sessionStorage.setItem("clienteId", cliente.idCliente);
-        await onConfirm?.(sitioWeb, cliente);
-      } catch (error) {
-        console.error("Error en onConfirm:", error);
-        setError("Ocurrió un error al iniciar la suscripción.");
-        setShowContent(true);
-        setLoading(false);
+    try {
+      sessionStorage.setItem("sitioWebReserva", sitioWeb);
+      sessionStorage.setItem("clienteNombre", cliente.nombre);
+      sessionStorage.setItem("clienteCorreo", cliente.correo);
+      sessionStorage.setItem("clienteId", cliente.idCliente);
+
+      // 🔹 Llamar al backend (Netlify function suscribirse)
+      const result = await onConfirm?.(sitioWeb, cliente);
+
+      if (result?.url_webpay && result?.token) {
+        console.log("🚀 Redirigiendo a Transbank...");
+
+        // 🕐 Mostramos pantalla de carga 1 segundo antes de salir
+        setTimeout(() => {
+          // ✅ Redirige realmente a Transbank (manteniendo el diálogo visible hasta el cambio de página)
+          window.location.href = `${result.url_webpay}?TBK_TOKEN=${result.token}`;
+        }, 1000);
+      } else {
+        throw new Error("No se recibió una respuesta válida desde WebPay");
       }
-    }, 1000);
+    } catch (error) {
+      console.error("❌ Error en onConfirm:", error);
+      setError("Ocurrió un error al iniciar la suscripción.");
+      setShowContent(true);
+      setLoading(false);
+    }
   };
+
 
   return (
     <Dialog
-      open={open}
-      onClose={onClose}
+      open={open || loading}
+      onClose={loading ? undefined : onClose}
       maxWidth="xs"
       fullWidth
       TransitionComponent={Transition}
+      sx={{
+        "& .MuiDialog-container": {
+          alignItems: { xs: "flex-start", sm: "center" }, // 📱 arriba, 🖥️ centrado
+        },
+      }}
       PaperProps={{
         sx: {
           mt: { xs: 5, sm: 0 },
@@ -161,7 +180,7 @@ export default function DialogOneClickMall({
           textAlign: "center",
           position: "relative",
           overflow: "hidden",
-          minHeight: { xs: 130, sm: 150 },
+          minHeight: { xs: 90, sm: 150 },
           "&::before": {
             content: '""',
             position: "absolute",
@@ -264,6 +283,8 @@ export default function DialogOneClickMall({
               sx={{
                 background: "linear-gradient(180deg,#F3E5F5 0%,#EDE7F6 100%)",
                 px: { xs: 2, sm: 4 },
+                pb: { xs: 1, sm: 3 },
+                pt: { xs: 1, sm: 3 },
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",

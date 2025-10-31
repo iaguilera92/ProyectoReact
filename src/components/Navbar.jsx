@@ -229,13 +229,12 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
   };
 
   const handleConfirmOneClick = async (sitioWeb, cliente) => {
-    setOpenDialogOneClick(false);
 
     console.log("📦 Datos enviados al backend:", {
       sitioWeb,
       nombre: cliente.nombre,
       correo: cliente.correo,
-      idCliente: cliente.idCliente, // ✅ log para confirmar
+      idCliente: cliente.idCliente,
     });
 
     if (!cliente?.nombre || !cliente?.correo || !cliente?.idCliente) {
@@ -244,12 +243,22 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
       return;
     }
 
-    await handleSuscribirse(
-      cliente.nombre,
-      cliente.correo,
-      sitioWeb,
-      cliente.idCliente // ✅ parámetro agregado
-    );
+    try {
+      const result = await handleSuscribirse(
+        cliente.nombre,
+        cliente.correo,
+        sitioWeb,
+        cliente.idCliente
+      );
+
+      // ✅ Devuelve el resultado a DialogOneClickMall
+      return result;
+    } catch (err) {
+      console.error("❌ Error en handleConfirmOneClick:", err);
+      alert("No se pudo iniciar la suscripción. Intenta nuevamente.");
+      // ⚙️ Si quieres, puedes cerrar aquí en caso de error:
+      // setOpenDialogOneClick(false);
+    }
   };
 
 

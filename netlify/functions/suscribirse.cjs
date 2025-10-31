@@ -1,8 +1,7 @@
-const { Options, Environment } = require("transbank-sdk");
+const { Options } = require("transbank-sdk");
 const axios = require("axios");
 const AWS = require("aws-sdk");
 
-// ✅ Inicializa S3
 const s3 = new AWS.S3();
 
 exports.handler = async (event) => {
@@ -11,8 +10,10 @@ exports.handler = async (event) => {
         origin: event.headers.origin,
     });
 
+    // 🌍 Dominios permitidos
     const allowedOrigins = [
         "http://localhost:5173",
+        "http://localhost:8888",
         "https://plataformas-web.cl",
     ];
 
@@ -40,15 +41,28 @@ exports.handler = async (event) => {
         if (!nombre || !email || !idCliente)
             throw new Error("Faltan parámetros requeridos (nombre, email, idCliente)");
 
-        // ✅ Configuración de integración
+        // 🔍 Detectar entorno
+        const isLocal =
+            origin.includes("localhost") ||
+            origin.includes("127.0.0.1") ||
+            origin.includes("8888");
+
+        // ✅ Endpoint Transbank según entorno
+        const inscriptionUrl = isLocal
+            ? "https://webpay3gint.transbank.cl/rswebpaytransaction/api/oneclick/v1.0/inscriptions" // integración
+            : "https://webpay3g.transbank.cl/rswebpaytransaction/api/oneclick/v1.0/inscriptions"; // producción
+
+        // ✅ Credenciales según entorno (usa variables de entorno en producción)
         const options = new Options(
-            "597055555541", // Código de comercio integración
-            "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C",
-            Environment.Integration
+            isLocal
+                ? "597055555541" // código comercio integración
+                : process.env.TBK_API_KEY_ID, // producción
+            isLocal
+                ? "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C" // integración
+                : process.env.TBK_API_KEY_SECRET, // producción
+            isLocal ? "INTEGRACION" : "PRODUCCION"
         );
 
-        // 🌍 Detectar entorno
-        const isLocal = origin.includes("localhost");
         const baseUrl = isLocal
             ? "http://localhost:8888"
             : "https://plataformas-web.cl";
@@ -56,10 +70,11 @@ exports.handler = async (event) => {
 
         console.log("⚙️ [suscribirse] Registrando inscripción OneClick...");
         console.log("↪️ URL retorno:", returnUrl);
+        console.log("🌎 Endpoint:", inscriptionUrl);
 
-        // 🔹 Llamada al endpoint público de Transbank
+        // 🔹 Llamada al endpoint de Transbank
         const response = await axios.post(
-            "https://webpay3gint.transbank.cl/rswebpaytransaction/api/oneclick/v1.0/inscriptions",
+            inscriptionUrl,
             {
                 username: nombre,
                 email,
@@ -80,7 +95,7 @@ exports.handler = async (event) => {
         if (!token || !url_webpay)
             throw new Error("No se recibió token o URL válidos desde Transbank");
 
-        // 🧾 Guarda el vínculo temporal token → cliente en S3
+        // 🧾 Guarda vínculo token → cliente en S3
         const bucketName = "plataformas-web-buckets";
         const key = `tokens/${token}.json`;
         const data = {
@@ -102,7 +117,6 @@ exports.handler = async (event) => {
 
         console.log(`💾 [suscribirse] Datos cliente guardados en S3: ${key}`);
 
-        // ✅ Retornar a frontend para redirección
         return {
             statusCode: 200,
             headers: corsHeaders,

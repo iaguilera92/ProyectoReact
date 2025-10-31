@@ -11,7 +11,6 @@ exports.handler = async (event) => {
         "https://plataformas-web.cl",
     ];
 
-    // 🔍 Detectar entorno
     const referer = event.headers.referer || "";
     const origin = event.headers.origin || "";
     const host = event.headers.host || "";
@@ -21,7 +20,9 @@ exports.handler = async (event) => {
         origin.includes("localhost") ||
         host.includes("localhost");
 
-    const corsOrigin = isLocal ? "http://localhost:5173" : "https://plataformas-web.cl";
+    const corsOrigin = isLocal
+        ? "http://localhost:5173"
+        : "https://plataformas-web.cl";
 
     const corsHeaders = {
         "Access-Control-Allow-Origin": corsOrigin,
@@ -37,7 +38,8 @@ exports.handler = async (event) => {
 
     try {
         let token = null;
-        const contentType = event.headers["content-type"] || event.headers["Content-Type"] || "";
+        const contentType =
+            event.headers["content-type"] || event.headers["Content-Type"] || "";
 
         // 🔍 Obtener token desde query o body
         if (event.queryStringParameters?.TBK_TOKEN) {
@@ -59,17 +61,30 @@ exports.handler = async (event) => {
         console.log("🔹 Token recibido de Transbank:", token);
         if (!token) throw new Error("No se recibió TBK_TOKEN desde Transbank");
 
-        // 🔹 Confirmar inscripción
-        const url = `https://webpay3gint.transbank.cl/rswebpaytransaction/api/oneclick/v1.0/inscriptions/${token}`;
-        const headers = {
-            "Tbk-Api-Key-Id": "597055555541",
-            "Tbk-Api-Key-Secret": "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C",
-            "Content-Type": "application/json",
-        };
+        // ✅ Endpoint Transbank según entorno
+        const apiUrl = isLocal
+            ? "https://webpay3gint.transbank.cl/rswebpaytransaction/api/oneclick/v1.0/inscriptions"
+            : "https://webpay3g.transbank.cl/rswebpaytransaction/api/oneclick/v1.0/inscriptions";
 
-        console.log("⚙️ [confirmarSuscripcion] Confirmando inscripción...");
+        // ✅ Credenciales según entorno
+        const headers = isLocal
+            ? {
+                "Tbk-Api-Key-Id": "597055555541", // integración
+                "Tbk-Api-Key-Secret":
+                    "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C",
+                "Content-Type": "application/json",
+            }
+            : {
+                "Tbk-Api-Key-Id": process.env.TBK_API_KEY_ID, // producción
+                "Tbk-Api-Key-Secret": process.env.TBK_API_KEY_SECRET,
+                "Content-Type": "application/json",
+            };
+
+        const url = `${apiUrl}/${token}`;
+        console.log("⚙️ [confirmarSuscripcion] Confirmando inscripción en:", url);
+
+        // 🔹 Llamada PUT para confirmar inscripción
         const resp = await axios.put(url, {}, { headers });
-
         console.log("✅ [confirmarSuscripcion] Respuesta Transbank:", resp.data);
 
         // 🌐 Redirigir según entorno
@@ -79,7 +94,9 @@ exports.handler = async (event) => {
 
         const redirectUrl = `${redirectBase}/suscripcion?tbk_user=${encodeURIComponent(
             resp.data.tbk_user
-        )}&card=${encodeURIComponent(resp.data.card_number)}&type=${encodeURIComponent(
+        )}&card=${encodeURIComponent(
+            resp.data.card_number
+        )}&type=${encodeURIComponent(
             resp.data.card_type
         )}&status=success`;
 
@@ -92,6 +109,7 @@ exports.handler = async (event) => {
         };
     } catch (err) {
         console.error("❌ [confirmarSuscripcion] Error:", err);
+
         const redirectError = `${isLocal ? "http://localhost:5173" : "https://plataformas-web.cl"
             }/suscripcion?status=error&msg=${encodeURIComponent(err.message)}`;
 
