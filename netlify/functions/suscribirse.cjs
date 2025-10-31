@@ -78,9 +78,17 @@ exports.handler = async (event) => {
 
         console.log("✅ [suscribirse] Respuesta Transbank:", response.data);
 
-        const { token, url_webpay } = response.data;
+        // 🔹 Transbank puede devolver "url_webpay" o simplemente "url"
+        const token = response.data.token;
+        const url_webpay = response.data.url_webpay || response.data.url;
+        console.log("🧾 [suscribirse] Data completa:", JSON.stringify(response.data, null, 2));
+
+        console.log("📦 Token:", token);
+        console.log("📦 URL Webpay:", url_webpay);
+
         if (!token || !url_webpay)
             throw new Error("No se recibió token o URL válidos desde Transbank");
+
 
         // 🧾 Guarda vínculo token → cliente en S3
         const bucketName = "plataformas-web-buckets";

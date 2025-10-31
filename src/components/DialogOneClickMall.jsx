@@ -140,7 +140,7 @@ export default function DialogOneClickMall({
       }
     } catch (error) {
       console.error("❌ Error en onConfirm:", error);
-      setError("Ocurrió un error al iniciar la suscripción.");
+      setError("");
       setShowContent(true);
       setLoading(false);
     }
