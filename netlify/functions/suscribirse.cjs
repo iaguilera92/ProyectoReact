@@ -1,67 +1,89 @@
+const { Options, Environment } = require("transbank-sdk");
+const axios = require("axios");
+
 exports.handler = async (event) => {
+    console.log("🛰️ [suscribirse] Nueva solicitud:", {
+        method: event.httpMethod,
+        origin: event.headers.origin,
+    });
+
+    // 🌐 Permitir tanto localhost como dominio productivo
+    const allowedOrigins = [
+        "http://localhost:5173",
+        "https://plataformas-web.cl",
+    ];
+
+    const origin = event.headers.origin || "";
+    const corsOrigin = allowedOrigins.includes(origin)
+        ? origin
+        : allowedOrigins[0];
+
+    const corsHeaders = {
+        "Access-Control-Allow-Origin": corsOrigin,
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+    };
+
+    // ✅ Manejo de preflight CORS
     if (event.httpMethod === "OPTIONS") {
-        return {
-            statusCode: 200,
-            headers: {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Headers": "Content-Type",
-                "Access-Control-Allow-Methods": "POST, OPTIONS",
-            },
-            body: "OK",
-        };
+        console.log("🟡 [suscribirse] Respondiendo preflight OPTIONS");
+        return { statusCode: 200, headers: corsHeaders, body: "" };
     }
 
     try {
-        const { email, nombre } = JSON.parse(event.body);
+        console.log("🟢 [suscribirse] Body recibido:", event.body);
+        const { nombre, email } = JSON.parse(event.body || "{}");
 
-        const body = {
-            username: nombre,
-            email,
-            response_url:
-                "http://localhost:8888/.netlify/functions/confirmarSuscripcion", // callback local
-        };
+        if (!nombre || !email)
+            throw new Error("Faltan parámetros: nombre y email son requeridos");
 
-        const COMMERCE_CODE = process.env.TBK_COMMERCE_CODE_ONECLICK || "597055555541";
-        const API_SECRET = process.env.TBK_API_KEY_SECRET_ONECLICK || "579B532A7440BB0C9079DED94D31EA161EB9A77A";
+        // ✅ Configuración de integración
+        const options = new Options(
+            "597055555541", // Código de comercio OneClick integración
+            "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C",
+            Environment.Integration
+        );
 
-        console.log("➡️ Enviando OneClick:", body);
-        console.log("Usando COMMERCE_CODE:", COMMERCE_CODE);
+        // 🌍 Determinar automáticamente la URL de retorno según entorno
+        const isLocal = origin.includes("localhost");
+        const baseUrl = isLocal
+            ? "http://localhost:8888"
+            : "https://plataformas-web.cl";
+        const returnUrl = `${baseUrl}/.netlify/functions/confirmarSuscripcion`;
 
-        const response = await fetch(
+        console.log("⚙️ [suscribirse] Enviando inscripción manual a OneClick...");
+        console.log("↪️ URL de retorno:", returnUrl);
+
+        // 🔹 Petición a la API pública de OneClick
+        const response = await axios.post(
             "https://webpay3gint.transbank.cl/rswebpaytransaction/api/oneclick/v1.0/inscriptions",
             {
-                method: "POST",
+                username: nombre,
+                email,
+                response_url: returnUrl,
+            },
+            {
                 headers: {
-                    "Tbk-Api-Key-Id": COMMERCE_CODE,
-                    "Tbk-Api-Key-Secret": API_SECRET,
+                    "Tbk-Api-Key-Id": options.commerceCode,
+                    "Tbk-Api-Key-Secret": options.apiKey,
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(body),
             }
         );
 
-        const text = await response.text();
-        console.log("⬅️ Respuesta cruda OneClick:", text);
-        const data = JSON.parse(text || "{}");
-
-        if (!data.token || !data.url_webpay) {
-            throw new Error("Respuesta incompleta desde OneClick");
-        }
+        console.log("✅ [suscribirse] Respuesta recibida:", response.data);
 
         return {
             statusCode: 200,
-            headers: { "Access-Control-Allow-Origin": "*" },
-            body: JSON.stringify({ token: data.token, url: data.url_webpay }),
+            headers: corsHeaders,
+            body: JSON.stringify(response.data),
         };
-    } catch (error) {
-        console.error("Error iniciando OneClick:", error);
+    } catch (err) {
+        console.error("❌ [suscribirse] Error:", err);
         return {
             statusCode: 500,
-            headers: { "Access-Control-Allow-Origin": "*" },
-            body: JSON.stringify({
-                error: "Error al iniciar inscripción OneClick",
-                detalle: error.message,
-            }),
+            headers: corsHeaders,
+            body: JSON.stringify({ error: err.message }),
         };
     }
 };

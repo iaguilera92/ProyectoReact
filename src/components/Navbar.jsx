@@ -163,7 +163,7 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
     }
   }, [mostrarAnimacion]);
 
-  //PATPASS
+  //ONECLICK MALL
   const handleSuscribirse = async (nombre, email) => {
     try {
       const isLocal = window.location.hostname === "localhost";
@@ -178,12 +178,15 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
       });
 
       const data = await resp.json();
-      console.log("Respuesta suscribirse OneClick:", data);
+      console.log("🔵 Respuesta suscribirse OneClick:", data);
 
-      if (data.url && data.token) {
+      // ✅ Verifica si vienen ambos datos antes de redirigir
+      if (data.url_webpay && data.token) {
+        console.log("🚀 Redirigiendo a Transbank...");
+
         const form = document.createElement("form");
         form.method = "POST";
-        form.action = data.url;
+        form.action = data.url_webpay;
 
         const input = document.createElement("input");
         input.type = "hidden";
@@ -192,13 +195,23 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
         form.appendChild(input);
 
         document.body.appendChild(form);
-        form.submit();
+        form.submit(); // 🔥 abre la página azul de Webpay
+      } else {
+        console.error("⚠️ Respuesta inválida:", data);
+        alert("No se pudo iniciar la inscripción. Revisa la consola.");
       }
     } catch (err) {
-      console.error("Error en handleSuscribirse:", err);
+      console.error("❌ Error en handleSuscribirse:", err);
     }
   };
 
+
+  //Visa TEST
+  //Número: 4051885600446623
+  //Fecha de vencimiento: 12/12
+  //CVV: 123
+  //Rut: 11.111.111-1
+  //Clave: 123
 
   return (
     <>
@@ -386,7 +399,6 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
 
               <Box sx={{ display: { xs: "none", md: "flex" }, gap: 1 }}>
                 {menuItems
-                  .filter((item) => item.name !== "Suscribirse") // 🚫 oculta el ítem
                   .map((item, index) => (
                     <Button
                       key={item.name}
@@ -479,7 +491,7 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
                 style={{ listStyle: "none", padding: 0, margin: 0, width: "100%" }}
               >
                 {menuItems.map((item, index) => {
-                  const isDisabled = item.name === "Suscribirse"; // 🔒 detecta el ítem a bloquear
+                  const isDisabled = item.name === "MenuBloqueado"; // 🔒 detecta el ítem a bloquear
 
                   return (
                     <ListItem
