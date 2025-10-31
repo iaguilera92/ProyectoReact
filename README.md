@@ -78,7 +78,9 @@ COMANDOS
 
 Node: npm run dev - npm run build
 
-Correr hosting: netlify dev
+DEV: netlify dev
+PRD: netlify deploy --prod
+
 
 Kill puerto: npx kill-port 5174
 

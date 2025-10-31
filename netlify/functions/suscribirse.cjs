@@ -1,85 +1,113 @@
-const { Options, Environment, Oneclick } = require("transbank-sdk");
 const AWS = require("aws-sdk");
 const s3 = new AWS.S3();
 
 exports.handler = async (event) => {
-    const allowedOrigins = [
-        "http://localhost:5173",
-        "http://localhost:8888",
-        "https://plataformas-web.cl",
-    ];
-    const origin = event.headers.origin || "";
-    const corsOrigin = allowedOrigins.includes(origin)
-        ? origin
-        : "https://plataformas-web.cl";
-
-    const corsHeaders = {
-        "Access-Control-Allow-Origin": corsOrigin,
-        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type",
-    };
-
+    // ✅ CORS
     if (event.httpMethod === "OPTIONS") {
-        return { statusCode: 200, headers: corsHeaders, body: "" };
+        return {
+            statusCode: 200,
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Headers": "Content-Type",
+                "Access-Control-Allow-Methods": "POST, OPTIONS",
+            },
+            body: "OK",
+        };
     }
 
     try {
-        const { nombre, email, sitioWeb, idCliente } = JSON.parse(event.body || "{}");
-        if (!nombre || !email || !idCliente)
+        const { email, nombre, sitioWeb, idCliente } = JSON.parse(event.body || "{}");
+
+        if (!email || !nombre || !idCliente)
             throw new Error("Faltan parámetros requeridos (nombre, email, idCliente)");
 
-        // 🌎 Detectar entorno
-        const isLocal =
-            origin.includes("localhost") ||
-            origin.includes("127.0.0.1") ||
-            origin.includes("8888");
+        const origin = event.headers.origin || "";
+        const host = event.headers.host || "";
+        const isLocal = origin.includes("localhost") || host.includes("localhost");
+        const isOfficial = origin.includes("plataformas-web.cl");
 
-        // ✅ Configurar ambiente: Integration (INT) aunque estemos en producción
-        const options = new Options(
-            "597055555541", // código comercio OneClick Mall integración
-            "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C", // API Key integración
-            Environment.Integration // 👈 antes era IntegrationType.TEST
-        );
+        // ✅ Forzar integración en cualquier deploy temporal (netlify.app)
+        const forceIntegration =
+            !isLocal && !isOfficial && host.includes("netlify.app");
 
-        const baseUrl = isLocal
-            ? "http://localhost:8888"
-            : "https://plataformas-web.cl";
-        const returnUrl = `${baseUrl}/.netlify/functions/confirmarSuscripcion`;
+        // 🌍 Callback URL (aceptado por Transbank INT)
+        const responseUrl = isOfficial
+            ? "https://plataformas-web.cl/.netlify/functions/confirmarSuscripcion"
+            : "http://localhost:8888/.netlify/functions/confirmarSuscripcion";
 
-        console.log("⚙️ [suscribirse] Iniciando inscripción con SDK...");
-        const inscription = new Oneclick.MallInscription(options);
-        const response = await inscription.start(nombre, email, returnUrl);
+        const body = {
+            username: nombre,
+            email,
+            response_url: responseUrl,
+        };
 
-        console.log("✅ [suscribirse] Respuesta Transbank:", response);
+        // 🔐 Credenciales INT (válidas en cualquier caso)
+        const COMMERCE_CODE = "597055555541";
+        const API_SECRET =
+            "579B532A7440BB0C9079DED94D31EA161EB9A77A"; // versión conocida funcional
 
-        if (!response.token || !response.url_webpay)
-            throw new Error("No se recibió token o URL válidos desde Transbank");
+        console.log("➡️ Enviando OneClick:", body);
+        console.log("🌐 Host:", host);
+        console.log("🧭 isLocal:", isLocal, "| isOfficial:", isOfficial, "| forceIntegration:", forceIntegration);
 
-        // 📦 Guarda vínculo token → cliente
+        const endpoint = "https://webpay3gint.transbank.cl/rswebpaytransaction/api/oneclick/v1.0/inscriptions";
+
+        const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+                "Tbk-Api-Key-Id": COMMERCE_CODE,
+                "Tbk-Api-Key-Secret": API_SECRET,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+        });
+
+        const text = await response.text();
+        console.log("⬅️ Respuesta cruda OneClick:", text);
+
+        const data = JSON.parse(text || "{}");
+
+        if (!data.token || !data.url_webpay)
+            throw new Error("Respuesta incompleta desde OneClick");
+
+        // 💾 Guardar token → cliente en S3
+        const bucketName = "plataformas-web-buckets";
+        const key = `tokens/${data.token}.json`;
+        const info = {
+            idCliente,
+            nombre,
+            email,
+            sitioWeb,
+            creado: new Date().toISOString(),
+            entorno: isOfficial ? "PROD" : "INT",
+        };
+
         await s3
             .putObject({
-                Bucket: "plataformas-web-buckets",
-                Key: `tokens/${response.token}.json`,
-                Body: JSON.stringify({ idCliente, nombre, email, sitioWeb }),
+                Bucket: bucketName,
+                Key: key,
+                Body: JSON.stringify(info),
                 ContentType: "application/json",
             })
             .promise();
 
+        console.log(`💾 Cliente guardado en S3: ${key}`);
+
         return {
             statusCode: 200,
-            headers: corsHeaders,
+            headers: { "Access-Control-Allow-Origin": "*" },
             body: JSON.stringify({
-                token: response.token,
-                url_webpay: response.url_webpay,
+                token: data.token,
+                url_webpay: data.url_webpay,
             }),
         };
-    } catch (err) {
-        console.error("❌ [suscribirse] Error:", err);
+    } catch (error) {
+        console.error("❌ Error iniciando OneClick:", error);
         return {
             statusCode: 500,
-            headers: corsHeaders,
+            headers: { "Access-Control-Allow-Origin": "*" },
             body: JSON.stringify({
-                error_message: err.message,
+                error_message: error.message,
             }),
         };
     }
