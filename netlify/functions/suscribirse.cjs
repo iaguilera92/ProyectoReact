@@ -41,38 +41,25 @@ exports.handler = async (event) => {
         if (!nombre || !email || !idCliente)
             throw new Error("Faltan parámetros requeridos (nombre, email, idCliente)");
 
-        // 🔍 Detectar entorno
-        const isLocal =
-            origin.includes("localhost") ||
-            origin.includes("127.0.0.1") ||
-            origin.includes("8888");
+        // ⚙️ Forzar modo INTEGRACIÓN (tanto en local como en producción)
+        const isIntegration = true;
 
-        // ✅ Endpoint Transbank según entorno
-        const inscriptionUrl = isLocal
-            ? "https://webpay3gint.transbank.cl/rswebpaytransaction/api/oneclick/v1.0/inscriptions" // integración
-            : "https://webpay3g.transbank.cl/rswebpaytransaction/api/oneclick/v1.0/inscriptions"; // producción
+        const inscriptionUrl = "https://webpay3gint.transbank.cl/rswebpaytransaction/api/oneclick/v1.0/inscriptions";
 
-        // ✅ Credenciales según entorno (usa variables de entorno en producción)
         const options = new Options(
-            isLocal
-                ? "597055555541" // código comercio integración
-                : process.env.TBK_API_KEY_ID, // producción
-            isLocal
-                ? "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C" // integración
-                : process.env.TBK_API_KEY_SECRET, // producción
-            isLocal ? "INTEGRACION" : "PRODUCCION"
+            "597055555541", // código de comercio integración
+            "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C", // API Key de integración
+            "INTEGRACION"
         );
 
-        const baseUrl = isLocal
-            ? "http://localhost:8888"
-            : "https://plataformas-web.cl";
+        // 🔗 URL de retorno (para confirmar suscripción)
+        const baseUrl = "https://plataformas-web.cl"; // ✅ usa dominio productivo
         const returnUrl = `${baseUrl}/.netlify/functions/confirmarSuscripcion`;
 
-        console.log("⚙️ [suscribirse] Registrando inscripción OneClick...");
+        console.log("⚙️ [suscribirse] Registrando inscripción OneClick (modo integración)...");
         console.log("↪️ URL retorno:", returnUrl);
-        console.log("🌎 Endpoint:", inscriptionUrl);
 
-        // 🔹 Llamada al endpoint de Transbank
+        // 🔹 Llamada a Transbank (ambiente integración)
         const response = await axios.post(
             inscriptionUrl,
             {
