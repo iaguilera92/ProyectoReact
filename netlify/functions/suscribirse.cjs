@@ -1,8 +1,5 @@
-const axios = require("axios");
+const { Options, Environment, Oneclick } = require("transbank-sdk");
 const AWS = require("aws-sdk");
-const dns = require("dns");
-const https = require("https");
-
 const s3 = new AWS.S3();
 
 exports.handler = async (event) => {
@@ -31,50 +28,38 @@ exports.handler = async (event) => {
         if (!nombre || !email || !idCliente)
             throw new Error("Faltan parámetros requeridos (nombre, email, idCliente)");
 
-        // 🌐 Siempre usar INT aunque esté en producción
-        const TBK_API_KEY_ID = "597055555541";
-        const TBK_API_KEY_SECRET =
-            "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C";
-        const inscriptionUrl =
-            "https://webpay3gint.transbank.cl/rswebpaytransaction/api/oneclick/v1.0/inscriptions";
-        const returnUrl =
-            "https://plataformas-web.cl/.netlify/functions/confirmarSuscripcion";
+        // 🌎 Detectar entorno
+        const isLocal =
+            origin.includes("localhost") ||
+            origin.includes("127.0.0.1") ||
+            origin.includes("8888");
 
-        const httpsAgent = new https.Agent({
-            lookup: (hostname, opts, cb) => dns.lookup(hostname, { family: 4 }, cb),
-            rejectUnauthorized: false,
-        });
-
-        const response = await axios.post(
-            inscriptionUrl,
-            {
-                username: nombre,
-                email,
-                response_url: returnUrl,
-            },
-            {
-                headers: {
-                    "tbk-api-key-id": TBK_API_KEY_ID,
-                    "tbk-api-key-secret": TBK_API_KEY_SECRET,
-                    "content-type": "application/json",
-                    Accept: "application/json",
-                    "user-agent": "Mozilla/5.0 (Netlify Function Integration)",
-                },
-                httpsAgent,
-                timeout: 10000,
-            }
+        // ✅ Configurar ambiente: Integration (INT) aunque estemos en producción
+        const options = new Options(
+            "597055555541", // código comercio OneClick Mall integración
+            "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C", // API Key integración
+            Environment.Integration // 👈 antes era IntegrationType.TEST
         );
 
-        console.log("✅ [suscribirse] Respuesta Transbank:", response.data);
+        const baseUrl = isLocal
+            ? "http://localhost:8888"
+            : "https://plataformas-web.cl";
+        const returnUrl = `${baseUrl}/.netlify/functions/confirmarSuscripcion`;
 
-        const { token, url_webpay } = response.data;
-        if (!token || !url_webpay)
+        console.log("⚙️ [suscribirse] Iniciando inscripción con SDK...");
+        const inscription = new Oneclick.MallInscription(options);
+        const response = await inscription.start(nombre, email, returnUrl);
+
+        console.log("✅ [suscribirse] Respuesta Transbank:", response);
+
+        if (!response.token || !response.url_webpay)
             throw new Error("No se recibió token o URL válidos desde Transbank");
 
+        // 📦 Guarda vínculo token → cliente
         await s3
             .putObject({
                 Bucket: "plataformas-web-buckets",
-                Key: `tokens/${token}.json`,
+                Key: `tokens/${response.token}.json`,
                 Body: JSON.stringify({ idCliente, nombre, email, sitioWeb }),
                 ContentType: "application/json",
             })
@@ -83,7 +68,10 @@ exports.handler = async (event) => {
         return {
             statusCode: 200,
             headers: corsHeaders,
-            body: JSON.stringify({ token, url_webpay }),
+            body: JSON.stringify({
+                token: response.token,
+                url_webpay: response.url_webpay,
+            }),
         };
     } catch (err) {
         console.error("❌ [suscribirse] Error:", err);
@@ -91,7 +79,7 @@ exports.handler = async (event) => {
             statusCode: 500,
             headers: corsHeaders,
             body: JSON.stringify({
-                error_message: err.response?.data || err.message,
+                error_message: err.message,
             }),
         };
     }
