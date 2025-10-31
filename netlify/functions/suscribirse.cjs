@@ -1,114 +1,144 @@
+const axios = require("axios");
 const AWS = require("aws-sdk");
+const { Options } = require("transbank-sdk");
 const s3 = new AWS.S3();
 
 exports.handler = async (event) => {
-    // ✅ CORS
+    console.log("🛰️ [suscribirse] Nueva solicitud:", {
+        method: event.httpMethod,
+        origin: event.headers.origin,
+        host: event.headers.host,
+    });
+
+    // 🌍 CORS permitido
+    const allowedOrigins = [
+        "http://localhost:5173",
+        "http://localhost:8888",
+        "https://plataformas-web.cl",
+    ];
+    const origin = event.headers.origin || "";
+    const corsOrigin = allowedOrigins.includes(origin)
+        ? origin
+        : allowedOrigins[0];
+    const corsHeaders = {
+        "Access-Control-Allow-Origin": corsOrigin,
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+    };
+
+    // ✅ Preflight CORS
     if (event.httpMethod === "OPTIONS") {
-        return {
-            statusCode: 200,
-            headers: {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Headers": "Content-Type",
-                "Access-Control-Allow-Methods": "POST, OPTIONS",
-            },
-            body: "OK",
-        };
+        console.log("🟡 [suscribirse] Preflight OPTIONS");
+        return { statusCode: 200, headers: corsHeaders, body: "" };
     }
 
     try {
-        const { email, nombre, sitioWeb, idCliente } = JSON.parse(event.body || "{}");
+        console.log("🟢 [suscribirse] Body recibido:", event.body);
+        const { nombre, email, sitioWeb, idCliente } = JSON.parse(event.body || "{}");
 
-        if (!email || !nombre || !idCliente)
+        if (!nombre || !email || !idCliente)
             throw new Error("Faltan parámetros requeridos (nombre, email, idCliente)");
 
-        const origin = event.headers.origin || "";
+        // ⚙️ Detección de entorno (local, integración o producción)
         const host = event.headers.host || "";
-        const isLocal = origin.includes("localhost") || host.includes("localhost");
-        const isOfficial = origin.includes("plataformas-web.cl");
+        const origin = event.headers.origin || "";
+        const isLocal =
+            host.includes("localhost") || origin.includes("localhost");
+        const hasProdKeys =
+            !!process.env.TBK_API_KEY_ID && !!process.env.TBK_API_KEY_SECRET;
 
-        // ✅ Forzar integración en cualquier deploy temporal (netlify.app)
-        const forceIntegration =
-            !isLocal && !isOfficial && host.includes("netlify.app");
+        // 🧠 Determinar modo de operación
+        const mode = hasProdKeys ? "PRODUCCION" : "INTEGRACION";
+        const inscriptionUrl =
+            mode === "PRODUCCION"
+                ? "https://webpay3g.transbank.cl/rswebpaytransaction/api/oneclick/v1.0/inscriptions"
+                : "https://webpay3gint.transbank.cl/rswebpaytransaction/api/oneclick/v1.0/inscriptions";
 
-        // 🌍 Callback URL (aceptado por Transbank INT)
-        const responseUrl = isOfficial
-            ? "https://plataformas-web.cl/.netlify/functions/confirmarSuscripcion"
-            : "http://localhost:8888/.netlify/functions/confirmarSuscripcion";
+        const options = new Options(
+            hasProdKeys
+                ? process.env.TBK_API_KEY_ID
+                : "597055555541", // Comercio integración
+            hasProdKeys
+                ? process.env.TBK_API_KEY_SECRET
+                : "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C", // Llave integración
+            mode
+        );
 
-        const body = {
-            username: nombre,
-            email,
-            response_url: responseUrl,
-        };
+        // 🌐 URL retorno (siempre dominio público)
+        const baseUrl =
+            mode === "PRODUCCION"
+                ? "https://plataformas-web.cl"
+                : isLocal
+                    ? "http://localhost:8888"
+                    : "https://plataformas-web.cl";
+        const returnUrl = `${baseUrl}/.netlify/functions/confirmarSuscripcion`;
 
-        // 🔐 Credenciales INT (válidas en cualquier caso)
-        const COMMERCE_CODE = "597055555541";
-        const API_SECRET =
-            "579B532A7440BB0C9079DED94D31EA161EB9A77A"; // versión conocida funcional
+        console.log("⚙️ [suscribirse] Registrando inscripción OneClick...");
+        console.log("↪️ Modo:", mode);
+        console.log("🌍 Endpoint:", inscriptionUrl);
+        console.log("📬 URL retorno:", returnUrl);
 
-        console.log("➡️ Enviando OneClick:", body);
-        console.log("🌐 Host:", host);
-        console.log("🧭 isLocal:", isLocal, "| isOfficial:", isOfficial, "| forceIntegration:", forceIntegration);
-
-        const endpoint = "https://webpay3gint.transbank.cl/rswebpaytransaction/api/oneclick/v1.0/inscriptions";
-
-        const response = await fetch(endpoint, {
-            method: "POST",
-            headers: {
-                "Tbk-Api-Key-Id": COMMERCE_CODE,
-                "Tbk-Api-Key-Secret": API_SECRET,
-                "Content-Type": "application/json",
+        // 🔹 Llamada HTTP directa a Transbank (REST)
+        const response = await axios.post(
+            inscriptionUrl,
+            {
+                username: nombre,
+                email,
+                response_url: returnUrl,
             },
-            body: JSON.stringify(body),
-        });
+            {
+                headers: {
+                    "Tbk-Api-Key-Id": options.commerceCode,
+                    "Tbk-Api-Key-Secret": options.apiKey,
+                    "Content-Type": "application/json",
+                },
+            }
+        );
 
-        const text = await response.text();
-        console.log("⬅️ Respuesta cruda OneClick:", text);
+        console.log("✅ [suscribirse] Respuesta Transbank:", response.data);
 
-        const data = JSON.parse(text || "{}");
+        const token = response.data.token;
+        const url_webpay = response.data.url_webpay || response.data.url;
 
-        if (!data.token || !data.url_webpay)
-            throw new Error("Respuesta incompleta desde OneClick");
+        if (!token || !url_webpay) {
+            console.error("⚠️ Respuesta incompleta desde Transbank:", response.data);
+            throw new Error(response.data.error_message || "Respuesta incompleta desde OneClick");
+        }
 
-        // 💾 Guardar token → cliente en S3
+        // 💾 Guarda relación token → cliente en S3
         const bucketName = "plataformas-web-buckets";
-        const key = `tokens/${data.token}.json`;
-        const info = {
+        const key = `tokens/${token}.json`;
+        const data = {
             idCliente,
             nombre,
             email,
             sitioWeb,
+            entorno: mode,
             creado: new Date().toISOString(),
-            entorno: isOfficial ? "PROD" : "INT",
         };
 
         await s3
             .putObject({
                 Bucket: bucketName,
                 Key: key,
-                Body: JSON.stringify(info),
+                Body: JSON.stringify(data),
                 ContentType: "application/json",
             })
             .promise();
 
-        console.log(`💾 Cliente guardado en S3: ${key}`);
+        console.log(`💾 [suscribirse] Datos guardados en S3: ${key}`);
 
         return {
             statusCode: 200,
-            headers: { "Access-Control-Allow-Origin": "*" },
-            body: JSON.stringify({
-                token: data.token,
-                url_webpay: data.url_webpay,
-            }),
+            headers: corsHeaders,
+            body: JSON.stringify({ token, url_webpay }),
         };
-    } catch (error) {
-        console.error("❌ Error iniciando OneClick:", error);
+    } catch (err) {
+        console.error("❌ [suscribirse] Error:", err);
         return {
             statusCode: 500,
-            headers: { "Access-Control-Allow-Origin": "*" },
-            body: JSON.stringify({
-                error_message: error.message,
-            }),
+            headers: corsHeaders,
+            body: JSON.stringify({ error_message: err.message }),
         };
     }
 };
