@@ -10,6 +10,7 @@ import { FormControl, InputLabel, Select, MenuItem, Tooltip, CircularProgress } 
 import { motion, AnimatePresence, useMotionValue, animate } from "framer-motion";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import ConfirmationNumberRoundedIcon from "@mui/icons-material/ConfirmationNumberRounded";
+import HowToRegRoundedIcon from "@mui/icons-material/HowToRegRounded";
 import DeleteForeverRoundedIcon from "@mui/icons-material/DeleteForeverRounded";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 
@@ -623,6 +624,36 @@ const Clientes = () => {
     }
   };
 
+  //SUSCRITO
+  const actualizarASuscrito = async (cliente, nuevoEstado) => {
+    try {
+      const url = `${window.location.hostname === "localhost"
+        ? "http://localhost:8888"
+        : ""
+        }/.netlify/functions/actualizarCliente`;
+
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          idCliente: cliente.idCliente,
+          suscripcion: nuevoEstado, // 👈 true = activar, false = anular
+        }),
+      });
+
+      const data = await res.json();
+      console.log("🔄 Suscripción actualizada:", data);
+
+      if (res.ok) {
+        const nuevosClientes = await cargarClientesDesdeExcel();
+        setClientes(nuevosClientes);
+      }
+    } catch (err) {
+      console.error("❌ Error al actualizar suscripción:", err);
+    }
+  };
+
+
   return (
     <Box
       sx={{
@@ -919,21 +950,62 @@ const Clientes = () => {
             <TableBody>
               {clientesPaginados.map((cliente, index) => {
                 const estaAlDia = cliente.pagado;
+                const estaSuscrito = cliente.suscripcion === true; // 👈 nuevo campo
+
                 return (
                   <TableRow
                     key={index}
                     sx={{
-                      backgroundColor: estaAlDia ? "rgba(200, 255, 200, 0.12)" : "transparent",
-                      transition: "background-color 0.3s ease-in-out",
+                      position: "relative",
+                      overflow: "hidden",
+                      background: estaSuscrito
+                        ? "linear-gradient(90deg, rgba(255,215,0,0.22), rgba(255,223,128,0.18))"
+                        : estaAlDia
+                          ? "rgba(200, 255, 200, 0.12)"
+                          : "transparent",
+                      transition: "background 0.3s ease-in-out",
 
-                      // 👇 aplica padding distinto en mobile
+                      "&:hover": {
+                        background: estaSuscrito
+                          ? "linear-gradient(90deg, rgba(255,215,0,0.32), rgba(255,223,128,0.25))"
+                          : estaAlDia
+                            ? "rgba(200, 255, 200, 0.22)"
+                            : "rgba(0,0,0,0.03)",
+                      },
+
+                      // ✨ Efecto de brillo diagonal solo si está suscrito
+                      ...(estaSuscrito && {
+                        boxShadow: "inset 0 0 0.5px rgba(255, 215, 0, 0.3), 0 0 10px rgba(255, 215, 0, 0.25)",
+                        position: "relative",
+                        isolation: "isolate", // 👈 asegura que el brillo no afecte layout exterior
+                        "&::after": {
+                          content: '""',
+                          position: "absolute",
+                          inset: 0,
+                          background: "linear-gradient(120deg, rgba(255,255,255,0) 40%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 60%)",
+                          maskImage: "linear-gradient(90deg, transparent, black, transparent)",
+                          WebkitMaskImage: "linear-gradient(90deg, transparent, black, transparent)",
+                          animation: "shineRowMask 6s linear infinite",
+                          pointerEvents: "none",
+                          zIndex: 1,
+                          opacity: 0.5,
+                        },
+                      }),
+                      "@keyframes shineRowMask": {
+                        "0%": { maskPosition: "150% 0", WebkitMaskPosition: "150% 0" },
+                        "100%": { maskPosition: "-50% 0", WebkitMaskPosition: "-50% 0" },
+                      },
+
                       "& td, & th": {
-                        py: { xs: 0, sm: 0 }, // menos alto en mobile
-                        px: { xs: 1, sm: 2 },   // opcional: menos ancho en mobile
-                        fontSize: { xs: "0.75rem", sm: "0.875rem" }, // 👈 texto más chico en mobile
+                        py: { xs: 0, sm: 0 },
+                        px: { xs: 1, sm: 2 },
+                        fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                        position: "relative",
+                        zIndex: 2,
                       },
                     }}
                   >
+
                     {/* Cliente */}
                     <TableCell
                       sx={{
@@ -947,10 +1019,9 @@ const Clientes = () => {
                         sx={{
                           display: "flex",
                           alignItems: "center",
-                          gap: 0.5, // 👈 mucho más compacto
+                          gap: 0.5,
                         }}
                       >
-                        {/* Link del sitio */}
                         <Typography
                           sx={{
                             color: "#1a0dab",
@@ -969,15 +1040,15 @@ const Clientes = () => {
                           {cliente.sitioWeb || "Sin sitio"}
                         </Typography>
 
-                        {/* Botón circular pincel al lado */}
+                        {/* Botón acciones */}
                         <Tooltip title="Acciones Cliente" arrow>
                           <IconButton
                             onClick={() => datosCliente(cliente)}
                             size="small"
                             sx={{
                               background: cliente.enRevision
-                                ? "linear-gradient(135deg, #e74c3c, #c0392b)" // rojo
-                                : "linear-gradient(135deg, #2ecc71, #27ae60)", // verde
+                                ? "linear-gradient(135deg, #e74c3c, #c0392b)"
+                                : "linear-gradient(135deg, #2ecc71, #27ae60)",
                               width: 22,
                               height: 22,
                               p: 0.3,
@@ -994,13 +1065,13 @@ const Clientes = () => {
                             }}
                           >
                             <ConfirmationNumberRoundedIcon fontSize="inherit" sx={{ fontSize: 14 }} />
-
                           </IconButton>
                         </Tooltip>
-                        {/* 🗑️ Botón eliminar cliente */}
+
+                        {/* Botón eliminar */}
                         <Tooltip title="Eliminar Cliente" arrow>
                           <IconButton
-                            onClick={() => abrirDialog(cliente.sitioWeb)} // 👈 abre el diálogo
+                            onClick={() => abrirDialog(cliente.sitioWeb)}
                             size="small"
                             sx={{
                               background: "linear-gradient(135deg, #f44336, #d32f2f)",
@@ -1022,21 +1093,49 @@ const Clientes = () => {
                           </IconButton>
                         </Tooltip>
 
-
+                        {/* 🟢 Botón suscribir manualmente */}
+                        <Tooltip
+                          title={
+                            cliente.suscripcion
+                              ? "Anular suscripción" // 👈 cambia tooltip
+                              : "Activar suscripción manual"
+                          }
+                          arrow
+                        >
+                          <IconButton
+                            onClick={() =>
+                              actualizarASuscrito(cliente, !cliente.suscripcion) // 👈 enviamos nuevo estado
+                            }
+                            size="small"
+                            sx={{
+                              background: cliente.suscripcion
+                                ? "linear-gradient(135deg, #f44336, #d32f2f)" // 🔴 rojo si está suscrito
+                                : "linear-gradient(135deg, #43a047, #2e7d32)", // 🟢 verde si no
+                              width: 22,
+                              height: 22,
+                              p: 0.3,
+                              borderRadius: "8px",
+                              boxShadow: "0 2px 6px rgba(0,0,0,0.25)",
+                              color: "#fff",
+                              ml: 0.5,
+                              "&:hover": {
+                                background: cliente.suscripcion
+                                  ? "linear-gradient(135deg, #ef5350, #e53935)"
+                                  : "linear-gradient(135deg, #66bb6a, #388e3c)",
+                                transform: "scale(1.1)",
+                                transition: "all 0.2s ease",
+                              },
+                            }}
+                          >
+                            <HowToRegRoundedIcon fontSize="inherit" sx={{ fontSize: 14 }} />
+                          </IconButton>
+                        </Tooltip>
 
                       </Box>
-
                     </TableCell>
 
-
                     {/* Estado */}
-                    <TableCell
-                      align="center"
-                      sx={{
-                        pl: 1, // 👈 reduce padding izquierdo
-                        width: isMobile ? 50 : 100,
-                      }}
-                    >
+                    <TableCell align="center">
                       <Box
                         sx={{
                           display: "flex",
@@ -1046,157 +1145,253 @@ const Clientes = () => {
                           minHeight: "50px",
                         }}
                       >
-                        {estaAlDia ? <GreenDot /> : <RedDot />}
+                        {estaSuscrito ? (
+                          <Box
+                            sx={{
+                              width: 14,
+                              height: 14,
+                              borderRadius: "50%",
+                              background: "radial-gradient(circle at 40% 40%, #FFD700, #B8860B)",
+                              boxShadow: "0 0 8px rgba(255, 215, 0, 0.6)",
+                              animation: "pulseGold 2s infinite ease-in-out",
+                              "@keyframes pulseGold": {
+                                "0%": { transform: "scale(1)", opacity: 1 },
+                                "50%": { transform: "scale(1.3)", opacity: 0.85 },
+                                "100%": { transform: "scale(1)", opacity: 1 },
+                              },
+                            }}
+                          />
+                        ) : estaAlDia ? (
+                          <GreenDot />
+                        ) : (
+                          <RedDot />
+                        )}
                       </Box>
                     </TableCell>
 
-                    {/* Botón COBRAR */}
-                    <TableCell align="center" sx={{ pl: 0.5, width: isMobile ? 60 : undefined }}>
-                      <Box
+
+                    {/* === Si está suscrito mostramos etiqueta === */}
+                    {estaSuscrito ? (
+                      <TableCell
+                        colSpan={2}
+                        align="left"
                         sx={{
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          minHeight: "50px",
+                          position: "relative",
+                          background: "transparent",
+                          pl: { xs: 0.8, sm: 1 },
+                          py: 0.2,
                         }}
                       >
-                        <Button
-                          variant="contained"
-                          color="error"
-                          size="small"
-                          onClick={() => {
-                            setClienteSeleccionado(cliente);
-                            setOpenDialogCobro(true);
-                          }}
-                          disabled={estaAlDia || botonesBloqueados.includes(index)}
+                        <Box
                           sx={{
-                            minWidth: isMobile ? "auto" : undefined,
-                            px: isMobile ? 1.3 : 2.2,
-                            py: isMobile ? 0.5 : 0.8,
-                            fontSize: isMobile ? 0 : "0.8rem", // texto oculto en mobile
+                            display: "inline-flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            position: "relative",
+                            border: "1px solid #FFD700", // ✨ borde dorado visible
+                            borderRadius: "5px",
+                            background:
+                              "linear-gradient(90deg, rgba(255,215,0,0.15), rgba(255,223,128,0.05))",
+                            boxShadow:
+                              "0 0 6px rgba(255,215,0,0.3), inset 0 0 2px rgba(255,255,255,0.4)",
+                            px: 1,
+                            py: 0.15,
+                            color: "#b8860b",
                             fontWeight: 600,
-                            '& .emoji': {
-                              fontSize: '1rem', // 👈 tamaño visible solo del ícono
+                            fontSize: { xs: "0.6rem", sm: "0.72rem" },
+                            textTransform: "uppercase",
+                            whiteSpace: "nowrap",
+                            transition: "all 0.3s ease",
+                            overflow: "hidden",
+
+                            "&:hover": {
+                              boxShadow:
+                                "0 0 10px rgba(255,215,0,0.45), inset 0 0 3px rgba(255,255,255,0.5)",
+                              transform: "scale(1.02)",
+                              background:
+                                "linear-gradient(90deg, rgba(255,215,0,0.25), rgba(255,223,128,0.1))",
                             },
-                            '&.Mui-disabled': {
-                              cursor: 'not-allowed !important',
-                              pointerEvents: 'auto',
-                              opacity: 0.6,
+
+                            "&::after": {
+                              content: '""',
+                              position: "absolute",
+                              top: 0,
+                              left: "-150%",
+                              width: "250%",
+                              height: "100%",
+                              background:
+                                "linear-gradient(120deg, transparent 45%, rgba(255,255,255,0.6) 50%, transparent 55%)",
+                              animation: "shineTightGold 4s linear infinite",
+                              pointerEvents: "none",
+                              zIndex: 1,
+                              opacity: 0.8,
+                            },
+
+                            "@keyframes shineTightGold": {
+                              "0%": { transform: "translateX(-100%)" },
+                              "100%": { transform: "translateX(100%)" },
                             },
                           }}
                         >
-                          {isMobile ? <span className="emoji">💰</span> : "Cobrar"}
-                        </Button>
+                          <Typography
+                            component="span"
+                            sx={{
+                              fontWeight: 700,
+                              letterSpacing: "0.2px",
+                              background:
+                                "linear-gradient(90deg, #FFD700, #DAA520, #FFD700)",
+                              WebkitBackgroundClip: "text",
+                              WebkitTextFillColor: "transparent",
+                              position: "relative",
+                              zIndex: 2,
+                            }}
+                          >
+                            💎Suscrito
+                          </Typography>
+                        </Box>
+                      </TableCell>
 
 
-                      </Box>
-                    </TableCell>
 
-                    {/* Botón PAGO RECIBIDO o Pagado */}
-                    <TableCell align="center" sx={{ pl: 0.5, width: isMobile ? 80 : undefined }}>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          minHeight: "50px",
-                        }}
-                      >
-                        <AnimatePresence mode="wait">
-                          {estaAlDia ? (
-                            <motion.div
-                              key="pagado"
-                              initial={{ opacity: 0, scale: 0.9 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              exit={{ opacity: 0, scale: 0.9 }}
-                              transition={{ duration: 0.3 }}
-                              style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+
+                    ) : (
+                      <>
+                        {/* Botón COBRAR */}
+                        <TableCell align="center">
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              minHeight: "50px",
+                            }}
+                          >
+                            <Button
+                              variant="contained"
+                              color="error"
+                              size="small"
+                              onClick={() => {
+                                setClienteSeleccionado(cliente);
+                                setOpenDialogCobro(true);
+                              }}
+                              disabled={estaAlDia || botonesBloqueados.includes(index)}
+                              sx={{
+                                minWidth: isMobile ? "auto" : undefined,
+                                px: isMobile ? 1.3 : 2.2,
+                                py: isMobile ? 0.5 : 0.8,
+                                fontSize: isMobile ? 0 : "0.8rem",
+                                fontWeight: 600,
+                                "& .emoji": { fontSize: "1rem" },
+                                "&.Mui-disabled": {
+                                  cursor: "not-allowed !important",
+                                  pointerEvents: "auto",
+                                  opacity: 0.6,
+                                },
+                              }}
                             >
-                              {isMobile ? (
-                                <>
-                                  <DoneAllIcon fontSize="small" htmlColor="#2e7d32" />
-                                  <Button
-                                    size="small"
-                                    variant="text"
-                                    color="warning"
-                                    onClick={() => abrirDialogoConfirmacion(cliente, true)}
-                                    sx={{
-                                      minWidth: 0,
-                                      padding: 0,
-                                      ml: 0,
-                                    }}
-                                  >
-                                    🔄
-                                  </Button>
-                                </>
+                              {isMobile ? <span className="emoji">💰</span> : "Cobrar"}
+                            </Button>
+                          </Box>
+                        </TableCell>
+
+                        {/* Botón PAGO RECIBIDO / Reversión */}
+                        <TableCell align="center">
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              minHeight: "50px",
+                            }}
+                          >
+                            <AnimatePresence mode="wait">
+                              {estaAlDia ? (
+                                <motion.div
+                                  key="pagado"
+                                  initial={{ opacity: 0, scale: 0.9 }}
+                                  animate={{ opacity: 1, scale: 1 }}
+                                  exit={{ opacity: 0, scale: 0.9 }}
+                                  transition={{ duration: 0.3 }}
+                                  style={{ display: "flex", alignItems: "center", gap: 6 }}
+                                >
+                                  {isMobile ? (
+                                    <>
+                                      <DoneAllIcon fontSize="small" htmlColor="#2e7d32" />
+                                      <Button
+                                        size="small"
+                                        variant="text"
+                                        color="warning"
+                                        onClick={() => abrirDialogoConfirmacion(cliente, true)}
+                                        sx={{ minWidth: 0, padding: 0, ml: 0 }}
+                                      >
+                                        🔄
+                                      </Button>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Typography
+                                        variant="caption"
+                                        sx={{
+                                          color: "#2e7d32",
+                                          fontWeight: 600,
+                                          whiteSpace: "nowrap",
+                                        }}
+                                      >
+                                        ✅ Pago recibido
+                                      </Typography>
+                                      <Button
+                                        size="small"
+                                        variant="text"
+                                        color="warning"
+                                        onClick={() => abrirDialogoConfirmacion(cliente, true)}
+                                        sx={{ minWidth: 0, padding: 0, ml: 0 }}
+                                      >
+                                        🔄
+                                      </Button>
+                                    </>
+                                  )}
+                                </motion.div>
                               ) : (
-                                <>
-                                  <Typography
-                                    variant="caption"
-                                    sx={{
-                                      color: "#2e7d32",
-                                      fontWeight: 600,
-                                      whiteSpace: "nowrap",
-                                    }}
-                                  >
-                                    ✅Pago recibido
-                                  </Typography>
+                                <motion.div
+                                  key="pagoRecibido"
+                                  initial={{ opacity: 0, scale: 0.9 }}
+                                  animate={{ opacity: 1, scale: 1 }}
+                                  exit={{ opacity: 0, scale: 0.9 }}
+                                  transition={{ duration: 0.3 }}
+                                >
                                   <Button
+                                    variant="contained"
+                                    color="success"
                                     size="small"
-                                    variant="text"
-                                    color="warning"
-                                    onClick={() => abrirDialogoConfirmacion(cliente, true)}
+                                    onClick={() => abrirDialogoConfirmacion(cliente)}
                                     sx={{
-                                      minWidth: 0,
-                                      padding: 0,
-                                      ml: 0,
+                                      minWidth: isMobile ? "auto" : undefined,
+                                      px: isMobile ? 1.2 : 2.2,
+                                      py: isMobile ? 0.5 : 0.8,
+                                      fontSize: isMobile ? 0 : "0.8rem",
+                                      fontWeight: 600,
+                                      textTransform: "none",
+                                      "& .emoji": { fontSize: "1rem" },
                                     }}
                                   >
-                                    🔄
+                                    {isMobile ? (
+                                      <span className="emoji">💸</span>
+                                    ) : (
+                                      "Pago recibido"
+                                    )}
                                   </Button>
-                                </>
+                                </motion.div>
                               )}
-                            </motion.div>
-                          ) : (
-                            <motion.div
-                              key="pagoRecibido"
-                              initial={{ opacity: 0, scale: 0.9 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              exit={{ opacity: 0, scale: 0.9 }}
-                              transition={{ duration: 0.3 }}
-                            >
-                              <Button
-                                variant="contained"
-                                color="success"
-                                size="small"
-                                onClick={() => abrirDialogoConfirmacion(cliente)}
-                                sx={{
-                                  minWidth: isMobile ? "auto" : undefined,
-                                  px: isMobile ? 1.2 : 2.2,
-                                  py: isMobile ? 0.5 : 0.8,
-                                  fontSize: isMobile ? 0 : "0.8rem",
-                                  fontWeight: 600,
-                                  textTransform: "none",
-                                  '& .emoji': {
-                                    fontSize: '1rem',
-                                  },
-                                }}
-                              >
-                                {isMobile ? <span className="emoji">💸</span> : "Pago recibido"}
-                              </Button>
-
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </Box>
-                    </TableCell>
-
-
+                            </AnimatePresence>
+                          </Box>
+                        </TableCell>
+                      </>
+                    )}
                   </TableRow>
                 );
               })}
-
             </TableBody>
+
           </Table>
         </TableContainer>
 

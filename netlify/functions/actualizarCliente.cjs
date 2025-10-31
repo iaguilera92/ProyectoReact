@@ -37,7 +37,7 @@ exports.handler = async (event) => {
         console.log("📦 event.body recibido:", event.body);
 
         const body = JSON.parse(event.body || "{}");
-        const { idCliente, revertir = false } = body;
+        const { idCliente, revertir = false, suscripcion = false } = body;
 
         if (!idCliente || (!Number.isInteger(idCliente) && typeof idCliente !== "string")) {
             return {
@@ -53,36 +53,40 @@ exports.handler = async (event) => {
         const hoja = workbook.Sheets[workbook.SheetNames[0]];
         const datos = XLSX.utils.sheet_to_json(hoja, { defval: "" });
 
-        console.log("📋 Lista de IDs:", datos.map(d => d.idCliente || d.idcliente));
-
-        // Normalizar claves de columnas
+        // Normalizar claves
         const normalizarClave = (obj) =>
             Object.fromEntries(Object.entries(obj).map(([k, v]) => [k.toLowerCase(), v]));
 
-        // Buscar y modificar
         let modificado = false;
-        const hoy = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+        const hoy = new Date().toISOString().split("T")[0];
 
         const nuevosDatos = datos.map((rowOriginal) => {
-            const row = normalizarClave(rowOriginal); // idcliente ahora está seguro en minúscula
+            const row = normalizarClave(rowOriginal);
             const rowId = String(row.idcliente ?? "").trim();
             const targetId = String(idCliente).trim();
 
             if (rowId === targetId) {
                 modificado = true;
-                console.log("🧪 Coincidencia encontrada:", rowId);
-                return {
-                    ...rowOriginal, // ← se aplica sobre el original
+                console.log("🧩 Cliente encontrado:", rowId);
+
+                const actualizado = {
+                    ...rowOriginal,
                     pagado: revertir ? 0 : 1,
                     fechaPago: revertir ? "" : hoy,
                 };
+
+                // ✅ Guardar Suscripcion como 1 o 0
+                if (typeof suscripcion !== "undefined") {
+                    actualizado.Suscripcion = suscripcion ? 1 : 0;
+                }
+
+                return actualizado;
             }
 
             return rowOriginal;
         });
 
         if (!modificado) {
-            console.warn("⚠️ Cliente no encontrado:", idCliente);
             return {
                 statusCode: 404,
                 headers: corsHeaders,
@@ -90,27 +94,33 @@ exports.handler = async (event) => {
             };
         }
 
-        // Subir a S3
+        // Asegurar que la columna Suscripcion exista
+        if (!Object.keys(nuevosDatos[0]).includes("Suscripcion")) {
+            nuevosDatos.forEach((row) => {
+                if (typeof row.Suscripcion === "undefined") row.Suscripcion = "";
+            });
+        }
+
+        // Guardar Excel actualizado
         const nuevaHoja = XLSX.utils.json_to_sheet(nuevosDatos);
         workbook.Sheets[workbook.SheetNames[0]] = nuevaHoja;
         const buffer = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" });
 
-        console.log("⏫ Subiendo archivo a S3...");
         await s3.putObject({
             Bucket: BUCKET_NAME,
             Key: FILE_KEY,
             Body: buffer,
-            ContentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            ContentType:
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         }).promise();
-        console.log("✅ Subida completada");
+
+        console.log("✅ Archivo actualizado con Suscripcion");
 
         return {
             statusCode: 200,
             headers: corsHeaders,
             body: JSON.stringify({
-                message: revertir
-                    ? "Pago revertido correctamente"
-                    : "Cliente actualizado correctamente",
+                message: "Cliente actualizado correctamente con Suscripción",
             }),
         };
     } catch (error) {

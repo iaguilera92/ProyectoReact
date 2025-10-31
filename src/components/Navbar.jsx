@@ -29,6 +29,7 @@ import { useNavigate } from "react-router-dom";
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 import CloseIcon from "@mui/icons-material/Close";
 import { useLocation } from 'react-router-dom';
+import DialogOneClickMall from "./DialogOneClickMall";
 
 
 const socialData = {
@@ -102,6 +103,8 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
   const maxScroll = 80; // hasta dónde se desvanece
   const translateY = Math.min(scrollY, maxScroll);
   const [mostrarTexto, setMostrarTexto] = useState(true);
+  const [openDialogOneClick, setOpenDialogOneClick] = useState(false);
+  const [pendingUser, setPendingUser] = useState(null);
 
   // ⏱️ ALERTA PRINCIPAL
   useEffect(() => {
@@ -144,7 +147,7 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
       Catálogo: () => navigate("/catalogo"),
       Nosotros: () => navigate("/nosotros"),
       Presentación: handleOpenPDF,
-      Suscribirse: () => handleSuscribirse("Ignacio Aguilera", "plataformas.web.cl@gmail.com"),
+      Suscribirse: () => handleOpenOneClick("Ignacio Aguilera", "plataformas.web.cl@gmail.com"),
     };
     actions[item.name]?.();
   };
@@ -164,26 +167,26 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
   }, [mostrarAnimacion]);
 
   //ONECLICK MALL
-  const handleSuscribirse = async (nombre, email) => {
+  const handleSuscribirse = async (nombre, email, sitioWeb, idCliente) => {
     try {
       const isLocal = window.location.hostname === "localhost";
       const endpoint = isLocal
         ? "http://localhost:8888/.netlify/functions/suscribirse"
         : "/.netlify/functions/suscribirse";
 
+      console.log("🛰️ Datos enviados al backend:", { sitioWeb, nombre, email, idCliente });
+
       const resp = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nombre, email }),
+        body: JSON.stringify({ nombre, email, sitioWeb, idCliente }),
       });
 
       const data = await resp.json();
       console.log("🔵 Respuesta suscribirse OneClick:", data);
 
-      // ✅ Verifica si vienen ambos datos antes de redirigir
       if (data.url_webpay && data.token) {
         console.log("🚀 Redirigiendo a Transbank...");
-
         const form = document.createElement("form");
         form.method = "POST";
         form.action = data.url_webpay;
@@ -195,7 +198,7 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
         form.appendChild(input);
 
         document.body.appendChild(form);
-        form.submit(); // 🔥 abre la página azul de Webpay
+        form.submit();
       } else {
         console.error("⚠️ Respuesta inválida:", data);
         alert("No se pudo iniciar la inscripción. Revisa la consola.");
@@ -206,12 +209,50 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
   };
 
 
+
   //Visa TEST
   //Número: 4051885600446623
   //Fecha de vencimiento: 12/12
   //CVV: 123
   //Rut: 11.111.111-1
   //Clave: 123
+
+
+  const handleOpenOneClick = (nombre, correo, idCliente) => {
+    setPendingUser({ nombre, correo, idCliente });
+    setOpenDialogOneClick(true);
+  };
+
+  const handleCloseOneClick = () => {
+    setOpenDialogOneClick(false);
+    setPendingUser(null);
+  };
+
+  const handleConfirmOneClick = async (sitioWeb, cliente) => {
+    setOpenDialogOneClick(false);
+
+    console.log("📦 Datos enviados al backend:", {
+      sitioWeb,
+      nombre: cliente.nombre,
+      correo: cliente.correo,
+      idCliente: cliente.idCliente, // ✅ log para confirmar
+    });
+
+    if (!cliente?.nombre || !cliente?.correo || !cliente?.idCliente) {
+      console.error("⚠️ No se recibieron datos válidos del cliente");
+      alert("Faltan los datos del cliente asociados al sitio web.");
+      return;
+    }
+
+    await handleSuscribirse(
+      cliente.nombre,
+      cliente.correo,
+      sitioWeb,
+      cliente.idCliente // ✅ parámetro agregado
+    );
+  };
+
+
 
   return (
     <>
@@ -847,6 +888,14 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
           </Box>
         </DialogContent>
       </Dialog>
+
+      {/* ONE CLICK MALL */}
+      <DialogOneClickMall
+        open={openDialogOneClick}
+        onClose={handleCloseOneClick}
+        onConfirm={handleConfirmOneClick}
+        primaryLabel="Suscribirme"
+      />
     </>
   );
 }

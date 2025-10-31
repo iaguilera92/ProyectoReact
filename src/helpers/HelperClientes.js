@@ -3,7 +3,6 @@ import * as XLSX from "xlsx";
 export const cargarClientesDesdeExcel = async () => {
   const urlExcel = `https://plataformas-web-buckets.s3.us-east-2.amazonaws.com/Clientes.xlsx?t=${Date.now()}`;
 
-
   try {
     const response = await fetch(urlExcel, {
       headers: {
@@ -12,28 +11,43 @@ export const cargarClientesDesdeExcel = async () => {
         "Expires": "0",
       },
     });
+
     if (!response.ok) throw new Error("No se pudo obtener el archivo Excel");
 
     const arrayBuffer = await response.arrayBuffer();
     const data = new Uint8Array(arrayBuffer);
     const workbook = XLSX.read(data, { type: "array" });
-
     const hoja = workbook.Sheets[workbook.SheetNames[0]];
-    const jsonData = XLSX.utils.sheet_to_json(hoja);
+    const jsonData = XLSX.utils.sheet_to_json(hoja, { defval: "" });
 
-    return jsonData.map((c) => ({
-      idCliente: c.idCliente || "",                         // ✅ ID del cliente
-      cliente: c.cliente?.trim() || "",                     // ✅ Nombre del cliente
-      sitioWeb: c.sitioWeb?.trim() || "",
-      url: c.url?.trim() || "",                             // URL del sitio
-      telefono: c.telefono?.toString() || "",               // Teléfono
-      correo: c.correo?.trim() || "",                       // Email
-      pagado: c.pagado === 1 || c.pagado === "1",           // Boolean pagado
-      valor: c.valor?.toString().replace(/\r?\n|\r/g, "").trim() || "$0", // Monto
-      fechaPago: c.fechaPago || "",                         // Fecha (si aplica)
-      estado: c.estado === 1 || c.estado === "1",           // Boolean activo
-      logoCliente: c.logoCliente?.trim() || "",             // ✅ Logo del cliente
-    }));
+    // Normaliza claves del objeto a minúsculas
+    const normalizarClave = (obj) =>
+      Object.fromEntries(Object.entries(obj).map(([k, v]) => [k.toLowerCase(), v]));
+
+    return jsonData.map((c) => {
+      const row = normalizarClave(c);
+
+      return {
+        idCliente: row.idcliente || "",
+        cliente: row.cliente?.trim() || "",
+        sitioWeb: row.sitioweb?.trim() || "",
+        url: row.url?.trim() || "",
+        telefono: row.telefono?.toString() || "",
+        correo: row.correo?.trim() || "",
+        pagado: row.pagado === 1 || row.pagado === "1",
+        valor:
+          row.valor?.toString().replace(/\r?\n|\r/g, "").trim() || "$0",
+        fechaPago: row.fechapago || "",
+        estado: row.estado === 1 || row.estado === "1",
+        logoCliente: row.logocliente?.trim() || "",
+
+        // 🆕 Suscripción: solo true si es 1 o "1"
+        suscripcion:
+          row.suscripcion === 1 ||
+          row.suscripcion === "1" ||
+          String(row.suscripcion).trim().toLowerCase() === "true",
+      };
+    });
   } catch (error) {
     console.error("❌ Error al cargar clientes desde el Excel:", error);
     return [];

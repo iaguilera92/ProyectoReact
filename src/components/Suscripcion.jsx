@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { WhatsApp as WhatsAppIcon } from "@mui/icons-material";
+
 const Suscripcion = () => {
   const [status, setStatus] = useState("loading");
   const [info, setInfo] = useState({});
@@ -18,15 +19,96 @@ const Suscripcion = () => {
     const type = searchParams.get("type");
     const s = searchParams.get("status");
 
+    // 🔹 Datos del cliente desde sessionStorage
+    const clienteNombre = sessionStorage.getItem("clienteNombre");
+    const clienteCorreo = sessionStorage.getItem("clienteCorreo");
+    const sitioWebReserva = sessionStorage.getItem("sitioWebReserva");
+    const idCliente = sessionStorage.getItem("clienteId");
+
     if (s === "success" && tbk_user) {
-      setInfo({ tbk_user, card, type });
+      setInfo({
+        tbk_user,
+        card,
+        type,
+        nombre: clienteNombre,
+        correo: clienteCorreo,
+        sitioWeb: sitioWebReserva,
+      });
       setStatus("success");
+
+      // 🟢 Actualizar en Excel que el cliente está suscrito
+      if (idCliente) {
+        actualizarASuscrito(idCliente, true);
+      } else {
+        console.warn("⚠️ idCliente no encontrado en sessionStorage");
+      }
     } else {
       setStatus("error");
     }
 
     return () => clearTimeout(t);
   }, [searchParams]);
+
+  // ✅ Registrar suscripción en Excel S3
+  useEffect(() => {
+    const s = searchParams.get("status");
+    const tbk_user = searchParams.get("tbk_user");
+    const idCliente = searchParams.get("idCliente");
+
+    if (s === "success" && idCliente) {
+      (async () => {
+        try {
+          const url = `${window.location.hostname === "localhost"
+            ? "http://localhost:8888"
+            : ""
+            }/.netlify/functions/actualizarCliente`;
+
+          const res = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              idCliente,
+              suscripcion: true,
+              tbk_user,
+            }),
+          });
+
+          const data = await res.json();
+          console.log("📊 Resultado de registro:", data);
+        } catch (err) {
+          console.error("❌ Error al registrar suscripción:", err);
+        }
+      })();
+    }
+  }, [searchParams]);
+
+  // ✅ Actualizar columna "Suscripcion" en Excel (S3)
+  const actualizarASuscrito = async (idCliente, nuevoEstado) => {
+    try {
+      const url = `${window.location.hostname === "localhost"
+        ? "http://localhost:8888"
+        : ""
+        }/.netlify/functions/actualizarCliente`;
+
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          idCliente,
+          suscripcion: nuevoEstado, // 👈 true = activar, false = anular
+        }),
+      });
+
+      const data = await res.json();
+      console.log("🔄 Suscripción actualizada:", data);
+
+      if (!res.ok) {
+        throw new Error("Error al actualizar la suscripción en Excel");
+      }
+    } catch (err) {
+      console.error("❌ Error al actualizar suscripción:", err);
+    }
+  };
 
   return (
     <Container
@@ -86,19 +168,17 @@ const Suscripcion = () => {
             maxWidth: 500,
             width: "90%",
             borderRadius: "20px",
-            backgroundColor: "white", // fondo blanco limpio
+            backgroundColor: "white",
             boxShadow: "0 8px 25px rgba(0,0,0,0.25)",
             overflow: "hidden",
-            transition: "transform 0.3s ease, box-shadow 0.3s ease",
             border: "1px solid rgba(0,0,0,0.05)",
-
             ...(status === "success" && {
               "&::before": {
                 content: '""',
                 position: "absolute",
                 top: 0,
-                left: "-150%", // comienza bien fuera de la card
-                width: "200%", // asegura cobertura completa
+                left: "-150%",
+                width: "200%",
                 height: "100%",
                 background:
                   "linear-gradient(130deg, transparent 45%, rgba(255,255,255,0.8) 50%, transparent 55%)",
@@ -108,7 +188,7 @@ const Suscripcion = () => {
               },
               "@keyframes shineDiagonal": {
                 "0%": { transform: "translateX(0)" },
-                "100%": { transform: "translateX(75%)" }, // movimiento más largo y natural
+                "100%": { transform: "translateX(75%)" },
               },
             }),
           }}
@@ -116,27 +196,30 @@ const Suscripcion = () => {
           <CardContent
             sx={{
               textAlign: "center",
-              py: 5,
+              py: { xs: 3, sm: 3 },
+              px: { xs: 2, sm: 4 },
               position: "relative",
-              zIndex: 2, // mantiene el contenido sobre el brillo
+              zIndex: 2,
             }}
           >
             {status === "loading" && (
               <>
                 <CircularProgress color="primary" />
-                <Typography sx={{ mt: 2 }}>Procesando suscripción...</Typography>
+                <Typography sx={{ mt: 2, fontSize: { xs: "0.9rem", sm: "1rem" } }}>
+                  Procesando suscripción...
+                </Typography>
               </>
             )}
 
             {status === "success" && (
               <>
-                {/* 🎉 Ícono */}
+                {/* ✅ Ícono check */}
                 <Box
                   component={motion.div}
                   initial={{ scale: 0, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ type: "spring", stiffness: 120, damping: 10 }}
-                  sx={{ mb: 3 }}
+                  sx={{ mb: { xs: 1, sm: 1 } }}
                 >
                   <Box
                     sx={{
@@ -151,8 +234,6 @@ const Suscripcion = () => {
                       mx: "auto",
                       boxShadow: "0 8px 25px rgba(46, 125, 50, 0.35)",
                       overflow: "hidden",
-
-                      /* ✨ Brillo diagonal perfectamente fluido */
                       "&::before": {
                         content: '""',
                         position: "absolute",
@@ -168,7 +249,6 @@ const Suscripcion = () => {
                         borderRadius: "inherit",
                         pointerEvents: "none",
                       },
-
                       "@keyframes shineDiagonal": {
                         "0%": {
                           transform: "translateX(-140%) translateY(-50%)",
@@ -194,7 +274,6 @@ const Suscripcion = () => {
                       ✓
                     </Typography>
                   </Box>
-
                 </Box>
 
                 <Typography
@@ -202,8 +281,8 @@ const Suscripcion = () => {
                   fontWeight={800}
                   sx={{
                     color: "success.main",
-                    mb: 0,
-                    textAlign: "center",
+                    mb: 1,
+                    fontSize: { xs: "1.2rem", sm: "1.8rem" },
                     textShadow: "0 1px 3px rgba(0,0,0,0.2)",
                   }}
                 >
@@ -215,16 +294,45 @@ const Suscripcion = () => {
                   fontWeight={700}
                   sx={{
                     mb: 0,
-                    textAlign: "center",
                     background: "linear-gradient(90deg, #4CAF50, #81C784)",
                     WebkitBackgroundClip: "text",
                     WebkitTextFillColor: "transparent",
+                    fontSize: { xs: "0.9rem", sm: "1.2rem" },
                   }}
                 >
                   Plan mensual: <strong>$9.990 CLP</strong>
                 </Typography>
 
-                {/* 💳 Logo de Transbank */}
+                {/* 🧾 Sitio web suscrito */}
+                <Box
+                  sx={{
+                    mt: 2,
+                    mb: 1,
+                    px: 2,
+                    py: 1.3,
+                    borderRadius: 2,
+                    background: "linear-gradient(180deg,#E8F5E9 0%,#F1F8E9 100%)",
+                    border: "1px solid rgba(76,175,80,0.3)",
+                    boxShadow: "0 3px 8px rgba(76,175,80,0.1)",
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      color: "#2E7D32",
+                      fontSize: "0.9rem",
+                      fontWeight: 600,
+                      lineHeight: 1.5,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 0.5,
+                    }}
+                  >
+                    🌐 <strong>{info.sitioWeb || "Sitio no disponible"}</strong>
+                  </Typography>
+                </Box>
+
+                {/* 💳 Logo Oneclick */}
                 <Box
                   component="img"
                   src="/logo-oneclick.png"
@@ -232,46 +340,36 @@ const Suscripcion = () => {
                   sx={{
                     display: "block",
                     mx: "auto",
-                    mt: 0,
+                    mt: 1,
                     mb: 2,
-                    width: 200,
+                    width: { xs: 150, sm: 200 },
                     filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.25))",
                     userSelect: "none",
                   }}
                 />
 
-                {/* 💳 Detalle de la tarjeta */}
-                <Typography sx={{ mt: 1, color: "text.secondary", textAlign: "center" }}>
-                  Tarjeta <strong>{info.type}</strong> terminada en{" "}
-                  <strong>{info.card}</strong>.
-                </Typography>
-
-
-                {/* 📦 Descripción del plan */}
+                {/* 💳 Tarjeta */}
                 <Typography
                   sx={{
-                    mt: 2,
+                    mt: 1,
                     color: "text.secondary",
-                    textAlign: "center",
+                    fontSize: "0.95rem",
                     lineHeight: 1.6,
                   }}
                 >
-                  🚀 Incluye <strong>hosting premium</strong> y{" "}
+                  👤 <strong>{info.nombre || "Cliente"}</strong>
+                  <br />
+                  📧 {info.correo || "—"}
+                  <br />
+                  💳 Tarjeta <strong>{info.type || "—"}</strong>{" "}
+                  <strong>{info.card || "—"}</strong>.
+
+                </Typography>
+
+                <Typography sx={{ mt: 2, color: "text.secondary", lineHeight: 1.5 }}>
+                  🚀 Incluye <strong>hosting</strong> y{" "}
                   <strong>soporte técnico 24/7</strong> para mantener tu sitio siempre activo.
                 </Typography>
-
-                {/* 💬 Mensaje final */}
-                <Typography
-                  sx={{
-                    mt: 2,
-                    color: "text.secondary",
-                    textAlign: "center",
-                    fontStyle: "italic",
-                  }}
-                >
-                  💡 Nuestro equipo está disponible para ayudarte cuando lo necesites.
-                </Typography>
-
 
                 <Button
                   component={motion.a}
@@ -280,18 +378,14 @@ const Suscripcion = () => {
                   transition={{ delay: 0.3 }}
                   variant="contained"
                   sx={{
-                    mt: 4,
+                    mt: 2,
                     borderRadius: "50px",
                     px: 4,
                     py: 1.3,
-                    gap: 1,
-                    fontWeight: 600,
-                    fontSize: "1rem",
                     background: "linear-gradient(90deg, #25D366, #128C7E)",
                     boxShadow: "0 4px 20px rgba(37,211,102,0.4)",
                     "&:hover": {
                       background: "linear-gradient(90deg, #1ebe5b, #0d745f)",
-                      boxShadow: "0 6px 25px rgba(37,211,102,0.55)",
                     },
                   }}
                   href="https://api.whatsapp.com/send?phone=56946873014"
@@ -316,7 +410,6 @@ const Suscripcion = () => {
             )}
           </CardContent>
         </Card>
-
       </Box>
     </Container>
   );
