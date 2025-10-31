@@ -1,13 +1,14 @@
-const { Options } = require("transbank-sdk");
 const axios = require("axios");
 const AWS = require("aws-sdk");
 
+// Inicializar S3
 const s3 = new AWS.S3();
 
 exports.handler = async (event) => {
     console.log("🛰️ [suscribirse] Nueva solicitud:", {
         method: event.httpMethod,
         origin: event.headers.origin,
+        host: event.headers.host,
     });
 
     // 🌍 Dominios permitidos
@@ -20,7 +21,7 @@ exports.handler = async (event) => {
     const origin = event.headers.origin || "";
     const corsOrigin = allowedOrigins.includes(origin)
         ? origin
-        : allowedOrigins[0];
+        : "https://plataformas-web.cl";
 
     const corsHeaders = {
         "Access-Control-Allow-Origin": corsOrigin,
@@ -41,25 +42,26 @@ exports.handler = async (event) => {
         if (!nombre || !email || !idCliente)
             throw new Error("Faltan parámetros requeridos (nombre, email, idCliente)");
 
-        // ⚙️ Forzar modo INTEGRACIÓN (tanto en local como en producción)
-        const isIntegration = true;
+        // ⚙️ Siempre usar ambiente de integración, incluso en producción
+        const TBK_API_KEY_ID = "597055555541";
+        const TBK_API_KEY_SECRET =
+            "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C";
+        const inscriptionUrl =
+            "https://webpay3gint.transbank.cl/rswebpaytransaction/api/oneclick/v1.0/inscriptions";
 
-        const inscriptionUrl = "https://webpay3gint.transbank.cl/rswebpaytransaction/api/oneclick/v1.0/inscriptions";
+        const returnUrl = "https://plataformas-web.cl/.netlify/functions/confirmarSuscripcion";
 
-        const options = new Options(
-            "597055555541", // código de comercio integración
-            "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C", // API Key de integración
-            "INTEGRACION"
-        );
-
-        // 🔗 URL de retorno (para confirmar suscripción)
-        const baseUrl = "https://plataformas-web.cl"; // ✅ usa dominio productivo
-        const returnUrl = `${baseUrl}/.netlify/functions/confirmarSuscripcion`;
-
-        console.log("⚙️ [suscribirse] Registrando inscripción OneClick (modo integración)...");
+        console.log("⚙️ [suscribirse] Registrando inscripción OneClick...");
         console.log("↪️ URL retorno:", returnUrl);
 
-        // 🔹 Llamada a Transbank (ambiente integración)
+        // 🔐 Logs de diagnóstico
+        console.log("🔐 Headers de envío:", {
+            "Tbk-Api-Key-Id": TBK_API_KEY_ID,
+            "Tbk-Api-Key-Secret-length": TBK_API_KEY_SECRET.length,
+        });
+        console.log("📦 Payload:", { username: nombre, email, response_url: returnUrl });
+
+        // 🚀 Llamada al endpoint de integración
         const response = await axios.post(
             inscriptionUrl,
             {
@@ -69,26 +71,30 @@ exports.handler = async (event) => {
             },
             {
                 headers: {
-                    "Tbk-Api-Key-Id": options.commerceCode,
-                    "Tbk-Api-Key-Secret": options.apiKey,
-                    "Content-Type": "application/json",
+                    // 🔹 Transbank a veces requiere los headers en minúsculas (Netlify los normaliza)
+                    "tbk-api-key-id": TBK_API_KEY_ID,
+                    "tbk-api-key-secret": TBK_API_KEY_SECRET,
+                    "content-type": "application/json",
+                    "user-agent": "Mozilla/5.0 (Netlify Function Integration)",
+                    Accept: "application/json",
                 },
+                httpsAgent: new (require("https").Agent)({
+                    rejectUnauthorized: false, // evita errores de SSL self-signed en INT
+                }),
+                timeout: 10000,
             }
         );
 
         console.log("✅ [suscribirse] Respuesta Transbank:", response.data);
 
-        // 🔹 Transbank puede devolver "url_webpay" o simplemente "url"
+        // 🔹 Transbank puede devolver "url_webpay" o "url"
         const token = response.data.token;
         const url_webpay = response.data.url_webpay || response.data.url;
-        console.log("🧾 [suscribirse] Data completa:", JSON.stringify(response.data, null, 2));
 
-        console.log("📦 Token:", token);
-        console.log("📦 URL Webpay:", url_webpay);
-
-        if (!token || !url_webpay)
+        if (!token || !url_webpay) {
+            console.error("⚠️ Estructura inesperada:", response.data);
             throw new Error("No se recibió token o URL válidos desde Transbank");
-
+        }
 
         // 🧾 Guarda vínculo token → cliente en S3
         const bucketName = "plataformas-web-buckets";
@@ -122,7 +128,9 @@ exports.handler = async (event) => {
         return {
             statusCode: 500,
             headers: corsHeaders,
-            body: JSON.stringify({ error_message: err.message }),
+            body: JSON.stringify({
+                error_message: err.response?.data || err.message || "Error desconocido",
+            }),
         };
     }
 };
