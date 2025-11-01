@@ -6,7 +6,8 @@ import {
 } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
-import { cargarClientesDesdeExcel } from "../helpers/HelperClientes"; // ✅ importa tu helper
+import { cargarClientesDesdeExcel } from "../helpers/HelperClientes";
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
@@ -263,10 +264,10 @@ export default function DialogOneClickMall({
             exit={{ scale: 0.8, opacity: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
           >
-            {loading ? "💳" : "🌐"}
+            {loading ? "💳" : "🔔"}
           </motion.span>
 
-          {loading ? "Redirigiendo a WebPay..." : "Suscripción Transbank"}
+          {loading ? "Redirigiendo a WebPay..." : "Suscripción WebPay"}
         </Typography>
       </DialogTitle>
 
@@ -347,112 +348,283 @@ export default function DialogOneClickMall({
 
               {/* Cliente encontrado */}
               {cliente && (
-                <>
-                  {/* Título sobre el borde */}
+                <motion.div
+                  key="cliente-info"
+                  initial={{ opacity: 0, y: 25, scale: 0.98 }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                    scale: 1,
+                    transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1.0] },
+                  }}
+                  exit={{ opacity: 0, y: -10, transition: { duration: 0.4 } }}
+                  style={{ width: "100%" }}
+                >
+                  {/* 📋 Título centrado */}
                   <Typography
                     variant="subtitle1"
                     sx={{
                       mt: -2,
-                      mb: 0, // lo acerca al borde del box
-                      ml: 0,
+                      mb: 0,
                       fontWeight: 700,
-                      color: "#6A1B9A",
-                      fontSize: "0.9rem",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 0.5,
+                      color: "#4A148C",
+                      fontSize: { xs: "0.9rem", sm: "1rem" },
+                      letterSpacing: 0.3,
+                      textAlign: "center",
                     }}
                   >
-                    📋 Datos del Cliente
+                    Información del Cliente
                   </Typography>
 
-                  {/* Contenedor con borde */}
-                  <Box
-                    sx={{
-                      p: 2.5,
-                      width: "100%",
-                      background: "linear-gradient(180deg, #FFFFFF 0%, #F8F3FC 100%)",
-                      borderRadius: 3,
-                      border: "2px solid #6A1B9A",
-                      boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
-                      textAlign: "left",
-                      position: "relative",
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        fontWeight: 600,
-                        mb: 0.5,
-                        fontSize: "0.95rem",
-                        color: "#2e2e2e",
-                      }}
-                    >
-                      👤 {cliente.nombre}
-                    </Typography>
-
-                    <Typography
-                      sx={{
-                        fontWeight: 500,
-                        color: "#4A148C",
-                        fontSize: "0.9rem",
-                        wordBreak: "break-all",
-                      }}
-                    >
-                      ✉️ {cliente.correo}
-                    </Typography>
-                  </Box>
-
-                  {/* Mensaje informativo de suscripción */}
-                  <Box
-                    sx={{
-                      mt: 1,
-                      px: 2,
-                      py: 1.2,
-                      borderRadius: 2,
-                      background: "linear-gradient(90deg, #F3E5F5 0%, #EDE7F6 100%)",
-                      border: "1px solid rgba(106,27,154,0.25)",
-                      boxShadow: "0 3px 8px rgba(106,27,154,0.1)",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1.2,
-                      width: "100%",
+                  {/* 🔲 Contenedor del cliente */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                      transition: { delay: 0.15, duration: 0.6 },
                     }}
                   >
                     <Box
                       sx={{
-                        fontSize: "1.6rem",
-                        color: "#6A1B9A",
+                        position: "relative",
+                        width: "100%",
+                        p: 2.2,
+                        borderRadius: 3,
+                        background: "linear-gradient(180deg, #FFFFFF 0%, #F7F2FB 100%)",
+                        border: "1.5px solid rgba(106,27,154,0.25)",
+                        boxShadow: "0 4px 10px rgba(106,27,154,0.08)",
+                        overflow: "hidden",
+                      }}
+                    >
+                      {/* 🔹 Borde superior animado */}
+                      <Box
+                        sx={{
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                          height: 4,
+                          width: "100%",
+                          background:
+                            "linear-gradient(90deg, #6A1B9A 0%, #8E24AA 50%, #BA68C8 100%)",
+                          animation: "flow 5s linear infinite",
+                          "@keyframes flow": {
+                            "0%": { backgroundPosition: "0% 0%" },
+                            "100%": { backgroundPosition: "200% 0%" },
+                          },
+                          backgroundSize: "200% auto",
+                        }}
+                      />
+
+                      {/* ✅ Franja de estado animada */}
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{
+                          opacity: 1,
+                          transition: { delay: 0.3, duration: 0.6 },
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            position: "absolute",
+                            top: 4,
+                            left: 0,
+                            width: "100%",
+                            textAlign: "center",
+                            py: 0.35,
+                            backgroundColor: "rgba(76,175,80,0.08)",
+                            color: "#2E7D32",
+                            fontSize: "0.72rem",
+                            fontWeight: 500,
+                            letterSpacing: 0.3,
+                            borderBottom: "1px solid rgba(46,125,50,0.15)",
+                          }}
+                        >
+                          ✅ Identidad verificada con éxito
+                        </Box>
+                      </motion.div>
+
+                      {/* 👤 Datos principales */}
+                      <Box sx={{ mt: 2 }}>
+                        <Typography
+                          sx={{
+                            fontWeight: 600,
+                            fontSize: { xs: "0.9rem", sm: "1rem" },
+                            color: "#212121",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 0.6,
+                            mb: 0.4,
+                          }}
+                        >
+                          👤 <Box component="span">{cliente.nombre}</Box>
+                        </Typography>
+
+                        <Typography
+                          sx={{
+                            fontWeight: 500,
+                            fontSize: { xs: "0.8rem", sm: "0.9rem" },
+                            color: "#6A1B9A",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 0.6,
+                            wordBreak: "break-all",
+                          }}
+                        >
+                          ✉️ <Box component="span">{cliente.correo}</Box>
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </motion.div>
+
+                  {/* 🔒 Mensaje de confianza WebPay (sin cambios, solo animado al aparecer) */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                      transition: { delay: 0.3, duration: 0.5 },
+                    }}
+                  >
+                    {/* 🔒 Mensaje de confianza WebPay */}
+                    <Box
+                      sx={{
+                        width: "100%",
+                        mt: 0.5,
+                        px: 1.8,
+                        py: 1.2,
+                        borderRadius: 2.5,
+                        background: "linear-gradient(135deg, #F3E5F5 0%, #EDE7F6 100%)",
+                        border: "1px solid rgba(106,27,154,0.25)",
+                        boxShadow: "0 3px 8px rgba(106,27,154,0.15)",
                         display: "flex",
                         alignItems: "center",
-                        justifyContent: "center",
-                        width: 40,
-                        height: 40,
-                        flexShrink: 0,
+                        justifyContent: "space-between",
+                        gap: 1.2,
+                        flexWrap: "wrap",
                       }}
                     >
-                      🔒
-                    </Box>
-                    <Typography
-                      sx={{
-                        fontSize: "0.77rem",
-                        color: "#4A148C",
-                        fontWeight: 500,
-                        lineHeight: 1.55,
-                        whiteSpace: "pre-line", // 👈 respeta saltos de línea
-                      }}
-                    >
-                      {"Transacción protegida por "}
-                      <strong>WebPay</strong>
-                      {"\nMonto mensual: "}
-                      <strong>$9.990 CLP</strong>
-                      {"\n"}
-                      <Box component="span" sx={{ fontWeight: 400, color: "#6A1B9A" }}>
-                        <strong>Nos encargamos de tu web!</strong>
+                      {/* 📝 Texto informativo */}
+                      <Box
+                        sx={{
+                          flex: "1 1 65%",
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 0.4,
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            fontSize: { xs: "0.7rem", sm: "0.75rem" },
+                            color: "#6A1B9A",
+                            fontWeight: 500,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 0.4,
+                          }}
+                        >
+                          💳 Pago seguro con <strong>WebPay.</strong>
+                        </Typography>
+
+                        <Typography
+                          sx={{
+                            fontSize: { xs: "0.7rem", sm: "0.75rem" },
+                            color: "#6A1B9A",
+                            fontWeight: 400,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 0.4,
+                          }}
+                        >
+                          🔐 Datos protegidos por <strong>Transbank.</strong>
+                        </Typography>
+                        <Typography
+                          sx={{
+                            fontSize: { xs: "0.7rem", sm: "0.75rem" },
+                            color: "#6A1B9A",
+                            fontWeight: 500,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 0.4,
+                          }}
+                        >
+                          🔁 Suscripción Mensual: <strong>$9.990 CLP.</strong>
+                        </Typography>
                       </Box>
-                    </Typography>
-                  </Box>
-                </>
+
+                      {/* 🛡️ Escudo protector animado con pulso */}
+                      <Box
+                        sx={{
+                          flex: "0 0 auto",
+                          position: "relative",
+                          width: { xs: 50, sm: 64 },
+                          height: { xs: 56, sm: 70 },
+                          mt: { xs: 0, sm: 0 },
+                          mx: { xs: "auto", sm: 0 },
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        {/* 🔰 Capa del escudo principal */}
+                        <Box
+                          sx={{
+                            position: "absolute",
+                            inset: 0,
+                            clipPath:
+                              "polygon(50% 0%, 100% 25%, 88% 90%, 50% 100%, 12% 90%, 0% 25%)",
+                            background: "linear-gradient(135deg, #E1BEE7 0%, #CE93D8 100%)",
+                            boxShadow: "0 0 12px rgba(106,27,154,0.25)",
+                            animation: "shieldPulse 2.8s ease-in-out infinite",
+                            "@keyframes shieldPulse": {
+                              "0%": { transform: "scale(1)", boxShadow: "0 0 10px rgba(106,27,154,0.35)" },
+                              "50%": { transform: "scale(1.05)", boxShadow: "0 0 24px rgba(106,27,154,0.55)" },
+                              "100%": { transform: "scale(1)", boxShadow: "0 0 10px rgba(106,27,154,0.35)" },
+                            },
+                            transition: "all 0.3s ease",
+                          }}
+                        />
+
+                        {/* ✨ Capa interna más clara (profundidad visual) */}
+                        <Box
+                          sx={{
+                            position: "absolute",
+                            inset: "4px",
+                            clipPath:
+                              "polygon(50% 0%, 100% 25%, 88% 90%, 50% 100%, 12% 90%, 0% 25%)",
+                            background: "linear-gradient(180deg, #FFFFFF 0%, #F3E5F5 100%)",
+                            border: "1.5px solid rgba(106,27,154,0.3)",
+                            boxShadow: "inset 0 0 6px rgba(106,27,154,0.15)",
+                            borderRadius: 2,
+                          }}
+                        />
+
+                        {/* 🔒 Candado central */}
+                        <Typography
+                          sx={{
+                            position: "relative",
+                            fontSize: { xs: "1.6rem", sm: "2rem" },
+                            color: "#4A148C",
+                            zIndex: 2,
+                            textShadow: "0 2px 4px rgba(0,0,0,0.2)",
+                            animation: "lockPulse 2.8s ease-in-out infinite",
+                            "@keyframes lockPulse": {
+                              "0%": { opacity: 1 },
+                              "50%": { opacity: 0.8 },
+                              "100%": { opacity: 1 },
+                            },
+                          }}
+                        >
+                          🔒
+                        </Typography>
+                      </Box>
+
+
+                    </Box>
+                  </motion.div>
+                </motion.div>
               )}
+
             </DialogContent>
           </motion.div>
         )}
@@ -491,6 +663,8 @@ export default function DialogOneClickMall({
           onClick={sitioValido && cliente ? handleConfirm : handleValidateWebsite}
           disabled={loading || (!sitioWeb && !(sitioValido && cliente))}
           sx={{
+            position: "relative",
+            overflow: "hidden", // para que el brillo no se salga
             height: 42,
             minWidth: 170,
             textTransform: "none",
@@ -498,11 +672,11 @@ export default function DialogOneClickMall({
             color: "#fff",
             background:
               sitioValido && cliente
-                ? "linear-gradient(135deg, #FFD700 0%, #FFC107 40%, #FFB300 70%, #FFD54F 100%)" // ✨ Dorado brillante
-                : "linear-gradient(90deg,#6A1B9A,#8E24AA)", // Morado para Validar
+                ? "linear-gradient(135deg, #FFD700 0%, #FFC107 40%, #FFB300 70%, #FFD54F 100%)"
+                : "linear-gradient(90deg,#6A1B9A,#8E24AA)",
             boxShadow:
               sitioValido && cliente
-                ? "0 0 16px rgba(255,215,0,0.6)" // brillo dorado
+                ? "0 0 16px rgba(255,215,0,0.6)"
                 : "0 6px 18px rgba(106,27,154,.35)",
             opacity: sitioWeb || (sitioValido && cliente) ? 1 : 0.5,
             transition: "all 0.3s ease",
@@ -517,7 +691,7 @@ export default function DialogOneClickMall({
                   : "linear-gradient(90deg,#7B1FA2,#9C27B0)",
               boxShadow:
                 sitioValido && cliente
-                  ? "0 0 24px rgba(255,235,59,0.85)" // más brillo al pasar el mouse
+                  ? "0 0 24px rgba(255,235,59,0.85)"
                   : "0 6px 18px rgba(106,27,154,.35)",
             },
             "&:active": {
@@ -529,10 +703,40 @@ export default function DialogOneClickMall({
             },
           }}
         >
+          {/* ✨ Brillo diagonal animado */}
+          {sitioValido && cliente && (
+            <Box
+              sx={{
+                position: "absolute",
+                top: 0,
+                left: "-75%",
+                width: "50%",
+                height: "100%",
+                background:
+                  "linear-gradient(120deg, rgba(255,255,255,0.0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.0) 100%)",
+                transform: "skewX(-25deg)",
+                animation: "shine 3.2s infinite",
+                "@keyframes shine": {
+                  "0%": { left: "-75%" },
+                  "60%": { left: "130%" },
+                  "100%": { left: "130%" },
+                },
+              }}
+            />
+          )}
+
           {loading ? (
             <CircularProgress size={20} color="inherit" />
           ) : sitioValido && cliente ? (
-            "Suscribirse"
+            <>
+              <NotificationsNoneIcon
+                sx={{
+                  fontSize: 21,
+                  verticalAlign: "middle",
+                }}
+              />
+              Suscribirse
+            </>
           ) : (
             "Validar Sitio Web"
           )}

@@ -38,8 +38,14 @@ const Suscripcion = () => {
 
       // 🟢 Actualizar en Excel que el cliente está suscrito
       if (idCliente) {
-        actualizarASuscrito(idCliente, true);
-      } else {
+        actualizarASuscrito(idCliente, {
+          suscripcion: true,
+          tbk_user,
+          card,
+          type,
+        });
+      }
+      else {
         console.warn("⚠️ idCliente no encontrado en sessionStorage");
       }
     } else {
@@ -82,25 +88,28 @@ const Suscripcion = () => {
     }
   }, [searchParams]);
 
-  // ✅ Actualizar columna "Suscripcion" en Excel (S3)
-  const actualizarASuscrito = async (idCliente, nuevoEstado) => {
+  // ACTUALIZAR CLIENTE
+  const actualizarASuscrito = async (idCliente, datos) => {
     try {
       const url = `${window.location.hostname === "localhost"
         ? "http://localhost:8888"
         : ""
         }/.netlify/functions/actualizarCliente`;
 
+      // 🧠 datos = { suscripcion: true, tbk_user, card, type }
+      const body = {
+        idCliente,
+        suscripcion: datos.suscripcion ? 1 : 0,
+        tbk_user: datos.tbk_user || "",
+        tarjeta: datos.card || "",
+        tipo_tarjeta: datos.type || "",
+      };
+
       const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          idCliente,
-          suscripcion: nuevoEstado, // 👈 true = activar, false = anular
-        }),
+        body: JSON.stringify(body),
       });
-
-      const data = await res.json();
-      console.log("🔄 Suscripción actualizada:", data);
 
       if (!res.ok) {
         throw new Error("Error al actualizar la suscripción en Excel");
@@ -109,6 +118,7 @@ const Suscripcion = () => {
       console.error("❌ Error al actualizar suscripción:", err);
     }
   };
+
 
   return (
     <Container
@@ -124,7 +134,7 @@ const Suscripcion = () => {
     >
       <Box textAlign="center" mb={0}>
         <Typography
-          variant="h6"
+          variant="h7"
           fontWeight={700}
           sx={{
             color: "white",
@@ -224,8 +234,8 @@ const Suscripcion = () => {
                   <Box
                     sx={{
                       position: "relative",
-                      width: 90,
-                      height: 90,
+                      width: 80,
+                      height: 80,
                       borderRadius: "50%",
                       background: "linear-gradient(135deg, #43A047, #2E7D32)",
                       display: "flex",
@@ -319,7 +329,7 @@ const Suscripcion = () => {
                   <Typography
                     sx={{
                       color: "#2E7D32",
-                      fontSize: "0.9rem",
+                      fontSize: "1.1rem",
                       fontWeight: 600,
                       lineHeight: 1.5,
                       display: "flex",
@@ -340,9 +350,9 @@ const Suscripcion = () => {
                   sx={{
                     display: "block",
                     mx: "auto",
-                    mt: 1,
-                    mb: 2,
-                    width: { xs: 150, sm: 200 },
+                    mt: 0,
+                    mb: 0,
+                    width: { xs: 190, sm: 200 },
                     filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.25))",
                     userSelect: "none",
                   }}
@@ -371,30 +381,79 @@ const Suscripcion = () => {
                   <strong>soporte técnico 24/7</strong> para mantener tu sitio siempre activo.
                 </Typography>
 
-                <Button
-                  component={motion.a}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                  variant="contained"
-                  sx={{
-                    mt: 2,
-                    borderRadius: "50px",
-                    px: 4,
-                    py: 1.3,
-                    background: "linear-gradient(90deg, #25D366, #128C7E)",
-                    boxShadow: "0 4px 20px rgba(37,211,102,0.4)",
-                    "&:hover": {
-                      background: "linear-gradient(90deg, #1ebe5b, #0d745f)",
-                    },
-                  }}
-                  href="https://api.whatsapp.com/send?phone=56946873014"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <WhatsAppIcon sx={{ fontSize: 22 }} />
-                  Contactar Soporte
-                </Button>
+                {/* 🔹 Contenedor centrador */}
+                <Box sx={{ display: "flex", justifyContent: "center", width: "100%" }}>
+                  <Button
+                    component={motion.a}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    variant="contained"
+                    href="https://api.whatsapp.com/send?phone=56946873014"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    sx={{
+                      position: "relative",
+                      overflow: "hidden",
+                      mt: 2,
+                      borderRadius: "30px",
+                      px: 2.6, // 👈 padding lateral mínimo
+                      py: 1, // 👈 más bajo y angosto
+                      fontWeight: 600,
+                      fontSize: "0.74rem",
+                      textTransform: "none",
+                      letterSpacing: 0.1,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 0.25,
+                      minWidth: "auto",
+                      maxWidth: 220,
+                      background: "linear-gradient(90deg, #25D366 0%, #128C7E 100%)",
+                      boxShadow: "0 3px 10px rgba(18,140,126,0.3)",
+                      transition: "all 0.3s ease",
+                      "&:hover": {
+                        transform: "translateY(-2px)",
+                        background: "linear-gradient(90deg, #20bd5a 0%, #0d745f 100%)",
+                        boxShadow: "0 5px 14px rgba(18,140,126,0.4)",
+                      },
+                      "&:active": {
+                        transform: "scale(0.97)",
+                      },
+                    }}
+                  >
+                    {/* ✨ Brillo diagonal */}
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        top: 0,
+                        left: "-75%",
+                        width: "50%",
+                        height: "100%",
+                        background:
+                          "linear-gradient(120deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.35) 50%, rgba(255,255,255,0) 100%)",
+                        transform: "skewX(-25deg)",
+                        animation: "shine 3s infinite",
+                        "@keyframes shine": {
+                          "0%": { left: "-75%" },
+                          "60%": { left: "130%" },
+                          "100%": { left: "130%" },
+                        },
+                        pointerEvents: "none",
+                      }}
+                    />
+
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.25 }}>
+                      <WhatsAppIcon sx={{ fontSize: 17, mb: "1px" }} />
+                      <Box component="span" sx={{ fontWeight: 600, fontSize: "0.78rem" }}>
+                        Siempre en Contacto!
+                      </Box>
+                    </Box>
+                  </Button>
+                </Box>
+
+
+
               </>
             )}
 

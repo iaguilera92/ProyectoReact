@@ -35,9 +35,16 @@ exports.handler = async (event) => {
 
     try {
         console.log("📦 event.body recibido:", event.body);
-
         const body = JSON.parse(event.body || "{}");
-        const { idCliente, revertir = false, suscripcion = false } = body;
+
+        const {
+            idCliente,
+            revertir = false,
+            suscripcion = false,
+            tbk_user = "",
+            tarjeta = "",
+            tipo_tarjeta = "",
+        } = body;
 
         if (!idCliente || (!Number.isInteger(idCliente) && typeof idCliente !== "string")) {
             return {
@@ -69,16 +76,21 @@ exports.handler = async (event) => {
                 modificado = true;
                 console.log("🧩 Cliente encontrado:", rowId);
 
-                const actualizado = {
-                    ...rowOriginal,
-                    pagado: revertir ? 0 : 1,
-                    fechaPago: revertir ? "" : hoy,
-                };
+                const actualizado = { ...rowOriginal };
 
-                // ✅ Guardar Suscripcion como 1 o 0
+                // ✅ Actualizar pagos normales
+                actualizado.pagado = revertir ? 0 : 1;
+                actualizado.fechaPago = revertir ? "" : hoy;
+
+                // ✅ Actualizar suscripción (solo si se indica)
                 if (typeof suscripcion !== "undefined") {
                     actualizado.Suscripcion = suscripcion ? 1 : 0;
                 }
+
+                // ⚙️ Validar campos sensibles: solo escribir si están vacíos
+                if (tbk_user && !row.tbk_user) actualizado.tbk_user = tbk_user;
+                if (tarjeta && !row.tarjeta) actualizado.tarjeta = tarjeta;
+                if (tipo_tarjeta && !row.tipo_tarjeta) actualizado.tipo_tarjeta = tipo_tarjeta;
 
                 return actualizado;
             }
@@ -94,33 +106,35 @@ exports.handler = async (event) => {
             };
         }
 
-        // Asegurar que la columna Suscripcion exista
-        if (!Object.keys(nuevosDatos[0]).includes("Suscripcion")) {
-            nuevosDatos.forEach((row) => {
-                if (typeof row.Suscripcion === "undefined") row.Suscripcion = "";
+        // Asegurar que existan las columnas nuevas
+        const columnasNecesarias = ["Suscripcion", "tbk_user", "tarjeta", "tipo_tarjeta"];
+        nuevosDatos.forEach((row) => {
+            columnasNecesarias.forEach((col) => {
+                if (typeof row[col] === "undefined") row[col] = "";
             });
-        }
+        });
 
         // Guardar Excel actualizado
         const nuevaHoja = XLSX.utils.json_to_sheet(nuevosDatos);
         workbook.Sheets[workbook.SheetNames[0]] = nuevaHoja;
         const buffer = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" });
 
-        await s3.putObject({
-            Bucket: BUCKET_NAME,
-            Key: FILE_KEY,
-            Body: buffer,
-            ContentType:
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        }).promise();
+        await s3
+            .putObject({
+                Bucket: BUCKET_NAME,
+                Key: FILE_KEY,
+                Body: buffer,
+                ContentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            })
+            .promise();
 
-        console.log("✅ Archivo actualizado con Suscripcion");
+        console.log("✅ Archivo actualizado correctamente con validación de campos sensibles");
 
         return {
             statusCode: 200,
             headers: corsHeaders,
             body: JSON.stringify({
-                message: "Cliente actualizado correctamente con Suscripción",
+                message: "Cliente actualizado correctamente (Suscripción y enrolamiento seguros)",
             }),
         };
     } catch (error) {
