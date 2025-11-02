@@ -13,7 +13,7 @@ CORREOS
 
 plataformas.web.cl@gmail.com //OFICIAL
 plataformas.web.contacto@gmail.com //CONTACTO
-
+plataformas.webs.cl@gmail.com //SUSCRIPCIÓN
 
 
 ANOTACIONES

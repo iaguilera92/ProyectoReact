@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { WhatsApp as WhatsAppIcon } from "@mui/icons-material";
+import emailjs from "@emailjs/browser";
 
 const Suscripcion = () => {
   const [status, setStatus] = useState("loading");
@@ -24,6 +25,7 @@ const Suscripcion = () => {
     const clienteCorreo = sessionStorage.getItem("clienteCorreo");
     const sitioWebReserva = sessionStorage.getItem("sitioWebReserva");
     const idCliente = sessionStorage.getItem("clienteId");
+    const logoCliente = sessionStorage.getItem("logoCliente");
 
     if (s === "success" && tbk_user) {
       setInfo({
@@ -43,6 +45,18 @@ const Suscripcion = () => {
           tbk_user,
           card,
           type,
+        }).then(() => {
+          enviarCorreoSuscripcion({
+            nombre: clienteNombre,
+            sitioWeb: sitioWebReserva,
+            logoCliente: logoCliente,
+            email: clienteCorreo,
+            fechaInicio: new Date().toLocaleDateString("es-CL", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            }),
+          });
         });
       }
       else {
@@ -54,6 +68,27 @@ const Suscripcion = () => {
 
     return () => clearTimeout(t);
   }, [searchParams]);
+
+  const enviarCorreoSuscripcion = async (datos) => {
+    try {
+      emailjs.init("TfLG1wfibewzR9Xpf");
+
+      const response = await emailjs.send(
+        "service_73azdl9",  // ID del servicio
+        "template_88weuur", // ID de plantilla
+        {
+          nombre: datos.nombre,
+          fechaInicio: datos.fechaInicio,
+          sitioWeb: datos.sitioWeb,
+          logoCliente: datos.logoCliente,
+          email: datos.email,
+        }
+      );
+      console.log("📧 Correo enviado:", response.status, response.text);
+    } catch (error) {
+      console.error("❌ Error al enviar correo:", error);
+    }
+  };
 
   // ✅ Registrar suscripción en Excel S3
   useEffect(() => {

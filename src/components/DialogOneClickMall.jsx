@@ -95,6 +95,7 @@ export default function DialogOneClickMall({
           nombre: encontrado.cliente,
           correo: encontrado.correo,
           idCliente: encontrado.idCliente,
+          logoCliente: encontrado.logoCliente
         });
       } else {
         setError("No se encontró el Cliente en la base de datos.");
@@ -124,6 +125,7 @@ export default function DialogOneClickMall({
       sessionStorage.setItem("clienteNombre", cliente.nombre);
       sessionStorage.setItem("clienteCorreo", cliente.correo);
       sessionStorage.setItem("clienteId", cliente.idCliente);
+      sessionStorage.setItem("logoCliente", cliente.logoCliente);
 
       // 🔹 Llamar al backend (Netlify function suscribirse)
       const result = await onConfirm?.(sitioWeb, cliente);

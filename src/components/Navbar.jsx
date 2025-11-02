@@ -230,13 +230,6 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
 
   const handleConfirmOneClick = async (sitioWeb, cliente) => {
 
-    console.log("📦 Datos enviados al backend:", {
-      sitioWeb,
-      nombre: cliente.nombre,
-      correo: cliente.correo,
-      idCliente: cliente.idCliente,
-    });
-
     if (!cliente?.nombre || !cliente?.correo || !cliente?.idCliente) {
       console.error("⚠️ No se recibieron datos válidos del cliente");
       alert("Faltan los datos del cliente asociados al sitio web.");
