@@ -39,38 +39,21 @@ exports.handler = async (event) => {
         if (!nombre || !email || !idCliente)
             throw new Error("Faltan parámetros requeridos (nombre, email, idCliente)");
 
-        // ⚙️ Detección de entorno (local, integración o producción)
-        const host = event.headers.host || "";
-        const origin = event.headers.origin || "";
-        const isLocal =
-            host.includes("localhost") || origin.includes("localhost");
-        const hasProdKeys =
-            !!process.env.TBK_API_KEY_ID && !!process.env.TBK_API_KEY_SECRET;
-
-        // 🧠 Determinar modo de operación
-        const mode = hasProdKeys ? "PRODUCCION" : "INTEGRACION";
+        // ⚙️ Siempre usar ambiente de integración (forzado)
+        const mode = "INTEGRACION";
         const inscriptionUrl =
-            mode === "PRODUCCION"
-                ? "https://webpay3g.transbank.cl/rswebpaytransaction/api/oneclick/v1.0/inscriptions"
-                : "https://webpay3gint.transbank.cl/rswebpaytransaction/api/oneclick/v1.0/inscriptions";
+            "https://webpay3gint.transbank.cl/rswebpaytransaction/api/oneclick/v1.0/inscriptions";
 
         const options = new Options(
-            hasProdKeys
-                ? process.env.TBK_API_KEY_ID
-                : "597055555541", // Comercio integración
-            hasProdKeys
-                ? process.env.TBK_API_KEY_SECRET
-                : "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C", // Llave integración
+            "597055555541", // Comercio integración OneClick Mall
+            "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C", // Llave integración
             mode
         );
 
-        // 🌐 URL retorno (siempre dominio público)
-        const baseUrl =
-            mode === "PRODUCCION"
-                ? "https://plataformas-web.cl"
-                : isLocal
-                    ? "http://localhost:8888"
-                    : "https://plataformas-web.cl";
+        // 🌐 URL retorno (dominio público o localhost)
+        const baseUrl = event.headers.host?.includes("localhost")
+            ? "http://localhost:8888"
+            : "https://plataformas-web.cl";
         const returnUrl = `${baseUrl}/.netlify/functions/confirmarSuscripcion`;
 
         console.log("⚙️ [suscribirse] Registrando inscripción OneClick...");
@@ -102,7 +85,9 @@ exports.handler = async (event) => {
 
         if (!token || !url_webpay) {
             console.error("⚠️ Respuesta incompleta desde Transbank:", response.data);
-            throw new Error(response.data.error_message || "Respuesta incompleta desde OneClick");
+            throw new Error(
+                response.data.error_message || "Respuesta incompleta desde OneClick"
+            );
         }
 
         // 💾 Guarda relación token → cliente en S3
