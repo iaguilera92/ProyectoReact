@@ -1766,10 +1766,10 @@ const Clientes = () => {
               transition: "all 0.3s ease",
             }}
             color={
-              clienteSeleccionado.suscripcion &&
-                (clienteSeleccionado.pagado === 1 || clienteSeleccionado.pagado === true)
-                ? "success" // 💚 verde si está suscrito y pagado
-                : "error"   // ❤️ rojo en cualquier otro caso
+              clienteSeleccionado?.suscripcion &&
+                (clienteSeleccionado?.pagado === 1 || clienteSeleccionado?.pagado === true)
+                ? "success"
+                : "error"
             }
             variant="contained"
             onClick={async () => {
@@ -1809,10 +1809,14 @@ const Clientes = () => {
               setOpenDialogCobro(false);
             }}
           >
-            {clienteSeleccionado.suscripcion &&
-              (clienteSeleccionado.pagado === 1 || clienteSeleccionado.pagado === true)
-              ? "👁️ Cobrar"
-              : "💰 Cobrar"}
+            {clienteSeleccionado && (
+              <>
+                {clienteSeleccionado.suscripcion &&
+                  (clienteSeleccionado.pagado === 1 || clienteSeleccionado.pagado === true)
+                  ? "👁️ Cobrar"
+                  : "💰 Cobrar"}
+              </>
+            )}
           </Button>
 
         </DialogActions>
