@@ -237,6 +237,7 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
   const handleCloseOneClick = () => {
     setOpenDialogOneClick(false);
     setPendingUser(null);
+    navigate("/", { replace: true });
   };
 
   // ✅ Confirma el inicio del flujo de inscripción OneClick Mall
@@ -268,6 +269,13 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
   //CVV: 123
   //Rut: 11.111.111-1
   //Clave: 123
+
+  //DETECTAR URL /suscribir
+  useEffect(() => {
+    if (location.pathname === "/suscribir") {
+      setOpenDialogOneClick(true);
+    }
+  }, [location.pathname]);
 
 
   return (

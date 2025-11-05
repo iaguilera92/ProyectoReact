@@ -291,13 +291,18 @@ const Clientes = () => {
     }
   };
 
-  const enviarCorreoPagoRecibido = async (cliente, mesFinal) => {
-    try {
-      const urlBase = window.location.hostname === "localhost"
-        ? "http://localhost:8888"
-        : "";
+  const enviarCorreoPagoRecibido = async (cliente, mesFinal, overrides = {}) => {
+    const {
+      metodoPago = "Transferencia",
+      montoPagado = cliente.valor || "$10.000 CLP",
+      pdfUrl: pdfUrlOverride, // si lo mandas desde afuera, se usa este
+    } = overrides;
 
-      let pdfUrl = "https://plataformas-web-buckets.s3.us-east-2.amazonaws.com/comprobantes/comprobante-pago.pdf";
+    try {
+      const urlBase = window.location.hostname === "localhost" ? "http://localhost:8888" : "";
+
+      // valor por defecto si no logramos generar
+      let pdfUrl = pdfUrlOverride || "https://plataformas-web-buckets.s3.us-east-2.amazonaws.com/comprobantes/comprobante-pago.pdf";
 
       try {
         // 🔹 Intentar generar el comprobante PDF
@@ -321,43 +326,43 @@ const Clientes = () => {
           throw new Error(resultado.message || resultado.detalle || "Error al generar el comprobante");
         }
 
-        console.log("✅ PDF generado exitosamente");
+        // si tu lambda retorna una url, úsala
+        if (resultado?.pdfUrl) pdfUrl = resultado.pdfUrl;
 
+        console.log("✅ PDF generado exitosamente");
       } catch (err) {
         console.warn("⚠️ No se pudo generar el comprobante, se enviará correo sin adjunto:", err.message);
       }
 
-      // 🔹 Parámetros del correo
+      // 🔹 Parámetros del correo (plantilla de pago realizado)
       const templateParams = {
         sitioWeb: `www.${cliente.sitioWeb}`,
         nombre: cliente.cliente || cliente.sitioWeb || "Cliente",
         mes: mesFinal,
         fechaPago: new Date().toLocaleDateString("es-CL"),
-        montoPagado: cliente.valor || "$10.000 CLP",
-        metodoPago: "Transferencia",
+        montoPagado,                      // 👈 override-friendly
+        metodoPago,                       // 👈 override-friendly
         logoCliente: cliente.logoCliente || "/logo-plataformas-web-correo.png",
         email: modoDesarrollo ? "plataformas.web.cl@gmail.com" : (cliente.correo || "plataformas.web.cl@gmail.com"),
         cc: "plataformas.web.cl@gmail.com",
-        pdfUrl, // sigue teniendo valor
+        pdfUrl,                           // 👈 final
       };
 
-
-      // 🔹 Enviar correo
       const resultadoCorreo = await emailjs.send(
         "service_ocjgtpc",
-        "template_ligrzq3",
+        "template_ligrzq3",               // ✅ comprobante
         templateParams,
         "byR6suwAx2-x6ddVp"
       );
 
-      console.log("✅ Correo enviado:", resultadoCorreo);
+      console.log("✅ Correo enviado (pago realizado):", resultadoCorreo);
       return resultadoCorreo;
-
     } catch (err) {
       console.error("❌ Error en enviarCorreoPagoRecibido:", err);
       throw err;
     }
   };
+
 
 
   //ÚLTIMO DÍA DEL MES
@@ -378,91 +383,126 @@ const Clientes = () => {
   const enviarCorreoCobro = async (cliente, mesCapitalizado) => {
     const year = new Date().getFullYear();
 
-    const templateParams = {
-      sitioWeb: `www.${cliente.sitioWeb}`,
-      nombre: cliente.cliente || cliente.sitioWeb || "Cliente",
-      mes: `${mesCapitalizado} ${year}`,
-      email: modoDesarrollo
-        ? "plataformas.web.cl@gmail.com"
-        : cliente.correo || "plataformas.web.cl@gmail.com",
-      monto: cliente.valor
-        ? `$${cliente.valor.replace(/\$/g, "").trim()} CLP`
-        : "$9.990 CLP",
-      cc: "plataformas.web.cl@gmail.com", // copia interna
-    };
+    // 🧠 Normaliza estado suscripción
+    const suscrito =
+      cliente.suscripcion === true ||
+      cliente.suscripcion === 1 ||
+      cliente.suscripcion === "1" ||
+      cliente.suscripcion === "true" ||
+      cliente.suscripcion === "TRUE";
 
-    // 📨 Enviar correo al cliente
-    try {
-      await emailjs.send(
-        "service_ocjgtpc",
-        "template_eoaqvlw",
-        templateParams,
-        "byR6suwAx2-x6ddVp"
-      );
-      console.log("📧 Correo enviado exitosamente a", templateParams.email);
-    } catch (error) {
-      console.error("❌ Error al enviar el correo:", error);
-    }
+    const tbkUser = (cliente.tbk_user || "").trim();
+    const username = (cliente.correo || "").trim();
 
-    // 💳 Si el cliente tiene suscripción activa → ejecutar cobro automático
-    if (cliente.suscripcion && cliente.tbk_user) {
+    // 💳 Ejecutar cobro automático si corresponde
+    if (suscrito && tbkUser) {
       try {
         const baseUrl =
-          window.location.hostname === "localhost"
-            ? "http://localhost:8888"
-            : "";
+          window.location.hostname === "localhost" ? "http://localhost:8888" : "";
         const endpoint = `${baseUrl}/.netlify/functions/autorizarTransaccion`;
 
         const buyOrder = `ORD-${Date.now()}`;
+        const MONTO_PRUEBA = true;
+
+        const amount = MONTO_PRUEBA
+          ? 50 // 💵 Test seguro en producción
+          : cliente.valor
+            ? Number(String(cliente.valor).replace(/[^\d]/g, "")) || 9990
+            : 9990;
 
         console.log("💳 Iniciando cobro automático OneClick Mall...", {
-          tbk_user: cliente.tbk_user,
-          username: cliente.correo,
+          tbk_user: tbkUser,
+          username,
           buy_order: buyOrder,
-          amount: 9990,
+          amount,
         });
 
         const resp = await fetch(endpoint, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            tbk_user: cliente.tbk_user,
-            username: cliente.correo,
+            tbk_user: tbkUser,
+            username,
             buy_order: buyOrder,
-            amount: 9990,
-            child_commerce_code: "597053022840", // tu tienda hija
+            amount,
+            child_commerce_code: "597053022840",
           }),
         });
+
+        if (!resp.ok) throw new Error(`HTTP ${resp.status} - ${resp.statusText}`);
 
         const data = await resp.json();
         console.log("📦 Respuesta Transbank:", data);
 
-        const detalle = data.details?.[0];
+        const detalle = data?.data?.details?.[0] || data?.details?.[0];
         if (detalle && detalle.response_code === 0) {
           console.log("✅ Cobro aprobado:", detalle);
 
           // 🟢 Marcar en Excel como pagado
           await actualizarClientePagado(cliente.idCliente);
 
-          mostrarSnackbar(
-            `💰 Cobro automático aprobado para ${cliente.sitioWeb}`,
-            "success"
-          );
+          // 🧾 Enviar comprobante (pago realizado)
+          const montoCLP = amount;
+          await enviarCorreoPagoRecibido(cliente, mesCapitalizado, {
+            metodoPago: "OneClick Webpay",
+            montoPagado: `$${montoCLP} CLP`,
+          });
+
+          setSnackbar({
+            open: true,
+            message: `💰 Cobro automático aprobado para ${cliente.sitioWeb}`,
+            severity: "success",
+          });
         } else {
           console.warn("❌ Cobro rechazado o error en Transbank:", detalle);
-          mostrarSnackbar(
-            `❌ Cobro rechazado para ${cliente.sitioWeb}`,
-            "error"
-          );
+          setSnackbar({
+            open: true,
+            message: `❌ Cobro rechazado para ${cliente.sitioWeb}`,
+            severity: "error",
+          });
         }
       } catch (err) {
         console.error("⚠️ Error al procesar cobro automático:", err);
-        mostrarSnackbar("Error al procesar el cobro automático", "error");
+        setSnackbar({
+          open: true,
+          message: "⚠️ Error al procesar el cobro automático",
+          severity: "error",
+        });
       }
     } else {
-      console.log("ℹ️ Cliente no suscrito o sin tbk_user, solo se notificó por correo.");
+      // 📨 Si NO está suscrito → enviar correo de cobro manual
+      const templateParams = {
+        sitioWeb: `www.${cliente.sitioWeb}`,
+        nombre: cliente.cliente || cliente.sitioWeb || "Cliente",
+        mes: `${mesCapitalizado} ${year}`,
+        email: modoDesarrollo
+          ? "plataformas.web.cl@gmail.com"
+          : cliente.correo || "plataformas.web.cl@gmail.com",
+        monto: cliente.valor
+          ? `$${cliente.valor.replace(/\$/g, "").trim()} CLP`
+          : "$9.990 CLP",
+        cc: "plataformas.web.cl@gmail.com",
+      };
+
+      try {
+        await emailjs.send(
+          "service_ocjgtpc",
+          "template_eoaqvlw",
+          templateParams,
+          "byR6suwAx2-x6ddVp"
+        );
+        console.log("📧 Correo de cobro enviado a", templateParams.email);
+      } catch (error) {
+        console.error("❌ Error al enviar el correo de cobro:", error);
+      }
+
+      console.log("ℹ️ Cliente no suscrito o sin tbk_user, se notificó por correo de cobro.", {
+        suscripcionOriginal: cliente.suscripcion,
+        tbk_user: cliente.tbk_user,
+      });
     }
   };
+
 
   // SUSPENSIÓN
   const enviarCorreoSuspension = (cliente) => {
@@ -1720,30 +1760,61 @@ const Clientes = () => {
 
           <Button
             size={isMobile ? "small" : "medium"}
-            sx={{ fontSize: isMobile ? "0.7rem" : "0.875rem" }}
-            onClick={() => {
+            sx={{
+              fontSize: isMobile ? "0.7rem" : "0.875rem",
+              fontWeight: 600,
+              transition: "all 0.3s ease",
+            }}
+            color={
+              clienteSeleccionado.suscripcion &&
+                (clienteSeleccionado.pagado === 1 || clienteSeleccionado.pagado === true)
+                ? "success" // 💚 verde si está suscrito y pagado
+                : "error"   // ❤️ rojo en cualquier otro caso
+            }
+            variant="contained"
+            onClick={async () => {
               const mesFinal = mesManual || mesCapitalizado;
               const mesFinalCapitalizado =
                 mesFinal.charAt(0).toUpperCase() + mesFinal.slice(1);
 
-              const mensaje = `Buenas! recordar el pago del HOSTING de ${clienteSeleccionado.sitioWeb} de *${clienteSeleccionado.valor}* del mes de ${mesFinalCapitalizado}.`;
-              const numero = clienteSeleccionado.telefono || "56946873014";
-              const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
-              window.open(url, "_blank");
+              const cliente = clienteSeleccionado;
+              const suscrito =
+                cliente.suscripcion === true ||
+                cliente.suscripcion === 1 ||
+                cliente.suscripcion === "1" ||
+                cliente.suscripcion === "true" ||
+                cliente.suscripcion === "TRUE";
+              const tieneToken = (cliente.tbk_user || "").trim() !== "";
 
-              enviarCorreoCobro(clienteSeleccionado, mesFinalCapitalizado);
+              // 🔹 Si está suscrito con tbk_user válido → cobro automático (sin WhatsApp)
+              if (suscrito && tieneToken) {
+                console.log("⚙️ Cliente suscrito, se omite WhatsApp. Iniciando cobro automático...");
+                await enviarCorreoCobro(cliente, mesFinalCapitalizado);
+              } else {
+                // 🔹 Si NO está suscrito → abrir WhatsApp y enviar correo de cobro manual
+                const mensaje = `Buenas! recordar el pago del HOSTING de ${cliente.sitioWeb} de *${cliente.valor}* del mes de ${mesFinalCapitalizado}.`;
+                const numero = cliente.telefono || "56946873014";
+                const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
+                window.open(url, "_blank");
 
-              if (clienteSeleccionado.index !== undefined) {
-                bloquearBotonTemporalmente(clienteSeleccionado.index);
+                await enviarCorreoCobro(cliente, mesFinalCapitalizado);
               }
 
+              // 🔹 Bloquear botón temporalmente para evitar doble envío
+              if (cliente.index !== undefined) {
+                bloquearBotonTemporalmente(cliente.index);
+              }
+
+              // 🔹 Cerrar diálogo
               setOpenDialogCobro(false);
             }}
-            color="error"
-            variant="contained"
           >
-            💰 Cobrar
+            {clienteSeleccionado.suscripcion &&
+              (clienteSeleccionado.pagado === 1 || clienteSeleccionado.pagado === true)
+              ? "👁️ Cobrar"
+              : "💰 Cobrar"}
           </Button>
+
         </DialogActions>
 
       </Dialog>

@@ -4,6 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import { WhatsApp as WhatsAppIcon } from "@mui/icons-material";
 import emailjs from "@emailjs/browser";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
 const Suscripcion = () => {
   const [status, setStatus] = useState("loading");
@@ -11,6 +12,7 @@ const Suscripcion = () => {
   const [subrayadoActivo, setSubrayadoActivo] = useState(false);
   const [searchParams] = useSearchParams();
   const ejecutadoRef = useRef(false);
+  const [animar, setAnimar] = useState(false);
 
   //INICIO
   useEffect(() => {
@@ -41,6 +43,7 @@ const Suscripcion = () => {
         sitioWeb: sitioWebReserva,
       });
       setStatus("success");
+      setTimeout(() => setAnimar(true), 2000);
 
       if (idCliente) {
         actualizarASuscrito(idCliente, {
@@ -144,32 +147,42 @@ const Suscripcion = () => {
             color: "white",
             display: "inline-flex",
             position: "relative",
-            "&::after": {
-              content: '""',
-              position: "absolute",
-              bottom: -2,
-              left: 0,
-              width: subrayadoActivo ? "100%" : "0%",
-              height: "3px",
-              borderRadius: "3px",
-              background: "linear-gradient(90deg, #007bff, #00c6ff)",
-              transition: "width 0.6s ease-out",
-            },
           }}
         >
-          {"Suscripción Plataformas Web".split("").map((c, i) => (
-            <motion.span
-              key={i}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.05 }}
-              style={{ display: "inline-block", whiteSpace: "pre" }}
-            >
-              {c === " " ? "\u00A0" : c}
-            </motion.span>
-          ))}
+          <Box
+            component="span"
+            sx={{
+              position: "relative",
+              display: "inline-block",
+              "&::after": {
+                content: '""',
+                position: "absolute",
+                bottom: -4,
+                left: "50%",
+                transform: "translateX(-50%)",
+                width: subrayadoActivo ? "100%" : "0%",
+                height: "3px",
+                borderRadius: "3px",
+                background: "linear-gradient(90deg, #007bff, #00c6ff)",
+                transition: "width 0.6s ease-in-out",
+              },
+            }}
+          >
+            {"Suscripción Plataformas Web".split("").map((c, i) => (
+              <motion.span
+                key={i}
+                initial={{ opacity: 0, x: -10 }}
+                animate={animar ? { opacity: 1, x: 0 } : {}}
+                transition={{ delay: animar ? i * 0.05 : 0 }}
+                style={{ display: "inline-block", whiteSpace: "pre" }}
+              >
+                {c === " " ? "\u00A0" : c}
+              </motion.span>
+            ))}
+          </Box>
         </Typography>
       </Box>
+
 
       <Box display="flex" justifyContent="center" mt={2}>
         <Card
@@ -233,68 +246,69 @@ const Suscripcion = () => {
             {status === "success" && (
               <>
                 {/* ✅ Ícono check */}
-                <Box
-                  component={motion.div}
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ type: "spring", stiffness: 120, damping: 10 }}
-                  sx={{ mb: { xs: 1, sm: 1 } }}
-                >
+                {animar && (
                   <Box
-                    sx={{
-                      position: "relative",
-                      width: 80,
-                      height: 80,
-                      borderRadius: "50%",
-                      background: "linear-gradient(135deg, #43A047, #2E7D32)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      mx: "auto",
-                      boxShadow: "0 8px 25px rgba(46, 125, 50, 0.35)",
-                      overflow: "hidden",
-                      "&::before": {
-                        content: '""',
-                        position: "absolute",
-                        top: "-70%",
-                        left: "-70%",
-                        width: "240%",
-                        height: "240%",
-                        background:
-                          "linear-gradient(130deg, transparent 40%, rgba(255,255,255,0.85) 50%, transparent 60%)",
-                        mixBlendMode: "screen",
-                        filter: "blur(5px)",
-                        animation: "shineDiagonal 2.8s linear infinite",
-                        borderRadius: "inherit",
-                        pointerEvents: "none",
-                      },
-                      "@keyframes shineDiagonal": {
-                        "0%": {
-                          transform: "translateX(-140%) translateY(-50%)",
-                          opacity: 0.8,
-                        },
-                        "100%": {
-                          transform: "translateX(140%) translateY(50%)",
-                          opacity: 0.8,
-                        },
-                      },
-                    }}
+                    component={motion.div}
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ type: "spring", stiffness: 120, damping: 10 }}
+                    sx={{ mb: { xs: 1, sm: 1 } }}
                   >
-                    <Typography
-                      variant="h3"
+                    <Box
                       sx={{
-                        color: "white",
-                        fontWeight: 700,
                         position: "relative",
-                        zIndex: 1,
-                        textShadow: "0 1px 2px rgba(0,0,0,0.3)",
+                        width: 80,
+                        height: 80,
+                        borderRadius: "50%",
+                        background: "linear-gradient(135deg, #43A047, #2E7D32)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        mx: "auto",
+                        boxShadow: "0 8px 25px rgba(46, 125, 50, 0.35)",
+                        overflow: "hidden",
+                        "&::before": {
+                          content: '""',
+                          position: "absolute",
+                          top: "-70%",
+                          left: "-70%",
+                          width: "240%",
+                          height: "240%",
+                          background:
+                            "linear-gradient(130deg, transparent 40%, rgba(255,255,255,0.85) 50%, transparent 60%)",
+                          mixBlendMode: "screen",
+                          filter: "blur(5px)",
+                          animation: "shineDiagonal 2.8s linear infinite",
+                          borderRadius: "inherit",
+                          pointerEvents: "none",
+                        },
+                        "@keyframes shineDiagonal": {
+                          "0%": {
+                            transform: "translateX(-140%) translateY(-50%)",
+                            opacity: 0.8,
+                          },
+                          "100%": {
+                            transform: "translateX(140%) translateY(50%)",
+                            opacity: 0.8,
+                          },
+                        },
                       }}
                     >
-                      ✓
-                    </Typography>
+                      <Typography
+                        variant="h3"
+                        sx={{
+                          color: "white",
+                          fontWeight: 700,
+                          position: "relative",
+                          zIndex: 1,
+                          textShadow: "0 1px 2px rgba(0,0,0,0.3)",
+                        }}
+                      >
+                        ✓
+                      </Typography>
+                    </Box>
                   </Box>
-                </Box>
-
+                )}
                 <Typography
                   variant="h4"
                   fontWeight={800}
@@ -308,19 +322,47 @@ const Suscripcion = () => {
                   ¡Suscripción activada!
                 </Typography>
 
-                <Typography
-                  variant="h5"
-                  fontWeight={700}
+
+                <Box
                   sx={{
-                    mb: 0,
-                    background: "linear-gradient(90deg, #4CAF50, #81C784)",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    fontSize: { xs: "0.9rem", sm: "1.2rem" },
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 0.6,
+                    mt: 0.5,
                   }}
                 >
-                  Plan mensual: <strong>$9.990 CLP</strong>
-                </Typography>
+                  <InfoOutlinedIcon
+                    sx={{
+                      fontSize: { xs: 18, sm: 20 },
+                      color: "#2E7D32", // tono verde del plan
+                      opacity: 0.85,
+                      mb: "1px",
+                    }}
+                  />
+
+                  <Typography
+                    variant="h6"
+                    fontWeight={700}
+                    sx={{
+                      background: "linear-gradient(90deg, #43A047, #66BB6A, #81C784)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      fontSize: { xs: "0.95rem", sm: "1.15rem" },
+                      letterSpacing: "-0.3px",
+                      lineHeight: 1.15,
+                      textShadow: "0 0.5px 1px rgba(0,0,0,0.15)",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 0.4,
+                    }}
+                  >
+                    Plan mensual:&nbsp;
+                    <strong style={{ color: "#2E7D32" }}>$9.990&nbsp;CLP</strong>
+                  </Typography>
+                </Box>
+
+
 
                 {/* 🧾 Sitio web suscrito */}
                 <Box

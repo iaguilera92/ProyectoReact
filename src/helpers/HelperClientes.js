@@ -35,17 +35,21 @@ export const cargarClientesDesdeExcel = async () => {
         telefono: row.telefono?.toString() || "",
         correo: row.correo?.trim() || "",
         pagado: row.pagado === 1 || row.pagado === "1",
-        valor:
-          row.valor?.toString().replace(/\r?\n|\r/g, "").trim() || "$0",
+        valor: row.valor?.toString().replace(/\r?\n|\r/g, "").trim() || "$0",
         fechaPago: row.fechapago || "",
         estado: row.estado === 1 || row.estado === "1",
         logoCliente: row.logocliente?.trim() || "",
 
-        // 🆕 Suscripción: solo true si es 1 o "1"
+        // 🧾 Datos de suscripción
         suscripcion:
           row.suscripcion === 1 ||
           row.suscripcion === "1" ||
           String(row.suscripcion).trim().toLowerCase() === "true",
+
+        // 💳 Campos adicionales para OneClick
+        tbk_user: row.tbk_user?.trim() || "",
+        tarjeta: row.tarjeta?.trim() || "",
+        tipo_tarjeta: row.tipo_tarjeta?.trim() || "",
       };
     });
   } catch (error) {

@@ -51,6 +51,7 @@ const router = createBrowserRouter(
             element: <App />,
             children: [
                 { path: "", element: <HomeWrapper /> },
+                { path: "suscribir", element: <HomeWrapper /> },
                 { path: "servicios", element: withSuspense(Servicios) },
                 { path: "nosotros", element: withSuspense(Nosotros) },
                 { path: "contacto", element: withSuspense(Contacto) },

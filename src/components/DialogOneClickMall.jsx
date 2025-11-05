@@ -517,7 +517,7 @@ export default function DialogOneClickMall({
                       >
                         <Typography
                           sx={{
-                            fontSize: { xs: "0.7rem", sm: "0.75rem" },
+                            fontSize: { xs: "0.68rem", sm: "0.75rem" },
                             color: "#6A1B9A",
                             fontWeight: 500,
                             display: "flex",
@@ -530,7 +530,7 @@ export default function DialogOneClickMall({
 
                         <Typography
                           sx={{
-                            fontSize: { xs: "0.7rem", sm: "0.75rem" },
+                            fontSize: { xs: "0.68rem", sm: "0.75rem" },
                             color: "#6A1B9A",
                             fontWeight: 400,
                             display: "flex",
@@ -542,7 +542,7 @@ export default function DialogOneClickMall({
                         </Typography>
                         <Typography
                           sx={{
-                            fontSize: { xs: "0.7rem", sm: "0.75rem" },
+                            fontSize: { xs: "0.68rem", sm: "0.75rem" },
                             color: "#6A1B9A",
                             fontWeight: 500,
                             display: "flex",
