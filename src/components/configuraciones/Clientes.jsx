@@ -464,31 +464,6 @@ const Clientes = () => {
     }
   };
 
-  const actualizarClientePagado = async (idCliente) => {
-    try {
-      const baseUrl =
-        window.location.hostname === "localhost"
-          ? "http://localhost:8888"
-          : "";
-      const resp = await fetch(`${baseUrl}/.netlify/functions/actualizarCliente`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          idCliente,
-          pagado: 1,
-          fechaPago: new Date().toLocaleDateString("es-CL"),
-        }),
-      });
-
-      const data = await resp.json();
-      console.log("📊 Cliente actualizado como pagado:", data);
-    } catch (err) {
-      console.error("❌ Error al actualizar Excel:", err);
-    }
-  };
-
-
-
   // SUSPENSIÓN
   const enviarCorreoSuspension = (cliente) => {
 
@@ -1252,224 +1227,186 @@ const Clientes = () => {
                       </Box>
                     </TableCell>
 
-
-                    {/* === Si está suscrito mostramos etiqueta === */}
-                    {estaSuscrito ? (
-                      <TableCell
-                        colSpan={2}
-                        align="left"
+                    {/* === CELDA 1: Botón COBRAR (siempre visible) === */}
+                    <TableCell align="center">
+                      <Box
                         sx={{
-                          position: "relative",
-                          background: "transparent",
-                          pl: { xs: 0.8, sm: 1 },
-                          py: 0.2,
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          minHeight: "50px",
                         }}
                       >
-                        <Box
+                        <Button
+                          variant="contained"
+                          color="error"
+                          size="small"
+                          onClick={() => {
+                            setClienteSeleccionado(cliente);
+                            setOpenDialogCobro(true);
+                          }}
+                          disabled={!estaSuscrito && (estaAlDia || botonesBloqueados.includes(index))}
                           sx={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            position: "relative",
-                            border: "1px solid #FFD700", // ✨ borde dorado visible
-                            borderRadius: "5px",
-                            background:
-                              "linear-gradient(90deg, rgba(255,215,0,0.15), rgba(255,223,128,0.05))",
-                            boxShadow:
-                              "0 0 6px rgba(255,215,0,0.3), inset 0 0 2px rgba(255,255,255,0.4)",
-                            px: 1,
-                            py: 0.15,
-                            color: "#b8860b",
+                            minWidth: isMobile ? "auto" : undefined,
+                            px: isMobile ? 1.3 : 2.2,
+                            py: isMobile ? 0.5 : 0.8,
+                            fontSize: isMobile ? 0 : "0.8rem",
                             fontWeight: 600,
-                            fontSize: { xs: "0.6rem", sm: "0.72rem" },
-                            textTransform: "uppercase",
-                            whiteSpace: "nowrap",
-                            transition: "all 0.3s ease",
-                            overflow: "hidden",
-
-                            "&:hover": {
-                              boxShadow:
-                                "0 0 10px rgba(255,215,0,0.45), inset 0 0 3px rgba(255,255,255,0.5)",
-                              transform: "scale(1.02)",
-                              background:
-                                "linear-gradient(90deg, rgba(255,215,0,0.25), rgba(255,223,128,0.1))",
-                            },
-
-                            "&::after": {
-                              content: '""',
-                              position: "absolute",
-                              top: 0,
-                              left: "-150%",
-                              width: "250%",
-                              height: "100%",
-                              background:
-                                "linear-gradient(120deg, transparent 45%, rgba(255,255,255,0.6) 50%, transparent 55%)",
-                              animation: "shineTightGold 4s linear infinite",
-                              pointerEvents: "none",
-                              zIndex: 1,
-                              opacity: 0.8,
-                            },
-
-                            "@keyframes shineTightGold": {
-                              "0%": { transform: "translateX(-100%)" },
-                              "100%": { transform: "translateX(100%)" },
+                            "& .emoji": { fontSize: "1rem" },
+                            "&.Mui-disabled": {
+                              cursor: "not-allowed !important",
+                              pointerEvents: "auto",
+                              opacity: 0.6,
                             },
                           }}
                         >
-                          <Typography
-                            component="span"
-                            sx={{
-                              fontWeight: 700,
-                              letterSpacing: "0.2px",
-                              background:
-                                "linear-gradient(90deg, #FFD700, #DAA520, #FFD700)",
-                              WebkitBackgroundClip: "text",
-                              WebkitTextFillColor: "transparent",
-                              position: "relative",
-                              zIndex: 2,
-                            }}
-                          >
-                            💎Suscrito
-                          </Typography>
-                        </Box>
-                      </TableCell>
+                          {isMobile ? <span className="emoji">💰</span> : "Cobrar"}
+                        </Button>
+                      </Box>
+                    </TableCell>
 
-
-
-
-                    ) : (
-                      <>
-                        {/* Botón COBRAR */}
-                        <TableCell align="center">
-                          <Box
-                            sx={{
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                              minHeight: "50px",
-                            }}
-                          >
-                            <Button
-                              variant="contained"
-                              color="error"
-                              size="small"
-                              onClick={() => {
-                                setClienteSeleccionado(cliente);
-                                setOpenDialogCobro(true);
-                              }}
-                              disabled={estaAlDia || botonesBloqueados.includes(index)}
-                              sx={{
-                                minWidth: isMobile ? "auto" : undefined,
-                                px: isMobile ? 1.3 : 2.2,
-                                py: isMobile ? 0.5 : 0.8,
-                                fontSize: isMobile ? 0 : "0.8rem",
-                                fontWeight: 600,
-                                "& .emoji": { fontSize: "1rem" },
-                                "&.Mui-disabled": {
-                                  cursor: "not-allowed !important",
-                                  pointerEvents: "auto",
-                                  opacity: 0.6,
-                                },
-                              }}
+                    {/* === CELDA 2: Pago recibido o Suscrito === */}
+                    <TableCell align="center">
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          minHeight: "50px",
+                        }}
+                      >
+                        <AnimatePresence mode="wait">
+                          {estaSuscrito ? (
+                            // 💎 Etiqueta Suscrito reemplaza el contenido
+                            <motion.div
+                              key="suscrito"
+                              initial={{ opacity: 0, scale: 0.9 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0, scale: 0.9 }}
+                              transition={{ duration: 0.3 }}
                             >
-                              {isMobile ? <span className="emoji">💰</span> : "Cobrar"}
-                            </Button>
-                          </Box>
-                        </TableCell>
-
-                        {/* Botón PAGO RECIBIDO / Reversión */}
-                        <TableCell align="center">
-                          <Box
-                            sx={{
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                              minHeight: "50px",
-                            }}
-                          >
-                            <AnimatePresence mode="wait">
-                              {estaAlDia ? (
-                                <motion.div
-                                  key="pagado"
-                                  initial={{ opacity: 0, scale: 0.9 }}
-                                  animate={{ opacity: 1, scale: 1 }}
-                                  exit={{ opacity: 0, scale: 0.9 }}
-                                  transition={{ duration: 0.3 }}
-                                  style={{ display: "flex", alignItems: "center", gap: 6 }}
-                                >
-                                  {isMobile ? (
-                                    <>
-                                      <DoneAllIcon fontSize="small" htmlColor="#2e7d32" />
-                                      <Button
-                                        size="small"
-                                        variant="text"
-                                        color="warning"
-                                        onClick={() => abrirDialogoConfirmacion(cliente, true)}
-                                        sx={{ minWidth: 0, padding: 0, ml: 0 }}
-                                      >
-                                        🔄
-                                      </Button>
-                                    </>
-                                  ) : (
-                                    <>
-                                      <Typography
-                                        variant="caption"
-                                        sx={{
-                                          color: "#2e7d32",
-                                          fontWeight: 600,
-                                          whiteSpace: "nowrap",
-                                        }}
-                                      >
-                                        ✅ Pago recibido
-                                      </Typography>
-                                      <Button
-                                        size="small"
-                                        variant="text"
-                                        color="warning"
-                                        onClick={() => abrirDialogoConfirmacion(cliente, true)}
-                                        sx={{ minWidth: 0, padding: 0, ml: 0 }}
-                                      >
-                                        🔄
-                                      </Button>
-                                    </>
-                                  )}
-                                </motion.div>
-                              ) : (
-                                <motion.div
-                                  key="pagoRecibido"
-                                  initial={{ opacity: 0, scale: 0.9 }}
-                                  animate={{ opacity: 1, scale: 1 }}
-                                  exit={{ opacity: 0, scale: 0.9 }}
-                                  transition={{ duration: 0.3 }}
-                                >
+                              <Box
+                                sx={{
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  border: "1px solid #FFD700",
+                                  borderRadius: "6px",
+                                  background:
+                                    "linear-gradient(90deg, rgba(255,215,0,0.15), rgba(255,223,128,0.05))",
+                                  px: 1,
+                                  py: 0.3,
+                                  color: "#b8860b",
+                                  fontWeight: 700,
+                                  fontSize: { xs: "0.65rem", sm: "0.8rem" },
+                                  textTransform: "uppercase",
+                                  boxShadow: "0 0 6px rgba(255,215,0,0.3)",
+                                  whiteSpace: "nowrap",
+                                  position: "relative",
+                                  overflow: "hidden",
+                                  "&::after": {
+                                    content: '""',
+                                    position: "absolute",
+                                    top: 0,
+                                    left: "-150%",
+                                    width: "250%",
+                                    height: "100%",
+                                    background:
+                                      "linear-gradient(120deg, transparent 45%, rgba(255,255,255,0.6) 50%, transparent 55%)",
+                                    animation: "shineGold 4s linear infinite",
+                                    pointerEvents: "none",
+                                    zIndex: 1,
+                                    opacity: 0.7,
+                                  },
+                                  "@keyframes shineGold": {
+                                    "0%": { transform: "translateX(-100%)" },
+                                    "100%": { transform: "translateX(100%)" },
+                                  },
+                                }}
+                              >
+                                💎 Suscrito
+                              </Box>
+                            </motion.div>
+                          ) : estaAlDia ? (
+                            // ✅ Pago recibido
+                            <motion.div
+                              key="pagado"
+                              initial={{ opacity: 0, scale: 0.9 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0, scale: 0.9 }}
+                              transition={{ duration: 0.3 }}
+                              style={{ display: "flex", alignItems: "center", gap: 6 }}
+                            >
+                              {isMobile ? (
+                                <>
+                                  <DoneAllIcon fontSize="small" htmlColor="#2e7d32" />
                                   <Button
-                                    variant="contained"
-                                    color="success"
                                     size="small"
-                                    onClick={() => abrirDialogoConfirmacion(cliente)}
+                                    variant="text"
+                                    color="warning"
+                                    onClick={() => abrirDialogoConfirmacion(cliente, true)}
+                                    sx={{ minWidth: 0, padding: 0, ml: 0 }}
+                                  >
+                                    🔄
+                                  </Button>
+                                </>
+                              ) : (
+                                <>
+                                  <Typography
+                                    variant="caption"
                                     sx={{
-                                      minWidth: isMobile ? "auto" : undefined,
-                                      px: isMobile ? 1.2 : 2.2,
-                                      py: isMobile ? 0.5 : 0.8,
-                                      fontSize: isMobile ? 0 : "0.8rem",
+                                      color: "#2e7d32",
                                       fontWeight: 600,
-                                      textTransform: "none",
-                                      "& .emoji": { fontSize: "1rem" },
+                                      whiteSpace: "nowrap",
                                     }}
                                   >
-                                    {isMobile ? (
-                                      <span className="emoji">💸</span>
-                                    ) : (
-                                      "Pago recibido"
-                                    )}
+                                    ✅ Pago recibido
+                                  </Typography>
+                                  <Button
+                                    size="small"
+                                    variant="text"
+                                    color="warning"
+                                    onClick={() => abrirDialogoConfirmacion(cliente, true)}
+                                    sx={{ minWidth: 0, padding: 0, ml: 0 }}
+                                  >
+                                    🔄
                                   </Button>
-                                </motion.div>
+                                </>
                               )}
-                            </AnimatePresence>
-                          </Box>
-                        </TableCell>
-                      </>
-                    )}
+                            </motion.div>
+                          ) : (
+                            // 💸 Botón Pago recibido normal
+                            <motion.div
+                              key="pagoRecibido"
+                              initial={{ opacity: 0, scale: 0.9 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0, scale: 0.9 }}
+                              transition={{ duration: 0.3 }}
+                            >
+                              <Button
+                                variant="contained"
+                                color="success"
+                                size="small"
+                                onClick={() => abrirDialogoConfirmacion(cliente)}
+                                sx={{
+                                  minWidth: isMobile ? "auto" : undefined,
+                                  px: isMobile ? 1.2 : 2.2,
+                                  py: isMobile ? 0.5 : 0.8,
+                                  fontSize: isMobile ? 0 : "0.8rem",
+                                  fontWeight: 600,
+                                  textTransform: "none",
+                                  "& .emoji": { fontSize: "1rem" },
+                                }}
+                              >
+                                {isMobile ? <span className="emoji">💸</span> : "Pago recibido"}
+                              </Button>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </Box>
+                    </TableCell>
+
+
                   </TableRow>
                 );
               })}
