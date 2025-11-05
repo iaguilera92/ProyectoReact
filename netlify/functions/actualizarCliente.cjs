@@ -41,9 +41,9 @@ exports.handler = async (event) => {
             idCliente,
             revertir = false,
             suscripcion = false,
-            tbk_user = "",
-            tarjeta = "",
-            tipo_tarjeta = "",
+            tbk_user,
+            tarjeta,
+            tipo_tarjeta,
         } = body;
 
         if (!idCliente || (!Number.isInteger(idCliente) && typeof idCliente !== "string")) {
@@ -54,18 +54,22 @@ exports.handler = async (event) => {
             };
         }
 
-        // Leer Excel desde S3
+        // 🧾 Leer Excel desde S3
         const s3Data = await s3.getObject({ Bucket: BUCKET_NAME, Key: FILE_KEY }).promise();
         const workbook = XLSX.read(s3Data.Body, { type: "buffer" });
         const hoja = workbook.Sheets[workbook.SheetNames[0]];
         const datos = XLSX.utils.sheet_to_json(hoja, { defval: "" });
 
-        // Normalizar claves
+        // 🔠 Normalizar claves
         const normalizarClave = (obj) =>
             Object.fromEntries(Object.entries(obj).map(([k, v]) => [k.toLowerCase(), v]));
 
         let modificado = false;
         const hoy = new Date().toISOString().split("T")[0];
+        const entornoActual =
+            process.env.CONTEXT === "dev" || process.env.CONTEXT === "development"
+                ? "INTEGRACION"
+                : "PRODUCCION";
 
         const nuevosDatos = datos.map((rowOriginal) => {
             const row = normalizarClave(rowOriginal);
@@ -78,19 +82,46 @@ exports.handler = async (event) => {
 
                 const actualizado = { ...rowOriginal };
 
-                // ✅ Actualizar pagos normales
+                // ✅ Actualizar estado de pago
                 actualizado.pagado = revertir ? 0 : 1;
                 actualizado.fechaPago = revertir ? "" : hoy;
 
-                // ✅ Actualizar suscripción (solo si se indica)
+                // ✅ Actualizar estado de suscripción
                 if (typeof suscripcion !== "undefined") {
                     actualizado.Suscripcion = suscripcion ? 1 : 0;
                 }
 
-                // ⚙️ Validar campos sensibles: solo escribir si están vacíos
-                if (tbk_user && !row.tbk_user) actualizado.tbk_user = tbk_user;
-                if (tarjeta && !row.tarjeta) actualizado.tarjeta = tarjeta;
-                if (tipo_tarjeta && !row.tipo_tarjeta) actualizado.tipo_tarjeta = tipo_tarjeta;
+                // ⚙️ Actualizar tbk_user SOLO si llega un nuevo valor válido
+                if (typeof tbk_user !== "undefined" && tbk_user.trim() !== "") {
+                    if (tbk_user !== row.tbk_user) {
+                        console.log(`🔁 Actualizando tbk_user para cliente ${rowId}`);
+                        actualizado.tbk_user = tbk_user;
+                        actualizado.entorno_tbk = entornoActual;
+                    }
+                } else {
+                    // 🔒 Mantener valor anterior
+                    actualizado.tbk_user = row.tbk_user;
+                }
+
+                // ⚙️ Actualizar tarjeta solo si llega un nuevo valor
+                if (typeof tarjeta !== "undefined" && tarjeta.trim() !== "") {
+                    if (tarjeta !== row.tarjeta) {
+                        console.log(`💳 Actualizando tarjeta para cliente ${rowId}`);
+                        actualizado.tarjeta = tarjeta;
+                    }
+                } else {
+                    actualizado.tarjeta = row.tarjeta;
+                }
+
+                // ⚙️ Actualizar tipo_tarjeta solo si llega un nuevo valor
+                if (typeof tipo_tarjeta !== "undefined" && tipo_tarjeta.trim() !== "") {
+                    if (tipo_tarjeta !== row.tipo_tarjeta) {
+                        console.log(`💳 Actualizando tipo_tarjeta para cliente ${rowId}`);
+                        actualizado.tipo_tarjeta = tipo_tarjeta;
+                    }
+                } else {
+                    actualizado.tipo_tarjeta = row.tipo_tarjeta;
+                }
 
                 return actualizado;
             }
@@ -106,15 +137,21 @@ exports.handler = async (event) => {
             };
         }
 
-        // Asegurar que existan las columnas nuevas
-        const columnasNecesarias = ["Suscripcion", "tbk_user", "tarjeta", "tipo_tarjeta"];
+        // 📋 Asegurar columnas necesarias
+        const columnasNecesarias = [
+            "Suscripcion",
+            "tbk_user",
+            "tarjeta",
+            "tipo_tarjeta",
+            "entorno_tbk",
+        ];
         nuevosDatos.forEach((row) => {
             columnasNecesarias.forEach((col) => {
                 if (typeof row[col] === "undefined") row[col] = "";
             });
         });
 
-        // Guardar Excel actualizado
+        // 💾 Guardar Excel actualizado
         const nuevaHoja = XLSX.utils.json_to_sheet(nuevosDatos);
         workbook.Sheets[workbook.SheetNames[0]] = nuevaHoja;
         const buffer = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" });
@@ -124,17 +161,19 @@ exports.handler = async (event) => {
                 Bucket: BUCKET_NAME,
                 Key: FILE_KEY,
                 Body: buffer,
-                ContentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                ContentType:
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             })
             .promise();
 
-        console.log("✅ Archivo actualizado correctamente con validación de campos sensibles");
+        console.log("✅ Archivo actualizado correctamente (Suscripción + OneClick seguras).");
 
         return {
             statusCode: 200,
             headers: corsHeaders,
             body: JSON.stringify({
-                message: "Cliente actualizado correctamente (Suscripción y enrolamiento seguros)",
+                message:
+                    "Cliente actualizado correctamente (Suscripción y enrolamiento OneClick protegidos)",
             }),
         };
     } catch (error) {

@@ -38,6 +38,8 @@ exports.handler = async (event) => {
             child_commerce_code,
         } = body;
 
+        console.log("📥 Body recibido del frontend:", body);
+
         // 🧩 Validar parámetros
         if (!tbk_user || !username || !buy_order || !amount) {
             console.error("⚠️ Faltan parámetros requeridos:", body);
@@ -58,8 +60,9 @@ exports.handler = async (event) => {
             origin.includes("localhost") ||
             event.headers.host?.includes("localhost");
 
-        console.log("🌐 Context:", process.env.CONTEXT, "Host:", event.headers.host, "isLocal:", isLocal);
-        console.log(`🧭 Ejecutando en entorno ${isLocal ? "INTEGRACIÓN" : "PRODUCCIÓN"}`);
+        console.log("🌐 Context:", process.env.CONTEXT);
+        console.log("🖥️ Host:", event.headers.host);
+        console.log("🧭 Ejecutando en:", isLocal ? "INTEGRACIÓN" : "PRODUCCIÓN");
 
         const baseUrl = isLocal
             ? "https://webpay3gint.transbank.cl"
@@ -69,7 +72,7 @@ exports.handler = async (event) => {
         // 🔑 Credenciales Transbank
         const headers = isLocal
             ? {
-                "Tbk-Api-Key-Id": "597055555541", // Comercio integración OneClick Mall
+                "Tbk-Api-Key-Id": "597055555541", // Integración
                 "Tbk-Api-Key-Secret":
                     "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C",
                 "Content-Type": "application/json",
@@ -80,6 +83,14 @@ exports.handler = async (event) => {
                 "Content-Type": "application/json",
             };
 
+        console.log("🔑 Credenciales Transbank cargadas:");
+        console.log({
+            id: headers["Tbk-Api-Key-Id"],
+            secret: headers["Tbk-Api-Key-Secret"]
+                ? headers["Tbk-Api-Key-Secret"].slice(0, 8) + "...(oculto)"
+                : "⚠️ NO DEFINIDA",
+        });
+
         // 🧾 Payload
         const payload = {
             username,
@@ -87,7 +98,10 @@ exports.handler = async (event) => {
             buy_order,
             details: [
                 {
-                    commerce_code: child_commerce_code || process.env.TBK_OCM_CHILD_CODE || "597053022840",
+                    commerce_code:
+                        child_commerce_code ||
+                        process.env.TBK_OCM_CHILD_CODE ||
+                        "597053022840",
                     buy_order: `CHILD-${buy_order}`,
                     amount,
                 },
@@ -100,13 +114,14 @@ exports.handler = async (event) => {
             username,
             tbk_user,
             amount,
-            child_commerce_code,
+            payload,
         });
 
         // 🔹 Llamada HTTP a Transbank
         const resp = await axios.post(apiUrl, payload, { headers });
 
-        console.log("✅ [autorizarTransaccion] Respuesta Transbank:", resp.data);
+        console.log("✅ [autorizarTransaccion] Respuesta Transbank completa:");
+        console.log(JSON.stringify(resp.data, null, 2));
 
         // 🟢 Retornar respuesta estándar
         return {
@@ -127,6 +142,7 @@ exports.handler = async (event) => {
             headers: err.response?.headers,
             data: err.response?.data,
             message: err.message,
+            stack: err.stack,
         });
 
         return {
