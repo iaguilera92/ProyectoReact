@@ -1,7 +1,12 @@
 const axios = require("axios");
 const AWS = require("aws-sdk");
 const { Options } = require("transbank-sdk");
-const s3 = new AWS.S3();
+
+const s3 = new AWS.S3({
+    region: process.env.AWS_REGION || "us-east-1",
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+});
 
 exports.handler = async (event) => {
     console.log("🛰️ [suscribirse] Nueva solicitud:", {
@@ -39,29 +44,43 @@ exports.handler = async (event) => {
         if (!nombre || !email || !idCliente)
             throw new Error("Faltan parámetros requeridos (nombre, email, idCliente)");
 
-        // ⚙️ Siempre usar ambiente de integración (forzado)
-        const mode = "INTEGRACION";
-        const inscriptionUrl =
-            "https://webpay3gint.transbank.cl/rswebpaytransaction/api/oneclick/v1.0/inscriptions";
+        // ⚙️ Detectar entorno
+        const isLocal =
+            event.headers.host?.includes("localhost") ||
+            origin.includes("localhost");
+        const environment = isLocal ? "INTEGRACION" : "PRODUCCION";
 
-        const options = new Options(
-            "597055555541", // Comercio integración OneClick Mall
-            "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C", // Llave integración
-            mode
-        );
+        // 🌐 URL de inscripción según entorno
+        const inscriptionUrl = isLocal
+            ? "https://webpay3gint.transbank.cl/rswebpaytransaction/api/oneclick/v1.0/inscriptions"
+            : "https://webpay3g.transbank.cl/rswebpaytransaction/api/oneclick/v1.0/inscriptions";
 
-        // 🌐 URL retorno (dominio público o localhost)
-        const baseUrl = event.headers.host?.includes("localhost")
+        // 🔐 Credenciales según entorno
+        const headers = isLocal
+            ? {
+                "Tbk-Api-Key-Id": "597055555541", // Mall integración
+                "Tbk-Api-Key-Secret":
+                    "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C",
+                "Content-Type": "application/json",
+            }
+            : {
+                "Tbk-Api-Key-Id": process.env.TBK_OCM_API_KEY_ID, // Mall producción
+                "Tbk-Api-Key-Secret": process.env.TBK_OCM_API_KEY_SECRET,
+                "Content-Type": "application/json",
+            };
+
+        // 🌍 URL retorno (función confirmarSuscripcion)
+        const baseUrl = isLocal
             ? "http://localhost:8888"
             : "https://plataformas-web.cl";
         const returnUrl = `${baseUrl}/.netlify/functions/confirmarSuscripcion`;
 
         console.log("⚙️ [suscribirse] Registrando inscripción OneClick...");
-        console.log("↪️ Modo:", mode);
         console.log("🌍 Endpoint:", inscriptionUrl);
         console.log("📬 URL retorno:", returnUrl);
+        console.log("🔧 Modo:", environment);
 
-        // 🔹 Llamada HTTP directa a Transbank (REST)
+        // 🔹 Solicitud HTTP a Transbank
         const response = await axios.post(
             inscriptionUrl,
             {
@@ -69,13 +88,7 @@ exports.handler = async (event) => {
                 email,
                 response_url: returnUrl,
             },
-            {
-                headers: {
-                    "Tbk-Api-Key-Id": options.commerceCode,
-                    "Tbk-Api-Key-Secret": options.apiKey,
-                    "Content-Type": "application/json",
-                },
-            }
+            { headers }
         );
 
         console.log("✅ [suscribirse] Respuesta Transbank:", response.data);
@@ -98,7 +111,7 @@ exports.handler = async (event) => {
             nombre,
             email,
             sitioWeb,
-            entorno: mode,
+            entorno: environment,
             creado: new Date().toISOString(),
         };
 
@@ -119,11 +132,13 @@ exports.handler = async (event) => {
             body: JSON.stringify({ token, url_webpay }),
         };
     } catch (err) {
-        console.error("❌ [suscribirse] Error:", err);
+        console.error("❌ [suscribirse] Error:", err.response?.data || err);
         return {
             statusCode: 500,
             headers: corsHeaders,
-            body: JSON.stringify({ error_message: err.message }),
+            body: JSON.stringify({
+                error_message: err.response?.data?.error_message || err.message,
+            }),
         };
     }
 };

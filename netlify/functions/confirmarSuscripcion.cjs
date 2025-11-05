@@ -32,7 +32,7 @@ exports.handler = async (event) => {
 
     // ✅ Preflight CORS
     if (event.httpMethod === "OPTIONS") {
-        console.log("🟡 [confirmarSuscripcion] Respondiendo preflight OPTIONS");
+        console.log("🟡 [confirmarSuscripcion] Preflight OPTIONS");
         return { statusCode: 200, headers: corsHeaders, body: "" };
     }
 
@@ -61,42 +61,41 @@ exports.handler = async (event) => {
         console.log("🔹 Token recibido de Transbank:", token);
         if (!token) throw new Error("No se recibió TBK_TOKEN desde Transbank");
 
-        // ✅ Endpoint Transbank según entorno
+        // 🌐 Endpoint según entorno
         const apiUrl = isLocal
             ? "https://webpay3gint.transbank.cl/rswebpaytransaction/api/oneclick/v1.0/inscriptions"
             : "https://webpay3g.transbank.cl/rswebpaytransaction/api/oneclick/v1.0/inscriptions";
 
-        // ✅ Credenciales según entorno
+        // 🔐 Credenciales según entorno
         const headers = isLocal
             ? {
-                "Tbk-Api-Key-Id": "597055555541", // integración
+                "Tbk-Api-Key-Id": "597055555541", // Integración
                 "Tbk-Api-Key-Secret":
                     "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C",
                 "Content-Type": "application/json",
             }
             : {
-                "Tbk-Api-Key-Id": process.env.TBK_API_KEY_ID, // producción
-                "Tbk-Api-Key-Secret": process.env.TBK_API_KEY_SECRET,
+                "Tbk-Api-Key-Id": process.env.TBK_OCM_API_KEY_ID, // Mall producción
+                "Tbk-Api-Key-Secret": process.env.TBK_OCM_API_KEY_SECRET, // Llave producción
                 "Content-Type": "application/json",
             };
 
         const url = `${apiUrl}/${token}`;
         console.log("⚙️ [confirmarSuscripcion] Confirmando inscripción en:", url);
 
-        // 🔹 Llamada PUT para confirmar inscripción
+        // 🔹 Confirmar inscripción con Transbank
         const resp = await axios.put(url, {}, { headers });
+
         console.log("✅ [confirmarSuscripcion] Respuesta Transbank:", resp.data);
 
-        // 🌐 Redirigir según entorno
+        // 🌐 Redirección al frontend
         const redirectBase = isLocal
             ? "http://localhost:5173"
             : "https://plataformas-web.cl";
 
         const redirectUrl = `${redirectBase}/suscripcion?tbk_user=${encodeURIComponent(
             resp.data.tbk_user
-        )}&card=${encodeURIComponent(
-            resp.data.card_number
-        )}&type=${encodeURIComponent(
+        )}&card=${encodeURIComponent(resp.data.card_number)}&type=${encodeURIComponent(
             resp.data.card_type
         )}&status=success`;
 
@@ -108,10 +107,16 @@ exports.handler = async (event) => {
             body: "",
         };
     } catch (err) {
-        console.error("❌ [confirmarSuscripcion] Error:", err);
+        console.error("❌ [confirmarSuscripcion] Error:", err.response?.data || err);
+
+        const isLocal =
+            event.headers.host?.includes("localhost") ||
+            (event.headers.origin || "").includes("localhost");
 
         const redirectError = `${isLocal ? "http://localhost:5173" : "https://plataformas-web.cl"
-            }/suscripcion?status=error&msg=${encodeURIComponent(err.message)}`;
+            }/suscripcion?status=error&msg=${encodeURIComponent(
+                err.response?.data?.error_message || err.message
+            )}`;
 
         return {
             statusCode: 302,

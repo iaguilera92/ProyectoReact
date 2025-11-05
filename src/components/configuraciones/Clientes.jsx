@@ -374,37 +374,120 @@ const Clientes = () => {
   }, []);
 
 
-  //COBRO
-  const enviarCorreoCobro = (cliente, mesCapitalizado) => {
+  // COBRO
+  const enviarCorreoCobro = async (cliente, mesCapitalizado) => {
     const year = new Date().getFullYear();
 
     const templateParams = {
       sitioWeb: `www.${cliente.sitioWeb}`,
       nombre: cliente.cliente || cliente.sitioWeb || "Cliente",
-      mes: `${mesCapitalizado} ${year}`,   // 👈 ahora mes + año
+      mes: `${mesCapitalizado} ${year}`,
       email: modoDesarrollo
         ? "plataformas.web.cl@gmail.com"
-        : (cliente.correo || "plataformas.web.cl@gmail.com"),
+        : cliente.correo || "plataformas.web.cl@gmail.com",
       monto: cliente.valor
         ? `$${cliente.valor.replace(/\$/g, "").trim()} CLP`
-        : "$10.000 CLP",
+        : "$9.990 CLP",
       cc: "plataformas.web.cl@gmail.com", // copia interna
     };
 
-    emailjs
-      .send(
+    // 📨 Enviar correo al cliente
+    try {
+      await emailjs.send(
         "service_ocjgtpc",
         "template_eoaqvlw",
         templateParams,
         "byR6suwAx2-x6ddVp"
-      )
-      .then(() => {
-        console.log("📧 Correo enviado exitosamente a", templateParams.email);
-      })
-      .catch((error) => {
-        console.error("❌ Error al enviar el correo:", error);
-      });
+      );
+      console.log("📧 Correo enviado exitosamente a", templateParams.email);
+    } catch (error) {
+      console.error("❌ Error al enviar el correo:", error);
+    }
+
+    // 💳 Si el cliente tiene suscripción activa → ejecutar cobro automático
+    if (cliente.suscripcion && cliente.tbk_user) {
+      try {
+        const baseUrl =
+          window.location.hostname === "localhost"
+            ? "http://localhost:8888"
+            : "";
+        const endpoint = `${baseUrl}/.netlify/functions/autorizarTransaccion`;
+
+        const buyOrder = `ORD-${Date.now()}`;
+
+        console.log("💳 Iniciando cobro automático OneClick Mall...", {
+          tbk_user: cliente.tbk_user,
+          username: cliente.correo,
+          buy_order: buyOrder,
+          amount: 9990,
+        });
+
+        const resp = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            tbk_user: cliente.tbk_user,
+            username: cliente.correo,
+            buy_order: buyOrder,
+            amount: 9990,
+            child_commerce_code: "597053022840", // tu tienda hija
+          }),
+        });
+
+        const data = await resp.json();
+        console.log("📦 Respuesta Transbank:", data);
+
+        const detalle = data.details?.[0];
+        if (detalle && detalle.response_code === 0) {
+          console.log("✅ Cobro aprobado:", detalle);
+
+          // 🟢 Marcar en Excel como pagado
+          await actualizarClientePagado(cliente.idCliente);
+
+          mostrarSnackbar(
+            `💰 Cobro automático aprobado para ${cliente.sitioWeb}`,
+            "success"
+          );
+        } else {
+          console.warn("❌ Cobro rechazado o error en Transbank:", detalle);
+          mostrarSnackbar(
+            `❌ Cobro rechazado para ${cliente.sitioWeb}`,
+            "error"
+          );
+        }
+      } catch (err) {
+        console.error("⚠️ Error al procesar cobro automático:", err);
+        mostrarSnackbar("Error al procesar el cobro automático", "error");
+      }
+    } else {
+      console.log("ℹ️ Cliente no suscrito o sin tbk_user, solo se notificó por correo.");
+    }
   };
+
+  const actualizarClientePagado = async (idCliente) => {
+    try {
+      const baseUrl =
+        window.location.hostname === "localhost"
+          ? "http://localhost:8888"
+          : "";
+      const resp = await fetch(`${baseUrl}/.netlify/functions/actualizarCliente`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          idCliente,
+          pagado: 1,
+          fechaPago: new Date().toLocaleDateString("es-CL"),
+        }),
+      });
+
+      const data = await resp.json();
+      console.log("📊 Cliente actualizado como pagado:", data);
+    } catch (err) {
+      console.error("❌ Error al actualizar Excel:", err);
+    }
+  };
+
+
 
   // SUSPENSIÓN
   const enviarCorreoSuspension = (cliente) => {

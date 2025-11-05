@@ -166,7 +166,8 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
     }
   }, [mostrarAnimacion]);
 
-  //ONECLICK MALL
+
+  // 🚀 Inscripción OneClick Mall
   const handleSuscribirse = async (nombre, email, sitioWeb, idCliente) => {
     try {
       const isLocal = window.location.hostname === "localhost";
@@ -174,7 +175,13 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
         ? "http://localhost:8888/.netlify/functions/suscribirse"
         : "/.netlify/functions/suscribirse";
 
-      console.log("🛰️ Datos enviados al backend:", { sitioWeb, nombre, email, idCliente });
+      console.log("🛰️ Datos enviados al backend:", {
+        nombre,
+        email,
+        sitioWeb,
+        idCliente,
+        ambiente: isLocal ? "INTEGRACIÓN" : "PRODUCCIÓN",
+      });
 
       const resp = await fetch(endpoint, {
         method: "POST",
@@ -182,11 +189,22 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
         body: JSON.stringify({ nombre, email, sitioWeb, idCliente }),
       });
 
+      // ⚠️ Si Transbank o Netlify devuelven error
+      if (!resp.ok) {
+        const errorText = await resp.text();
+        console.error("❌ Error HTTP suscribirse:", errorText);
+        alert("Ocurrió un error al comunicarse con el servidor.");
+        return;
+      }
+
       const data = await resp.json();
       console.log("🔵 Respuesta suscribirse OneClick:", data);
 
+      // ✅ Si Transbank devolvió token + url válidos
       if (data.url_webpay && data.token) {
-        console.log("🚀 Redirigiendo a Transbank...");
+        console.log(`🚀 Redirigiendo a Transbank...`);
+        console.log(`🔑 Token: ${data.token}`);
+
         const form = document.createElement("form");
         form.method = "POST";
         form.action = data.url_webpay;
@@ -205,31 +223,24 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
       }
     } catch (err) {
       console.error("❌ Error en handleSuscribirse:", err);
+      alert("Error al iniciar la suscripción. Ver consola para más detalles.");
     }
   };
 
-
-
-  //Visa TEST
-  //Número: 4051885600446623
-  //Fecha de vencimiento: 12/12
-  //CVV: 123
-  //Rut: 11.111.111-1
-  //Clave: 123
-
-
+  // 🟢 Abre el diálogo para suscribirse
   const handleOpenOneClick = (nombre, correo, idCliente) => {
     setPendingUser({ nombre, correo, idCliente });
     setOpenDialogOneClick(true);
   };
 
+  // 🔴 Cierra el diálogo
   const handleCloseOneClick = () => {
     setOpenDialogOneClick(false);
     setPendingUser(null);
   };
 
+  // ✅ Confirma el inicio del flujo de inscripción OneClick Mall
   const handleConfirmOneClick = async (sitioWeb, cliente) => {
-
     if (!cliente?.nombre || !cliente?.correo || !cliente?.idCliente) {
       console.error("⚠️ No se recibieron datos válidos del cliente");
       alert("Faltan los datos del cliente asociados al sitio web.");
@@ -244,16 +255,19 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
         cliente.idCliente
       );
 
-      // ✅ Devuelve el resultado a DialogOneClickMall
-      return result;
+      return result; // opcional, si quieres capturarlo en otro handler
     } catch (err) {
       console.error("❌ Error en handleConfirmOneClick:", err);
       alert("No se pudo iniciar la suscripción. Intenta nuevamente.");
-      // ⚙️ Si quieres, puedes cerrar aquí en caso de error:
-      // setOpenDialogOneClick(false);
     }
   };
 
+  //Visa TEST
+  //Número: 4051885600446623
+  //Fecha de vencimiento: 12/12
+  //CVV: 123
+  //Rut: 11.111.111-1
+  //Clave: 123
 
 
   return (

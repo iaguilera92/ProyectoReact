@@ -90,70 +90,6 @@ const Suscripcion = () => {
     }
   };
 
-  // ✅ Registrar suscripción en Excel S3
-  useEffect(() => {
-    const s = searchParams.get("status");
-    const tbk_user = searchParams.get("tbk_user");
-    const idCliente = searchParams.get("idCliente");
-
-    if (s === "success" && idCliente) {
-      (async () => {
-        try {
-          const url = `${window.location.hostname === "localhost"
-            ? "http://localhost:8888"
-            : ""
-            }/.netlify/functions/actualizarCliente`;
-
-          const res = await fetch(url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              idCliente,
-              suscripcion: true,
-              tbk_user,
-            }),
-          });
-
-          const data = await res.json();
-          console.log("📊 Resultado de registro:", data);
-        } catch (err) {
-          console.error("❌ Error al registrar suscripción:", err);
-        }
-      })();
-    }
-  }, [searchParams]);
-
-  // ACTUALIZAR CLIENTE
-  const actualizarASuscrito = async (idCliente, datos) => {
-    try {
-      const url = `${window.location.hostname === "localhost"
-        ? "http://localhost:8888"
-        : ""
-        }/.netlify/functions/actualizarCliente`;
-
-      // 🧠 datos = { suscripcion: true, tbk_user, card, type }
-      const body = {
-        idCliente,
-        suscripcion: datos.suscripcion ? 1 : 0,
-        tbk_user: datos.tbk_user || "",
-        tarjeta: datos.card || "",
-        tipo_tarjeta: datos.type || "",
-      };
-
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-
-      if (!res.ok) {
-        throw new Error("Error al actualizar la suscripción en Excel");
-      }
-    } catch (err) {
-      console.error("❌ Error al actualizar suscripción:", err);
-    }
-  };
-
 
   return (
     <Container
@@ -248,13 +184,18 @@ const Suscripcion = () => {
             }}
           >
             {status === "loading" && (
-              <>
-                <CircularProgress color="primary" />
-                <Typography sx={{ mt: 2, fontSize: { xs: "0.9rem", sm: "1rem" } }}>
-                  Procesando suscripción...
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.4 }}
+              >
+                <CircularProgress size={55} thickness={4} color="primary" />
+                <Typography sx={{ mt: 2, fontWeight: 500 }}>
+                  Validando tu suscripción segura con Transbank...
                 </Typography>
-              </>
+              </motion.div>
             )}
+
 
             {status === "success" && (
               <>
