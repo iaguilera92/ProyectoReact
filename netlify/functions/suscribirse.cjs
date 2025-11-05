@@ -1,20 +1,14 @@
 const axios = require("axios");
 const AWS = require("aws-sdk");
-const { Options } = require("transbank-sdk");
 
+// 🧩 Inicializa S3 con soporte para MY_* o AWS_*
 const s3 = new AWS.S3({
-    region:
-        process.env.AWS_REGION ||
-        process.env.MY_AWS_REGION ||
-        "us-east-1",
+    region: process.env.AWS_REGION || process.env.MY_AWS_REGION || "us-east-1",
     accessKeyId:
-        process.env.AWS_ACCESS_KEY_ID ||
-        process.env.MY_AWS_ACCESS_KEY_ID,
+        process.env.AWS_ACCESS_KEY_ID || process.env.MY_AWS_ACCESS_KEY_ID,
     secretAccessKey:
-        process.env.AWS_SECRET_ACCESS_KEY ||
-        process.env.MY_AWS_SECRET_ACCESS_KEY,
+        process.env.AWS_SECRET_ACCESS_KEY || process.env.MY_AWS_SECRET_ACCESS_KEY,
 });
-
 
 exports.handler = async (event) => {
     console.log("🛰️ [suscribirse] Nueva solicitud:", {
@@ -54,8 +48,7 @@ exports.handler = async (event) => {
 
         // ⚙️ Detectar entorno
         const isLocal =
-            event.headers.host?.includes("localhost") ||
-            origin.includes("localhost");
+            event.headers.host?.includes("localhost") || origin.includes("localhost");
         const environment = isLocal ? "INTEGRACION" : "PRODUCCION";
 
         // 🌐 URL de inscripción según entorno
@@ -66,18 +59,18 @@ exports.handler = async (event) => {
         // 🔐 Credenciales según entorno
         const headers = isLocal
             ? {
-                "Tbk-Api-Key-Id": "597055555541", // Mall integración
+                "Tbk-Api-Key-Id": "597055555541",
                 "Tbk-Api-Key-Secret":
                     "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C",
                 "Content-Type": "application/json",
             }
             : {
-                "Tbk-Api-Key-Id": process.env.TBK_OCM_API_KEY_ID, // Mall producción
+                "Tbk-Api-Key-Id": process.env.TBK_OCM_API_KEY_ID,
                 "Tbk-Api-Key-Secret": process.env.TBK_OCM_API_KEY_SECRET,
                 "Content-Type": "application/json",
             };
 
-        // 🌍 URL retorno (función confirmarSuscripcion)
+        // 🌍 URL retorno (confirmarSuscripcion)
         const baseUrl = isLocal
             ? "http://localhost:8888"
             : "https://plataformas-web.cl";
@@ -91,11 +84,7 @@ exports.handler = async (event) => {
         // 🔹 Solicitud HTTP a Transbank
         const response = await axios.post(
             inscriptionUrl,
-            {
-                username: nombre,
-                email,
-                response_url: returnUrl,
-            },
+            { username: nombre, email, response_url: returnUrl },
             { headers }
         );
 
@@ -104,43 +93,54 @@ exports.handler = async (event) => {
         const token = response.data.token;
         const url_webpay = response.data.url_webpay || response.data.url;
 
-        if (!token || !url_webpay) {
-            console.error("⚠️ Respuesta incompleta desde Transbank:", response.data);
-            throw new Error(
-                response.data.error_message || "Respuesta incompleta desde OneClick"
-            );
+        if (!token || !url_webpay)
+            throw new Error("Respuesta incompleta desde Transbank");
+
+        // 💾 Guardar relación token → cliente en S3 (solo si hay credenciales)
+        const region =
+            process.env.AWS_REGION || process.env.MY_AWS_REGION || "us-east-1";
+        const hasCredentials =
+            (process.env.AWS_ACCESS_KEY_ID || process.env.MY_AWS_ACCESS_KEY_ID) &&
+            (process.env.AWS_SECRET_ACCESS_KEY || process.env.MY_AWS_SECRET_ACCESS_KEY);
+
+        if (hasCredentials) {
+            try {
+                const bucketName = "plataformas-web-buckets";
+                const key = `tokens/${token}.json`;
+                const data = {
+                    idCliente,
+                    nombre,
+                    email,
+                    sitioWeb,
+                    entorno: environment,
+                    creado: new Date().toISOString(),
+                };
+
+                await s3
+                    .putObject({
+                        Bucket: bucketName,
+                        Key: key,
+                        Body: JSON.stringify(data),
+                        ContentType: "application/json",
+                    })
+                    .promise();
+
+                console.log(`💾 [suscribirse] Token guardado en S3 (${region}): ${key}`);
+            } catch (s3Err) {
+                console.warn("⚠️ [suscribirse] No se pudo guardar en S3:", s3Err.message);
+            }
+        } else {
+            console.log("🧩 [suscribirse] Sin credenciales AWS: se omite guardado en S3");
         }
 
-        // 💾 Guarda relación token → cliente en S3
-        const bucketName = "plataformas-web-buckets";
-        const key = `tokens/${token}.json`;
-        const data = {
-            idCliente,
-            nombre,
-            email,
-            sitioWeb,
-            entorno: environment,
-            creado: new Date().toISOString(),
-        };
-
-        await s3
-            .putObject({
-                Bucket: bucketName,
-                Key: key,
-                Body: JSON.stringify(data),
-                ContentType: "application/json",
-            })
-            .promise();
-
-        console.log(`💾 [suscribirse] Datos guardados en S3: ${key}`);
-
+        // ✅ Devuelve respuesta al frontend
         return {
             statusCode: 200,
             headers: corsHeaders,
             body: JSON.stringify({ token, url_webpay }),
         };
     } catch (err) {
-        console.error("❌ [suscribirse] Error:", err.response?.data || err);
+        console.error("❌ [suscribirse] Error:", err.response?.data || err.message || err);
         return {
             statusCode: 500,
             headers: corsHeaders,

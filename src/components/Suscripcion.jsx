@@ -1,7 +1,7 @@
 import { Box, Typography, Container, Card, CardContent, Button, CircularProgress } from "@mui/material";
 import { motion } from "framer-motion";
 import { useSearchParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { WhatsApp as WhatsAppIcon } from "@mui/icons-material";
 import emailjs from "@emailjs/browser";
 
@@ -10,8 +10,13 @@ const Suscripcion = () => {
   const [info, setInfo] = useState({});
   const [subrayadoActivo, setSubrayadoActivo] = useState(false);
   const [searchParams] = useSearchParams();
+  const ejecutadoRef = useRef(false);
 
+  //INICIO
   useEffect(() => {
+    if (ejecutadoRef.current) return;
+    ejecutadoRef.current = true;
+
     window.scrollTo({ top: 0, behavior: "auto" });
     const t = setTimeout(() => setSubrayadoActivo(true), 800);
 
@@ -20,7 +25,6 @@ const Suscripcion = () => {
     const type = searchParams.get("type");
     const s = searchParams.get("status");
 
-    // 🔹 Datos del cliente desde sessionStorage
     const clienteNombre = sessionStorage.getItem("clienteNombre");
     const clienteCorreo = sessionStorage.getItem("clienteCorreo");
     const sitioWebReserva = sessionStorage.getItem("sitioWebReserva");
@@ -38,7 +42,6 @@ const Suscripcion = () => {
       });
       setStatus("success");
 
-      // 🟢 Actualizar en Excel que el cliente está suscrito
       if (idCliente) {
         actualizarASuscrito(idCliente, {
           suscripcion: true,
@@ -49,7 +52,7 @@ const Suscripcion = () => {
           enviarCorreoSuscripcion({
             nombre: clienteNombre,
             sitioWeb: sitioWebReserva,
-            logoCliente: logoCliente,
+            logoCliente,
             email: clienteCorreo,
             fechaInicio: new Date().toLocaleDateString("es-CL", {
               day: "2-digit",
@@ -58,8 +61,7 @@ const Suscripcion = () => {
             }),
           });
         });
-      }
-      else {
+      } else {
         console.warn("⚠️ idCliente no encontrado en sessionStorage");
       }
     } else {
@@ -68,6 +70,7 @@ const Suscripcion = () => {
 
     return () => clearTimeout(t);
   }, [searchParams]);
+
 
   const enviarCorreoSuscripcion = async (datos) => {
     try {
@@ -90,6 +93,36 @@ const Suscripcion = () => {
     }
   };
 
+  // ACTUALIZAR CLIENTE
+  const actualizarASuscrito = async (idCliente, datos) => {
+    try {
+      const url = `${window.location.hostname === "localhost"
+        ? "http://localhost:8888"
+        : ""
+        }/.netlify/functions/actualizarCliente`;
+
+      // 🧠 datos = { suscripcion: true, tbk_user, card, type }
+      const body = {
+        idCliente,
+        suscripcion: datos.suscripcion ? 1 : 0,
+        tbk_user: datos.tbk_user || "",
+        tarjeta: datos.card || "",
+        tipo_tarjeta: datos.type || "",
+      };
+
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        throw new Error("Error al actualizar la suscripción en Excel");
+      }
+    } catch (err) {
+      console.error("❌ Error al actualizar suscripción:", err);
+    }
+  };
 
   return (
     <Container
