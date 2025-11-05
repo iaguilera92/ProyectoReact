@@ -54,7 +54,12 @@ exports.handler = async (event) => {
 
         // ⚙️ Detectar entorno
         const isLocal =
-            origin.includes("localhost") || event.headers.host?.includes("localhost");
+            process.env.CONTEXT === "dev" ||
+            origin.includes("localhost") ||
+            event.headers.host?.includes("localhost");
+
+        console.log("🌐 Context:", process.env.CONTEXT, "Host:", event.headers.host, "isLocal:", isLocal);
+        console.log(`🧭 Ejecutando en entorno ${isLocal ? "INTEGRACIÓN" : "PRODUCCIÓN"}`);
 
         const baseUrl = isLocal
             ? "https://webpay3gint.transbank.cl"
@@ -82,7 +87,7 @@ exports.handler = async (event) => {
             buy_order,
             details: [
                 {
-                    commerce_code: child_commerce_code || process.env.TBK_OCM_CHILD_CODE,
+                    commerce_code: child_commerce_code || process.env.TBK_OCM_CHILD_CODE || "597053022840",
                     buy_order: `CHILD-${buy_order}`,
                     amount,
                 },
@@ -116,7 +121,13 @@ exports.handler = async (event) => {
         };
     } catch (err) {
         console.error("❌ [autorizarTransaccion] Error general:");
-        console.error(err.response?.data || err.message || err);
+        console.error({
+            status: err.response?.status,
+            statusText: err.response?.statusText,
+            headers: err.response?.headers,
+            data: err.response?.data,
+            message: err.message,
+        });
 
         return {
             statusCode: 500,
@@ -125,6 +136,7 @@ exports.handler = async (event) => {
                 success: false,
                 message:
                     err.response?.data?.error_message ||
+                    err.response?.data?.detail ||
                     err.response?.data ||
                     err.message ||
                     "Error desconocido al procesar la transacción",
