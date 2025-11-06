@@ -128,7 +128,8 @@ const Clientes = () => {
   const [openAgregarCliente, setOpenAgregarCliente] = useState(false);
   const [dialog, setDialog] = useState({ open: false, sitioWeb: "" });
   const [loadingDialogAction, setLoadingDialogAction] = useState(null);
-
+  const [cobrando, setCobrando] = useState(false);
+  const [botonesDeshabilitados, setBotonesDeshabilitados] = useState(false);
 
   const datosCliente = (cliente) => { setClienteSeleccionado(cliente); setOpenDialogCliente(true); };
   const MotionBox = motion.create(Box);
@@ -295,62 +296,26 @@ const Clientes = () => {
     const {
       metodoPago = "Transferencia",
       montoPagado = cliente.valor || "$10.000 CLP",
-      pdfUrl: pdfUrlOverride, // si lo mandas desde afuera, se usa este
     } = overrides;
 
     try {
-      const urlBase = window.location.hostname === "localhost" ? "http://localhost:8888" : "";
-
-      // valor por defecto si no logramos generar
-      let pdfUrl = pdfUrlOverride || "https://plataformas-web-buckets.s3.us-east-2.amazonaws.com/comprobantes/comprobante-pago.pdf";
-
-      try {
-        // 🔹 Intentar generar el comprobante PDF
-        const generarPDFResponse = await fetch(`${urlBase}/.netlify/functions/generarComprobante`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ cliente, mes: mesFinal }),
-        });
-
-        const raw = await generarPDFResponse.text();
-        console.log("🪵 Respuesta generarComprobante:", raw);
-
-        let resultado;
-        try {
-          resultado = JSON.parse(raw);
-        } catch {
-          throw new Error("❌ Respuesta inválida desde generarComprobante");
-        }
-
-        if (!generarPDFResponse.ok) {
-          throw new Error(resultado.message || resultado.detalle || "Error al generar el comprobante");
-        }
-
-        // si tu lambda retorna una url, úsala
-        if (resultado?.pdfUrl) pdfUrl = resultado.pdfUrl;
-
-        console.log("✅ PDF generado exitosamente");
-      } catch (err) {
-        console.warn("⚠️ No se pudo generar el comprobante, se enviará correo sin adjunto:", err.message);
-      }
-
-      // 🔹 Parámetros del correo (plantilla de pago realizado)
       const templateParams = {
         sitioWeb: `www.${cliente.sitioWeb}`,
         nombre: cliente.cliente || cliente.sitioWeb || "Cliente",
         mes: mesFinal,
         fechaPago: new Date().toLocaleDateString("es-CL"),
-        montoPagado,                      // 👈 override-friendly
-        metodoPago,                       // 👈 override-friendly
+        montoPagado,
+        metodoPago,
         logoCliente: cliente.logoCliente || "/logo-plataformas-web-correo.png",
-        email: modoDesarrollo ? "plataformas.web.cl@gmail.com" : (cliente.correo || "plataformas.web.cl@gmail.com"),
+        email: modoDesarrollo
+          ? "plataformas.web.cl@gmail.com"
+          : (cliente.correo || "plataformas.web.cl@gmail.com"),
         cc: "plataformas.web.cl@gmail.com",
-        pdfUrl,                           // 👈 final
       };
 
       const resultadoCorreo = await emailjs.send(
         "service_ocjgtpc",
-        "template_ligrzq3",               // ✅ comprobante
+        "template_ligrzq3", // ✅ plantilla pago realizado
         templateParams,
         "byR6suwAx2-x6ddVp"
       );
@@ -426,8 +391,10 @@ const Clientes = () => {
             buy_order: buyOrder,
             amount,
             child_commerce_code: "597053022840",
+            entorno_tbk: cliente.entorno_tbk || "PRODUCCION"
           }),
         });
+
 
         if (!resp.ok) throw new Error(`HTTP ${resp.status} - ${resp.statusText}`);
 
@@ -502,6 +469,27 @@ const Clientes = () => {
       });
     }
   };
+
+  // ✅ Marca el pago como exitoso en el Excel del S3
+  const actualizarClientePagado = async (idCliente) => {
+    try {
+      const baseUrl = window.location.hostname === "localhost" ? "http://localhost:8888" : "";
+      const resp = await fetch(`${baseUrl}/.netlify/functions/actualizarCliente`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          idCliente,
+          cobroExitoso: true, // 👈 activa pagado=1 y fechaPago=hoy
+        }),
+      });
+
+      if (!resp.ok) throw new Error(`Error HTTP ${resp.status}`);
+      console.log("✅ Cliente marcado como pagado en Excel");
+    } catch (err) {
+      console.error("❌ Error al actualizar cliente pagado:", err);
+    }
+  };
+
 
 
   // SUSPENSIÓN
@@ -1001,7 +989,7 @@ const Clientes = () => {
               <TableRow>
                 <TableCell
                   sx={{
-                    backgroundColor: "#ffffff",   // 👈 fondo blanco fijo
+                    backgroundColor: "#ffffff",
                     fontWeight: "bold",
                     color: "#1b263b",
                     fontFamily: "Poppins, sans-serif",
@@ -1012,38 +1000,45 @@ const Clientes = () => {
                 >
                   Clientes
                 </TableCell>
+
                 <TableCell
                   align="center"
                   sx={{
                     backgroundColor: "#ffffff",
                     fontWeight: "bold",
                     color: "#1b263b",
-                    width: isMobile ? 50 : 100,
+                    width: isMobile ? 45 : 100,
                     py: 0.5,
+                    pr: isMobile ? 0 : 2,
                     fontSize: "0.85rem",
                   }}
                 >
                   Estado
                 </TableCell>
+
+                {/* Botón 1 */}
                 <TableCell
                   align="center"
                   sx={{
                     backgroundColor: "#ffffff",
-                    width: isMobile ? 60 : 140,
-                    px: isMobile ? 0.5 : 1,
+                    width: isMobile ? 35 : 140,
+                    px: isMobile ? 0 : 1,
                   }}
                 />
+
+                {/* Botón 2 */}
                 <TableCell
                   align="center"
                   sx={{
                     backgroundColor: "#ffffff",
-                    width: isMobile ? 80 : 170,
-                    px: isMobile ? 0.5 : 1,
-                    pr: isMobile ? 1.5 : 0,
+                    width: isMobile ? 35 : 170, // 🔹 solo se achica en mobile
+                    px: isMobile ? 0 : 1,       // 🔹 sin padding solo mobile
+                    pr: isMobile ? 0.5 : 0,
                   }}
                 />
               </TableRow>
             </TableHead>
+
 
             <TableBody>
               {clientesPaginados.map((cliente, index) => {
@@ -1241,6 +1236,7 @@ const Clientes = () => {
                           alignItems: "center",
                           height: "100%",
                           minHeight: "50px",
+                          pl: isMobile ? 1.2 : 0,
                         }}
                       >
                         {estaSuscrito ? (
@@ -1279,12 +1275,16 @@ const Clientes = () => {
                       >
                         <Button
                           variant="contained"
-                          color="error"
                           size="small"
                           onClick={() => {
                             setClienteSeleccionado(cliente);
                             setOpenDialogCobro(true);
                           }}
+                          color={
+                            cliente.pagado === 1 || cliente.pagado === true
+                              ? "success"
+                              : "error"
+                          }
                           disabled={!estaSuscrito && (estaAlDia || botonesBloqueados.includes(index))}
                           sx={{
                             minWidth: isMobile ? "auto" : undefined,
@@ -1292,6 +1292,7 @@ const Clientes = () => {
                             py: isMobile ? 0.5 : 0.8,
                             fontSize: isMobile ? 0 : "0.8rem",
                             fontWeight: 600,
+                            transition: "all 0.3s ease",
                             "& .emoji": { fontSize: "1rem" },
                             "&.Mui-disabled": {
                               cursor: "not-allowed !important",
@@ -1300,13 +1301,29 @@ const Clientes = () => {
                             },
                           }}
                         >
-                          {isMobile ? <span className="emoji">💰</span> : "Cobrar"}
+                          {isMobile ? (
+                            <span className="emoji">
+                              {cliente.pagado === 1 || cliente.pagado === true ? "🏦" : "💰"}
+                            </span>
+                          ) : (
+                            <>
+                              {cliente.pagado === 1 || cliente.pagado === true ? "Cobrado" : "Cobrar"}
+                            </>
+                          )}
                         </Button>
+
                       </Box>
                     </TableCell>
 
                     {/* === CELDA 2: Pago recibido o Suscrito === */}
-                    <TableCell align="center">
+                    <TableCell
+                      align="center"
+                      sx={{
+                        width: isMobile ? 55 : 170,
+                        pl: isMobile ? 0 : 1,
+                        pr: isMobile ? 0.3 : 1,
+                      }}
+                    >
                       <Box
                         sx={{
                           display: "flex",
@@ -1334,7 +1351,7 @@ const Clientes = () => {
                                   borderRadius: "6px",
                                   background:
                                     "linear-gradient(90deg, rgba(255,215,0,0.15), rgba(255,223,128,0.05))",
-                                  px: 1,
+                                  px: 0.,
                                   py: 0.3,
                                   color: "#b8860b",
                                   fontWeight: 700,
@@ -1727,7 +1744,7 @@ const Clientes = () => {
             px: 2,
             pb: 2,
             gap: 0,
-            background: "linear-gradient(90deg, #FFF3E0, #FFE0B2)", // footer en contraste
+            background: "linear-gradient(90deg, #FFF3E0, #FFE0B2)",
             borderTop: "1px solid rgba(255,167,38,.35)",
           }}
         >
@@ -1735,6 +1752,7 @@ const Clientes = () => {
             size={isMobile ? "small" : "medium"}
             sx={{ fontSize: isMobile ? "0.6rem" : "0.875rem" }}
             onClick={() => setOpenDialogCobro(false)}
+            disabled={botonesDeshabilitados}
           >
             Cancelar
           </Button>
@@ -1743,6 +1761,9 @@ const Clientes = () => {
             size={isMobile ? "small" : "medium"}
             sx={{ fontSize: isMobile ? "0.7rem" : "0.875rem" }}
             onClick={() => {
+              if (botonesDeshabilitados) return;
+              setBotonesDeshabilitados(true);
+
               enviarCorreoSuspension(clienteSeleccionado);
 
               const mensaje = `🔴 Estimado ${clienteSeleccionado.cliente}, su Suscripción (${clienteSeleccionado.sitioWeb}) tiene ${diasAtraso} día${diasAtraso === 1 ? "" : "s"} de atraso. Se debe regularizar o será suspendido en 24 hrs.`;
@@ -1751,9 +1772,11 @@ const Clientes = () => {
               window.open(url, "_blank");
 
               setOpenDialogCobro(false);
+              setBotonesDeshabilitados(false);
             }}
             color="warning"
             variant="contained"
+            disabled={botonesDeshabilitados}
           >
             🚫 Suspensión
           </Button>
@@ -1772,7 +1795,10 @@ const Clientes = () => {
                 : "error"
             }
             variant="contained"
+            disabled={cobrando} // ⛔ no permitir doble clic
             onClick={async () => {
+              setCobrando(true); // ▶️ activar loading
+
               const mesFinal = mesManual || mesCapitalizado;
               const mesFinalCapitalizado =
                 mesFinal.charAt(0).toUpperCase() + mesFinal.slice(1);
@@ -1786,40 +1812,39 @@ const Clientes = () => {
                 cliente.suscripcion === "TRUE";
               const tieneToken = (cliente.tbk_user || "").trim() !== "";
 
-              // 🔹 Si está suscrito con tbk_user válido → cobro automático (sin WhatsApp)
-              if (suscrito && tieneToken) {
-                console.log("⚙️ Cliente suscrito, se omite WhatsApp. Iniciando cobro automático...");
-                await enviarCorreoCobro(cliente, mesFinalCapitalizado);
-              } else {
-                // 🔹 Si NO está suscrito → abrir WhatsApp y enviar correo de cobro manual
-                const mensaje = `Buenas! recordar el pago del HOSTING de ${cliente.sitioWeb} de *${cliente.valor}* del mes de ${mesFinalCapitalizado}.`;
-                const numero = cliente.telefono || "56946873014";
-                const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
-                window.open(url, "_blank");
+              try {
+                // 🔹 Si está suscrito con tbk_user válido → cobro automático
+                if (suscrito && tieneToken) {
+                  await enviarCorreoCobro(cliente, mesFinalCapitalizado);
+                } else {
+                  // 🔹 Cobro manual + WhatsApp
+                  const mensaje = `Buenas! recordar el pago del HOSTING de ${cliente.sitioWeb} de *${cliente.valor}* del mes de ${mesFinalCapitalizado}.`;
+                  const numero = cliente.telefono || "56946873014";
+                  const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
+                  window.open(url, "_blank");
 
-                await enviarCorreoCobro(cliente, mesFinalCapitalizado);
+                  await enviarCorreoCobro(cliente, mesFinalCapitalizado);
+                }
+
+                if (cliente.index !== undefined) {
+                  bloquearBotonTemporalmente(cliente.index);
+                }
+
+              } finally {
+                setCobrando(false); // 🟢 liberar botón
+                setOpenDialogCobro(false); // ❗Cerrar popup SOLO al terminar
               }
-
-              // 🔹 Bloquear botón temporalmente para evitar doble envío
-              if (cliente.index !== undefined) {
-                bloquearBotonTemporalmente(cliente.index);
-              }
-
-              // 🔹 Cerrar diálogo
-              setOpenDialogCobro(false);
             }}
           >
-            {clienteSeleccionado && (
-              <>
-                {clienteSeleccionado.suscripcion &&
-                  (clienteSeleccionado.pagado === 1 || clienteSeleccionado.pagado === true)
-                  ? "👁️ Cobrar"
-                  : "💰 Cobrar"}
-              </>
+            {cobrando ? "⏳ Cobrando..." : (
+              clienteSeleccionado?.suscripcion &&
+                (clienteSeleccionado?.pagado === 1 || clienteSeleccionado?.pagado === true)
+                ? "👁️ Cobrar"
+                : "💰 Cobrar"
             )}
           </Button>
-
         </DialogActions>
+
 
       </Dialog>
 

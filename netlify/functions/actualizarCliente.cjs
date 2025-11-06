@@ -40,40 +40,38 @@ exports.handler = async (event) => {
         const {
             idCliente,
             revertir = false,
-            suscripcion = false,
+            suscripcion,
             tbk_user,
             tarjeta,
             tipo_tarjeta,
+            cobroExitoso,
         } = body;
 
-        if (!idCliente || (!Number.isInteger(idCliente) && typeof idCliente !== "string")) {
+        if (!idCliente) {
             return {
                 statusCode: 400,
                 headers: corsHeaders,
-                body: JSON.stringify({ message: "Falta o es inválido el ID del cliente" }),
+                body: JSON.stringify({ message: "Falta el ID del cliente" }),
             };
         }
 
-        // 🧾 Leer Excel desde S3
+        // Leer Excel desde S3
         const s3Data = await s3.getObject({ Bucket: BUCKET_NAME, Key: FILE_KEY }).promise();
         const workbook = XLSX.read(s3Data.Body, { type: "buffer" });
         const hoja = workbook.Sheets[workbook.SheetNames[0]];
         const datos = XLSX.utils.sheet_to_json(hoja, { defval: "" });
 
-        // 🔠 Normalizar claves
-        const normalizarClave = (obj) =>
-            Object.fromEntries(Object.entries(obj).map(([k, v]) => [k.toLowerCase(), v]));
-
-        let modificado = false;
         const hoy = new Date().toISOString().split("T")[0];
         const entornoActual =
             process.env.CONTEXT === "dev" || process.env.CONTEXT === "development"
                 ? "INTEGRACION"
                 : "PRODUCCION";
 
+        let modificado = false;
+
         const nuevosDatos = datos.map((rowOriginal) => {
-            const row = normalizarClave(rowOriginal);
-            const rowId = String(row.idcliente ?? "").trim();
+            const row = Object.fromEntries(Object.entries(rowOriginal).map(([k, v]) => [k.toLowerCase(), v]));
+            const rowId = String(row.idcliente || "").trim();
             const targetId = String(idCliente).trim();
 
             if (rowId === targetId) {
@@ -82,52 +80,37 @@ exports.handler = async (event) => {
 
                 const actualizado = { ...rowOriginal };
 
-                // ✅ Actualizar estado de pago SOLO si se solicitó explícitamente
-                if (body.hasOwnProperty("revertir")) {
-                    actualizado.pagado = revertir ? 0 : 1;
-                    actualizado.fechaPago = revertir ? "" : hoy;
+                // ✅ PAGO (seguro)
+                if (cobroExitoso === true || cobroExitoso === 1 || cobroExitoso === "1") {
+                    actualizado.pagado = 1;
+                    actualizado.fechaPago = hoy;
+                } else if (revertir === true || revertir === 1 || revertir === "1") {
+                    actualizado.pagado = 0;
+                    actualizado.fechaPago = "";
                 } else {
-                    // 🔒 Mantener valores actuales si no se está procesando un pago/reversión
                     actualizado.pagado = row.pagado;
                     actualizado.fechaPago = row.fechapago || row.fechaPago || "";
                 }
 
-
-                // ✅ Actualizar estado de suscripción
+                // ✅ Suscripción
                 if (typeof suscripcion !== "undefined") {
                     actualizado.Suscripcion = suscripcion ? 1 : 0;
                 }
 
-                // ⚙️ Actualizar tbk_user SOLO si llega un nuevo valor válido
+                // ✅ tbk_user
                 if (typeof tbk_user !== "undefined" && tbk_user.trim() !== "") {
-                    if (tbk_user !== row.tbk_user) {
-                        console.log(`🔁 Actualizando tbk_user para cliente ${rowId}`);
-                        actualizado.tbk_user = tbk_user;
-                        actualizado.entorno_tbk = entornoActual;
-                    }
-                } else {
-                    // 🔒 Mantener valor anterior
-                    actualizado.tbk_user = row.tbk_user;
+                    actualizado.tbk_user = tbk_user;
+                    actualizado.entorno_tbk = entornoActual;
                 }
 
-                // ⚙️ Actualizar tarjeta solo si llega un nuevo valor
+                // ✅ Tarjeta
                 if (typeof tarjeta !== "undefined" && tarjeta.trim() !== "") {
-                    if (tarjeta !== row.tarjeta) {
-                        console.log(`💳 Actualizando tarjeta para cliente ${rowId}`);
-                        actualizado.tarjeta = tarjeta;
-                    }
-                } else {
-                    actualizado.tarjeta = row.tarjeta;
+                    actualizado.tarjeta = tarjeta;
                 }
 
-                // ⚙️ Actualizar tipo_tarjeta solo si llega un nuevo valor
+                // ✅ Tipo tarjeta
                 if (typeof tipo_tarjeta !== "undefined" && tipo_tarjeta.trim() !== "") {
-                    if (tipo_tarjeta !== row.tipo_tarjeta) {
-                        console.log(`💳 Actualizando tipo_tarjeta para cliente ${rowId}`);
-                        actualizado.tipo_tarjeta = tipo_tarjeta;
-                    }
-                } else {
-                    actualizado.tipo_tarjeta = row.tipo_tarjeta;
+                    actualizado.tipo_tarjeta = tipo_tarjeta;
                 }
 
                 return actualizado;
@@ -144,51 +127,31 @@ exports.handler = async (event) => {
             };
         }
 
-        // 📋 Asegurar columnas necesarias
-        const columnasNecesarias = [
-            "Suscripcion",
-            "tbk_user",
-            "tarjeta",
-            "tipo_tarjeta",
-            "entorno_tbk",
-        ];
-        nuevosDatos.forEach((row) => {
-            columnasNecesarias.forEach((col) => {
-                if (typeof row[col] === "undefined") row[col] = "";
-            });
-        });
-
-        // 💾 Guardar Excel actualizado
+        // Guardar Excel
         const nuevaHoja = XLSX.utils.json_to_sheet(nuevosDatos);
         workbook.Sheets[workbook.SheetNames[0]] = nuevaHoja;
         const buffer = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" });
 
-        await s3
-            .putObject({
-                Bucket: BUCKET_NAME,
-                Key: FILE_KEY,
-                Body: buffer,
-                ContentType:
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            })
-            .promise();
+        await s3.putObject({
+            Bucket: BUCKET_NAME,
+            Key: FILE_KEY,
+            Body: buffer,
+            ContentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        }).promise();
 
-        console.log("✅ Archivo actualizado correctamente (Suscripción + OneClick seguras).");
+        console.log("✅ Cliente actualizado correctamente.");
 
         return {
             statusCode: 200,
             headers: corsHeaders,
-            body: JSON.stringify({
-                message:
-                    "Cliente actualizado correctamente (Suscripción y enrolamiento OneClick protegidos)",
-            }),
+            body: JSON.stringify({ message: "OK" }),
         };
     } catch (error) {
         console.error("❌ Error al actualizar cliente:", error);
         return {
             statusCode: 500,
             headers: corsHeaders,
-            body: JSON.stringify({ message: "Error interno del servidor" }),
+            body: JSON.stringify({ message: "Error interno" }),
         };
     }
 };
