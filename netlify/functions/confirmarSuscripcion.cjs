@@ -16,9 +16,7 @@ exports.handler = async (event) => {
     let entorno_tbk = "INTEGRACION"; // Valor por defecto
 
     try {
-        // ----------------------------------------------------------
         // 1️⃣ OBTENER TOKEN TBK
-        // ----------------------------------------------------------
         const qs = event.queryStringParameters || {};
         let token =
             qs.TBK_TOKEN ||
@@ -44,12 +42,10 @@ exports.handler = async (event) => {
             throw new Error("Faltó el token en la solicitud. Token inválido.");
         }
 
-        // ----------------------------------------------------------
         // 2️⃣ OBTENER DATOS DESDE S3
-        // ----------------------------------------------------------
         try {
             const bucketName = "plataformas-web-buckets";
-            const key = `tokens/${token}.json`;
+            const key = `tokens/${token}.json`;  // Asegúrate de que esta clave sea correcta
 
             existingData = await s3
                 .getObject({ Bucket: bucketName, Key: key })

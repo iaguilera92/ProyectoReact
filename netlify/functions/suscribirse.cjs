@@ -108,7 +108,7 @@ exports.handler = async (event) => {
         if (hasCredentials) {
             try {
                 const bucketName = "plataformas-web-buckets";
-                const key = `tokens/${token}.json`;
+                const key = `tokens/${token}.json`;  // Verifica que esta clave sea correcta
 
                 const data = {
                     idCliente,

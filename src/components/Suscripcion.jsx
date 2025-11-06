@@ -511,11 +511,80 @@ const Suscripcion = () => {
             {status === "error" && (
               <>
                 <Typography variant="h5" color="error" fontWeight={700}>
-                  ❌ Error en la suscripción
+                  ❌ Error al Suscribir
                 </Typography>
                 <Typography sx={{ mt: 2 }}>
-                  No fue posible completar el proceso. Por favor intenta nuevamente o contáctanos.
+                  Ocurrió un problema y no pudimos completar tu suscripción. Intenta de nuevo o ponte en contacto con soporte si el error persiste.
                 </Typography>
+
+                <Box sx={{ display: "flex", justifyContent: "center", width: "100%" }}>
+                  <Button
+                    component={motion.a}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    variant="contained"
+                    href="https://api.whatsapp.com/send?phone=56946873014"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    sx={{
+                      position: "relative",
+                      overflow: "hidden",
+                      mt: 2,
+                      borderRadius: "30px",
+                      px: 2.6,
+                      py: 1,
+                      fontWeight: 600,
+                      fontSize: "0.74rem",
+                      textTransform: "none",
+                      letterSpacing: 0.1,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 0.25,
+                      minWidth: "auto",
+                      maxWidth: 220,
+                      background: "linear-gradient(90deg, #25D366 0%, #128C7E 100%)",
+                      boxShadow: "0 3px 10px rgba(18,140,126,0.3)",
+                      transition: "all 0.3s ease",
+                      "&:hover": {
+                        transform: "translateY(-2px)",
+                        background: "linear-gradient(90deg, #20bd5a 0%, #0d745f 100%)",
+                        boxShadow: "0 5px 14px rgba(18,140,126,0.4)",
+                      },
+                      "&:active": {
+                        transform: "scale(0.97)",
+                      },
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        top: 0,
+                        left: "-75%",
+                        width: "50%",
+                        height: "100%",
+                        background:
+                          "linear-gradient(120deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.35) 50%, rgba(255,255,255,0) 100%)",
+                        transform: "skewX(-25deg)",
+                        animation: "shine 3s infinite",
+                        "@keyframes shine": {
+                          "0%": { left: "-75%" },
+                          "60%": { left: "130%" },
+                          "100%": { left: "130%" },
+                        },
+                        pointerEvents: "none",
+                      }}
+                    />
+
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.25 }}>
+                      <WhatsAppIcon sx={{ fontSize: 17, mb: "1px" }} />
+                      <Box component="span" sx={{ fontWeight: 600, fontSize: "0.78rem" }}>
+                        Avisanos para ayudarte!
+                      </Box>
+                    </Box>
+                  </Button>
+                </Box>
               </>
             )}
           </CardContent>
