@@ -62,10 +62,7 @@ exports.handler = async (event) => {
         const datos = XLSX.utils.sheet_to_json(hoja, { defval: "" });
 
         const hoy = new Date().toISOString().split("T")[0];
-        const entornoActual =
-            process.env.CONTEXT === "dev" || process.env.CONTEXT === "development"
-                ? "INTEGRACION"
-                : "PRODUCCION";
+        const entornoActual = process.env.CONTEXT = "PRODUCCION";
 
         let modificado = false;
 

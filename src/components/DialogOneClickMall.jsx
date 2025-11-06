@@ -32,8 +32,8 @@ export default function DialogOneClickMall({
   const [loadingCheck, setLoadingCheck] = useState(false);
   const [sitioValido, setSitioValido] = useState(false);
   const [cliente, setCliente] = useState(null);
+  const [isRedirecting, setIsRedirecting] = useState(false);  // Estado para controlar la redirección
 
-  // 🔹 Animaciones apertura
   useEffect(() => {
     if (open) {
       setLoading(false);
@@ -44,6 +44,7 @@ export default function DialogOneClickMall({
       setSitioValido(false);
       setCliente(null);
       setArmed(false);
+      setIsRedirecting(false);  // Asegurarse que no se esté en proceso de redirección
       setTimeout(() => setArmed(true), 600);
     } else {
       setShowContent(false);
@@ -118,7 +119,8 @@ export default function DialogOneClickMall({
 
     // Mantiene el diálogo abierto, solo cambia al modo “cargando”
     setLoading(true);
-    setShowContent(false);
+    setShowContent(false); // Oculta el contenido del dialogo
+    setIsRedirecting(true); // Activa la redirección
 
     try {
       sessionStorage.setItem("sitioWebReserva", sitioWeb);
@@ -127,15 +129,15 @@ export default function DialogOneClickMall({
       sessionStorage.setItem("clienteId", cliente.idCliente);
       sessionStorage.setItem("logoCliente", cliente.logoCliente);
 
-      // 🔹 Llamar al backend (Netlify function suscribirse)
+      // Llamar al backend (Netlify function suscribirse)
       const result = await onConfirm?.(sitioWeb, cliente);
 
       if (result?.url_webpay && result?.token) {
         console.log("🚀 Redirigiendo a Transbank...");
 
-        // 🕐 Mostramos pantalla de carga 1 segundo antes de salir
+        // Muestra pantalla de carga 1 segundo antes de redirigir
         setTimeout(() => {
-          // ✅ Redirige realmente a Transbank (manteniendo el diálogo visible hasta el cambio de página)
+          // Redirige a Transbank manteniendo el diálogo visible hasta el cambio de página
           window.location.href = `${result.url_webpay}?TBK_TOKEN=${result.token}`;
         }, 1000);
       } else {
@@ -146,8 +148,10 @@ export default function DialogOneClickMall({
       setError("");
       setShowContent(true);
       setLoading(false);
+      setIsRedirecting(false); // Desactiva el estado de redirección
     }
   };
+
 
 
   return (
@@ -274,7 +278,7 @@ export default function DialogOneClickMall({
       </DialogTitle>
 
       <AnimatePresence mode="wait">
-        {showContent && (
+        {showContent && !isRedirecting && (
           <motion.div
             key="dialogContent"
             initial={{ opacity: 0, height: 0 }}

@@ -2,6 +2,7 @@ const axios = require("axios");
 const querystring = require("querystring");
 const AWS = require("aws-sdk");
 
+// 🧩 Inicializa S3
 const s3 = new AWS.S3({
     region: process.env.AWS_REGION || process.env.MY_AWS_REGION || "us-east-1",
     accessKeyId: process.env.AWS_ACCESS_KEY_ID || process.env.MY_AWS_ACCESS_KEY_ID,
@@ -15,7 +16,9 @@ exports.handler = async (event) => {
     let entorno_tbk = "INTEGRACION"; // Valor por defecto
 
     try {
+        // ----------------------------------------------------------
         // 1️⃣ OBTENER TOKEN TBK
+        // ----------------------------------------------------------
         const qs = event.queryStringParameters || {};
         let token =
             qs.TBK_TOKEN ||
@@ -36,11 +39,14 @@ exports.handler = async (event) => {
         }
 
         console.log("🔹 Token recibido:", token);
+
         if (!token) {
             throw new Error("Faltó el token en la solicitud. Token inválido.");
         }
 
+        // ----------------------------------------------------------
         // 2️⃣ OBTENER DATOS DESDE S3
+        // ----------------------------------------------------------
         try {
             const bucketName = "plataformas-web-buckets";
             const key = `tokens/${token}.json`;
@@ -50,8 +56,6 @@ exports.handler = async (event) => {
                 .promise()
                 .then(r => JSON.parse(r.Body.toString()))
                 .catch(() => null);
-
-            console.log("📦 Datos obtenidos de S3:", existingData); // Log adicional
 
             if (existingData) {
                 entorno_tbk = existingData.entorno || existingData.entorno_tbk || "INTEGRACION";
@@ -65,7 +69,9 @@ exports.handler = async (event) => {
 
         const isProd = entorno_tbk === "PRODUCCION";
 
+        // ----------------------------------------------------------
         // 3️⃣ CONFIRMAR CON TRANSBANK
+        // ----------------------------------------------------------
         const apiUrl = isProd
             ? `https://webpay3g.transbank.cl/rswebpaytransaction/api/oneclick/v1.0/inscriptions/${token}`
             : `https://webpay3gint.transbank.cl/rswebpaytransaction/api/oneclick/v1.0/inscriptions/${token}`;
@@ -87,18 +93,26 @@ exports.handler = async (event) => {
 
         console.log("✅ Respuesta Transbank:", resp.data);
 
-        if (!resp.data || !resp.data.token || !resp.data.url_webpay) {
-            throw new Error("Respuesta incompleta de Transbank.");
+        // Verifica si la respuesta tiene los campos necesarios
+        if (!resp.data.token && !resp.data.url_webpay) {
+            console.warn("⚠️ Respuesta incompleta, pero aún continuando...");  // WARNING solo si no se reciben todos los campos
+            // Permite que el flujo continúe si no se reciben todos los datos esperados.
         }
 
-        const { tbk_user, card_number, card_type, username } = resp.data;
+        const { tbk_user, card_number, card_type, authorization_code } = resp.data;
 
+        if (!tbk_user || !authorization_code) {
+            throw new Error("Error en la confirmación de la inscripción. Datos incompletos.");
+        }
+
+        // ----------------------------------------------------------
         // 4️⃣ GUARDAR DATOS EN S3
+        // ----------------------------------------------------------
         if (existingData) {
             const updated = {
                 ...existingData,
                 tbk_user,
-                username,
+                authorization_code,
                 tarjeta: card_number,
                 tipo_tarjeta: card_type,
                 confirmado: true,
@@ -120,7 +134,9 @@ exports.handler = async (event) => {
             }
         }
 
+        // ----------------------------------------------------------
         // 5️⃣ REDIRECCIÓN FINAL
+        // ----------------------------------------------------------
         const cameFromLocal = existingData?.cameFromLocal === true;
         const redirectBase = cameFromLocal
             ? "http://localhost:5173"
