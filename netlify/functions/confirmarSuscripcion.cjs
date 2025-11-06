@@ -47,11 +47,16 @@ exports.handler = async (event) => {
             const bucketName = "plataformas-web-buckets";
             const key = `tokens/${token}.json`;  // Asegúrate de que esta clave sea correcta
 
+            console.log(`🔍 Buscando el token en S3: tokens/${token}.json`);
+
             existingData = await s3
                 .getObject({ Bucket: bucketName, Key: key })
                 .promise()
                 .then(r => JSON.parse(r.Body.toString()))
-                .catch(() => null);
+                .catch((err) => {
+                    console.warn("⚠️ Error al buscar en S3:", err);
+                    return null;
+                });
 
             if (existingData) {
                 entorno_tbk = existingData.entorno || existingData.entorno_tbk || "INTEGRACION";
@@ -92,7 +97,6 @@ exports.handler = async (event) => {
         // Verifica si la respuesta tiene los campos necesarios
         if (!resp.data.token && !resp.data.url_webpay) {
             console.warn("⚠️ Respuesta incompleta, pero aún continuando...");  // WARNING solo si no se reciben todos los campos
-            // Permite que el flujo continúe si no se reciben todos los datos esperados.
         }
 
         const { tbk_user, card_number, card_type, authorization_code } = resp.data;
