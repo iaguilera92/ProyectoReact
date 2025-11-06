@@ -64,8 +64,8 @@ exports.handler = async (event) => {
             } else {
                 console.log("⚠️ Token no encontrado en S3, se asume INT");
             }
-        } catch {
-            console.warn("⚠️ Error leyendo S3, fallback → INTEGRACION");
+        } catch (err) {
+            console.warn("⚠️ Error leyendo S3, fallback → INTEGRACION", err);
         }
 
         const isProd = entorno_tbk === "PRODUCCION";
@@ -92,6 +92,7 @@ exports.handler = async (event) => {
         console.log("⚙️ Confirmando inscripción en:", apiUrl);
         const resp = await axios.put(apiUrl, {}, { headers: headersReq });
 
+        // Verificar la respuesta de Transbank
         console.log("✅ Respuesta Transbank:", resp.data);
 
         if (!resp.data || !resp.data.token || !resp.data.url_webpay) {
@@ -122,7 +123,7 @@ exports.handler = async (event) => {
                     Body: JSON.stringify(updated),
                     ContentType: "application/json",
                 }).promise();
-
+                console.log(`💾 Token ${token} guardado correctamente en S3.`);
                 console.log("💾 S3 actualizado con datos finales");
             } catch (err) {
                 console.warn("⚠️ No se pudo actualizar S3:", err.message);
@@ -143,6 +144,7 @@ exports.handler = async (event) => {
             tbk_user
         )}&card=${encodeURIComponent(card_number)}&type=${encodeURIComponent(card_type)}`;
 
+        console.log("🔀 URL de redirección:", redirectUrl);
         return { statusCode: 302, headers: { Location: redirectUrl }, body: "" };
 
     } catch (err) {
@@ -157,6 +159,7 @@ exports.handler = async (event) => {
             err.response?.data?.error_message || err.message
         )}`;
 
+        console.log("🔴 Redirigiendo a error:", redirectError);
         return { statusCode: 302, headers: { Location: redirectError }, body: "" };
     }
 };
