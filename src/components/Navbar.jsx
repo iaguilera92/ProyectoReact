@@ -297,7 +297,6 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
             }}
             sx={{
               background: "linear-gradient(135deg, #00ACEE, #027EFB)",
-              boxShadow: "0px 3px 10px rgba(2,126,251,0.4)",
               height: { xs: 30, sm: 32 },
               px: 2,
               display: "flex",

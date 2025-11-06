@@ -405,7 +405,7 @@ const Clientes = () => {
         const MONTO_PRUEBA = true;
 
         const amount = MONTO_PRUEBA
-          ? 50 // 💵 Test seguro en producción
+          ? 300 // 💵 Test seguro en producción
           : cliente.valor
             ? Number(String(cliente.valor).replace(/[^\d]/g, "")) || 9990
             : 9990;

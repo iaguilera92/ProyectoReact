@@ -3,16 +3,10 @@ const axios = require("axios");
 exports.handler = async (event) => {
     console.log("🚀 [autorizarTransaccion] Nueva solicitud de cobro");
 
-    // 🌍 CORS: dominios permitidos
-    const allowedOrigins = [
-        "http://localhost:5173",
-        "http://localhost:8888",
-        "https://plataformas-web.cl",
-    ];
+    // 🌍 CORS
+    const allowedOrigins = ["http://localhost:5173", "http://localhost:8888", "https://plataformas-web.cl"];
     const origin = event.headers.origin || "";
-    const corsOrigin = allowedOrigins.includes(origin)
-        ? origin
-        : allowedOrigins[0];
+    const corsOrigin = allowedOrigins.includes(origin) ? origin : allowedOrigins[0];
 
     const corsHeaders = {
         "Access-Control-Allow-Origin": corsOrigin,
@@ -21,128 +15,103 @@ exports.handler = async (event) => {
         "Access-Control-Allow-Credentials": "true",
     };
 
-    // ✅ Preflight OPTIONS
     if (event.httpMethod === "OPTIONS") {
-        console.log("🟡 [autorizarTransaccion] Preflight OPTIONS");
         return { statusCode: 200, headers: corsHeaders, body: "" };
     }
 
     try {
-        // 📦 Parse body
         const body = JSON.parse(event.body || "{}");
-        const {
-            tbk_user,
-            username,
-            buy_order,
-            amount = 9990,
-            child_commerce_code,
-        } = body;
+        const { tbk_user, username, buy_order, amount, child_commerce_code, entorno_tbk } = body;
 
-        console.log("📥 Body recibido del frontend:", body);
+        console.log("📥 Body recibido:", body);
 
-        // 🧩 Validar parámetros
         if (!tbk_user || !username || !buy_order || !amount) {
-            console.error("⚠️ Faltan parámetros requeridos:", body);
             return {
                 statusCode: 400,
                 headers: corsHeaders,
-                body: JSON.stringify({
-                    success: false,
-                    message:
-                        "Faltan parámetros requeridos (tbk_user, username, buy_order, amount)",
-                }),
+                body: JSON.stringify({ success: false, message: "Faltan parámetros requeridos" }),
             };
         }
 
-        // ⚙️ Detectar entorno
-        const isLocal =
-            process.env.CONTEXT === "dev" ||
-            origin.includes("localhost") ||
-            event.headers.host?.includes("localhost");
+        // 🧭 Detección PRD / INT
+        const apiKeyId = process.env.TBK_OCM_API_KEY_ID;
+        const apiKeySecret = process.env.TBK_OCM_API_KEY_SECRET;
 
-        console.log("🌐 Context:", process.env.CONTEXT);
-        console.log("🖥️ Host:", event.headers.host);
-        console.log("🧭 Ejecutando en:", isLocal ? "INTEGRACIÓN" : "PRODUCCIÓN");
+        const hasProdKeys = apiKeyId?.startsWith("5970") && apiKeySecret?.length > 20;
 
-        const baseUrl = isLocal
-            ? "https://webpay3gint.transbank.cl"
-            : "https://webpay3g.transbank.cl";
-        const apiUrl = `${baseUrl}/rswebpaytransaction/api/oneclick/v1.0/transactions`;
+        let entornoFinal = hasProdKeys ? "PRODUCCION" : "INTEGRACION";
 
-        // 🔑 Credenciales Transbank
-        const headers = isLocal
-            ? {
-                "Tbk-Api-Key-Id": "597055555541", // Integración
-                "Tbk-Api-Key-Secret":
-                    "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C",
-                "Content-Type": "application/json",
-            }
-            : {
-                "Tbk-Api-Key-Id": process.env.TBK_OCM_API_KEY_ID,
-                "Tbk-Api-Key-Secret": process.env.TBK_OCM_API_KEY_SECRET,
-                "Content-Type": "application/json",
-            };
+        // Permitir override desde frontend
+        if (entorno_tbk?.toUpperCase() === "INT") entornoFinal = "INTEGRACION";
+        if (entorno_tbk?.toUpperCase() === "PRD") entornoFinal = "PRODUCCION";
 
-        console.log("🔑 Credenciales Transbank cargadas:");
-        console.log({
-            id: headers["Tbk-Api-Key-Id"],
-            secret: headers["Tbk-Api-Key-Secret"]
-                ? headers["Tbk-Api-Key-Secret"].slice(0, 8) + "...(oculto)"
-                : "⚠️ NO DEFINIDA",
+        console.log("🧭 Entorno detectado:", entornoFinal);
+        console.log("🔑 Variables cargadas:", {
+            TBK_OCM_API_KEY_ID: apiKeyId ? apiKeyId.slice(0, 8) + "..." : "❌ NO DEFINIDA",
+            TBK_OCM_API_KEY_SECRET: apiKeySecret ? "(definida)" : "❌ NO DEFINIDA",
+            CHILD_CODE_ENV: process.env.TBK_OCM_CHILD_CODE || "⚠️ NO DEFINIDA",
+            hasProdKeys,
         });
 
-        // 🧾 Payload
+        const baseUrl =
+            entornoFinal === "PRODUCCION"
+                ? "https://webpay3g.transbank.cl"
+                : "https://webpay3gint.transbank.cl";
+
+        const apiUrl = `${baseUrl}/rswebpaytransaction/api/oneclick/v1.0/transactions`;
+
+        const headers =
+            entornoFinal === "PRODUCCION"
+                ? {
+                    "Tbk-Api-Key-Id": apiKeyId,
+                    "Tbk-Api-Key-Secret": apiKeySecret,
+                    "Content-Type": "application/json",
+                }
+                : {
+                    "Tbk-Api-Key-Id": "597055555541",
+                    "Tbk-Api-Key-Secret":
+                        "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C",
+                    "Content-Type": "application/json",
+                };
+
         const payload = {
             username,
             tbk_user,
             buy_order,
             details: [
                 {
-                    commerce_code:
-                        child_commerce_code ||
-                        process.env.TBK_OCM_CHILD_CODE ||
-                        "597053022840",
+                    commerce_code: child_commerce_code || process.env.TBK_OCM_CHILD_CODE,
                     buy_order: `CHILD-${buy_order}`,
                     amount,
                 },
             ],
         };
 
-        console.log("📨 Enviando solicitud a Transbank:", {
-            entorno: isLocal ? "INTEGRACION" : "PRODUCCION",
-            apiUrl,
-            username,
-            tbk_user,
-            amount,
-            payload,
-        });
+        console.log("📨 Payload enviado a Transbank:", JSON.stringify({ apiUrl, headers, payload }, null, 2));
 
-        // 🔹 Llamada HTTP a Transbank
         const resp = await axios.post(apiUrl, payload, { headers });
 
-        console.log("✅ [autorizarTransaccion] Respuesta Transbank completa:");
-        console.log(JSON.stringify(resp.data, null, 2));
+        console.log("✅ Respuesta Transbank:", resp.data);
 
-        // 🟢 Retornar respuesta estándar
         return {
             statusCode: 200,
             headers: corsHeaders,
             body: JSON.stringify({
                 success: true,
-                message: "Transacción procesada correctamente",
-                entorno: isLocal ? "INTEGRACION" : "PRODUCCION",
+                entorno: entornoFinal,
                 data: resp.data,
             }),
         };
+
     } catch (err) {
-        console.error("❌ [autorizarTransaccion] Error general:");
-        console.error({
-            status: err.response?.status,
-            statusText: err.response?.statusText,
-            headers: err.response?.headers,
-            data: err.response?.data,
+        console.error("❌ ERROR TRANSBANK DETALLADO:", {
+            url: err.config?.url,
+            sentData: err.config?.data,
+            status: err?.response?.status,
+            statusText: err?.response?.statusText,
+            headers: err?.response?.headers,
+            data: err?.response?.data,
             message: err.message,
-            stack: err.stack,
         });
 
         return {
@@ -153,9 +122,8 @@ exports.handler = async (event) => {
                 message:
                     err.response?.data?.error_message ||
                     err.response?.data?.detail ||
-                    err.response?.data ||
                     err.message ||
-                    "Error desconocido al procesar la transacción",
+                    "Error desconocido",
             }),
         };
     }

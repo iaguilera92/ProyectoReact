@@ -1,13 +1,11 @@
 const axios = require("axios");
 const AWS = require("aws-sdk");
 
-// 🧩 Inicializa S3 con soporte para MY_* o AWS_*
+// 🧩 Inicializa S3 con soporte MY_* o AWS_*
 const s3 = new AWS.S3({
     region: process.env.AWS_REGION || process.env.MY_AWS_REGION || "us-east-1",
-    accessKeyId:
-        process.env.AWS_ACCESS_KEY_ID || process.env.MY_AWS_ACCESS_KEY_ID,
-    secretAccessKey:
-        process.env.AWS_SECRET_ACCESS_KEY || process.env.MY_AWS_SECRET_ACCESS_KEY,
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID || process.env.MY_AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || process.env.MY_AWS_SECRET_ACCESS_KEY,
 });
 
 exports.handler = async (event) => {
@@ -17,16 +15,14 @@ exports.handler = async (event) => {
         host: event.headers.host,
     });
 
-    // 🌍 CORS permitido
+    // 🌍 CORS
     const allowedOrigins = [
         "http://localhost:5173",
         "http://localhost:8888",
         "https://plataformas-web.cl",
     ];
     const origin = event.headers.origin || "";
-    const corsOrigin = allowedOrigins.includes(origin)
-        ? origin
-        : allowedOrigins[0];
+    const corsOrigin = allowedOrigins.includes(origin) ? origin : allowedOrigins[0];
     const corsHeaders = {
         "Access-Control-Allow-Origin": corsOrigin,
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
@@ -43,48 +39,55 @@ exports.handler = async (event) => {
         console.log("🟢 [suscribirse] Body recibido:", event.body);
         const { nombre, email, sitioWeb, idCliente } = JSON.parse(event.body || "{}");
 
-        if (!nombre || !email || !idCliente)
+        if (!nombre || !email || !idCliente) {
             throw new Error("Faltan parámetros requeridos (nombre, email, idCliente)");
+        }
 
-        // ⚙️ Detectar entorno
-        const isLocal =
-            event.headers.host?.includes("localhost") || origin.includes("localhost");
-        const environment = isLocal ? "INTEGRACION" : "PRODUCCION";
+        // ✅ Detecta entorno por llaves, NO por localhost
+        const hasProdKeys =
+            process.env.TBK_OCM_API_KEY_ID?.startsWith("5970") &&
+            process.env.TBK_OCM_API_KEY_SECRET?.length > 10;
 
-        // 🌐 URL de inscripción según entorno
-        const inscriptionUrl = isLocal
-            ? "https://webpay3gint.transbank.cl/rswebpaytransaction/api/oneclick/v1.0/inscriptions"
-            : "https://webpay3g.transbank.cl/rswebpaytransaction/api/oneclick/v1.0/inscriptions";
+        const environment = hasProdKeys ? "PRODUCCION" : "INTEGRACION";
+
+        // 🌐 URL inscripción según entorno
+        const inscriptionUrl = hasProdKeys
+            ? "https://webpay3g.transbank.cl/rswebpaytransaction/api/oneclick/v1.0/inscriptions"
+            : "https://webpay3gint.transbank.cl/rswebpaytransaction/api/oneclick/v1.0/inscriptions";
 
         // 🔐 Credenciales según entorno
-        const headers = isLocal
+        const headers = hasProdKeys
             ? {
+                "Tbk-Api-Key-Id": process.env.TBK_OCM_API_KEY_ID,
+                "Tbk-Api-Key-Secret": process.env.TBK_OCM_API_KEY_SECRET,
+                "Content-Type": "application/json",
+            }
+            : {
                 "Tbk-Api-Key-Id": "597055555541",
                 "Tbk-Api-Key-Secret":
                     "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C",
                 "Content-Type": "application/json",
-            }
-            : {
-                "Tbk-Api-Key-Id": process.env.TBK_OCM_API_KEY_ID,
-                "Tbk-Api-Key-Secret": process.env.TBK_OCM_API_KEY_SECRET,
-                "Content-Type": "application/json",
             };
 
-        // 🌍 URL retorno (confirmarSuscripcion)
-        const baseUrl = isLocal
-            ? "http://localhost:8888"
-            : "https://plataformas-web.cl";
+        // 🌍 URL retorno (finish)
+        const baseUrl = hasProdKeys ? "https://plataformas-web.cl" : "http://localhost:8888";
         const returnUrl = `${baseUrl}/.netlify/functions/confirmarSuscripcion`;
 
-        console.log("⚙️ [suscribirse] Registrando inscripción OneClick...");
-        console.log("🌍 Endpoint:", inscriptionUrl);
-        console.log("📬 URL retorno:", returnUrl);
-        console.log("🔧 Modo:", environment);
+        console.log("⚙️ [suscribirse] Registrando inscripción OneClick...", {
+            inscriptionUrl,
+            returnUrl,
+            environment,
+            hasProdKeys,
+        });
 
-        // 🔹 Solicitud HTTP a Transbank
+        // 🔹 Start inscripción OneClick Mall
         const response = await axios.post(
             inscriptionUrl,
-            { username: nombre, email, response_url: returnUrl },
+            {
+                username: email,
+                email,
+                response_url: returnUrl, // 👈 CORRECTO PARA PRD
+            },
             { headers }
         );
 
@@ -93,12 +96,12 @@ exports.handler = async (event) => {
         const token = response.data.token;
         const url_webpay = response.data.url_webpay || response.data.url;
 
-        if (!token || !url_webpay)
+        if (!token || !url_webpay) {
             throw new Error("Respuesta incompleta desde Transbank");
+        }
 
-        // 💾 Guardar relación token → cliente en S3 (solo si hay credenciales)
-        const region =
-            process.env.AWS_REGION || process.env.MY_AWS_REGION || "us-east-1";
+        // 💾 Guarda relación token → cliente en S3
+        const region = process.env.AWS_REGION || process.env.MY_AWS_REGION || "us-east-1";
         const hasCredentials =
             (process.env.AWS_ACCESS_KEY_ID || process.env.MY_AWS_ACCESS_KEY_ID) &&
             (process.env.AWS_SECRET_ACCESS_KEY || process.env.MY_AWS_SECRET_ACCESS_KEY);
@@ -129,11 +132,9 @@ exports.handler = async (event) => {
             } catch (s3Err) {
                 console.warn("⚠️ [suscribirse] No se pudo guardar en S3:", s3Err.message);
             }
-        } else {
-            console.log("🧩 [suscribirse] Sin credenciales AWS: se omite guardado en S3");
         }
 
-        // ✅ Devuelve respuesta al frontend
+        // ✅ Respuesta al frontend
         return {
             statusCode: 200,
             headers: corsHeaders,

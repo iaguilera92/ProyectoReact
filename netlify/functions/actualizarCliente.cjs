@@ -82,9 +82,16 @@ exports.handler = async (event) => {
 
                 const actualizado = { ...rowOriginal };
 
-                // ✅ Actualizar estado de pago
-                actualizado.pagado = revertir ? 0 : 1;
-                actualizado.fechaPago = revertir ? "" : hoy;
+                // ✅ Actualizar estado de pago SOLO si se solicitó explícitamente
+                if (body.hasOwnProperty("revertir")) {
+                    actualizado.pagado = revertir ? 0 : 1;
+                    actualizado.fechaPago = revertir ? "" : hoy;
+                } else {
+                    // 🔒 Mantener valores actuales si no se está procesando un pago/reversión
+                    actualizado.pagado = row.pagado;
+                    actualizado.fechaPago = row.fechapago || row.fechaPago || "";
+                }
+
 
                 // ✅ Actualizar estado de suscripción
                 if (typeof suscripcion !== "undefined") {
