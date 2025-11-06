@@ -25,6 +25,7 @@ exports.handler = async (event) => {
             qs.token ||
             qs.TBK_TOKEN_WS;
 
+        // Verifica si el token es recibido por query params o body
         if (!token && event.body) {
             const contentType = event.headers["content-type"] || event.headers["Content-Type"] || "";
             if (contentType.includes("application/x-www-form-urlencoded")) {
@@ -92,7 +93,7 @@ exports.handler = async (event) => {
         console.log("⚙️ Confirmando inscripción en:", apiUrl);
         const resp = await axios.put(apiUrl, {}, { headers: headersReq });
 
-        // Verificar la respuesta de Transbank
+        // Verifica la respuesta de Transbank
         console.log("✅ Respuesta Transbank:", resp.data);
 
         if (!resp.data || !resp.data.token || !resp.data.url_webpay) {
