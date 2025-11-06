@@ -11,16 +11,19 @@ const s3 = new AWS.S3({
 
 exports.handler = async (event) => {
     console.log("🛰️ [confirmarSuscripcion] Nueva solicitud:", event.httpMethod);
-    if (event.httpMethod === "GET") {
-        console.log("🔄 Forzando lectura de query GET");
-    }
+
+    let existingData = null;        // 🔹 Se reasigna => let
+    let entorno_tbk = "INTEGRACION"; // 🔹 Se reasigna => let
+
     try {
         // ----------------------------------------------------------
         // 1️⃣ OBTENER TOKEN TBK
         // ----------------------------------------------------------
-        let token = event.queryStringParameters?.TBK_TOKEN
-            || event.queryStringParameters?.token
-            || event.queryStringParameters?.TBK_TOKEN_WS;
+        const qs = event.queryStringParameters || {};
+        let token =
+            qs.TBK_TOKEN ||
+            qs.token ||
+            qs.TBK_TOKEN_WS;
 
         if (!token && event.body) {
             const contentType = event.headers["content-type"] || event.headers["Content-Type"] || "";
@@ -39,16 +42,15 @@ exports.handler = async (event) => {
         if (!token) throw new Error("No se recibió token desde Transbank");
 
         // ----------------------------------------------------------
-        // 2️⃣ OBTENER DATOS DESDE S3 (para saber entorno)
+        // 2️⃣ OBTENER DATOS DESDE S3
         // ----------------------------------------------------------
-        let entorno_tbk = null;
-        let existingData = null;
-
         try {
             const bucketName = "plataformas-web-buckets";
             const key = `tokens/${token}.json`;
 
-            existingData = await s3.getObject({ Bucket: bucketName, Key: key }).promise()
+            existingData = await s3
+                .getObject({ Bucket: bucketName, Key: key })
+                .promise()
                 .then(r => JSON.parse(r.Body.toString()))
                 .catch(() => null);
 
@@ -56,18 +58,16 @@ exports.handler = async (event) => {
                 entorno_tbk = existingData.entorno || existingData.entorno_tbk || "INTEGRACION";
                 console.log("📦 Datos S3 encontrados. entorno_tbk:", entorno_tbk);
             } else {
-                console.log("⚠️ Token no encontrado en S3. Asumimos LOCAL + INT");
-                entorno_tbk = "INTEGRACION";
+                console.log("⚠️ Token no encontrado en S3, se asume INT");
             }
         } catch {
             console.warn("⚠️ Error leyendo S3, fallback → INTEGRACION");
-            entorno_tbk = "INTEGRACION";
         }
 
         const isProd = entorno_tbk === "PRODUCCION";
 
         // ----------------------------------------------------------
-        // 3️⃣ CONFIRMAR INSCRIPCIÓN ANTE TRANSBANK (PUT)
+        // 3️⃣ CONFIRMAR CON TRANSBANK
         // ----------------------------------------------------------
         const apiUrl = isProd
             ? `https://webpay3g.transbank.cl/rswebpaytransaction/api/oneclick/v1.0/inscriptions/${token}`
@@ -88,28 +88,29 @@ exports.handler = async (event) => {
         console.log("⚙️ Confirmando inscripción en:", apiUrl);
         const resp = await axios.put(apiUrl, {}, { headers: headersReq });
 
-
-
         console.log("✅ Respuesta Transbank:", resp.data);
         const { tbk_user, card_number, card_type, username } = resp.data;
 
         // ----------------------------------------------------------
-        // 4️⃣ GUARDAR DATOS COMPLETOS EN S3 (actualizar)
+        // 4️⃣ GUARDAR DATOS EN S3
         // ----------------------------------------------------------
         if (existingData) {
-            existingData.tbk_user = tbk_user;
-            existingData.username = username;
-            existingData.tarjeta = card_number;
-            existingData.tipo_tarjeta = card_type;
-            existingData.confirmado = true;
-            existingData.fechaConfirmacion = new Date().toISOString();
-            existingData.entorno_tbk = entorno_tbk;
+            const updated = {
+                ...existingData,
+                tbk_user,
+                username,
+                tarjeta: card_number,
+                tipo_tarjeta: card_type,
+                confirmado: true,
+                fechaConfirmacion: new Date().toISOString(),
+                entorno_tbk,
+            };
 
             try {
                 await s3.putObject({
                     Bucket: "plataformas-web-buckets",
                     Key: `tokens/${token}.json`,
-                    Body: JSON.stringify(existingData),
+                    Body: JSON.stringify(updated),
                     ContentType: "application/json",
                 }).promise();
 
@@ -120,13 +121,12 @@ exports.handler = async (event) => {
         }
 
         // ----------------------------------------------------------
-        // 5️⃣ DETERMINAR REDIRECCIÓN FINAL (FRONTEND)
+        // 5️⃣ REDIRECCIÓN FINAL
         // ----------------------------------------------------------
-        let redirectBase = "https://plataformas-web.cl"; // por defecto PRD
-
-        if (existingData?.cameFromLocal === true || existingData?.origen === "LOCAL") {
-            redirectBase = "http://localhost:5173";
-        }
+        const cameFromLocal = existingData?.cameFromLocal === true;
+        const redirectBase = cameFromLocal
+            ? "http://localhost:5173"
+            : "https://plataformas-web.cl";
 
         console.log("🔀 Redirigiendo a:", redirectBase);
 
@@ -139,9 +139,7 @@ exports.handler = async (event) => {
     } catch (err) {
         console.error("❌ Error confirmarSuscripcion:", err.response?.data || err);
 
-        // Detecta si el token venía de local o PRD
         const cameFromLocal = existingData?.cameFromLocal === true;
-
         const redirectBase = cameFromLocal
             ? "http://localhost:5173"
             : "https://plataformas-web.cl";
