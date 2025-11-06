@@ -139,7 +139,14 @@ exports.handler = async (event) => {
     } catch (err) {
         console.error("❌ Error confirmarSuscripcion:", err.response?.data || err);
 
-        const redirectError = `http://localhost:5173/suscripcion?status=error&msg=${encodeURIComponent(
+        // Detecta si el token venía de local o PRD
+        const cameFromLocal = existingData?.cameFromLocal === true;
+
+        const redirectBase = cameFromLocal
+            ? "http://localhost:5173"
+            : "https://plataformas-web.cl";
+
+        const redirectError = `${redirectBase}/suscripcion?status=error&msg=${encodeURIComponent(
             err.response?.data?.error_message || err.message
         )}`;
 

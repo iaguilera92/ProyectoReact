@@ -16,13 +16,19 @@ exports.handler = async (event) => {
     });
 
     // 🌍 CORS
-    const allowedOrigins = ["http://localhost:5173", "http://localhost:8888", "https://plataformas-web.cl"];
+    const allowedOrigins = [
+        "http://localhost:5173",
+        "http://localhost:8888",
+        "https://plataformas-web.cl",
+        "https://www.plataformas-web.cl"
+    ];
     const origin = event.headers.origin || "";
     const corsOrigin = allowedOrigins.includes(origin) ? origin : allowedOrigins[0];
     const corsHeaders = {
         "Access-Control-Allow-Origin": corsOrigin,
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Credentials": "true",
     };
 
     if (event.httpMethod === "OPTIONS") {
@@ -46,10 +52,8 @@ exports.handler = async (event) => {
         const environment = hasProdKeys ? "PRODUCCION" : "INTEGRACION";
 
         // 🧠 Detectar si usuario inició desde localhost
-        const cameFromLocal =
-            (event.headers.referer || "").includes("localhost") ||
-            (event.headers.origin || "").includes("localhost") ||
-            (event.headers.host || "").includes("localhost");
+        const originHeader = event.headers.origin || "";
+        const cameFromLocal = originHeader.startsWith("http://localhost");
 
         console.log("📍 Origen del usuario:", cameFromLocal ? "LOCALHOST" : "PRODUCCIÓN");
 
