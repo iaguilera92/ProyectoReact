@@ -12,8 +12,8 @@ const s3 = new AWS.S3({
 exports.handler = async (event) => {
     console.log("🛰️ [confirmarSuscripcion] Nueva solicitud:", event.httpMethod);
 
-    let existingData = null;        // 🔹 Se reasigna => let
-    let entorno_tbk = "INTEGRACION"; // 🔹 Se reasigna => let
+    let existingData = null;
+    let entorno_tbk = "INTEGRACION"; // Valor por defecto
 
     try {
         // ----------------------------------------------------------
@@ -39,7 +39,11 @@ exports.handler = async (event) => {
         }
 
         console.log("🔹 Token recibido:", token);
-        if (!token) throw new Error("No se recibió token desde Transbank");
+
+        // Validación para asegurarnos de que el token es válido
+        if (!token) {
+            throw new Error("Faltó el token en la solicitud. Token inválido.");
+        }
 
         // ----------------------------------------------------------
         // 2️⃣ OBTENER DATOS DESDE S3
@@ -89,6 +93,11 @@ exports.handler = async (event) => {
         const resp = await axios.put(apiUrl, {}, { headers: headersReq });
 
         console.log("✅ Respuesta Transbank:", resp.data);
+
+        if (!resp.data || !resp.data.token || !resp.data.url_webpay) {
+            throw new Error("Respuesta incompleta de Transbank.");
+        }
+
         const { tbk_user, card_number, card_type, username } = resp.data;
 
         // ----------------------------------------------------------

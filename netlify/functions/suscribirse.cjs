@@ -3,9 +3,9 @@ const AWS = require("aws-sdk");
 
 // 🧩 Inicializa S3 (usa MY_* o AWS_*)
 const s3 = new AWS.S3({
-    region: process.env.AWS_REGION || process.env.MY_AWS_REGION || "us-east-1",
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID || process.env.MY_AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || process.env.MY_AWS_SECRET_ACCESS_KEY,
+    region: process.env.MY_AWS_REGION || "us-east-2",  // Usa la región us-east-2
+    accessKeyId: process.env.MY_AWS_ACCESS_KEY_ID,    // Usa MY_AWS_ACCESS_KEY_ID
+    secretAccessKey: process.env.MY_AWS_SECRET_ACCESS_KEY,  // Usa MY_AWS_SECRET_ACCESS_KEY
 });
 
 exports.handler = async (event) => {

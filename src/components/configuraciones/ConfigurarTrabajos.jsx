@@ -472,7 +472,6 @@ const ConfigurarTrabajos = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                       sx={{
-                        fontWeight: 500,
                         fontSize: { xs: "0.75rem", sm: "0.875rem" },
                         whiteSpace: "nowrap",
                         color: trabajo.tipoApp === 1 ? "#0288d1" : "#333",

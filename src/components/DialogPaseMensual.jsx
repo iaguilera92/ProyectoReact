@@ -804,7 +804,6 @@ export default function DialogPaseMensual({ open, onClose, analyticsDisponible }
                           display: "flex",
                           alignItems: "flex-end",
                           backgroundColor: "transparent",
-                          boxShadow: "none",
                           border: "none",
                         }}
                         elevation={0}
