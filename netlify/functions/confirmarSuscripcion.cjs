@@ -4,10 +4,22 @@ const AWS = require("aws-sdk");
 
 // 🧩 Inicializa S3
 const s3 = new AWS.S3({
-    region: process.env.AWS_REGION || process.env.MY_AWS_REGION || "us-east-1",
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID || process.env.MY_AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || process.env.MY_AWS_SECRET_ACCESS_KEY,
+    region: process.env.MY_AWS_REGION || "us-east-2",  // Usa MY_AWS_REGION
+    accessKeyId: process.env.MY_AWS_ACCESS_KEY_ID,    // Usa MY_AWS_ACCESS_KEY_ID
+    secretAccessKey: process.env.MY_AWS_SECRET_ACCESS_KEY,  // Usa MY_AWS_SECRET_ACCESS_KEY
 });
+console.log("MY_AWS_ACCESS_KEY_ID:", process.env.MY_AWS_ACCESS_KEY_ID);
+console.log("MY_AWS_SECRET_ACCESS_KEY:", process.env.MY_AWS_SECRET_ACCESS_KEY);
+console.log("MY_AWS_REGION:", process.env.MY_AWS_REGION);
+
+try {
+    const data = await s3.listObjectsV2({
+        Bucket: "plataformas-web-buckets",
+    }).promise();
+    console.log("Acceso a S3 exitoso:", data);
+} catch (err) {
+    console.error("Error de acceso a S3:", err);
+}
 
 exports.handler = async (event) => {
     console.log("🛰️ [confirmarSuscripcion] Nueva solicitud:", event.httpMethod);
