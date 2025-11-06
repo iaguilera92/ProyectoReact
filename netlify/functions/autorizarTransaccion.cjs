@@ -77,21 +77,31 @@ exports.handler = async (event) => {
         const payload = {
             username,
             tbk_user,
-            buy_order,
+            buy_order: `CHILD-${buy_order}`,  // Asegúrate de que este buy_order sea único y bien formateado
             details: [
                 {
-                    commerce_code: child_commerce_code || process.env.TBK_OCM_CHILD_CODE,
-                    buy_order: `CHILD-${buy_order}`,
+                    commerce_code: child_commerce_code || process.env.TBK_OCM_CHILD_CODE, // Verifica que este sea el comercio correcto
+                    buy_order: `CHILD-${buy_order}`, // Asegúrate de que el buy_order sea único
                     amount,
                 },
             ],
         };
 
-        console.log("📨 Payload enviado a Transbank:", JSON.stringify({ apiUrl, headers, payload }, null, 2));
+        console.log("📨 Payload enviado a Transbank:", JSON.stringify(payload, null, 2));
 
         const resp = await axios.post(apiUrl, payload, { headers });
 
         console.log("✅ Respuesta Transbank:", resp.data);
+
+        // Verificar el tipo de respuesta para obtener más detalles
+        if (resp.data.details) {
+            resp.data.details.forEach(detail => {
+                if (detail.status === 'CONSTRAINTS_VIOLATED') {
+                    console.warn("⚠️ Transacción fallida por restricciones:", detail);
+                }
+            });
+        }
+
 
         return {
             statusCode: 200,
