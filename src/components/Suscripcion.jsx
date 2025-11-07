@@ -509,20 +509,66 @@ const Suscripcion = () => {
             )}
 
             {status === "error" && (
-              <>
-                <Typography variant="h5" color="error" fontWeight={700}>
-                  ❌ Error al Suscribir
-                </Typography>
-                <Typography sx={{ mt: 2 }}>
-                  Ocurrió un problema y no pudimos completar tu suscripción. Intenta de nuevo o ponte en contacto con soporte si el error persiste.
+              <motion.div
+                key="error-block"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+                style={{ width: "100%", textAlign: "center" }}
+              >
+                {/* Header visual del error */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    mb: 2,
+                    py: 1,
+                    borderRadius: 2,
+                    background: "linear-gradient(90deg, rgba(244,67,54,0.08) 0%, rgba(244,67,54,0.12) 100%)",
+                    border: "1px solid rgba(244,67,54,0.2)",
+                  }}
+                >
+                  <Typography
+                    variant="h6"
+                    color="error"
+                    fontWeight={800}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 1,
+                      letterSpacing: 0.2,
+                      fontSize: { xs: "0.90rem", sm: "1.05rem" },
+                    }}
+                  >
+                    ⚠️ Transacción de suscripción fallida
+                  </Typography>
+                </Box>
+
+
+                <Typography
+                  sx={{
+                    mb: 2.5,
+                    px: { xs: 1, sm: 3 },
+                    color: "#555",
+                    fontSize: { xs: "0.83rem", sm: "0.95rem" },
+                    lineHeight: 1.45,
+                  }}
+                >
+                  Tuvimos un problema al intentar completar tu suscripción.
+                  Puedes intentarlo nuevamente o comunicarte con soporte para recibir ayuda.
                 </Typography>
 
+
+                {/* Botón WhatsApp */}
                 <Box sx={{ display: "flex", justifyContent: "center", width: "100%" }}>
                   <Button
                     component={motion.a}
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
+                    transition={{ delay: 0.2, duration: 0.6 }}
                     variant="contained"
                     href="https://api.whatsapp.com/send?phone=56946873014"
                     target="_blank"
@@ -530,33 +576,34 @@ const Suscripcion = () => {
                     sx={{
                       position: "relative",
                       overflow: "hidden",
-                      mt: 2,
-                      borderRadius: "30px",
-                      px: 2.6,
-                      py: 1,
-                      fontWeight: 600,
-                      fontSize: "0.74rem",
+                      mt: 1,
+                      borderRadius: "999px",
+                      px: 2.8,
+                      py: 1.1,
+                      fontWeight: 700,
+                      fontSize: { xs: "0.78rem", sm: "0.85rem" },
                       textTransform: "none",
                       letterSpacing: 0.1,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      gap: 0.25,
+                      gap: 0.4,
                       minWidth: "auto",
-                      maxWidth: 220,
+                      maxWidth: 240,
                       background: "linear-gradient(90deg, #25D366 0%, #128C7E 100%)",
-                      boxShadow: "0 3px 10px rgba(18,140,126,0.3)",
+                      boxShadow: "0 4px 12px rgba(18,140,126,0.35)",
                       transition: "all 0.3s ease",
                       "&:hover": {
                         transform: "translateY(-2px)",
                         background: "linear-gradient(90deg, #20bd5a 0%, #0d745f 100%)",
-                        boxShadow: "0 5px 14px rgba(18,140,126,0.4)",
+                        boxShadow: "0 6px 16px rgba(18,140,126,0.45)",
                       },
                       "&:active": {
                         transform: "scale(0.97)",
                       },
                     }}
                   >
+                    {/* Brillo animado */}
                     <Box
                       sx={{
                         position: "absolute",
@@ -577,16 +624,18 @@ const Suscripcion = () => {
                       }}
                     />
 
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.25 }}>
+                    {/* Ícono + texto */}
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.6 }}>
                       <WhatsAppIcon sx={{ fontSize: 17, mb: "1px" }} />
-                      <Box component="span" sx={{ fontWeight: 600, fontSize: "0.78rem" }}>
-                        Avisanos para ayudarte!
+                      <Box component="span" sx={{ fontWeight: 700 }}>
+                        ¡Avísanos para ayudarte!
                       </Box>
                     </Box>
                   </Button>
                 </Box>
-              </>
+              </motion.div>
             )}
+
           </CardContent>
         </Card>
       </Box>
