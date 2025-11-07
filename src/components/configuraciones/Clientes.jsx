@@ -134,6 +134,16 @@ const Clientes = () => {
   const datosCliente = (cliente) => { setClienteSeleccionado(cliente); setOpenDialogCliente(true); };
   const MotionBox = motion.create(Box);
 
+  // 💵 COBROS - $9.990 o $300 CLP
+  const dominio = (clienteSeleccionado?.sitioWeb || "")
+    .toLowerCase()
+    .replace(/^https?:\/\//, "")
+    .replace(/^www\./, "");
+
+  const sitiosPrueba = ["plataformas-web.cl", "ivelpink.cl"];
+  const esSitioPrueba = sitiosPrueba.some((s) => dominio.includes(s));
+
+  const montoCobro = esSitioPrueba ? 300 : 9990;
 
   //DÍAS ATRASO
   const hoy = new Date();
@@ -367,10 +377,16 @@ const Clientes = () => {
         const endpoint = `${baseUrl}/.netlify/functions/autorizarTransaccion`;
 
         const buyOrder = `ORD-${Date.now()}`;
-        const MONTO_PRUEBA = true;
 
-        const amount = MONTO_PRUEBA
-          ? 300 // 💵 Test seguro en producción
+        // 💵 Lógica dinámica según dominio
+        const dominio = (cliente.sitioWeb || "").toLowerCase().replace(/^https?:\/\//, "").replace(/^www\./, "");
+
+        // si es alguno de los sitios “exentos” => cobra 300 CLP
+        const sitiosPrueba = ["plataformas-web.cl", "ivelpink.cl"];
+        const esSitioPrueba = sitiosPrueba.some((s) => dominio.includes(s));
+
+        const amount = esSitioPrueba
+          ? 300
           : cliente.valor
             ? Number(String(cliente.valor).replace(/[^\d]/g, "")) || 9990
             : 9990;
@@ -399,11 +415,9 @@ const Clientes = () => {
         if (!resp.ok) throw new Error(`HTTP ${resp.status} - ${resp.statusText}`);
 
         const data = await resp.json();
-        console.log("📦 Respuesta Transbank:", data);
 
         const detalle = data?.data?.details?.[0] || data?.details?.[0];
         if (detalle && detalle.response_code === 0) {
-          console.log("✅ Cobro aprobado:", detalle);
 
           // 🟢 Marcar en Excel como pagado
           await actualizarClientePagado(cliente.idCliente);
@@ -417,8 +431,9 @@ const Clientes = () => {
 
           setSnackbar({
             open: true,
-            message: `💰 Cobro automático aprobado para ${cliente.sitioWeb}`,
+            message: `Cobro automático aprobado para ${cliente.sitioWeb}`,
             severity: "success",
+            type: "success-cobro", // 👈 nuevo tipo
           });
         } else {
           console.warn("❌ Cobro rechazado o error en Transbank:", detalle);
@@ -1667,9 +1682,187 @@ const Clientes = () => {
 
         <DialogContent sx={{ pt: 4, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
 
-          <DialogContentText sx={{ pt: 3 }}>
+          <DialogContentText sx={{ pt: 2 }}>
             Notificaremos al cliente <strong>{clienteSeleccionado?.cliente}</strong> por el sitio{" "}
             <strong>{clienteSeleccionado?.sitioWeb}</strong>.
+
+            {/* 💰 Información de monto a cobrar */}
+            <Box
+              sx={{
+                mt: 1,
+                mb: 0,
+                px: 2,
+                py: 1.5,
+                borderRadius: 2,
+                position: "relative",
+                background: "linear-gradient(90deg, #25D366 0%, #128C7E 100%)",
+                boxShadow: "0 4px 12px rgba(18,140,126,0.35)",
+                transition: "all 0.3s ease",
+                textAlign: "center",
+                color: "#fff",
+                overflow: "hidden",
+                "&:hover": {
+                  transform: "translateY(-2px)",
+                  background: "linear-gradient(90deg, #20bd5a 0%, #0d745f 100%)",
+                  boxShadow: "0 6px 16px rgba(18,140,126,0.45)",
+                },
+                "&:active": {
+                  transform: "scale(0.98)",
+                },
+              }}
+            >
+              {/* ✨ Brillo animado */}
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: 0,
+                  left: "-75%",
+                  width: "50%",
+                  height: "100%",
+                  background:
+                    "linear-gradient(120deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.35) 50%, rgba(255,255,255,0) 100%)",
+                  transform: "skewX(-25deg)",
+                  animation: "shine 3s infinite",
+                  "@keyframes shine": {
+                    "0%": { left: "-75%" },
+                    "60%": { left: "130%" },
+                    "100%": { left: "130%" },
+                  },
+                  pointerEvents: "none",
+                }}
+              />
+
+              {/* 🚀 Contenedor animado con altura fluida */}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={cobrando ? "procesando" : "monto"}
+                  layout
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{
+                    layout: { duration: 0.4, ease: "easeInOut" },
+                    opacity: { duration: 0.4 },
+                    y: { duration: 0.4 },
+                  }}
+                >
+                  {cobrando ? (
+                    <>
+                      {/* 🏦 Animación Transbank → Banco */}
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          gap: 2,
+                          px: 1,
+                          py: 0.5,
+                          minHeight: 60,
+                          position: "relative",
+                        }}
+                      >
+                        {/* Transbank */}
+                        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", zIndex: 1 }}>
+                          <Box
+                            component="img"
+                            src="/logo-cargo-transbank.png"
+                            alt="Transbank"
+                            sx={{ width: 30, height: "auto", mb: 0.3 }}
+                          />
+                          <Typography sx={{ fontSize: "0.7rem", fontWeight: 600, opacity: 0.9, letterSpacing: 0.3 }}>
+                            Transbank
+                          </Typography>
+                        </Box>
+
+                        {/* Puntos animados */}
+                        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1.1, flex: 1, zIndex: 2 }}>
+                          {[0, 1, 2].map((i) => (
+                            <motion.span
+                              key={i}
+                              style={{
+                                width: 10,
+                                height: 10,
+                                borderRadius: "50%",
+                                background: "radial-gradient(circle, #ffffff 0%, #b2f7d8 100%)",
+                                boxShadow: "0 0 8px rgba(255,255,255,0.7)",
+                              }}
+                              animate={{
+                                scale: [0.8, 1.4, 0.8],
+                                opacity: [0.3, 1, 0.3],
+                                x: [0, 2, 0],
+                              }}
+                              transition={{
+                                repeat: Infinity,
+                                repeatDelay: 0.2,
+                                duration: 1.4,
+                                delay: i * 0.25,
+                                ease: "easeInOut",
+                              }}
+                            />
+                          ))}
+                        </Box>
+
+                        {/* Banco */}
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            zIndex: 1,
+                            mt: { xs: 1, sm: 0.8 },
+                          }}
+                        >
+                          <Box
+                            component="img"
+                            src="/logo-cargo-banco.webp"
+                            alt="Banco"
+                            sx={{ width: 70, height: "auto", mb: 0.3 }}
+                          />
+                          <Typography sx={{ fontSize: "0.7rem", fontWeight: 600, opacity: 0.9, letterSpacing: 0.3 }}>
+                            Banco
+                          </Typography>
+                        </Box>
+                      </Box>
+
+                      {/* Texto inferior animado */}
+                      <motion.div animate={{ opacity: [0.5, 1, 0.5] }} transition={{ repeat: Infinity, duration: 2 }}>
+                        <Typography
+                          sx={{
+                            mt: 1.2,
+                            fontWeight: 700,
+                            fontSize: { xs: "0.9rem", sm: "1.05rem" },
+                            textShadow: "0 2px 4px rgba(0,0,0,0.25)",
+                          }}
+                        >
+                          Procesando pago...
+                        </Typography>
+                      </motion.div>
+                    </>
+                  ) : (
+                    <>
+                      <Typography
+                        sx={{
+                          fontWeight: 700,
+                          fontSize: { xs: "0.9rem", sm: "1.05rem" },
+                          color: "white",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: 0.6,
+                        }}
+                      >
+                        💰 Monto a cobrar: ${montoCobro.toLocaleString("es-CL")} CLP
+                      </Typography>
+                      <Typography sx={{ fontSize: { xs: "0.75rem", sm: "0.85rem" }, opacity: 0.9, mt: 0.3 }}>
+                        {esSitioPrueba ? "(Monto especial por sitio asociado)" : "(Suscripción mensual estándar)"}
+                      </Typography>
+                    </>
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </Box>
+
+
           </DialogContentText>
           <FormControl fullWidth size="small" sx={{ mt: 2 }}>
             <InputLabel sx={{ color: "#1b263b" }}>Mes de cobro</InputLabel>
@@ -1843,6 +2036,32 @@ const Clientes = () => {
                 : "💰 Cobrar"
             )}
           </Button>
+          {/*<Button
+            size={isMobile ? "small" : "medium"}
+            sx={{
+              fontSize: isMobile ? "0.7rem" : "0.875rem",
+              fontWeight: 600,
+              textTransform: "none",
+              background: "linear-gradient(90deg,#607D8B,#455A64)",
+              color: "#fff",
+              "&:hover": {
+                background: "linear-gradient(90deg,#546E7A,#37474F)",
+              },
+            }}
+            onClick={() => {
+              // 🔹 Simulación de cobro en proceso
+              setCobrando(true);
+              console.log("🔄 Simulación de cobro iniciada...");
+
+              // ⏳ Simula un proceso de 5 segundos
+              setTimeout(() => {
+                setCobrando(false);
+                console.log("✅ Simulación de cobro finalizada");
+              }, 5000);
+            }}
+          >
+            🧪 TEST
+          </Button>*/}
         </DialogActions>
 
 
@@ -2010,13 +2229,88 @@ const Clientes = () => {
           </Button>
         </DialogActions>
       </Dialog>
-
+      {/* Snackbar genérico */}
       <Snackbar
-        open={snackbar.open}
+        open={snackbar.open && snackbar.type !== "success-cobro"}
         autoHideDuration={4000}
         onClose={() => setSnackbar({ ...snackbar, open: false })}
         message={snackbar.message}
       />
+
+      {/* Snackbar especial de cobro */}
+      <Snackbar
+        open={snackbar.open && snackbar.type === "success-cobro"}
+        autoHideDuration={4500}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 40, scale: 0.9 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 20 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1.5,
+              background: "linear-gradient(90deg,#2E7D32 0%,#43A047 50%,#66BB6A 100%)",
+              color: "#fff",
+              px: 2.8,
+              py: 1.6,
+              borderRadius: 2.5,
+              boxShadow: "0 6px 22px rgba(67,160,71,0.4)",
+              fontFamily: "'Poppins', sans-serif",
+              fontWeight: 600,
+              textShadow: "0 1px 2px rgba(0,0,0,0.25)",
+              minWidth: 300,
+            }}
+          >
+            {/* 👏 Aplausos animados */}
+            <motion.span
+              initial={{ scale: 0 }}
+              animate={{ scale: [0, 1.3, 1], rotate: [0, 8, -8, 0] }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              style={{ fontSize: "1.7rem" }}
+            >
+              👏
+            </motion.span>
+
+            {/* Texto */}
+            <Box sx={{ flex: 1, textAlign: "left" }}>
+              <Typography
+                sx={{
+                  fontWeight: 700,
+                  fontSize: { xs: "0.9rem", sm: "1rem" },
+                  lineHeight: 1.3,
+                }}
+              >
+                Cobro automático aprobado
+              </Typography>
+              <Typography
+                sx={{
+                  fontSize: { xs: "0.8rem", sm: "0.9rem" },
+                  opacity: 0.95,
+                }}
+              >
+                💰 Transacción exitosa para{" "}
+                {snackbar?.message?.match(/para (.*)/)?.[1] || "el cliente"}
+              </Typography>
+            </Box>
+
+            {/* 💵 Dinero flotante */}
+            <motion.span
+              animate={{ y: [0, -5, 0] }}
+              transition={{ repeat: Infinity, duration: 1.4, ease: "easeInOut" }}
+              style={{ fontSize: "1.6rem" }}
+            >
+              💵
+            </motion.span>
+          </Box>
+        </motion.div>
+      </Snackbar>
+
     </Box >
   );
 };
