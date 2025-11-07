@@ -270,12 +270,17 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
   //Rut: 11.111.111-1
   //Clave: 123
 
-  //DETECTAR URL /suscribir
+  // DETECTAR URL
   useEffect(() => {
+    let timer;
     if (location.pathname === "/suscribir") {
-      setOpenDialogOneClick(true);
+      timer = setTimeout(() => {
+        setOpenDialogOneClick(true);
+      }, 2300); // ⏳ espera 2.3 segundos
     }
+    return () => clearTimeout(timer);
   }, [location.pathname]);
+
 
 
   return (

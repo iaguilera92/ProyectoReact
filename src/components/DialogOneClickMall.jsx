@@ -35,21 +35,30 @@ export default function DialogOneClickMall({
   const [isRedirecting, setIsRedirecting] = useState(false);  // Estado para controlar la redirección
 
   useEffect(() => {
+    let timer;
+
     if (open) {
+      setShowContent(false);
       setLoading(false);
       setError("");
       setTouched(false);
-      setShowContent(true);
       setSitioWeb("");
       setSitioValido(false);
       setCliente(null);
       setArmed(false);
-      setIsRedirecting(false);  // Asegurarse que no se esté en proceso de redirección
-      setTimeout(() => setArmed(true), 600);
+      setIsRedirecting(false);
+      timer = setTimeout(() => {
+        setShowContent(true);
+        setArmed(true);
+      }, 350);
     } else {
       setShowContent(false);
     }
+
+    return () => clearTimeout(timer);
   }, [open]);
+
+
 
   // 🔍 Validar sitio web y buscar en Excel
   const handleValidateWebsite = async () => {
@@ -152,7 +161,18 @@ export default function DialogOneClickMall({
     }
   };
 
+  // Detectar /suscribir
+  useEffect(() => {
+    if (typeof window === "undefined") return;
 
+    if (window.location.pathname.includes("/suscribir")) {
+      const timer = setTimeout(() => {
+        setAutoOpen(true);
+      }, 2500);
+
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   return (
     <Dialog
@@ -282,10 +302,19 @@ export default function DialogOneClickMall({
           <motion.div
             key="dialogContent"
             initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto", transition: { duration: 1 } }}
-            exit={{ opacity: 0, height: 0, transition: { duration: 1.2 } }}
-            style={{ overflow: "hidden", transformOrigin: "top center" }}
+            animate={{
+              opacity: 1,
+              height: "auto",
+              transition: { duration: 0.7, ease: [0.25, 0.1, 0.25, 1] },
+            }}
+            exit={{ opacity: 0, height: 0, transition: { duration: 0.6 } }}
+            style={{
+              overflow: "hidden",
+              transformOrigin: "top center",
+              willChange: "opacity, height",
+            }}
           >
+
             <DialogContent
               sx={{
                 background: "linear-gradient(180deg,#F3E5F5 0%,#EDE7F6 100%)",
@@ -370,7 +399,7 @@ export default function DialogOneClickMall({
                   <Typography
                     variant="subtitle1"
                     sx={{
-                      mt: -2,
+                      mt: -2.5,
                       mb: 0,
                       fontWeight: 700,
                       color: "#4A148C",
@@ -379,7 +408,7 @@ export default function DialogOneClickMall({
                       textAlign: "center",
                     }}
                   >
-                    Información del Cliente
+                    Cliente - Plataformas web
                   </Typography>
 
                   {/* 🔲 Contenedor del cliente */}
