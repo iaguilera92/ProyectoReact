@@ -14,27 +14,47 @@ import InformationsPromotions from './InformationsPromotions';
 const promotions = [
   {
     id: 1,
-    title: "Sitios Web",
-    description: "Entrega en menos de 72hrs.",
+    title: "📅 Suscripción Mensual",
+    description: "Tu presencia digital activa mes a mes.",
     image: "/promocion-1.webp",
-    price: "$90.000 CLP",
-    priceUSD: "$95 USD", // 💲 agregado
+    price: "$29.990 CLP",
+    priceUSD: "$32 USD",
     extraPrices: [
-      { label: "ELIGE TU DOMINIO .CL", price: "$10.000 CLP", priceUSD: "$10 USD" },
-      { label: "HOSTING + SOPORTE", price: "$10.000 CLP", priceUSD: "$10 USD" }
+      { label: "Soporte continuo", price: "$9.990 CLP", priceUSD: "10 USD" },
+      { label: "Actualizaciones", price: "$9.990 CLP", priceUSD: "10 USD" }
     ],
-    bgColor: "linear-gradient(180deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3))",
+    bgColor: "linear-gradient(180deg, rgba(0,0,0,0.7), rgba(0,0,0,0.3))",
     textColor: "white",
     descriptors: [
-      "🎨 Diseño personalizado.",
-      "☁️ Admininstración y Base de datos.",
-      "📈 Más alcance y clientes.",
-      "🛠️ Soporte evolutivo."
+      "🕐 Soporte y atención continua 24/7",
+      "🛠️ Mantención técnica permanente del sitio",
+      "✏️ Solicitud de mejoras y ajustes incluidos",
+      "🤝 Gestión integral de tu sitio web"
     ]
   },
   {
     id: 2,
-    title: "🛒Tienda online",
+    title: "💎 Pago Único",
+    description: "Sitio web sin mensualidades.",
+    image: "/promocion-1.webp",
+    price: "$99.990 CLP",
+    priceUSD: "$105 USD",
+    extraPrices: [
+      { label: "Entrega rápida", price: "Incluido", priceUSD: "Included" },
+      { label: "Soporte inicial", price: "Incluido", priceUSD: "Included" }
+    ],
+    bgColor: "linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.2))",
+    textColor: "white",
+    descriptors: [
+      "💎 Pago único, sin mensualidades",
+      "🎯 Ideal para landing o web institucional",
+      "💼 Imagen profesional desde el día uno",
+      "🧾 Desarrollos se cotizan por separado"
+    ]
+  },
+  {
+    id: 3,
+    title: "🛒 Tienda Online",
     description: "Vende tus productos online de forma segura.",
     image: "/Informations-2.jpg",
     price: "$250.000 a $400.000 CLP",
@@ -43,19 +63,19 @@ const promotions = [
       { label: "Dominio anual", price: "$15.000 CLP", priceUSD: "$16 USD" },
       { label: "Hosting mensual", price: "$80.000 CLP", priceUSD: "$85 USD" }
     ],
-    bgColor: "linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.2))",
+    bgColor: "linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.2))",
     textColor: "white",
     descriptors: [
-      "🛍️ eCommerce profesional.",
-      "🛒 Carrito + stock.",
-      "📊 Panel de gestión.",
-      "💳 WebPay y más pagos."
+      "🛍️ eCommerce profesional",
+      "📦 Stock y carrito",
+      "💳 WebPay y pagos",
+      "📊 Panel de gestión"
     ]
   },
   {
-    id: 3,
-    title: "🖥️Sistemas a la medida",
-    description: "Desarrollo adaptados para tu negocio.",
+    id: 4,
+    title: "🖥️ Sistemas a la Medida",
+    description: "Desarrollo adaptado a tu negocio.",
     image: "/Informations-3.jpg",
     price: "$600.000 a $4.000.000 CLP",
     priceUSD: "$635 a $4.200 USD",
@@ -63,16 +83,17 @@ const promotions = [
       { label: "Dominio anual", price: "$30.000 CLP", priceUSD: "$32 USD" },
       { label: "Hosting mensual", price: "$600.000 CLP", priceUSD: "$635 USD" }
     ],
-    bgColor: "linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.2))",
+    bgColor: "linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.2))",
     textColor: "white",
     descriptors: [
-      "⚙️ Sistemas web o apps.",
-      "📊 Panel + base de datos.",
-      "🧩 Adaptado a tu negocio.",
-      "🛠️ Soporte continuo."
+      "⚙️ Sistemas web o apps",
+      "🧩 100% personalizado",
+      "📊 Panel + base de datos",
+      "🛠️ Soporte continuo"
     ]
   }
 ];
+
 
 function Informations({ informationsRef, triggerInformations, setHasSeenInformations }) {
 

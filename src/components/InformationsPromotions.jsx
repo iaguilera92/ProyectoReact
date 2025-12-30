@@ -90,6 +90,25 @@ const InformationsPromotions = ({
   //Rut: 11.111.111-1
   //Clave: 123
 
+  const pricingBoxBase = {
+    mt: isMobile ? 1.2 : 1,
+    mb: 0,
+    borderRadius: "12px",
+    px: 2,
+    py: isMobile ? 0.5 : 0.3,
+    display: "flex",
+    alignItems: "center",
+    width: "310px",
+    minHeight: isMobile ? "78px" : "70px", // 🔥 ALTO ÚNICO COMPARTIDO
+    position: "relative",
+    overflow: "hidden",
+    zIndex: 3,
+    mx: "auto",
+    alignSelf: "center",
+    boxSizing: "border-box",
+    transition: "all 0.4s ease-in-out",
+  };
+
   return (
     <Box
       ref={swiperRef}
@@ -127,7 +146,7 @@ const InformationsPromotions = ({
               }}
             >
 
-              {promo.id === 1 && (
+              {(promo.id === 1 || promo.id === 2) && (
                 <motion.div
                   initial={{ opacity: 0, y: 50 }}
                   animate={showPopularBadge ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
@@ -246,42 +265,41 @@ const InformationsPromotions = ({
                         letterSpacing: promo.id === 1 ? "0.5px" : "normal",
                       }}
                     >
-                      {promo.id === 1 ? (
-                        <>
-                          <Box
-                            component="span"
+                      {(promo.id === 1 || promo.id === 2) ? (
+                        <Box
+                          component="span"
+                          sx={{
+                            fontWeight: "bold",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "2px",
+                            color: "rgb(243, 210, 98)",
+                          }}
+                        >
+                          {promo.id === 1
+                            ? "Entrega en menos de 72 horas"
+                            : "Entrega en menos de 3 a 7 días"}
+                          {/* Reloj */}
+                          <AccessTimeFilledRoundedIcon
                             sx={{
-                              fontWeight: "bold",
-                              display: "inline-flex",
-                              alignItems: "center",
-                              gap: "2px",
-                              color: "rgb(243, 210, 98)",
+                              fontSize: { xs: 15, sm: 18 },
+                              position: "relative",
+                              top: { xs: "-1px", sm: "-1px" },
+                              animation: "clock 12s steps(12) infinite",
+                              transformOrigin: "50% 50%",
+                              filter: "drop-shadow(0 0 4px rgba(255,167,38,.35))",
+                              "@media (prefers-reduced-motion: reduce)": { animation: "none" },
+                              "@keyframes clock": {
+                                "0%": { transform: "rotate(0deg)" },
+                                "100%": { transform: "rotate(360deg)" },
+                              },
                             }}
-                          >
-                            Entrega en menos de 72 horas
-                            {/* Reloj */}
-                            <AccessTimeFilledRoundedIcon
-                              sx={{
-                                fontSize: { xs: 15, sm: 18 },
-                                position: "relative",
-                                top: { xs: "-1px", sm: "-1px" }, // 👈 lo sube en desktop
-                                animation: "clock 12s steps(12) infinite",
-                                transformOrigin: "50% 50%",
-                                filter: "drop-shadow(0 0 4px rgba(255,167,38,.35))",
-                                "@media (prefers-reduced-motion: reduce)": { animation: "none" },
-                                "@keyframes clock": {
-                                  "0%": { transform: "rotate(0deg)" },
-                                  "100%": { transform: "rotate(360deg)" },
-                                },
-                              }}
-                            />
-                          </Box>
-
-
-                        </>
+                          />
+                        </Box>
                       ) : (
                         promo.description
                       )}
+
                     </Typography>
 
                   </Box>
@@ -431,7 +449,7 @@ const InformationsPromotions = ({
                         }}
                       >
                         {/* 👇 Aquí todo tu contenido interno (precios, motion.span, etc.) */}
-                        {promo.id === 1 ? (
+                        {promo.id === 2 ? (
                           <Typography
                             variant="body1"
                             sx={{
@@ -524,8 +542,8 @@ const InformationsPromotions = ({
                               }}
                             >
                               {currency === "USD"
-                                ? "2 cuotas (💳 $32 USD reserva • $63 USD final)"
-                                : "2 cuotas (💳 $30.000 reserva • $60.000 final)"}
+                                ? "2 cuotas (💳 $32 USD reserva • $73 USD final)"
+                                : "2 cuotas (💳 $30.000 reserva • $69.990 final)"}
                             </Box>
                           </Typography>
                         ) : (
@@ -533,26 +551,48 @@ const InformationsPromotions = ({
                             variant="body1"
                             sx={{
                               fontFamily: "'Mukta', sans-serif",
-                              fontWeight: 700,
-                              fontSize: isMobile ? "13px" : "15px",
+                              fontWeight: promo.id === 1 ? 800 : 700,
+                              fontSize: promo.id === 1
+                                ? (isMobile ? "15px" : "17px")   // 👈 más grande
+                                : (isMobile ? "13px" : "15px"),
                               textTransform: "none",
-                              lineHeight: 1.2,
+                              lineHeight: 1.3,
                               width: "100%",
                               textAlign: "center",
                             }}
                           >
-                            El valor será determinado por el negocio.
-                            <br />
-                            <Box
-                              component="span"
-                              sx={{
-                                color: "rgb(243, 210, 98)",
-                                fontWeight: "bold",
-                              }}
-                            >
-                              (Valor Estimado: {promo.price})
-                            </Box>
+                            {promo.id === 1 ? (
+                              <>
+                                Precio Desarrollo:&nbsp;
+                                <Box
+                                  component="span"
+                                  sx={{
+                                    color: "rgb(243, 210, 98)",
+                                    fontWeight: 900,
+                                    fontSize: isMobile ? "20px" : "18px",
+                                  }}
+                                >
+                                  {currency === "USD" ? promo.priceUSD : promo.price}
+                                </Box>
+                              </>
+                            ) : (
+                              <>
+                                El valor será determinado por el negocio.
+                                <br />
+                                <Box
+                                  component="span"
+                                  sx={{
+                                    color: "rgb(243, 210, 98)",
+                                    fontWeight: "bold",
+                                  }}
+                                >
+                                  (Valor Estimado: {currency === "USD" ? promo.priceUSD : promo.price})
+                                </Box>
+                              </>
+                            )}
+
                           </Typography>
+
                         )}
                       </Box>
                     </Box>
@@ -574,201 +614,194 @@ const InformationsPromotions = ({
                       animate={{ y: 0, opacity: 1 }}
                       transition={{ duration: 0.6, ease: "easeOut", delay: 0.4 }}
                     >
+                      {promo.id === 2 ? (
 
-                      <Box
-                        onClick={toggleCurrency}
-                        sx={{
-                          mt: isMobile ? 1.2 : 1,
-                          mb: 0,
-                          background:
-                            currency === "USD"
-                              ? "linear-gradient(180deg, #00B871 0%, #007A48 100%)" // 💚 Verde USD
-                              : "linear-gradient(180deg, #1E1EBA 0%, #0075FF 100%)", // 💙 Azul CLP
-                          borderRadius: "12px",
-                          px: 2,
-                          py: isMobile ? 0.5 : 0.3,
-                          display: "flex",
-                          flex: 1,
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          width: "310px",
-                          color: "white",
-                          boxShadow:
-                            currency === "USD"
-                              ? "0 3px 12px rgba(0, 200, 100, 0.4)" // 💚 sombra verde suave
-                              : "0 3px 12px rgba(0, 0, 0, 0.3)", // 💙 sombra original
-                          position: "relative",
-                          overflow: "hidden", // 👈 necesario para contener el brillo
-                          zIndex: 3,
-                          mx: "auto",
-                          alignSelf: "center",
-                          boxSizing: "border-box",
-                          cursor: "pointer",
-                          transition: "all 0.4s ease-in-out",
-
-                          "&:hover": {
-                            transform: "scale(1.02)",
-                            boxShadow:
-                              currency === "USD"
-                                ? "0 4px 16px rgba(0, 255, 150, 0.5)"
-                                : "0 4px 16px rgba(0, 100, 255, 0.4)",
-                          },
-
-                          /* ✨ BRILLO INTERNO — Sheen diagonal */
-                          "&::after": {
-                            content: '""',
-                            position: "absolute",
-                            inset: 0,
-                            background:
-                              "linear-gradient(130deg, transparent 40%, rgba(255,255,255,0.75) 50%, transparent 60%)",
-                            transform: "translateX(-120%)",
-                            animation: "shineDiagonal 5s ease-in-out infinite",
-                            borderRadius: "inherit",
-                            pointerEvents: "none",
-                            zIndex: 2,
-                            mixBlendMode: "overlay",
-                          },
-
-                          "@keyframes shineDiagonal": {
-                            "0%": { transform: "translateX(-120%) rotate(0deg)" },
-                            "50%": { transform: "translateX(120%) rotate(0deg)" },
-                            "100%": { transform: "translateX(120%) rotate(0deg)" },
-                          },
-                        }}
-                      >
-
-                        {/* DOMINIO .CL */}
-                        <Box sx={{ textAlign: "center", flex: 1, mt: isMobile ? 1.2 : 0.8 }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              fontFamily: "'Mukta', sans-serif",
-                              fontWeight: 300,
-                              fontSize: "0.74rem",
-                              letterSpacing: "0.5px",
-                              textTransform: "uppercase",
-                              color: "white",
-                              lineHeight: 1.1,
-                              whiteSpace: "nowrap",
-                            }}
-                          >
-                            <Box component="span" sx={{ display: "block", lineHeight: 1.1 }}>
-                              ELIGE TU DOMINIO .CL
-                            </Box>
-                          </Typography>
-
-                          <Typography
-                            sx={{
-                              fontFamily: "'Montserrat', sans-serif",
-                              fontSize: isMobile ? "1.1rem" : "1.15rem",
-                              fontWeight: "bold",
-                              color: "white",
-                              lineHeight: 1,
-                              mt: 0.5,
-                            }}
-                          >
-                            <AnimatePresence mode="wait">
-                              <motion.span
-                                key={`extraPrice0-${currency}`}
-                                initial={{ opacity: 0, x: 50 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -50 }}
-                                transition={{ duration: 0.5 }}
-                                style={{ display: "inline-block" }} // mantiene layout y color heredado
-                              >
-                                {currency === "USD"
-                                  ? promo.extraPrices?.[0]?.priceUSD || "$10"
-                                  : promo.extraPrices?.[0]?.price || "$10.000"}
-                              </motion.span>
-                            </AnimatePresence>
-                          </Typography>
-
-
-                          <Typography
-                            sx={{
-                              fontSize: "0.7rem",
-                              opacity: 0.85,
-                              color: "white",
-                              mt: 0.3,
-                              fontFamily: "'Mukta', sans-serif",
-                            }}
-                          >
-                            ANUAL
-                          </Typography>
-                        </Box>
-
-
-                        {/* Separador */}
                         <Box
                           sx={{
-                            width: "1px",
-                            height: isMobile ? "45px" : "55px", // 👈 también más compacto
-                            backgroundColor: "rgba(255, 255, 255, 0.35)",
-                            mx: 1.5,
-                          }}
-                        />
+                            ...pricingBoxBase,
+                            justifyContent: "center",
+                            background:
+                              "linear-gradient(180deg, #FFD700 0%, #FFB300 50%, #C99700 100%)",
+                            color: "#2E1A00",
+                            boxShadow: "0 3px 12px rgba(255, 193, 7, 0.55)",
 
-                        {/* HOSTING */}
-                        <Box sx={{ textAlign: "center", flex: 1, mt: isMobile ? 1.2 : 0.8 }}>
+                            "&::after": {
+                              content: '""',
+                              position: "absolute",
+                              inset: 0,
+                              background:
+                                "linear-gradient(130deg, transparent 40%, rgba(255,255,255,0.75) 50%, transparent 60%)",
+                              transform: "translateX(-120%)",
+                              animation: "shineDiagonal 5s ease-in-out infinite",
+                              pointerEvents: "none",
+                            },
+                          }}
+                        >
                           <Typography
-                            variant="caption"
                             sx={{
                               fontFamily: "'Mukta', sans-serif",
-                              fontWeight: 300,
-                              fontSize: "0.74rem",
-                              letterSpacing: "0.5px",
-                              textTransform: "uppercase",
+                              fontWeight: 900,
+                              fontSize: isMobile ? "0.75rem" : "0.8rem",
+                              letterSpacing: "1px",
                               color: "white",
-                              lineHeight: 1.1,
+                              textTransform: "uppercase",
                               whiteSpace: "nowrap",
                             }}
                           >
-                            <Box component="span" sx={{ display: "block", lineHeight: 1.1 }}>
-                              SUSCRIPCIÓN + SOPORTE
-                            </Box>
-                          </Typography>
-
-                          <Typography
-                            sx={{
-                              fontFamily: "'Montserrat', sans-serif",
-                              fontSize: isMobile ? "1.1rem" : "1.15rem",
-                              fontWeight: "bold",
-                              color: "white",
-                              lineHeight: 1,
-                              mt: 0.5,
-                            }}
-                          >
-                            <AnimatePresence mode="wait">
-                              <motion.span
-                                key={`extraPrice1-${currency}`}
-                                initial={{ opacity: 0, x: 50 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -50 }}
-                                transition={{ duration: 0.5 }}
-                                style={{ display: "inline-block" }} // mantiene layout y color heredado
-                              >
-                                {currency === "USD"
-                                  ? promo.extraPrices?.[1]?.priceUSD || "$10"
-                                  : promo.extraPrices?.[1]?.price || "$10.000"}
-                              </motion.span>
-                            </AnimatePresence>
-                          </Typography>
-
-
-                          <Typography
-                            sx={{
-                              fontSize: "0.7rem",
-                              opacity: 0.85,
-                              color: "white",
-                              mt: 0.3,
-                              fontFamily: "'Mukta', sans-serif",
-                            }}
-                          >
-                            MENSUAL
+                            💎 Pagas una vez. Es tuyo para siempre!
                           </Typography>
                         </Box>
 
-                      </Box>
+
+
+
+                      ) : (
+                        <Box
+                          onClick={toggleCurrency}
+                          sx={{
+                            ...pricingBoxBase,
+                            justifyContent: "space-between",
+                            background:
+                              currency === "USD"
+                                ? "linear-gradient(180deg, #00B871 0%, #007A48 100%)"
+                                : "linear-gradient(180deg, #1E1EBA 0%, #0075FF 100%)",
+                            color: "white",
+                            cursor: "pointer",
+                          }}
+                        >
+                          {/* DOMINIO .CL */}
+                          <Box sx={{ textAlign: "center", flex: 1, mt: isMobile ? 1.2 : 0.8 }}>
+                            <Typography
+                              variant="caption"
+                              sx={{
+                                fontFamily: "'Mukta', sans-serif",
+                                fontWeight: 300,
+                                fontSize: "0.74rem",
+                                letterSpacing: "0.5px",
+                                textTransform: "uppercase",
+                                color: "white",
+                                lineHeight: 1.1,
+                                whiteSpace: "nowrap",
+                              }}
+                            >
+                              <Box component="span" sx={{ display: "block", lineHeight: 1.1 }}>
+                                ELIGE TU DOMINIO .CL
+                              </Box>
+                            </Typography>
+
+                            <Typography
+                              sx={{
+                                fontFamily: "'Montserrat', sans-serif",
+                                fontSize: isMobile ? "1.1rem" : "1.15rem",
+                                fontWeight: "bold",
+                                color: "white",
+                                lineHeight: 1,
+                                mt: 0.5,
+                              }}
+                            >
+                              <AnimatePresence mode="wait">
+                                <motion.span
+                                  key={`extraPrice0-${currency}`}
+                                  initial={{ opacity: 0, x: 50 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  exit={{ opacity: 0, x: -50 }}
+                                  transition={{ duration: 0.5 }}
+                                  style={{ display: "inline-block" }} // mantiene layout y color heredado
+                                >
+                                  {currency === "USD"
+                                    ? promo.extraPrices?.[0]?.priceUSD || "$10"
+                                    : promo.extraPrices?.[0]?.price || "$10.000"}
+                                </motion.span>
+                              </AnimatePresence>
+                            </Typography>
+
+
+                            <Typography
+                              sx={{
+                                fontSize: "0.7rem",
+                                opacity: 0.85,
+                                color: "white",
+                                mt: 0.3,
+                                fontFamily: "'Mukta', sans-serif",
+                              }}
+                            >
+                              ANUAL
+                            </Typography>
+                          </Box>
+
+
+                          {/* Separador */}
+                          <Box
+                            sx={{
+                              width: "1px",
+                              height: isMobile ? "45px" : "55px", // 👈 también más compacto
+                              backgroundColor: "rgba(255, 255, 255, 0.35)",
+                              mx: 1.5,
+                            }}
+                          />
+
+                          {/* HOSTING */}
+                          <Box sx={{ textAlign: "center", flex: 1, mt: isMobile ? 1.2 : 0.8 }}>
+                            <Typography
+                              variant="caption"
+                              sx={{
+                                fontFamily: "'Mukta', sans-serif",
+                                fontWeight: 300,
+                                fontSize: "0.74rem",
+                                letterSpacing: "0.5px",
+                                textTransform: "uppercase",
+                                color: "white",
+                                lineHeight: 1.1,
+                                whiteSpace: "nowrap",
+                              }}
+                            >
+                              <Box component="span" sx={{ display: "block", lineHeight: 1.1 }}>
+                                SUSCRIPCIÓN + SOPORTE
+                              </Box>
+                            </Typography>
+
+                            <Typography
+                              sx={{
+                                fontFamily: "'Montserrat', sans-serif",
+                                fontSize: isMobile ? "1.1rem" : "1.15rem",
+                                fontWeight: "bold",
+                                color: "white",
+                                lineHeight: 1,
+                                mt: 0.5,
+                              }}
+                            >
+                              <AnimatePresence mode="wait">
+                                <motion.span
+                                  key={`extraPrice1-${currency}`}
+                                  initial={{ opacity: 0, x: 50 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  exit={{ opacity: 0, x: -50 }}
+                                  transition={{ duration: 0.5 }}
+                                  style={{ display: "inline-block" }} // mantiene layout y color heredado
+                                >
+                                  {currency === "USD"
+                                    ? promo.extraPrices?.[1]?.priceUSD || "$10"
+                                    : promo.extraPrices?.[1]?.price || "$10.000"}
+                                </motion.span>
+                              </AnimatePresence>
+                            </Typography>
+
+
+                            <Typography
+                              sx={{
+                                fontSize: "0.7rem",
+                                opacity: 0.85,
+                                color: "white",
+                                mt: 0.3,
+                                fontFamily: "'Mukta', sans-serif",
+                              }}
+                            >
+                              MENSUAL
+                            </Typography>
+                          </Box>
+
+                        </Box>
+                      )}
                     </motion.div>
 
                     {/*FIN PRECIOS*/}

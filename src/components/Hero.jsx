@@ -3,6 +3,7 @@ import { Container, Typography, Box, Snackbar, Alert, useMediaQuery, useTheme } 
 import { motion, AnimatePresence } from "framer-motion";
 import "./css/Hero.css";
 import CircularProgress from "@mui/material/CircularProgress";
+import emailjs from "@emailjs/browser";
 
 function Hero({ informationsRef, setVideoReady }) {
 
@@ -86,6 +87,48 @@ function Hero({ informationsRef, setVideoReady }) {
     };
   }, []);
 
+  const notificarVisitaPrecios = () => {
+    console.group("📩 EmailJS – Notificación Precios");
+
+    const ahora = new Date();
+
+    const fechaHoraFormateada = ahora
+      .toLocaleString("es-CL", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      })
+      .replace(/^./, (c) => c.toUpperCase()) // Capitaliza el día
+      .replace(",", " ·") + " hrs";
+
+    const templateParams = {
+      evento: "Nuestros Precios",
+      fechaHora: fechaHoraFormateada,
+      dispositivo: window.innerWidth < 768 ? "MOBILE 📱" : "DESKTOP 🖥️",
+    };
+
+    console.log("📦 Template params:", templateParams);
+
+    emailjs
+      .send(
+        "service_73azdl9",   // Service ID
+        "template_txa3qoq",  // Template ID
+        templateParams,
+        "TfLG1wfibewzR9Xpf"  // Public Key
+      )
+      .then((response) => {
+        console.log("✅ EmailJS enviado correctamente", response);
+      })
+      .catch((error) => {
+        console.error("❌ Error EmailJS", error);
+      })
+      .finally(() => {
+        console.groupEnd();
+      });
+  };
 
   return (
     <>
@@ -289,15 +332,23 @@ function Hero({ informationsRef, setVideoReady }) {
                       const offset = isMobile ? 490 : -50;
 
                       if (informationsRef?.current) {
-                        const y = informationsRef.current.getBoundingClientRect().top + window.scrollY + offset;
+                        const y =
+                          informationsRef.current.getBoundingClientRect().top +
+                          window.scrollY +
+                          offset;
+
                         window.scrollTo({ top: y, behavior: "smooth" });
-                      } else {
-                        console.warn("⚠️ informationsRef.current es null. Verifica que el ref esté correctamente asignado.");
                       }
+
+                      // 🔔 Notificación interna
+                      notificarVisitaPrecios();
                     }}
                   >
                     <span>Nuestros Precios</span>
                   </button>
+
+
+
                 </Box>
               </motion.div>
             </Box>
