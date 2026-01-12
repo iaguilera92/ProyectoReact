@@ -6,6 +6,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import AccessTimeFilledRoundedIcon from '@mui/icons-material/AccessTimeFilledRounded';
 import DialogTransbankCorreo from "./DialogTransbankCorreo";
 import 'swiper/css';
+import emailjs from "@emailjs/browser";
 
 const InformationsPromotions = ({
   isMobile,
@@ -23,6 +24,8 @@ const InformationsPromotions = ({
   const [openDialog, setOpenDialog] = useState(false);
   const [showOriginalPriceId1, setShowOriginalPriceId1] = useState(true);
   const [currency, setCurrency] = useState("CLP");
+  const VISITA_PRECIOS_KEY = "visita_pago_unico_notificada";
+  const visitaPreciosEnviadaRef = React.useRef(false);
 
   const toggleCurrency = () => {
     setCurrency(prev => (prev === "CLP" ? "USD" : "CLP"));
@@ -109,6 +112,49 @@ const InformationsPromotions = ({
     transition: "all 0.4s ease-in-out",
   };
 
+  const notificarVisitaPrecios = () => {
+    console.group("📩 EmailJS – Notificación Precios");
+
+    const ahora = new Date();
+
+    const fechaHoraFormateada = ahora
+      .toLocaleString("es-CL", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      })
+      .replace(/^./, (c) => c.toUpperCase()) // Capitaliza el día
+      .replace(",", " ·") + " hrs";
+
+    const templateParams = {
+      evento: "Nuestros Precios",
+      fechaHora: fechaHoraFormateada,
+      dispositivo: window.innerWidth < 768 ? "MOBILE 📱" : "DESKTOP 🖥️",
+    };
+
+    console.log("📦 Template params:", templateParams);
+
+    emailjs
+      .send(
+        "service_73azdl9",   // Service ID
+        "template_txa3qoq",  // Template ID
+        templateParams,
+        "TfLG1wfibewzR9Xpf"  // Public Key
+      )
+      .then((response) => {
+        console.log("✅ EmailJS enviado correctamente", response);
+      })
+      .catch((error) => {
+        console.error("❌ Error EmailJS", error);
+      })
+      .finally(() => {
+        console.groupEnd();
+      });
+  };
+
   return (
     <Box
       ref={swiperRef}
@@ -129,7 +175,25 @@ const InformationsPromotions = ({
         initialSlide={promotions.length - 1}
         centeredSlides={false}
         pagination={{ clickable: true }}
-        onSlideChange={(swiper) => setShowArrow(swiper.activeIndex !== 2)}
+        onSlideChange={(swiper) => {
+          const promo = promotions[swiper.activeIndex];
+
+          if (
+            promo?.id === 2 &&
+            !visitaPreciosEnviadaRef.current &&
+            !sessionStorage.getItem(VISITA_PRECIOS_KEY)
+          ) {
+            visitaPreciosEnviadaRef.current = true;
+
+            setTimeout(() => {
+              notificarVisitaPrecios();
+              sessionStorage.setItem(VISITA_PRECIOS_KEY, "1");
+            }, 500); // 👈 confirma intención real
+          }
+
+          setShowArrow(swiper.activeIndex !== 2);
+        }}
+
       >
         {promotions.map((promo, index) => (
           <SwiperSlide

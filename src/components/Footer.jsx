@@ -235,7 +235,7 @@ const Footer = () => {
         )}
 
         <Typography variant="body2" align="center" mt={2} sx={{ marginTop: "5vh" }}>
-          @Plataformas web 2025 {version && `- v${version}`}
+          @Plataformas web 2026 {version && `- v${version}`}
         </Typography>
       </Container>
     </Box>
