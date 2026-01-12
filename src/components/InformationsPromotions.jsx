@@ -155,6 +155,23 @@ const InformationsPromotions = ({
       });
   };
 
+  const evaluarVisitaPrecios = (swiper) => {
+    const promo = promotions[swiper.activeIndex];
+
+    //console.log("📊 Slide:", swiper.activeIndex, "| Promo ID:", promo?.id, "| Ref:", visitaPreciosEnviadaRef.current, "| Session:", sessionStorage.getItem(VISITA_PRECIOS_KEY));
+
+    if (promo?.id === 2 && !visitaPreciosEnviadaRef.current && !sessionStorage.getItem(VISITA_PRECIOS_KEY)) {
+      visitaPreciosEnviadaRef.current = true;
+
+      setTimeout(() => {
+        notificarVisitaPrecios();
+        sessionStorage.setItem(VISITA_PRECIOS_KEY, "1");
+      }, 500);
+    }
+
+    setShowArrow(swiper.activeIndex !== 2);
+  };
+
   return (
     <Box
       ref={swiperRef}
@@ -175,36 +192,7 @@ const InformationsPromotions = ({
         initialSlide={promotions.length - 1}
         centeredSlides={false}
         pagination={{ clickable: true }}
-        onSlideChange={(swiper) => {
-          const promo = promotions[swiper.activeIndex];
-
-          console.log(
-            "📊 Slide:",
-            swiper.activeIndex,
-            "| Promo ID:",
-            promo?.id,
-            "| Ref:",
-            visitaPreciosEnviadaRef.current,
-            "| Session:",
-            sessionStorage.getItem(VISITA_PRECIOS_KEY)
-          );
-
-          if (
-            promo?.id === 2 &&
-            !visitaPreciosEnviadaRef.current &&
-            !sessionStorage.getItem(VISITA_PRECIOS_KEY)
-          ) {
-            visitaPreciosEnviadaRef.current = true;
-
-            setTimeout(() => {
-              notificarVisitaPrecios();
-              sessionStorage.setItem(VISITA_PRECIOS_KEY, "1");
-            }, 500);
-          }
-
-          setShowArrow(swiper.activeIndex !== 2);
-        }}
-
+        onSlideChange={evaluarVisitaPrecios}
 
       >
         {promotions.map((promo, index) => (
@@ -1016,7 +1004,9 @@ const InformationsPromotions = ({
             style={{ position: "absolute", top: -4, right: 10, zIndex: 10 }}
           >
             <IconButton
-              onClick={() => swiperInstance.slideNext()}
+              onClick={() => {
+                swiperInstance.slideNext();
+              }}
               sx={{
                 color: "white",
                 transition: "opacity 0.3s ease-in-out",
