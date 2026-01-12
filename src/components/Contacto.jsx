@@ -9,7 +9,7 @@ import L from "leaflet";
 import ContactoForm from './ContactoForm';
 
 // 📍 Coordenadas
-const finalPosition = [-33.435054, -70.688067]; // sucursal 1
+const finalPosition = [-33.399871585904094, -70.74223163208484]; // sucursal 1
 const otraSucursalPosition = [-33.43341720871407, -70.63634900664654];// sucursal 2
 const otraSucursalPosition2 = [-33.56868063044323, -70.77689075499913]; // sucursal 3
 
