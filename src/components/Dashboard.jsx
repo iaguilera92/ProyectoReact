@@ -611,11 +611,11 @@ const Dashboard = () => {
                     🚧 En Construcción...
                 </Alert>
             </Snackbar>
-            <DialogPaseMensual
+            {/*<DialogPaseMensual
                 open={openPase}
                 onClose={() => setOpenPase(false)}
                 analyticsDisponible={analyticsDisponible}
-            />
+            />*/}
 
         </Box >
 
