@@ -178,6 +178,17 @@ const InformationsPromotions = ({
         onSlideChange={(swiper) => {
           const promo = promotions[swiper.activeIndex];
 
+          console.log(
+            "📊 Slide:",
+            swiper.activeIndex,
+            "| Promo ID:",
+            promo?.id,
+            "| Ref:",
+            visitaPreciosEnviadaRef.current,
+            "| Session:",
+            sessionStorage.getItem(VISITA_PRECIOS_KEY)
+          );
+
           if (
             promo?.id === 2 &&
             !visitaPreciosEnviadaRef.current &&
@@ -188,11 +199,12 @@ const InformationsPromotions = ({
             setTimeout(() => {
               notificarVisitaPrecios();
               sessionStorage.setItem(VISITA_PRECIOS_KEY, "1");
-            }, 500); // 👈 confirma intención real
+            }, 500);
           }
 
           setShowArrow(swiper.activeIndex !== 2);
         }}
+
 
       >
         {promotions.map((promo, index) => (
