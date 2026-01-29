@@ -15,6 +15,10 @@ const Clientes = lazy(() => import("./components/configuraciones/Clientes"));
 const Reserva = lazy(() => import("./components/Reserva"));
 const Reservas = lazy(() => import("./components/configuraciones/Reservas"));
 const Suscripcion = lazy(() => import("./components/Suscripcion"));
+//LEGAL
+const Privacy = lazy(() => import("./components/legal/Privacy"));
+const Terms = lazy(() => import("./components/legal/Terms"));
+const DataDeletion = lazy(() => import("./components/legal/DataDeletion"));
 
 // ✅ HOC para envolver cualquier componente con Suspense
 const withSuspense = (Component) => (
@@ -60,6 +64,9 @@ const router = createBrowserRouter(
                 { path: "dashboard", element: withSuspense(Dashboard) },
                 { path: "reserva", element: withSuspense(Reserva) },
                 { path: "suscripcion", element: withSuspense(Suscripcion) },
+                { path: "privacy", element: withSuspense(Privacy) },
+                { path: "terms", element: withSuspense(Terms) },
+                { path: "data-deletion", element: withSuspense(DataDeletion) },
                 {
                     path: "configurar-servicios",
                     element: (
