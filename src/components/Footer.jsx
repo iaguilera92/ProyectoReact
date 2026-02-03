@@ -235,8 +235,9 @@ const Footer = () => {
         )}
 
         <Typography variant="body2" align="center" mt={2} sx={{ marginTop: "5vh" }}>
-          @Plataformas web 2026 {version && `- v${version}`}
+          © 2026 Plataformas Webs – Operado por Ignacio Alejandro Aguilera Garrido {version && `- v${version}`}
         </Typography>
+
       </Container>
     </Box>
   );
