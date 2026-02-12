@@ -18,6 +18,8 @@ import Cargando from './components/Cargando';
 import { AnimatePresence, motion } from 'framer-motion';
 import "./components/css/App.css";
 import { initGoogleAnalytics, trackPageView } from "./helpers/HelperAnalytics.js"; //GOOGLE ANALYTICS
+import DialogTrabajoEnRevision from "./components/DialogTrabajoEnRevision";
+import { useSearchParams, useNavigate } from "react-router-dom";
 
 function App() {
   const [showContacto, setShowContacto] = useState(false);
@@ -34,6 +36,10 @@ function App() {
   const triggerInformations = (value) => setShouldAnimateInformations(value);
   const [hasSeenInformations, setHasSeenInformations] = useState(false);
   const [isFading, setIsFading] = useState(false);
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const [openRevision, setOpenRevision] = useState(false);
+  const [revisionId, setRevisionId] = useState(null);
 
   //EFECTO CAMBIAR DE RUTA
   useEffect(() => {
@@ -196,6 +202,20 @@ function App() {
     checkVersionAndClearCache();
   }, []);
 
+  //TRABAJOS EN REVISIÓN
+  useEffect(() => {
+    const workInProgress = searchParams.get("workInProgress");
+
+    if (workInProgress) {
+      setRevisionId(workInProgress);
+      setOpenRevision(true);
+    }
+  }, [searchParams]);
+
+  const handleCloseRevision = () => {
+    setOpenRevision(false);
+    navigate(location.pathname, { replace: true });
+  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -360,6 +380,11 @@ function App() {
           </IconButton>
         )}
       </Box>
+      <DialogTrabajoEnRevision
+        open={openRevision}
+        onClose={handleCloseRevision}
+        revisionId={revisionId}
+      />
     </ThemeProvider >
   );
 }
