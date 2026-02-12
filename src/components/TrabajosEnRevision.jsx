@@ -121,7 +121,7 @@ const Trabajos = ({ trabajo }) => {
           icon={
             porcentaje === 100 ? (
               <CheckCircleIcon sx={{ fontSize: 11, mt: "0px" }} />
-            ) : porcentaje < 30 ? (
+            ) : porcentaje < 20 ? (
               <ErrorOutlineIcon sx={{ fontSize: 11, mt: "0px" }} />
             ) : (
               <HourglassBottomIcon sx={{ fontSize: 11, mt: "0px" }} />
@@ -131,7 +131,7 @@ const Trabajos = ({ trabajo }) => {
             porcentaje === 100
               ? "Completado"
               : porcentaje < 20
-                ? "Iniciando"
+                ? "En evaluación"
                 : "En curso"
           }
           sx={{
@@ -142,7 +142,7 @@ const Trabajos = ({ trabajo }) => {
               porcentaje === 100
                 ? "rgba(46,125,50,0.15)"
                 : porcentaje < 20
-                  ? "rgba(229,115,115,0.2)"
+                  ? "rgba(255,193,7,0.15)" // 🔹 un amarillo suave más amigable
                   : "rgba(251,140,0,0.15)",
             color: getColor(porcentaje),
             "& .MuiChip-icon": {
@@ -154,6 +154,7 @@ const Trabajos = ({ trabajo }) => {
             }
           }}
         />
+
 
 
       </Box>
@@ -181,7 +182,7 @@ const Trabajos = ({ trabajo }) => {
                 ? "🖥️En desarrollo"
                 : porcentaje >= 20
                   ? "🛠️Preparando..."
-                  : "🌱Iniciando"}
+                  : "⏳En Revisión"}
 
         </Typography>
 
