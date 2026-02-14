@@ -36,7 +36,7 @@ const Contador = ({ valorFinal, texto, subtexto, delay = 0, variant = "h5", inic
                 start += increment;
                 const nuevoValor = Math.ceil(start);
                 if (nuevoValor >= valorFinal) {
-                    setValor(valorFinal); // ⬅️ Asegura el valor exacto
+                    setValor(valorFinal);
                     clearInterval(interval);
                 } else {
                     setValor(nuevoValor);
@@ -47,11 +47,10 @@ const Contador = ({ valorFinal, texto, subtexto, delay = 0, variant = "h5", inic
         return () => clearTimeout(timeout);
     }, [valorFinal, delay, iniciar]);
 
-
     return (
         <>
             <Typography variant={variant} fontWeight="bold">
-                {valor} {texto}
+                {valor.toLocaleString("es-CL")} {texto}
             </Typography>
             <Typography variant="body2">{subtexto}</Typography>
         </>
