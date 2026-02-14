@@ -114,10 +114,16 @@ const Dashboard = () => {
 
                 const data = await res.json();
 
-                setVisitasChile(data.chile || 0);
-                setVisitasInternacional(data.internacional || 0);
+                setVisitasChile(data.chile?.total || 0);
+                setVisitasInternacional(data.internacional?.total || 0);
                 setVisitasTotales(data.total || 0);
-                setDispositivos(data.dispositivos || { mobile: 0, desktop: 0, tablet: 0 });
+
+                setDispositivos({
+                    mobile: (data.chile?.mobile || 0) + (data.internacional?.mobile || 0),
+                    desktop: (data.chile?.desktop || 0) + (data.internacional?.desktop || 0),
+                    tablet: (data.chile?.tablet || 0) + (data.internacional?.tablet || 0),
+                });
+
 
                 setMostrarContadorPrincipal(true);
                 setAnalyticsDisponible(true);
