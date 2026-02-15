@@ -18,7 +18,7 @@ const getGradient = (val) => {
   return "linear-gradient(90deg,#81c784,#388e3c)"; // verde
 };
 
-export default function DialogAgregarTrabajo({ open, onClose, onSave }) {
+export default function DialogAgregarTrabajo({ open, onClose, onSave, trabajoInicial }) {
   const [loading, setLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: "", type: "success" });
   const [success, setSuccess] = useState(false);
@@ -48,16 +48,17 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave }) {
   useEffect(() => {
     if (open) {
       setSuccess(false);
+      //AUTOCOMPLETAR DESDE REVISIÓN 
       setForm({
-        trabajo: "",
-        tipoApp: "1",
-        progreso: 0,
+        trabajo: trabajoInicial?.Negocio || "",
+        tipoApp: trabajoInicial?.tipoApp || "1",
+        progreso: trabajoInicial?.Porcentaje || 0,
         nombreCliente: "",
-        emailCliente: "",
-        telefonoCliente: "",
+        emailCliente: trabajoInicial?.EmailCliente || "",
+        telefonoCliente: trabajoInicial?.TelefonoCliente || "",
       });
     }
-  }, [open]);
+  }, [open, trabajoInicial]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

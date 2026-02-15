@@ -11,6 +11,8 @@ const Home = lazy(() => import("./components/Home"));
 const Dashboard = lazy(() => import("./components/Dashboard"));
 const ConfigurarServicios = lazy(() => import("./components/configuraciones/ConfigurarServicios"));
 const ConfigurarTrabajos = lazy(() => import("./components/configuraciones/ConfigurarTrabajos"));
+const ConfigurarEnRevision = lazy(() => import("./components/configuraciones/ConfigurarEnRevision"));
+
 const Clientes = lazy(() => import("./components/configuraciones/Clientes"));
 const Reserva = lazy(() => import("./components/Reserva"));
 const Reservas = lazy(() => import("./components/configuraciones/Reservas"));
@@ -80,6 +82,14 @@ const router = createBrowserRouter(
                     element: (
                         <ProtectedRoute>
                             {withSuspense(ConfigurarTrabajos)}
+                        </ProtectedRoute>
+                    ),
+                },
+                {
+                    path: "configurar-en-revision",
+                    element: (
+                        <ProtectedRoute>
+                            {withSuspense(ConfigurarEnRevision)}
                         </ProtectedRoute>
                     ),
                 },

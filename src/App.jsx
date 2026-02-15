@@ -220,7 +220,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      {location.pathname !== "/administracion" && location.pathname !== "/dashboard" && location.pathname !== "/configurar-servicios" && location.pathname !== "/configurar-trabajos" && location.pathname !== "/clientes" && (
+      {location.pathname !== "/administracion" && location.pathname !== "/dashboard" && location.pathname !== "/configurar-servicios" && location.pathname !== "/configurar-trabajos" && location.pathname !== "/configurar-en-revision" && location.pathname !== "/clientes" && (
         <MusicaApp src="/musica-app.mp3" volume={0.25} btnSize={40} />
       )}
       {/* Pantalla de carga */}
@@ -318,10 +318,10 @@ function App() {
         )}
 
         {/* Footer (excepto en administración) */}
-        {location.pathname !== "/administracion" && location.pathname !== "/dashboard" && location.pathname !== "/configurar-servicios" && location.pathname !== "/configurar-trabajos" && location.pathname !== "/clientes" && location.pathname !== "/reservas" && <Footer />}
+        {location.pathname !== "/administracion" && location.pathname !== "/dashboard" && location.pathname !== "/configurar-servicios" && location.pathname !== "/configurar-trabajos" && location.pathname !== "/configurar-en-revision" && location.pathname !== "/clientes" && location.pathname !== "/reservas" && <Footer />}
 
         {/* Botón WhatsApp */}
-        {location.pathname !== "/administracion" && location.pathname !== "/dashboard" && location.pathname !== "/configurar-servicios" && location.pathname !== "/configurar-trabajos" && location.pathname !== "/clientes" && location.pathname !== "/reservas" && (
+        {location.pathname !== "/administracion" && location.pathname !== "/dashboard" && location.pathname !== "/configurar-servicios" && location.pathname !== "/configurar-trabajos" && location.pathname !== "/configurar-en-revision" && location.pathname !== "/clientes" && location.pathname !== "/reservas" && (
           <Box sx={{ position: "fixed", bottom: "75px", right: "15px", zIndex: 100, transition: "bottom 0.3s ease", }}>
             <IconButton onClick={() => { window.open("https://api.whatsapp.com/send?phone=56946873014", "_blank"); }} sx={{
               width: 60, height: 60, backgroundColor: "#25d366", color: "#FFF", borderRadius: "50%", boxShadow: "2px 2px 3px #999", "&:hover": { backgroundColor: "#1ebe5d" }, zIndex: 101

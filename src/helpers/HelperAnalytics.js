@@ -1,7 +1,8 @@
 export const MEASUREMENT_ID = "G-BXGJZQS44R";
 
+//GUARDAMS LA VISITA - UNA VEZ
 export const initGoogleAnalytics = () => {
-    if (window.gtag) return; // evitar duplicar carga
+    if (window.gtag) return;
 
     const script = document.createElement("script");
     script.async = true;

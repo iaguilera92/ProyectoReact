@@ -13,7 +13,6 @@ import ConfirmationNumberRoundedIcon from "@mui/icons-material/ConfirmationNumbe
 import HowToRegRoundedIcon from "@mui/icons-material/HowToRegRounded";
 import DeleteForeverRoundedIcon from "@mui/icons-material/DeleteForeverRounded";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
-
 import DialogClientePagos from "./DialogClientePagos";
 import DialogClientesPaseMensual from "./DialogClientesPaseMensual";
 import DialogAgregarCliente from "./DialogAgregarCliente";
@@ -1022,14 +1021,18 @@ const Clientes = () => {
                     backgroundColor: "#ffffff",
                     fontWeight: "bold",
                     color: "#1b263b",
-                    width: isMobile ? 45 : 100,
-                    py: 0.5,
-                    pr: isMobile ? 0 : 2,
+                    fontFamily: "Poppins, sans-serif",
                     fontSize: "0.85rem",
+                    width: isMobile ? 35 : 60,  // igual que el body
+                    minWidth: isMobile ? 35 : 60,
+                    py: 0.5,
+                    pr: 0,                     // espacio pequeño a la derecha
+                    pl: 0,                     // 👈 eliminamos padding a la izquierda
                   }}
                 >
                   Estado
                 </TableCell>
+
 
                 {/* Botón 1 */}
                 <TableCell
@@ -1117,10 +1120,11 @@ const Clientes = () => {
                     {/* Cliente */}
                     <TableCell
                       sx={{
-                        minWidth: isMobile ? 160 : 160,
-                        maxWidth: isMobile ? 160 : 200,
+                        minWidth: isMobile ? 240 : 240, // aumentamos mínimo
+                        maxWidth: isMobile ? 300 : 400, // aumentamos máximo
                         whiteSpace: "normal",
                         wordBreak: "break-word",
+                        overflow: "hidden",
                       }}
                     >
                       <Box
@@ -1128,6 +1132,7 @@ const Clientes = () => {
                           display: "flex",
                           alignItems: "center",
                           gap: 0.5,
+                          flexWrap: "wrap", // permite que los íconos bajen a la siguiente línea si falta espacio
                         }}
                       >
                         <Typography
@@ -1137,6 +1142,10 @@ const Clientes = () => {
                             fontWeight: 500,
                             fontSize: isMobile ? "0.75rem" : "1rem",
                             cursor: "pointer",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap", // evita que se rompa el texto, mantiene el ellipsis
+                            flex: 1, // ocupa todo el espacio disponible antes de los íconos
                             "&:hover": { color: "#0b0080" },
                           }}
                           onClick={() =>
@@ -1148,110 +1157,120 @@ const Clientes = () => {
                           {cliente.sitioWeb || "Sin sitio"}
                         </Typography>
 
-                        {/* Botón acciones */}
-                        <Tooltip title="Acciones Cliente" arrow>
-                          <IconButton
-                            onClick={() => datosCliente(cliente)}
-                            size="small"
-                            sx={{
-                              background: cliente.enRevision
-                                ? "linear-gradient(135deg, #e74c3c, #c0392b)"
-                                : "linear-gradient(135deg, #2ecc71, #27ae60)",
-                              width: 22,
-                              height: 22,
-                              p: 0.3,
-                              borderRadius: "8px",
-                              boxShadow: "0 2px 6px rgba(0,0,0,0.25)",
-                              color: "#fff",
-                              "&:hover": {
+                        {/* Iconos */}
+                        <Box sx={{ display: "flex", gap: 0.5 }}>
+                          {/* Botón acciones */}
+                          <Tooltip title="Acciones Cliente" arrow>
+                            <IconButton
+                              onClick={() => datosCliente(cliente)}
+                              size="small"
+                              sx={{
                                 background: cliente.enRevision
-                                  ? "linear-gradient(135deg, #ec7063, #e74c3c)"
-                                  : "linear-gradient(135deg, #58d68d, #2ecc71)",
-                                transform: "scale(1.1)",
-                                transition: "all 0.2s ease",
-                              },
-                            }}
-                          >
-                            <ConfirmationNumberRoundedIcon fontSize="inherit" sx={{ fontSize: 14 }} />
-                          </IconButton>
-                        </Tooltip>
+                                  ? "linear-gradient(135deg, #e74c3c, #c0392b)"
+                                  : "linear-gradient(135deg, #2ecc71, #27ae60)",
+                                width: 22,
+                                height: 22,
+                                p: 0.3,
+                                borderRadius: "8px",
+                                boxShadow: "0 2px 6px rgba(0,0,0,0.25)",
+                                color: "#fff",
+                                "&:hover": {
+                                  background: cliente.enRevision
+                                    ? "linear-gradient(135deg, #ec7063, #e74c3c)"
+                                    : "linear-gradient(135deg, #58d68d, #2ecc71)",
+                                  transform: "scale(1.1)",
+                                  transition: "all 0.2s ease",
+                                },
+                              }}
+                            >
+                              <ConfirmationNumberRoundedIcon fontSize="inherit" sx={{ fontSize: 14 }} />
+                            </IconButton>
+                          </Tooltip>
 
-                        {/* Botón eliminar */}
-                        <Tooltip title="Eliminar Cliente" arrow>
-                          <IconButton
-                            onClick={() => abrirDialog(cliente.sitioWeb)}
-                            size="small"
-                            sx={{
-                              background: "linear-gradient(135deg, #f44336, #d32f2f)",
-                              width: 22,
-                              height: 22,
-                              p: 0.3,
-                              borderRadius: "8px",
-                              boxShadow: "0 2px 6px rgba(0,0,0,0.25)",
-                              color: "#fff",
-                              ml: 0.5,
-                              "&:hover": {
-                                background: "linear-gradient(135deg, #ef5350, #e53935)",
-                                transform: "scale(1.1)",
-                                transition: "all 0.2s ease",
-                              },
-                            }}
-                          >
-                            <DeleteForeverRoundedIcon fontSize="inherit" sx={{ fontSize: 14 }} />
-                          </IconButton>
-                        </Tooltip>
+                          {/* Botón eliminar */}
+                          <Tooltip title="Eliminar Cliente" arrow>
+                            <IconButton
+                              onClick={() => abrirDialog(cliente.sitioWeb)}
+                              size="small"
+                              sx={{
+                                background: "linear-gradient(135deg, #f44336, #d32f2f)",
+                                width: 22,
+                                height: 22,
+                                p: 0.3,
+                                borderRadius: "8px",
+                                boxShadow: "0 2px 6px rgba(0,0,0,0.25)",
+                                color: "#fff",
+                                ml: 0.5,
+                                "&:hover": {
+                                  background: "linear-gradient(135deg, #ef5350, #e53935)",
+                                  transform: "scale(1.1)",
+                                  transition: "all 0.2s ease",
+                                },
+                              }}
+                            >
+                              <DeleteForeverRoundedIcon fontSize="inherit" sx={{ fontSize: 14 }} />
+                            </IconButton>
+                          </Tooltip>
 
-                        {/* 🟢 Botón suscribir manualmente */}
-                        <Tooltip
-                          title={
-                            cliente.suscripcion
-                              ? "Anular suscripción" // 👈 cambia tooltip
-                              : "Activar suscripción manual"
-                          }
-                          arrow
-                        >
-                          <IconButton
-                            onClick={() =>
-                              actualizarASuscrito(cliente, !cliente.suscripcion) // 👈 enviamos nuevo estado
+                          {/* 🟢 Botón suscribir manualmente */}
+                          <Tooltip
+                            title={
+                              cliente.suscripcion
+                                ? "Anular suscripción" // 👈 cambia tooltip
+                                : "Activar suscripción manual"
                             }
-                            size="small"
-                            sx={{
-                              background: cliente.suscripcion
-                                ? "linear-gradient(135deg, #f44336, #d32f2f)" // 🔴 rojo si está suscrito
-                                : "linear-gradient(135deg, #43a047, #2e7d32)", // 🟢 verde si no
-                              width: 22,
-                              height: 22,
-                              p: 0.3,
-                              borderRadius: "8px",
-                              boxShadow: "0 2px 6px rgba(0,0,0,0.25)",
-                              color: "#fff",
-                              ml: 0.5,
-                              "&:hover": {
-                                background: cliente.suscripcion
-                                  ? "linear-gradient(135deg, #ef5350, #e53935)"
-                                  : "linear-gradient(135deg, #66bb6a, #388e3c)",
-                                transform: "scale(1.1)",
-                                transition: "all 0.2s ease",
-                              },
-                            }}
+                            arrow
                           >
-                            <HowToRegRoundedIcon fontSize="inherit" sx={{ fontSize: 14 }} />
-                          </IconButton>
-                        </Tooltip>
-
+                            <IconButton
+                              onClick={() =>
+                                actualizarASuscrito(cliente, !cliente.suscripcion) // 👈 enviamos nuevo estado
+                              }
+                              size="small"
+                              sx={{
+                                background: cliente.suscripcion
+                                  ? "linear-gradient(135deg, #f44336, #d32f2f)" // 🔴 rojo si está suscrito
+                                  : "linear-gradient(135deg, #43a047, #2e7d32)", // 🟢 verde si no
+                                width: 22,
+                                height: 22,
+                                p: 0.3,
+                                borderRadius: "8px",
+                                boxShadow: "0 2px 6px rgba(0,0,0,0.25)",
+                                color: "#fff",
+                                ml: 0.5,
+                                "&:hover": {
+                                  background: cliente.suscripcion
+                                    ? "linear-gradient(135deg, #ef5350, #e53935)"
+                                    : "linear-gradient(135deg, #66bb6a, #388e3c)",
+                                  transform: "scale(1.1)",
+                                  transition: "all 0.2s ease",
+                                },
+                              }}
+                            >
+                              <HowToRegRoundedIcon fontSize="inherit" sx={{ fontSize: 14 }} />
+                            </IconButton>
+                          </Tooltip>
+                        </Box>
                       </Box>
                     </TableCell>
 
-                    {/* Estado */}
-                    <TableCell align="center">
+
+                    <TableCell
+                      align="center"
+                      sx={{
+                        width: isMobile ? 35 : 60,  // hacemos la celda más ajustada
+                        paddingLeft: 0,             // eliminamos espacio extra a la izquierda
+                        paddingRight: 0,             // un poco de espacio a la derecha para no pegarlo al borde
+                      }}
+                    >
                       <Box
                         sx={{
                           display: "flex",
-                          justifyContent: "center",
+                          justifyContent: "flex-start",
+                          paddingLeft: 1,
                           alignItems: "center",
                           height: "100%",
                           minHeight: "50px",
-                          pl: isMobile ? 1.2 : 0,
+                          gap: 0.5,                    // espacio pequeño si agregas más elementos
                         }}
                       >
                         {estaSuscrito ? (
@@ -1277,6 +1296,7 @@ const Clientes = () => {
                         )}
                       </Box>
                     </TableCell>
+
 
                     {/* === CELDA 1: Botón COBRAR (siempre visible) === */}
                     <TableCell align="center">
@@ -1330,26 +1350,25 @@ const Clientes = () => {
                       </Box>
                     </TableCell>
 
-                    {/* === CELDA 2: Pago recibido o Suscrito === */}
                     <TableCell
                       align="center"
                       sx={{
                         width: isMobile ? 55 : 170,
-                        pl: isMobile ? 0 : 1,
-                        pr: isMobile ? 0.3 : 1,
+                        pl: 0,        // 🔹 eliminar padding izquierdo
+                        pr: 1,        // 🔹 mantener un poquito de espacio a la derecha
                       }}
                     >
                       <Box
                         sx={{
                           display: "flex",
-                          justifyContent: "center",
+                          justifyContent: "flex-start", // 🔹 pegado a la izquierda
                           alignItems: "center",
                           minHeight: "50px",
+                          gap: 0.5, // espacio entre iconos y/o botón
                         }}
                       >
                         <AnimatePresence mode="wait">
                           {estaSuscrito ? (
-                            // 💎 Etiqueta Suscrito reemplaza el contenido
                             <motion.div
                               key="suscrito"
                               initial={{ opacity: 0, scale: 0.9 }}
@@ -1357,50 +1376,61 @@ const Clientes = () => {
                               exit={{ opacity: 0, scale: 0.9 }}
                               transition={{ duration: 0.3 }}
                             >
-                              <Box
-                                sx={{
-                                  display: "inline-flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  border: "1px solid #FFD700",
-                                  borderRadius: "6px",
-                                  background:
-                                    "linear-gradient(90deg, rgba(255,215,0,0.15), rgba(255,223,128,0.05))",
-                                  px: 0.,
-                                  py: 0.3,
-                                  color: "#b8860b",
-                                  fontWeight: 700,
-                                  fontSize: { xs: "0.65rem", sm: "0.8rem" },
-                                  textTransform: "uppercase",
-                                  boxShadow: "0 0 6px rgba(255,215,0,0.3)",
-                                  whiteSpace: "nowrap",
-                                  position: "relative",
-                                  overflow: "hidden",
-                                  "&::after": {
-                                    content: '""',
-                                    position: "absolute",
-                                    top: 0,
-                                    left: "-150%",
-                                    width: "250%",
-                                    height: "100%",
-                                    background:
-                                      "linear-gradient(120deg, transparent 45%, rgba(255,255,255,0.6) 50%, transparent 55%)",
-                                    animation: "shineGold 4s linear infinite",
-                                    pointerEvents: "none",
-                                    zIndex: 1,
-                                    opacity: 0.7,
-                                  },
-                                  "@keyframes shineGold": {
-                                    "0%": { transform: "translateX(-100%)" },
-                                    "100%": { transform: "translateX(100%)" },
-                                  },
-                                }}
-                              >
-                                💎 Suscrito
-                              </Box>
+                              <Tooltip title="Suscriptor" arrow>
+                                <Button
+                                  variant="contained"
+                                  size="small"
+                                  sx={{
+                                    minWidth: isMobile ? "auto" : undefined,
+                                    px: isMobile ? 1.3 : 2.2,
+                                    py: isMobile ? 0.5 : 0.8,
+                                    fontSize: isMobile ? 0 : "0.8rem",
+                                    fontWeight: 600,
+                                    transition: "all 0.3s ease",
+                                    "& .emoji": { fontSize: "1rem" },
+
+                                    // 🔹 Fondo más visible
+                                    background: "linear-gradient(90deg, rgba(255,215,0,0.35), rgba(255,195,0,0.2))",
+                                    // 🔹 Borde más oscuro
+                                    border: "1px solid rgba(184,134,11,0.8)",
+                                    color: "#b8860b",
+                                    boxShadow: "0 0 8px rgba(184,134,11,0.5)",
+                                    position: "relative",
+                                    overflow: "hidden",
+                                    borderRadius: "6px",
+
+                                    "&:hover": {
+                                      background: "linear-gradient(90deg, rgba(255,215,0,0.5), rgba(255,195,0,0.3))",
+                                      boxShadow: "0 0 10px rgba(184,134,11,0.7)",
+                                    },
+
+                                    "&::after": {
+                                      content: '""',
+                                      position: "absolute",
+                                      top: 0,
+                                      left: "-150%",
+                                      width: "250%",
+                                      height: "100%",
+                                      background:
+                                        "linear-gradient(120deg, transparent 45%, rgba(255,255,255,0.6) 50%, transparent 55%)",
+                                      animation: "shineGold 4s linear infinite",
+                                      pointerEvents: "none",
+                                      zIndex: 1,
+                                      opacity: 0.7,
+                                    },
+                                    "@keyframes shineGold": {
+                                      "0%": { transform: "translateX(-100%)" },
+                                      "100%": { transform: "translateX(100%)" },
+                                    },
+                                  }}
+                                >
+                                  <span className="emoji">💎</span>
+                                </Button>
+                              </Tooltip>
+
+
                             </motion.div>
                           ) : estaAlDia ? (
-                            // ✅ Pago recibido
                             <motion.div
                               key="pagado"
                               initial={{ opacity: 0, scale: 0.9 }}
@@ -1447,7 +1477,6 @@ const Clientes = () => {
                               )}
                             </motion.div>
                           ) : (
-                            // 💸 Botón Pago recibido normal
                             <motion.div
                               key="pagoRecibido"
                               initial={{ opacity: 0, scale: 0.9 }}
@@ -2036,38 +2065,8 @@ const Clientes = () => {
                 : "💰 Cobrar"
             )}
           </Button>
-          {/*<Button
-            size={isMobile ? "small" : "medium"}
-            sx={{
-              fontSize: isMobile ? "0.7rem" : "0.875rem",
-              fontWeight: 600,
-              textTransform: "none",
-              background: "linear-gradient(90deg,#607D8B,#455A64)",
-              color: "#fff",
-              "&:hover": {
-                background: "linear-gradient(90deg,#546E7A,#37474F)",
-              },
-            }}
-            onClick={() => {
-              // 🔹 Simulación de cobro en proceso
-              setCobrando(true);
-              console.log("🔄 Simulación de cobro iniciada...");
-
-              // ⏳ Simula un proceso de 5 segundos
-              setTimeout(() => {
-                setCobrando(false);
-                console.log("✅ Simulación de cobro finalizada");
-              }, 5000);
-            }}
-          >
-            🧪 TEST
-          </Button>*/}
         </DialogActions>
-
-
       </Dialog>
-
-
 
 
       {/* 🔔 Dialogo último día del mes */}

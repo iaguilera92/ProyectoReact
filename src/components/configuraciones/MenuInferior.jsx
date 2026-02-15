@@ -6,6 +6,7 @@ import HomeRepairServiceIcon from "@mui/icons-material/HomeRepairService";
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable'; // 👈 nuevo ícono
 import { useLocation } from 'react-router-dom';
+import FactCheckIcon from '@mui/icons-material/FactCheck';
 
 const MenuInferior = ({ cardSize }) => {
     const location = useLocation();
@@ -32,31 +33,49 @@ const MenuInferior = ({ cardSize }) => {
         "/clientes": {
             icono: <AttachMoneyIcon sx={{ fontSize: 45, color: "success.main" }} />,
             texto: "Clientes",
+            rutaDestino: "/clientes"
         },
         "/dashboard": {
             icono: <BarChartIcon sx={{ fontSize: 45, color: "success.main" }} />,
             texto: "Visitas",
+            rutaDestino: "/dashboard"
         },
         "/configurar-trabajos": {
             icono: <HomeRepairServiceIcon sx={{ fontSize: 45, color: "success.main" }} />,
             texto: "Trabajos",
+            rutaDestino: "/configurar-trabajos"
+        },
+        "/configurar-en-revision": { // 👈 nueva ruta
+            icono: <FactCheckIcon sx={{ fontSize: 45, color: "success.main" }} />,
+            texto: "Revisión",
+            rutaDestino: "/configurar-en-revision"
         },
         "/reservas": {
             icono: <EventAvailableIcon sx={{ fontSize: 45, color: "success.main" }} />,
             texto: "Reservas",
+            rutaDestino: "/reservas"
         },
     };
 
-    const orden = ["/clientes", "/dashboard", "/configurar-trabajos", "/reservas"];
-    const rutaCentral = orden.find(r => pathname.startsWith(r)) || "/dashboard";
+    const rutaCentral = Object.keys(opciones).find(r => pathname.startsWith(r)) || "/dashboard";
+
+
+    const orden = [
+        "/clientes",
+        "/dashboard",
+        "/configurar-trabajos",
+        "/configurar-en-revision",
+        "/reservas"
+    ];
 
     const renderBoton = (ruta) => {
         const { icono, texto } = opciones[ruta];
         const esCentral = ruta === rutaCentral;
 
         const baseStyles = {
-            flex: esCentral ? 1.3 : 1,
-            height: esCentral ? 108 : 65,
+            flex: esCentral ? 1.6 : 1.2, // 👈 aumentamos el ancho relativo
+            minWidth: esCentral ? 80 : 70, // 👈 ancho mínimo en px
+            height: esCentral ? 110 : 70,   // 👈 un poco más alto
             backgroundColor: "#ffffff",
             border: "2px solid black",
             borderRadius: esCentral ? "16px" : "12px 12px 0 0",
@@ -79,7 +98,11 @@ const MenuInferior = ({ cardSize }) => {
         };
 
         return (
-            <Box key={ruta} onClick={() => goWithCleanCache(ruta)} sx={baseStyles}>
+            <Box
+                key={ruta}
+                onClick={() => goWithCleanCache(opciones[ruta].rutaDestino)}
+                sx={baseStyles}
+            >
                 {esCentral ? (
                     <motion.div
                         initial={{ scale: 1 }}
@@ -88,7 +111,12 @@ const MenuInferior = ({ cardSize }) => {
                         style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
                     >
                         {icono}
-                        <Typography variant="caption" fontWeight="bold" fontSize={15} color="success.main">
+                        <Typography
+                            variant="caption"
+                            fontWeight="bold"
+                            fontSize={15}
+                            color="success.main"
+                        >
                             {texto}
                         </Typography>
                     </motion.div>
@@ -102,8 +130,8 @@ const MenuInferior = ({ cardSize }) => {
                             textAlign: "center",
                         }}
                     >
-                        {React.cloneElement(icono, { sx: { fontSize: 26, color: "primary.main" } })}
-                        <Typography variant="caption" fontSize={11}>
+                        {React.cloneElement(icono, { sx: { fontSize: 28, color: "primary.main" } })}
+                        <Typography variant="caption" fontSize={12}>
                             {texto}
                         </Typography>
                     </Box>
@@ -111,6 +139,7 @@ const MenuInferior = ({ cardSize }) => {
             </Box>
         );
     };
+
 
     return (
         <motion.div

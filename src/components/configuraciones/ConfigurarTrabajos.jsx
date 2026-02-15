@@ -467,10 +467,6 @@ const ConfigurarTrabajos = () => {
 
                     {/* Sitio Web */}
                     <TableCell
-                      component="a"
-                      href={`https://${trabajo.SitioWeb}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
                       sx={{
                         fontSize: { xs: "0.75rem", sm: "0.875rem" },
                         whiteSpace: "nowrap",
@@ -478,13 +474,22 @@ const ConfigurarTrabajos = () => {
                         fontWeight: 600,
                         cursor: trabajo.tipoApp === 1 ? "pointer" : "default",
                         textDecoration: "none",
-                        "&:hover": {
-                          textDecoration: trabajo.tipoApp === 1 ? "underline" : "none",
-                        },
                       }}
                     >
-                      {trabajo.SitioWeb}
+                      {trabajo.tipoApp === 1 ? (
+                        <a
+                          href={`https://${trabajo.SitioWeb}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ textDecoration: "none", color: "#0288d1" }}
+                        >
+                          {trabajo.SitioWeb}
+                        </a>
+                      ) : (
+                        trabajo.SitioWeb
+                      )}
                     </TableCell>
+
 
 
                     {/* Progreso editable */}
