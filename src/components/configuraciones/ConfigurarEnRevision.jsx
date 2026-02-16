@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Container, Paper, Table, TableHead, TableRow, TableCell, TableBody, Chip, LinearProgress, Snackbar, Alert, Button, useTheme, useMediaQuery } from "@mui/material";
+import { CircularProgress, Dialog, Box, Typography, Container, Paper, Table, TableHead, TableRow, TableCell, TableBody, Chip, LinearProgress, Snackbar, Alert, Button, useTheme, useMediaQuery } from "@mui/material";
 import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
 import { motion } from "framer-motion";
 import MenuInferior from "./MenuInferior";
@@ -21,6 +21,9 @@ const ConfigurarEnRevision = () => {
   const totalPaginas = Math.ceil(trabajos.length / registrosPorPagina);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [trabajoSeleccionado, setTrabajoSeleccionado] = useState(null);
+  const [dialogOpcionesOpen, setDialogOpcionesOpen] = useState(false);
+  const [trabajoParaOpciones, setTrabajoParaOpciones] = useState(null);
+  const [loadingEliminar, setLoadingEliminar] = useState(false);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -122,7 +125,15 @@ const ConfigurarEnRevision = () => {
     return "linear-gradient(90deg,#81c784,#388e3c)";
   };
 
+  const abrirDialogOpciones = (trabajo) => {
+    setTrabajoParaOpciones(trabajo);
+    setDialogOpcionesOpen(true);
+  };
 
+  const cerrarDialogOpciones = () => {
+    setDialogOpcionesOpen(false);
+    setTrabajoParaOpciones(null);
+  };
 
   return (
     <Container
@@ -142,7 +153,7 @@ const ConfigurarEnRevision = () => {
         {/* Título */}
         <Box display="flex" alignItems="center" gap={1} pb={2}>
           <SettingsSuggestIcon sx={{ color: "white" }} />
-          <Typography variant="h6" sx={{ color: "white", fontWeight: 700 }}>
+          <Typography variant="h7" sx={{ color: "white", fontWeight: 700 }}>
             Trabajos en Revisión
           </Typography>
         </Box>
@@ -160,12 +171,13 @@ const ConfigurarEnRevision = () => {
             <Table size="small" sx={{ "& .MuiTableCell-root": { border: "none" } }}>
               <TableHead>
                 <TableRow>
-                  <TableCell>Negocio</TableCell>
-                  {!isMobile && <TableCell>Email</TableCell>}
-                  {!isMobile && <TableCell>Teléfono</TableCell>}
-                  <TableCell>Progreso</TableCell>
-                  <TableCell>Estado</TableCell>
-                  {!isMobile && <TableCell>Fecha</TableCell>}
+                  <TableCell sx={{ fontWeight: "bold" }}>Negocio</TableCell>
+                  {!isMobile && <TableCell sx={{ fontWeight: "bold" }}>Email</TableCell>}
+                  {!isMobile && <TableCell sx={{ fontWeight: "bold" }}>Teléfono</TableCell>}
+                  <TableCell sx={{ fontWeight: "bold" }}>Progreso</TableCell>
+                  <TableCell sx={{ pl: 3, fontWeight: "bold" }}>Estado</TableCell>
+                  {!isMobile && <TableCell sx={{ fontWeight: "bold" }}>Fecha</TableCell>}
+
                 </TableRow>
               </TableHead>
 
@@ -213,7 +225,7 @@ const ConfigurarEnRevision = () => {
                         label={obtenerTextoEstado(trabajo.Estado)}
                         color={obtenerColorEstado(trabajo.Estado)}
                         size="small"
-                        onClick={() => abrirDialog(trabajo)}
+                        onClick={() => abrirDialogOpciones(trabajo)}
                         sx={{ cursor: "pointer" }}
                       />
                     </TableCell>
@@ -278,13 +290,188 @@ const ConfigurarEnRevision = () => {
         <MenuInferior cardSize={cardSize} />
       </Box>
 
-      {/* Dialog */}
+      {/* Dialog Crear Trabajo*/}
       <DialogAgregarTrabajo
         open={dialogOpen}
         onClose={cerrarDialog}
         onSave={handleGuardarTrabajo}
         trabajoInicial={trabajoSeleccionado}
       />
+
+      <Dialog
+        open={dialogOpcionesOpen}
+        onClose={() => {
+          if (!loadingEliminar) cerrarDialogOpciones();
+        }}
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            p: 3,
+            margin: 0,
+            boxShadow: "0 0 20px rgba(0, 150, 255, 0.5)", // glow azul eléctrico
+            border: "2px solid rgba(0, 200, 255, 0.8)",   // borde hielo
+            backgroundColor: "#121212",                   // fondo oscuro
+            backgroundImage: "linear-gradient(135deg, #0d0d0d, #1a1a1a)", // degradado sutil
+            color: "#e0f7ff",                             // texto azul hielo
+            backdropFilter: "blur(6px)",                  // efecto glass
+          },
+        }}
+      >
+
+        <Box display="flex" flexDirection="column" gap={2} alignItems="center" minWidth={280}>
+
+          {/* 🌟 Botón Crear Trabajo con colores dorado/anaranjado y brillo */}
+          <Button
+            variant="contained"
+            fullWidth
+            disabled={loadingEliminar} // bloquea mientras elimina
+            sx={{
+              minWidth: { xs: "280px", sm: "340px" },
+              height: "58px",
+              borderRadius: "14px",
+              textTransform: "none",
+              fontFamily: "Albert Sans, sans-serif",
+              fontWeight: 600,
+              color: "#fff",
+              background:
+                "linear-gradient(135deg, #66bb6a, #43a047 45%, #2e7d32 85%)",
+              backgroundSize: "200% 200%",
+              animation: "gradientShift 8s ease infinite",
+              boxShadow: "0 6px 16px rgba(76,175,80,.4)",
+              position: "relative",
+              overflow: "hidden",
+              border: "2px solid rgba(76,175,80,0.9)",
+              zIndex: 1,
+
+              "&:hover": {
+                background: "linear-gradient(135deg,#43a047,#2e7d32)",
+                boxShadow: "0 0 6px rgba(76,175,80,.6), inset 0 0 6px rgba(255,255,255,0.25)",
+              },
+
+              /* ✨ BRILLO EXTERNO — Border Sweep + Pulse */
+              "&::before": {
+                content: '""',
+                position: "absolute",
+                inset: "-2px",
+                borderRadius: "inherit",
+                background:
+                  "linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.9) 10%, #a5d6a7 20%, rgba(255,255,255,0.9) 30%, transparent 40%)",
+                backgroundRepeat: "no-repeat",
+                backgroundSize: "300% 300%",
+                animation: "shineBorderSweep 3s linear infinite, pulseGlow 4s ease-in-out infinite",
+                pointerEvents: "none",
+                zIndex: 2,
+                mask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+                maskComposite: "exclude",
+                WebkitMask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+                WebkitMaskComposite: "xor",
+              },
+
+              /* ✨ BRILLO INTERNO — Sheen diagonal */
+              "&::after": {
+                content: '""',
+                position: "absolute",
+                inset: 0,
+                background:
+                  "linear-gradient(130deg, transparent 40%, rgba(255,255,255,0.8) 50%, transparent 60%)",
+                transform: "translateX(-100%)",
+                animation: "shineDiagonal 4s ease-in-out infinite",
+                borderRadius: "inherit",
+                pointerEvents: "none",
+                zIndex: 1,
+              },
+
+              "&:hover::after": {
+                animation: "shineDiagonal 1.2s ease-in-out",
+              },
+
+              /* 🔥 ANIMACIONES */
+              "@keyframes shineBorderSweep": {
+                "0%": { backgroundPosition: "-300% 0" },
+                "100%": { backgroundPosition: "300% 0" },
+              },
+              "@keyframes pulseGlow": {
+                "0%, 100%": { filter: "drop-shadow(0 0 6px rgba(76,175,80,.35))" },
+                "50%": { filter: "drop-shadow(0 0 14px rgba(76,175,80,.75))" },
+              },
+              "@keyframes shineDiagonal": {
+                "0%": { transform: "translateX(-120%) rotate(0deg)" },
+                "100%": { transform: "translateX(120%) rotate(0deg)" },
+              },
+              "@keyframes gradientShift": {
+                "0%": { backgroundPosition: "0% 50%" },
+                "50%": { backgroundPosition: "100% 50%" },
+                "100%": { backgroundPosition: "0% 50%" },
+              },
+            }}
+            onClick={() => {
+              setDialogOpen(true);
+              setTrabajoSeleccionado(trabajoParaOpciones);
+              if (!loadingEliminar) cerrarDialogOpciones();
+            }}
+          >
+            Crear Trabajo
+          </Button>
+
+          {/* Eliminar */}
+          <Button
+            variant="contained"
+            fullWidth
+            disabled={loadingEliminar} // bloquea mientras elimina
+            sx={{
+              minWidth: { xs: "280px", sm: "340px" },
+              height: "58px",
+              borderRadius: "14px",
+              textTransform: "none",
+              fontFamily: "Albert Sans, sans-serif",
+              fontWeight: 600,
+              color: "#fff",
+              background: "linear-gradient(135deg, #e53935, #d32f2f 70%)",
+              boxShadow: "0 4px 12px rgba(211,47,47,.3)",
+              border: "2px solid rgba(211,47,47,0.9)",
+              "&:hover": {
+                background: "linear-gradient(135deg, #d32f2f, #b71c1c 70%)",
+                boxShadow: "0 0 8px rgba(211,47,47,.5)",
+              },
+            }}
+            onClick={async () => {
+              if (!trabajoParaOpciones) return;
+
+              try {
+                setLoadingEliminar(true); // inicia carga
+
+                await eliminarTrabajoRevision(trabajoParaOpciones.Id);
+
+                setSnackbar({
+                  open: true,
+                  message: "Trabajo eliminado correctamente",
+                  type: "success",
+                });
+
+                cerrarDialogOpciones();
+              } catch (error) {
+                setSnackbar({
+                  open: true,
+                  message: error.message || "Error eliminando trabajo",
+                  type: "error",
+                });
+              } finally {
+                setLoadingEliminar(false); // termina carga
+              }
+            }}
+          >
+            {loadingEliminar ? (
+              <Box display="flex" alignItems="center" justifyContent="center" width="100%">
+                <CircularProgress size={24} color="inherit" />
+              </Box>
+            ) : (
+              "Eliminar"
+            )}
+          </Button>
+
+        </Box>
+      </Dialog>
+
 
     </Container>
   );
