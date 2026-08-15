@@ -1,8 +1,9 @@
-﻿import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { IconButton, Snackbar, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Paper, Typography, useMediaQuery, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@mui/material";
 import { styled, keyframes } from "@mui/system";
 import { cargarClientesDesdeExcel } from "../../helpers/HelperClientes";
-import MenuInferior from './MenuInferior';
+import NavbarAdmin from './NavbarAdmin';
+import SidebarAdmin from './SidebarAdmin';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import GroupIcon from "@mui/icons-material/Group";
 import emailjs from "@emailjs/browser";
@@ -141,6 +142,11 @@ const Clientes = () => {
   const [cobrando, setCobrando] = useState(false);
   const [botonesDeshabilitados, setBotonesDeshabilitados] = useState(false);
   const [mostrarTextoAgregar, setMostrarTextoAgregar] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(() => localStorage.getItem("pw-sidebar") !== "false");
+  const toggleSidebar = () => setSidebarOpen(p => { const next = !p; localStorage.setItem("pw-sidebar", String(next)); return next; });
+  const [temaOscuro, setTemaOscuro] = useState(() => localStorage.getItem("pw-tema") !== "claro");
+  const handleTema = (oscuro) => { setTemaOscuro(oscuro); localStorage.setItem("pw-tema", oscuro ? "oscuro" : "claro"); };
+  const [forzarPrd, setForzarPrd] = useState(false);
 
   const datosCliente = (cliente) => { setClienteSeleccionado(cliente); setOpenDialogCliente(true); };
   const MotionBox = motion.create(Box);
@@ -837,35 +843,53 @@ const Clientes = () => {
 
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        height: isMobile ? "100dvh" : "auto",
-        width: "100vw",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        backgroundImage: 'url(/fondo-blizz.avif)',
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        overflowX: "hidden",
-        overflowY: isMobile ? "hidden" : "auto",
-        paddingTop: isMobile ? 11 : 12,
-        pb: isMobile ? 0 : 4,
-      }}
-    >
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden", bgcolor: temaOscuro ? "#0a0a0a" : "#f0f0f0" }}>
+      <NavbarAdmin
+        titulo="Clientes"
+        temaOscuro={temaOscuro}
+        onMenuClick={toggleSidebar}
+        forzarPrd={forzarPrd}
+        onForzarPrd={setForzarPrd}
+        accion={
+          <Button
+            onClick={() => agregarCliente()}
+            variant="outlined"
+            size="small"
+            sx={{
+              color: temaOscuro ? "white" : "#111",
+              borderColor: temaOscuro ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.3)",
+              fontSize: "0.75rem",
+              px: 1,
+              py: 0.4,
+              minWidth: 36,
+              display: "flex",
+              alignItems: "center",
+              gap: 0,
+              overflow: "hidden",
+              "&:hover": { backgroundColor: temaOscuro ? "#ffffff22" : "#00000011", borderColor: temaOscuro ? "#fff" : "#000" },
+            }}
+          >
+            <AddIcon sx={{ fontSize: 18, flexShrink: 0 }} />
+            <AnimatePresence>
+              {mostrarTextoAgregar && (
+                <motion.span
+                  initial={{ maxWidth: 130, opacity: 1, marginLeft: 4 }}
+                  exit={{ maxWidth: 0, opacity: 0, marginLeft: 0 }}
+                  transition={{ duration: 0.35, ease: "easeInOut" }}
+                  style={{ overflow: "hidden", whiteSpace: "nowrap", display: "block" }}
+                >
+                  Agregar Cliente
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </Button>
+        }
+      />
+      <Box sx={{ display: "flex", flex: 1, overflow: "hidden" }}>
+        <SidebarAdmin open={sidebarOpen} temaOscuro={temaOscuro} onTemaChange={handleTema} onClose={() => { setSidebarOpen(false); localStorage.setItem("pw-sidebar", "false"); }} esPrd={forzarPrd} />
+        <Box sx={{ flex: 1, minWidth: 0, width: 0, overflowY: "auto", overflowX: "hidden", pb: 4, px: { xs: 1, md: 3 }, pt: 2 }}>
 
-      <Box
-        sx={{
-          width: "100%",
-          maxWidth: isMobile ? "100%" : "80%",
-          px: isMobile ? 1 : 4,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
+      <Box sx={{ width: "100%" }}>
 
         {/* ── Indicadores ── */}
         {(() => {
@@ -875,7 +899,7 @@ const Clientes = () => {
           const pctCobrado = Math.round((cobrados / total) * 100);
 
           return (
-            <Box sx={{ display: "flex", gap: 1.5, mb: 2, width: isMobile ? "100%" : "70%", alignItems: "stretch" }}>
+            <Box sx={{ display: "flex", gap: 1.5, mb: 2, width: "100%", alignItems: "stretch" }}>
               {/* Recaudado */}
               <Box sx={{
                 flex: "1 1 0", width: 0,
@@ -951,93 +975,11 @@ const Clientes = () => {
           );
         })()}
 
-        {/* 🔹 Contenedor del título + botón */}
-        <Box
-          display="flex"
-          alignItems="center"
-          justifyContent="space-between"
-          flexDirection="row"
-          pb={0.75}
-          sx={{ width: isMobile ? "100%" : "70%", }}
-        >
-          {/* 🔸 Título a la derecha */}
-          <Box display="flex" alignItems="center" gap={{ xs: 0.5, sm: 1 }}>
-            <GroupIcon
-              sx={{
-                color: "white",
-                fontSize: { xs: 18, sm: 22 },
-                mt: "-1px",
-                mr: { xs: "-2px", sm: 0 },
-              }}
-            />
-            <Typography
-              variant="h6"
-              sx={{
-                color: "white",
-                fontWeight: 700,
-                fontSize: { xs: "0.82rem", sm: "1rem" },
-                whiteSpace: "nowrap",
-                lineHeight: 1.2,
-              }}
-            >
-              {"Gestión Clientes".split("").map((char, i) => (
-                <motion.span
-                  key={i}
-                  custom={i}
-                  variants={letterVariants}
-                  initial="hidden"
-                  animate="visible"
-                  style={{ display: "inline-block" }}
-                >
-                  {char === " " ? "\u00A0" : char}
-                </motion.span>
-              ))}
-            </Typography>
-          </Box>
-
-          {/* 🔸 Botón a la izquierda */}
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button
-              onClick={() => agregarCliente()}
-              variant="outlined"
-              color="inherit"
-              aria-label="Agregar cliente"
-              sx={{
-                color: "white",
-                borderColor: "white",
-                fontSize: { xs: "0.7rem", sm: "0.85rem" },
-                px: { xs: 0.9, sm: 1 },
-                py: { xs: 0.25, sm: 0.5 },
-                minWidth: 36,
-                display: "flex",
-                alignItems: "center",
-                gap: 0,
-                overflow: "hidden",
-                "&:hover": { backgroundColor: "#ffffff22", borderColor: "#ffffffcc" },
-              }}
-            >
-              <AddIcon sx={{ fontSize: 18, flexShrink: 0 }} />
-              <AnimatePresence>
-                {mostrarTextoAgregar && (
-                  <motion.span
-                    initial={{ maxWidth: 130, opacity: 1, marginLeft: 4 }}
-                    exit={{ maxWidth: 0, opacity: 0, marginLeft: 0 }}
-                    transition={{ duration: 0.35, ease: "easeInOut" }}
-                    style={{ overflow: "hidden", whiteSpace: "nowrap", display: "block" }}
-                  >
-                    Agregar Cliente
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </Button>
-          </motion.div>
-        </Box>
-
         <TableContainer
           component={Paper}
           sx={{
-            width: isMobile ? "100%" : "70%",
-            maxHeight: "80vh",
+            width: "100%",
+            maxHeight: "calc(100vh - 160px)",
             borderRadius: "12px",
             overflowX: isMobile ? "auto" : "hidden", // ðŸ'ˆ scroll horizontal solo en mobile
             overflowY: "auto",
@@ -1564,7 +1506,7 @@ const Clientes = () => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              width: isMobile ? "100%" : "70%",
+              width: "100%",
               gap: 1,
             }}
           >
@@ -1573,19 +1515,20 @@ const Clientes = () => {
               disabled={paginaActual === 1}
               onClick={() => setPaginaActual((p) => p - 1)}
               sx={{
-                color: "white",
-                borderColor: "white",
+                color: temaOscuro ? "white" : "#111",
+                borderColor: temaOscuro ? "white" : "#111",
                 fontSize: isMobile ? "0.75rem" : "0.875rem",
                 px: isMobile ? 1.5 : 2,
                 "&:hover": {
                   borderColor: "#E95420",
                   backgroundColor: "#E95420",
+                  color: "#fff",
                 },
               }}
             >
               Anterior
             </Button>
-            <Typography variant="body2" sx={{ color: "white", minWidth: 90, textAlign: "center" }}>
+            <Typography variant="body2" sx={{ color: temaOscuro ? "white" : "#111", minWidth: 90, textAlign: "center" }}>
               Página {paginaActual} de {totalPaginas}
             </Typography>
             <Button
@@ -1593,13 +1536,14 @@ const Clientes = () => {
               disabled={paginaActual === totalPaginas}
               onClick={() => setPaginaActual((p) => p + 1)}
               sx={{
-                color: "white",
-                borderColor: "white",
+                color: temaOscuro ? "white" : "#111",
+                borderColor: temaOscuro ? "white" : "#111",
                 fontSize: isMobile ? "0.75rem" : "0.875rem",
                 px: isMobile ? 1.5 : 2,
                 "&:hover": {
                   borderColor: "#E95420",
                   backgroundColor: "#E95420",
+                  color: "#fff",
                 },
               }}
             >
@@ -1613,47 +1557,6 @@ const Clientes = () => {
 
 
 
-      {/* MenuInferior: se abre manualmente y se minimiza solo */}
-      <AnimatePresence>
-        {mostrarMenuInferior && (
-          <MenuInferior cardSize={cardSize} modo="clientes" enterDuration={1} exitDuration={1} />
-        )}
-      </AnimatePresence>
-
-      {/* Flecha inferior para abrir menu */}
-      <Box
-        onClick={handleAbrirMenuInferior}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-        sx={{
-          position: "fixed",
-          left: "50%",
-          transform: "translateX(-50%)",
-          bottom: 10,
-          zIndex: 1200,
-          width: 56,
-          height: 30,
-          borderRadius: "999px",
-          background: "rgba(0,0,0,0.55)",
-          border: "1px solid rgba(255,255,255,0.25)",
-          display: mostrarMenuInferior ? "none" : "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          cursor: "pointer",
-          backdropFilter: "blur(6px)",
-          boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
-          "&:active": { transform: "translateX(-50%) scale(0.98)" },
-        }}
-      >
-        <KeyboardArrowUpIcon
-          sx={{
-            color: "#fff",
-            fontSize: 22,
-            transform: mostrarMenuInferior ? "rotate(180deg)" : "rotate(0deg)",
-            transition: "transform 0.25s ease",
-          }}
-        />
-      </Box>
 
       {/* DIALOG: REVERTIR && PAGOS */}
       <DialogClientePagos
@@ -2393,7 +2296,9 @@ const Clientes = () => {
         </motion.div>
       </Snackbar>
 
-    </Box >
+        </Box>
+      </Box>
+    </Box>
   );
 };
 

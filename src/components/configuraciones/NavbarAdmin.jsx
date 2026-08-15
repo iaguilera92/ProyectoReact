@@ -1,12 +1,12 @@
 import React from "react";
-import { Box, Typography, IconButton, Breadcrumbs } from "@mui/material";
+import { Box, Typography, IconButton, Breadcrumbs, CircularProgress } from "@mui/material";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import HomeIcon from "@mui/icons-material/Home";
 import { useNavigate } from "react-router-dom";
 
 const IS_PROD = import.meta.env.PROD;
 
-export default function NavbarAdmin({ titulo, onMenuClick, accion, temaOscuro = true, forzarPrd = false, onForzarPrd }) {
+export default function NavbarAdmin({ titulo, onMenuClick, accion, temaOscuro = true, forzarPrd = false, onForzarPrd, cargando = false, mensajeCarga = "Guardando..." }) {
   const navigate = useNavigate();
   const tc = temaOscuro;
   const esPrd = IS_PROD || forzarPrd;
@@ -78,6 +78,16 @@ export default function NavbarAdmin({ titulo, onMenuClick, accion, temaOscuro = 
             {titulo}
           </Typography>
         </Breadcrumbs>
+
+        {/* Indicador de carga (ej: guardando oferta) */}
+        {cargando && (
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.8, flexShrink: 0, px: 1.5, py: 0.4, borderRadius: "999px", bgcolor: tc ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)", border: tc ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.1)" }}>
+            <CircularProgress size={12} thickness={5} sx={{ color: tc ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.5)" }} />
+            <Typography sx={{ fontSize: "0.7rem", color: tc ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.5)", whiteSpace: "nowrap", fontWeight: 500 }}>
+              {mensajeCarga}
+            </Typography>
+          </Box>
+        )}
 
         {/* Slot acción (botón agregar, etc.) */}
         {accion}

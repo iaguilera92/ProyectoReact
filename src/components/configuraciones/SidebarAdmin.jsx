@@ -20,11 +20,11 @@ const ACCENT_HOVER = IS_PROD ? "rgba(139,0,0,0.35)"        : "rgba(46,125,50,0.3
 const ACCENT_ICON  = IS_PROD ? "#ef5350"                   : "#66bb6a";
 
 const NAV_ITEMS = [
-  { label: "Dashboard",  icon: <DashboardIcon />,       path: "/dashboard" },
-  { label: "Trabajos",   icon: <SettingsSuggestIcon />, path: "/configurar-trabajos" },
-  { label: "Clientes",   icon: <PeopleIcon />,          path: "/clientes" },
-  { label: "Servicios",  icon: <BuildIcon />,           path: "/configurar-servicios" },
-  { label: "Reservas",   icon: <EventNoteIcon />,       path: "/reservas" },
+  { label: "Dashboard",   icon: <DashboardIcon />,       path: "/dashboard" },
+  { label: "Trabajos",    icon: <SettingsSuggestIcon />, path: "/configurar-trabajos" },
+  { label: "En Revisión", icon: <BuildIcon />,           path: "/configurar-en-revision" },
+  { label: "Clientes",    icon: <PeopleIcon />,          path: "/clientes" },
+  { label: "Reservas",    icon: <EventNoteIcon />,       path: "/reservas" },
 ];
 
 const FOOTER_ITEMS = [
@@ -152,13 +152,13 @@ export default function SidebarAdmin({ open, temaOscuro = true, onTemaChange, on
               Aplicaciones
             </Typography>
             <MenuItem
-              onClick={() => { setAppsAnchor(null); navigate("/dashboard"); }}
+              onClick={() => { setAppsAnchor(null); window.open("https://pwbot-zfzs.onrender.com/docs", "_blank"); }}
               sx={{ borderRadius: 1.5, gap: 1.5, py: 1, px: 1.5, color: C.textMuted, fontSize: "0.85rem", "&:hover": { bgcolor: C.hover, color: C.text } }}
             >
-              <Box sx={{ width: 28, height: 28, borderRadius: "50%", overflow: "hidden", flexShrink: 0 }}>
-                <Box component="img" src="/PWBot.png" alt="PWBot" sx={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              <Box sx={{ width: 28, height: 28, borderRadius: 1.5, bgcolor: "rgba(99,102,241,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#818cf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
               </Box>
-              PWBot
+              API REST - Plataformas web
             </MenuItem>
             <MenuItem
               onClick={() => { setAppsAnchor(null); window.open("https://plataformas-web.app.n8n.cloud/workflow/cuzoZiBRZ7vg72pO", "_blank"); }}
@@ -189,7 +189,7 @@ export default function SidebarAdmin({ open, temaOscuro = true, onTemaChange, on
                     window.dispatchEvent(new CustomEvent("devtools-status", { detail: { message: `Redirigiendo a ${item.label}...` } }));
                     setTimeout(() => window.dispatchEvent(new CustomEvent("devtools-status", { detail: { message: "" } })), 200);
                     navigate(item.path);
-                    onClose?.();
+                    if (isMobile) onClose?.();
                   }}
                   sx={{
                     mx: 1, borderRadius: 1.5, mb: isMobile ? 0.5 : 0.25,
