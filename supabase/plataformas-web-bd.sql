@@ -39,6 +39,8 @@ create table if not exists trabajos (
   porcentaje       integer default 0,
   estado           boolean default true,
   tipo_app         integer,
+  origen           text null default 'manual',
+  ocultar          boolean null default false,
   created_at       timestamptz default now()
 );
 

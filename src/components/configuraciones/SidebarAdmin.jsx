@@ -161,6 +161,15 @@ export default function SidebarAdmin({ open, temaOscuro = true, onTemaChange, on
               API REST - Plataformas web
             </MenuItem>
             <MenuItem
+              onClick={() => { setAppsAnchor(null); window.open("https://dev.azure.com/plataformasweb/API-REST/_build?definitionId=2", "_blank"); }}
+              sx={{ borderRadius: 1.5, gap: 1.5, py: 1, px: 1.5, color: C.textMuted, fontSize: "0.85rem", "&:hover": { bgcolor: C.hover, color: C.text } }}
+            >
+              <Box sx={{ width: 28, height: 28, borderRadius: 1.5, overflow: "hidden", flexShrink: 0 }}>
+                <Box component="img" src="/azure-devops.webp" alt="Azure DevOps" sx={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              </Box>
+              Pruebas Automatizadas - Pipelines
+            </MenuItem>
+            <MenuItem
               onClick={() => { setAppsAnchor(null); window.open("https://plataformas-web.app.n8n.cloud/workflow/cuzoZiBRZ7vg72pO", "_blank"); }}
               sx={{ borderRadius: 1.5, gap: 1.5, py: 1, px: 1.5, color: C.textMuted, fontSize: "0.85rem", "&:hover": { bgcolor: C.hover, color: C.text } }}
             >
@@ -169,7 +178,7 @@ export default function SidebarAdmin({ open, temaOscuro = true, onTemaChange, on
                   <path fill="#EA4B71" fillRule="evenodd" d="M27.2 11.396a3.2 3.2 0 0 1-3.1-2.4h-3.667a1.6 1.6 0 0 0-1.578 1.336l-.132.79a3.2 3.2 0 0 1-1.04 1.874 3.2 3.2 0 0 1 1.04 1.874l.132.789a1.6 1.6 0 0 0 1.578 1.336h.468a3.201 3.201 0 1 1-.001 1.6h-.467a3.2 3.2 0 0 1-3.156-2.673l-.132-.79a1.6 1.6 0 0 0-1.578-1.336h-1.268a3.2 3.2 0 0 1-6.198 0H6.299a3.2 3.2 0 1 1 .001-1.6h1.8a3.2 3.2 0 0 1 6.2 0h1.267a1.6 1.6 0 0 0 1.578-1.338l.132-.79a3.2 3.2 0 0 1 3.156-2.672h3.668a3.201 3.201 0 0 1 6.299.8 3.2 3.2 0 0 1-3.2 3.2m0-1.6a1.6 1.6 0 1 0 0-3.2 1.6 1.6 0 0 0 0 3.2m-24 4.8a1.6 1.6 0 1 0 0-3.2 1.6 1.6 0 0 0 0 3.2m9.6-1.6a1.6 1.6 0 1 1-3.2 0 1.6 1.6 0 0 1 3.2 0m12.8 4.8a1.6 1.6 0 1 1-3.2 0 1.6 1.6 0 0 1 3.2 0" clipRule="evenodd"/>
                 </svg>
               </Box>
-              n8n
+              n8n - Workflow
             </MenuItem>
           </Menu>
         </Box>

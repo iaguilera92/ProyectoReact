@@ -155,6 +155,7 @@ export default function DialogTrabajos({
         .from('trabajos')
         .select('*')
         .eq('estado', true)
+        .or('ocultar.is.null,ocultar.eq.false')
         .then(({ data, error }) => {
           if (!error && data) setLocalTrabajos(data);
         });
