@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Box } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Box, useMediaQuery, useTheme } from "@mui/material";
 import { Outlet, useLocation } from "react-router-dom";
 import NavbarAdmin from "./NavbarAdmin";
 import SidebarAdmin from "./SidebarAdmin";
@@ -15,14 +15,24 @@ const TITULOS = {
 
 export default function AdminLayout() {
   const location = useLocation();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
-  const [sidebarOpen, setSidebarOpen]   = useState(() => localStorage.getItem("pw-sidebar") !== "false");
+  const [sidebarOpen, setSidebarOpen]   = useState(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 900) return false;
+    return localStorage.getItem("pw-sidebar") !== "false";
+  });
   const [temaOscuro,  setTemaOscuro]    = useState(() => localStorage.getItem("pw-tema")    !== "claro");
   const [forzarPrd,   setForzarPrd]     = useState(false);
   const [navbarAccion, setNavbarAccion] = useState(null);
 
+  // Cerrar sidebar automáticamente al entrar a mobile
+  useEffect(() => {
+    if (isMobile) setSidebarOpen(false);
+  }, [isMobile]);
+
   const toggleSidebar = () =>
-    setSidebarOpen(p => { const next = !p; localStorage.setItem("pw-sidebar", String(next)); return next; });
+    setSidebarOpen(p => { const next = !p; if (!isMobile) localStorage.setItem("pw-sidebar", String(next)); return next; });
 
   const handleTema = (oscuro) => {
     setTemaOscuro(oscuro);

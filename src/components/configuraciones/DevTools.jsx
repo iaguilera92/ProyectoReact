@@ -1,6 +1,7 @@
-import React, { useState, useRef } from "react";
-import { Box, Typography, Divider, Tooltip } from "@mui/material";
+import React, { useState, useRef, useEffect } from "react";
+import { Box, Typography, Divider, Tooltip, useMediaQuery, useTheme } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const IS_QAS = !import.meta.env.PROD;
 const MIN_SHOW_MS = 1500;
@@ -8,12 +9,20 @@ const MIN_SHOW_MS = 1500;
 export default function DevTools({ checks = [], label = "", loading = false, message = "" }) {
   const [open, setOpen] = useState(false);
   const [displayMsg, setDisplayMsg] = useState("");
+  const [errorMode, setErrorMode] = useState(false);
   const startRef = useRef(null);
   const timerRef = useRef(null);
+  const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  // Close the checks panel automatically when error mode activates
+  useEffect(() => { if (errorMode) setOpen(false); }, [errorMode]);
 
   React.useEffect(() => {
     const handler = (e) => {
       const msg = e.detail?.message || "";
+      if (e.detail?.errorMode !== undefined) setErrorMode(e.detail.errorMode);
       if (msg) {
         if (timerRef.current) clearTimeout(timerRef.current);
         startRef.current = Date.now();
@@ -36,15 +45,21 @@ export default function DevTools({ checks = [], label = "", loading = false, mes
   const hasError   = checks.some(c => c.status === "error");
   const hasLoading = loading || checks.some(c => c.status === "loading");
   const activeMsg  = displayMsg || message;
-  const showPill   = hasLoading || !!activeMsg;
-  const pillText   = activeMsg || "Cargando...";
-  const dotColor   = hasError ? "#ef5350" : (hasLoading || showPill) ? "#ffa726" : "#66bb6a";
+  const showPill   = errorMode || hasLoading || !!activeMsg;
+  const pillText   = activeMsg || (errorMode ? "Error en producción" : "Cargando...");
+  const dotColor   = hasError || errorMode ? "#ef5350" : (hasLoading || showPill) ? "#ffa726" : "#66bb6a";
+  const btnBg      = errorMode
+    ? "linear-gradient(145deg, #ef4444, #dc2626)"
+    : "linear-gradient(145deg, #25D366, #1ebe5d)";
+  const btnShadow  = errorMode
+    ? (showPill ? "0 4px 24px rgba(239,68,68,0.8)" : "0 4px 16px rgba(239,68,68,0.55)")
+    : (showPill ? "0 4px 20px rgba(37,211,102,0.5)" : "0 4px 16px rgba(0,0,0,0.35)");
 
   return (
     <>
-      {/* Panel de checks */}
+      {/* Panel de checks — oculto cuando hay error en producción */}
       <AnimatePresence>
-        {open && (
+        {open && !errorMode && (
           <motion.div
             key="panel"
             initial={{ opacity: 0, y: 8, scale: 0.97 }}
@@ -105,21 +120,19 @@ export default function DevTools({ checks = [], label = "", loading = false, mes
       <Tooltip title={!open && !showPill ? "QAS Dev Tools" : ""} placement="left">
         <motion.div
           layout
-          onClick={() => setOpen(o => !o)}
+          onClick={() => errorMode ? navigate("/pruebas-qas") : setOpen(o => !o)}
           style={{
             position: "fixed",
             bottom: 10,
-            right: 15,
+            right: isMobile ? 6 : 22,
             zIndex: 9999,
             display: "flex",
             alignItems: "center",
             flexDirection: "row",
             borderRadius: 999,
-            background: "linear-gradient(145deg, #25D366, #1ebe5d)",
+            background: btnBg,
             border: "4px solid #ffffff",
-            boxShadow: showPill
-              ? "0 4px 20px rgba(37,211,102,0.5)"
-              : "0 4px 16px rgba(0,0,0,0.35)",
+            boxShadow: btnShadow,
             cursor: "pointer",
             overflow: "hidden",
             minWidth: 55,
@@ -139,11 +152,31 @@ export default function DevTools({ checks = [], label = "", loading = false, mes
                 transition={{ duration: 0.25, ease: "easeInOut" }}
                 style={{ overflow: "hidden", flexShrink: 0 }}
               >
-                <Box sx={{ display: "flex", alignItems: "center", gap: 0.7, pl: 1.5, pr: 0.5, whiteSpace: "nowrap" }}>
-                  <Typography sx={{ fontSize: "0.72rem", fontWeight: 700, color: "#fff" }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, pl: 1.5, pr: 0.75, whiteSpace: "nowrap" }}>
+                  <Typography sx={{ fontSize: { xs: "0.65rem", md: "0.72rem" }, fontWeight: 700, color: "#fff" }}>
                     {pillText}
                   </Typography>
-                  <Dots />
+                  {errorMode ? (
+                    <Box
+                      onClick={(e) => { e.stopPropagation(); navigate("/pruebas-qas?filtro=failed"); }}
+                      sx={{
+                        display: "flex", alignItems: "center", gap: 0.5,
+                        px: 0.75, py: 0.3, borderRadius: 1,
+                        bgcolor: "rgba(255,255,255,0.18)",
+                        border: "1px solid rgba(255,255,255,0.3)",
+                        cursor: "pointer",
+                        transition: "all 0.15s",
+                        "&:hover": { bgcolor: "rgba(255,255,255,0.3)" },
+                      }}
+                    >
+                      <Typography sx={{ fontSize: "0.63rem", fontWeight: 800, color: "#fff", lineHeight: 1, display: { xs: "none", sm: "block" } }}>
+                        Revisar pruebas
+                      </Typography>
+                      <Box component="img" src="/clic.jpg" alt="Revisar" sx={{ width: 14, height: 14, objectFit: "contain", borderRadius: 0.5, filter: "brightness(0) invert(1)" }} />
+                    </Box>
+                  ) : (
+                    <Dots />
+                  )}
                 </Box>
               </motion.div>
             )}
@@ -154,8 +187,16 @@ export default function DevTools({ checks = [], label = "", loading = false, mes
             <motion.img
               src="/PWBot.png"
               alt="PWBot"
-              animate={showPill ? { rotate: [0, -12, 12, -8, 8, 0] } : { rotate: 0 }}
-              transition={showPill ? { duration: 0.6, ease: "easeInOut" } : { duration: 0.2 }}
+              animate={errorMode
+                ? { rotate: [0, -9, 9, -7, 7, 0] }
+                : showPill
+                  ? { rotate: [0, -12, 12, -8, 8, 0] }
+                  : { rotate: 0 }}
+              transition={errorMode
+                ? { duration: 0.65, ease: "easeInOut", repeat: Infinity, repeatDelay: 1.8 }
+                : showPill
+                  ? { duration: 0.6, ease: "easeInOut" }
+                  : { duration: 0.2 }}
               style={{ width: 46, height: 46, objectFit: "contain", display: "block" }}
             />
           </Box>

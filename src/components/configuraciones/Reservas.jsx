@@ -10,12 +10,14 @@ import {
   TableCell,
   TableBody,
   CircularProgress,
+  Chip,
   useTheme,
   useMediaQuery,
   Pagination
 } from "@mui/material";
 import { motion } from "framer-motion";
 import { useOutletContext } from "react-router-dom";
+import CreditCardIcon from "@mui/icons-material/CreditCard";
 
 const Reservas = () => {
   const [reservas, setReservas] = useState([]);
@@ -56,11 +58,23 @@ const Reservas = () => {
     <Box sx={{ flex: 1, minWidth: 0, overflowY: "auto", overflowX: "hidden", pb: 4, px: { xs: 1, md: 4 }, pt: 2 }}>
 
           {/* Encabezado */}
-          <Box display="flex" alignItems="center" gap={0.3} mb={2} sx={{ px: 2, py: 1, borderRadius: 2, bgcolor: temaOscuro ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)" }}>
-            <Box component="img" src="/logo-transbank.png" alt="Transbank" sx={{ height: { xs: 14, sm: 24 }, mt: "-2px", width: "auto", objectFit: "contain" }} />
-            <Typography variant="h6" fontWeight={800} sx={{ color: temaOscuro ? "#fff" : "#1b263b", fontSize: { xs: "0.8rem", sm: "1.1rem" } }}>
-              Transacciones recibidas – Reservas
-            </Typography>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2.5 }}>
+            <Box sx={{ width: 38, height: 38, borderRadius: 1.5, flexShrink: 0, border: `1px solid ${temaOscuro ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.08)"}`, bgcolor: temaOscuro ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <CreditCardIcon sx={{ fontSize: 20, color: temaOscuro ? "rgba(255,255,255,0.7)" : "#1b263b" }} />
+            </Box>
+            <Box>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Typography sx={{ fontSize: { xs: "1rem", md: "1.1rem" }, fontWeight: 700, color: temaOscuro ? "#fff" : "#1b263b", lineHeight: 1.2 }}>
+                  Reservas
+                </Typography>
+                <Box sx={{ display: "flex", alignItems: "center", height: 18, borderRadius: 0.75, bgcolor: "rgba(0,102,204,0.15)", border: "1px solid rgba(0,102,204,0.3)", px: 0.75 }}>
+                  <Box component="img" src="/logo-transbank.png" alt="Transbank" sx={{ height: 11, width: "auto", objectFit: "contain" }} />
+                </Box>
+              </Box>
+              <Typography sx={{ fontSize: "0.72rem", color: temaOscuro ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.45)" }}>
+                Transacciones · Pagos · Historial
+              </Typography>
+            </Box>
           </Box>
 
           {loading ? (

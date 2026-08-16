@@ -292,9 +292,9 @@ const Dashboard = () => {
                 minWidth: 0,
                 overflowY: "auto",
                 overflowX: "hidden",
-                pb: 4,
+                pb: 2,
                 px: { xs: 1, md: 4 },
-                pt: 2,
+                pt: 1,
                 bgcolor: temaOscuro ? "#0a0a0a" : "#f0f0f0",
             }}
         >
@@ -320,23 +320,31 @@ const Dashboard = () => {
                   <Box sx={{ position: "relative", borderRadius: 3, border: "1px solid rgba(255,255,255,0.15)", overflow: "hidden", px: { xs: 2.5, md: 4, lg: 5 }, py: { xs: 2.5, md: 6.5, lg: 8 } }}>
                     <Box sx={{ position: "absolute", inset: 0, zIndex: 0, background: (forzarPrd || import.meta.env.PROD) ? "linear-gradient(135deg, #0a0a0a 0%, #160505 30%, rgba(120,10,10,0.55) 58%, rgba(150,10,10,0.85) 78%, #8B0000 100%)" : "linear-gradient(135deg, #0a0a0a 0%, #161616 28%, rgba(17,31,17,1) 52%, rgba(25,60,27,1) 75%, #2e7d32 100%)" }} />
                     <Box sx={{ position: "absolute", inset: 0, zIndex: 0, opacity: 0.6, backgroundImage: ["repeating-linear-gradient(0deg, transparent, transparent 19px, rgba(255,255,255,0.05) 19px, rgba(255,255,255,0.05) 20px, transparent 20px, transparent 39px, rgba(255,255,255,0.05) 39px, rgba(255,255,255,0.05) 40px)", "repeating-linear-gradient(90deg, transparent, transparent 19px, rgba(255,255,255,0.05) 19px, rgba(255,255,255,0.05) 20px, transparent 20px, transparent 39px, rgba(255,255,255,0.05) 39px, rgba(255,255,255,0.05) 40px)", "radial-gradient(circle at 20px 20px, rgba(255,255,255,0.08) 2px, transparent 2px)", "radial-gradient(circle at 40px 40px, rgba(255,255,255,0.08) 2px, transparent 2px)"].join(", "), backgroundSize: "40px 40px, 40px 40px, 40px 40px, 40px 40px" }} />
-                    {/* Íconos — grupo principal (bolt, package con -translateX, grid) */}
-                    <Box sx={{ position: "absolute", top: "50%", right: { xs: 10, md: 100 }, transform: "translateY(-50%)", zIndex: 1, pointerEvents: "none", maskImage: { xs: "linear-gradient(to right, white 40%, transparent 100%)", md: "none" } }}>
-                      {[{ icon: icons[0], tx: 0, txXs: 0 }, { icon: icons[1], tx: -40, txXs: -20 }, { icon: icons[2], tx: 0, txXs: 0 }].map(({ icon, tx, txXs }, i) => (
-                        <Box key={i} sx={{ ...iconBoxSx, transform: { xs: txXs ? `translateX(${txXs}px)` : "none", md: tx ? `translateX(${tx}px)` : "none" } }}>
-                          <svg xmlns="http://www.w3.org/2000/svg" width={isMobile ? 12 : 18} height={isMobile ? 12 : 18} viewBox="0 0 24 24" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.8)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">{icon}</svg>
-                          {dashedLines.map((style, j) => <Box key={j} sx={{ position: "absolute", ...style, display: { xs: "none", md: "block" } }} />)}
+                    {/* Íconos — desktop: columna con offsets / mobile: grid 2×2 */}
+                    {/* Desktop */}
+                    <Box sx={{ display: { xs: "none", md: "block" }, position: "absolute", top: "50%", right: 100, transform: "translateY(-50%)", zIndex: 1, pointerEvents: "none" }}>
+                      {[{ icon: icons[0], tx: 0 }, { icon: icons[1], tx: -40 }, { icon: icons[2], tx: 0 }].map(({ icon, tx }, i) => (
+                        <Box key={i} sx={{ ...iconBoxSx, transform: tx ? `translateX(${tx}px)` : "none" }}>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.8)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">{icon}</svg>
+                          {dashedLines.map((style, j) => <Box key={j} sx={{ position: "absolute", ...style }} />)}
                         </Box>
                       ))}
                     </Box>
-                    {/* Ícono CPU — translate-x-full, se desvanece a la derecha */}
-                    <Box sx={{ display: { xs: "none", md: "block" }, position: "absolute", top: "50%", right: { xs: 10, md: 100 }, transform: "translateY(-50%)", zIndex: 1, pointerEvents: "none" }}>
+                    <Box sx={{ display: { xs: "none", md: "block" }, position: "absolute", top: "50%", right: 100, transform: "translateY(-50%)", zIndex: 1, pointerEvents: "none" }}>
                       <Box sx={{ ...iconBoxSx, transform: "translateX(40px)", maskImage: "linear-gradient(to right, white 75%, transparent 100%)" }}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.8)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">{icons[3]}</svg>
                         {dashedLines.map((style, j) => <Box key={j} sx={{ position: "absolute", ...style }} />)}
                       </Box>
                     </Box>
-                    <Box sx={{ position: "relative", zIndex: 2, maxWidth: 520 }}>
+                    {/* Mobile: grid 2×2 */}
+                    <Box sx={{ display: { xs: "grid", md: "none" }, gridTemplateColumns: "1fr 1fr", gap: "2px", position: "absolute", top: "50%", right: 10, transform: "translateY(-50%)", zIndex: 1, pointerEvents: "none", maskImage: "linear-gradient(to left, white 55%, transparent 100%)" }}>
+                      {icons.map((icon, i) => (
+                        <Box key={i} sx={{ width: 30, height: 30, border: "1px solid rgba(255,255,255,0.22)", bgcolor: "rgba(255,255,255,0.07)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">{icon}</svg>
+                        </Box>
+                      ))}
+                    </Box>
+                    <Box sx={{ position: "relative", zIndex: 2, maxWidth: 520, pr: { xs: "88px", md: 0 } }}>
                       <Typography sx={{ fontSize: { xs: "1rem", md: "1.25rem", lg: "1.55rem" }, fontWeight: 500, color: "#fff", letterSpacing: "-0.035em", lineHeight: 1.2, fontFamily: "'Poppins', sans-serif" }}>
                         Hola, {nombreUsuario} {usuario?.usuario === "iaguilera" ? "😎" : ""}
                       </Typography>

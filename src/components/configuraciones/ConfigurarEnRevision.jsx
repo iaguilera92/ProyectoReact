@@ -75,11 +75,21 @@ const ConfigurarEnRevision = () => {
     <Box sx={{ flex: 1, minWidth: 0, overflowY: "auto", overflowX: "hidden", pb: 4, px: { xs: 1, md: 4 }, pt: 2 }}>
 
           {/* Título */}
-          <Box display="flex" alignItems="center" gap={1} pb={2}>
-            <SettingsSuggestIcon sx={{ color: temaOscuro ? "rgba(255,255,255,0.7)" : "#1b263b" }} />
-            <Typography variant="h6" sx={{ color: temaOscuro ? "#fff" : "#1b263b", fontWeight: 700, fontSize: "1.1rem" }}>
-              Trabajos en Revisión
-            </Typography>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2.5 }}>
+            <Box sx={{ width: 38, height: 38, borderRadius: 1.5, flexShrink: 0, border: `1px solid ${temaOscuro ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.08)"}`, bgcolor: temaOscuro ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <SettingsSuggestIcon sx={{ fontSize: 20, color: temaOscuro ? "rgba(255,255,255,0.7)" : "#1b263b" }} />
+            </Box>
+            <Box>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Typography sx={{ fontSize: { xs: "1rem", md: "1.1rem" }, fontWeight: 700, color: temaOscuro ? "#fff" : "#1b263b", lineHeight: 1.2 }}>
+                  Trabajos en Revisión
+                </Typography>
+                <Chip label="Revisión" size="small" sx={{ height: 18, fontSize: "0.6rem", fontWeight: 800, letterSpacing: "0.06em", bgcolor: "rgba(251,146,60,0.15)", color: "#fb923c", border: "1px solid rgba(251,146,60,0.3)" }} />
+              </Box>
+              <Typography sx={{ fontSize: "0.72rem", color: temaOscuro ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.45)" }}>
+                Revisión · Seguimiento · Entrega
+              </Typography>
+            </Box>
           </Box>
 
           {/* Tabla */}

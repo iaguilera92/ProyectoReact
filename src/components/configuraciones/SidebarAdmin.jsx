@@ -113,8 +113,11 @@ export default function SidebarAdmin({ open, temaOscuro = true, onTemaChange, on
             sx={{ display: "flex", alignItems: "center", gap: 1.5, px: 1.5, height: 56, borderRadius: 1.5, cursor: "pointer", transition: "background 0.15s", "&:hover": { bgcolor: C.hover } }}
           >
             <Box sx={{ width: 32, height: 32, borderRadius: 1, bgcolor: ACENT, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none" style={{ color: "#fff" }}>
-                <path d="M17 3.34a10 10 0 1 1 -15 8.66l.005 -.324a10 10 0 0 1 14.995 -8.336zm-5 2.66a1 1 0 0 0 -1 1a3 3 0 1 0 0 6v2a1.024 1.024 0 0 1 -.866 -.398l-.068 -.101a1 1 0 0 0 -1.732 .998a3 3 0 0 0 2.505 1.5h.161a1 1 0 0 0 .883 .994l.117 .007a1 1 0 0 0 1 -1l.176 -.005a3 3 0 0 0 -.176 -5.995v-2c.358 -.012 .671 .14 .866 .398l.068 .101a1 1 0 0 0 1.732 -.998a3 3 0 0 0 -2.505 -1.501h-.161a1 1 0 0 0 -1 -1zm1 7a1 1 0 0 1 0 2v-2zm-2 -4v2a1 1 0 0 1 0 -2z"/>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ color: "#fff" }}>
+                <rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/>
+                <rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/>
+                <rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/>
+                <rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/>
               </svg>
             </Box>
             <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -163,7 +166,7 @@ export default function SidebarAdmin({ open, temaOscuro = true, onTemaChange, on
               API REST - Plataformas web
             </MenuItem>
             <MenuItem
-              onClick={() => { setAppsAnchor(null); window.open("https://dev.azure.com/plataformasweb/API-REST/_build?definitionId=2", "_blank"); }}
+              onClick={() => { setAppsAnchor(null); window.open("https://dev.azure.com/plataformasweb/API-REST/_build", "_blank"); }}
               sx={{ borderRadius: 1.5, gap: 1.5, py: 1, px: 1.5, color: C.textMuted, fontSize: "0.85rem", "&:hover": { bgcolor: C.hover, color: C.text } }}
             >
               <Box sx={{ width: 28, height: 28, borderRadius: 1.5, overflow: "hidden", flexShrink: 0 }}>

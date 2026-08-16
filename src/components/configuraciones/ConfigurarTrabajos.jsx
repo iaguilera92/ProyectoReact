@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Box, Typography, IconButton, Snackbar, Alert, Container, Paper, Slider, Tooltip, useTheme, useMediaQuery } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Box, Typography, IconButton, Snackbar, Alert, Container, Paper, Slider, Tooltip, Chip, useTheme, useMediaQuery } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
 import RestoreIcon from "@mui/icons-material/Restore";
@@ -389,15 +389,26 @@ const ConfigurarTrabajos = () => {
   };
 
   return (
-    <Box sx={{ flex: 1, minWidth: 0, overflowY: "auto", overflowX: "hidden", pb: 4, px: { xs: 1, md: 4 }, pt: 2 }}>
+    <Box sx={{ flex: 1, minWidth: 0, overflowY: "auto" }}>
+    <Box sx={{ px: { xs: 1, md: 4 }, pt: 2, pb: 4, overflowX: "hidden" }}>
 
       {/* Header */}
-      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2.5, flexWrap: "wrap", gap: 1.5 }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <SettingsSuggestIcon sx={{ color: temaOscuro ? "rgba(255,255,255,0.7)" : "#1b263b", fontSize: 22 }} />
-          <Typography variant="h6" sx={{ color: temaOscuro ? "#fff" : "#1b263b", fontWeight: 700, fontSize: "1.1rem" }}>
-            Configurar trabajos
-          </Typography>
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2.5, gap: 1.5 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, minWidth: 0, flex: 1 }}>
+          <Box sx={{ width: 38, height: 38, borderRadius: 1.5, flexShrink: 0, border: `1px solid ${temaOscuro ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.08)"}`, bgcolor: temaOscuro ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <SettingsSuggestIcon sx={{ fontSize: 20, color: temaOscuro ? "rgba(255,255,255,0.7)" : "#1b263b" }} />
+          </Box>
+          <Box sx={{ minWidth: 0 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 0 }}>
+              <Typography sx={{ fontSize: { xs: "1rem", md: "1.1rem" }, fontWeight: 700, color: temaOscuro ? "#fff" : "#1b263b", lineHeight: 1.2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                Configurar Trabajos
+              </Typography>
+              <Chip label="Admin" size="small" sx={{ height: 18, fontSize: "0.6rem", fontWeight: 800, letterSpacing: "0.06em", bgcolor: "rgba(139,0,0,0.15)", color: "#f87171", border: "1px solid rgba(139,0,0,0.3)" }} />
+            </Box>
+            <Typography sx={{ fontSize: "0.72rem", color: temaOscuro ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.45)" }}>
+              Gestión · Progreso · Seguimiento
+            </Typography>
+          </Box>
         </Box>
         <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
           <Button
@@ -430,7 +441,8 @@ const ConfigurarTrabajos = () => {
               display: { xs: "flex", md: "grid" },
               flexDirection: "column",
               gridTemplateColumns: { md: "repeat(2, 1fr)", xl: "repeat(3, 1fr)" },
-              gap: { xs: 0.5, sm: 0.75, md: 1.5 },
+              alignItems: "stretch",
+              gap: { xs: 1.5, sm: 1.5, md: 1.5 },
               mt: mostrarPaginacion ? 1 : 0,
               opacity: loadingSaveAll ? 0.5 : 1,
               pointerEvents: loadingSaveAll ? "none" : "auto",
@@ -448,12 +460,14 @@ const ConfigurarTrabajos = () => {
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.25, delay: index * 0.04 }}
+                  style={{ height: "100%", minWidth: 0 }}
                 >
                   <Paper
                     elevation={0}
                     sx={{
                       borderRadius: 3,
                       overflow: "hidden",
+                      height: "100%",
                       border: listo
                         ? "1px solid rgba(76,175,80,0.3)"
                         : activo
@@ -461,11 +475,11 @@ const ConfigurarTrabajos = () => {
                         : "1px solid rgba(239,83,80,0.2)",
                       bgcolor: temaOscuro ? "#1a1a1a" : "#fff",
                       position: "relative",
-                      p: { xs: 1.75, md: 2 },
+                      p: 1.5,
                       display: "flex",
-                      flexDirection: { xs: "column", md: "row" },
-                      alignItems: { xs: "stretch", md: "center" },
-                      gap: { xs: 1.25, md: 2 },
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                      gap: 0.75,
                       transition: "all 0.2s",
                       "&:hover": {
                         borderTopLeftRadius: 0,
@@ -479,100 +493,105 @@ const ConfigurarTrabajos = () => {
                     {/* Accent bar izquierda */}
                     <Box className="accent-bar" sx={{ position: "absolute", inset: "0 auto 0 0", width: 3.5, bgcolor: listo ? "#4caf50" : "#8B0000", transform: "scaleY(0)", transformOrigin: "center", transition: "transform 0.2s", zIndex: 1 }} />
 
-                    {/* Fila superior en mobile: ícono + título + badges */}
+                    {/* Fila superior: ícono + título + botones + flecha */}
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, zIndex: 2 }}>
-                      {/* Caja ícono */}
-                      <Box sx={{ width: { xs: 44, md: 48 }, height: { xs: 44, md: 48 }, borderRadius: 2, bgcolor: listo ? "rgba(56,142,60,0.15)" : activo ? "rgba(139,0,0,0.18)" : "rgba(80,0,0,0.12)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                        <Typography sx={{ fontSize: { xs: "1.5rem", md: "1.4rem" }, lineHeight: 1 }}>
+                      {/* Ícono */}
+                      <Box sx={{ width: 38, height: 38, borderRadius: 1.5, bgcolor: listo ? "rgba(56,142,60,0.15)" : activo ? "rgba(139,0,0,0.18)" : "rgba(80,0,0,0.12)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <Typography sx={{ fontSize: "1.4rem", lineHeight: 1 }}>
                           {Number(trabajo.TipoApp || trabajo.tipoApp) === 1 ? "🌐" : "⚙️"}
                         </Typography>
                       </Box>
 
                       {/* Título + badges */}
                       <Box sx={{ flex: 1, minWidth: 0 }}>
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, mb: { xs: 0.4, md: 0.75 } }}>
-                          <Typography sx={{ fontWeight: 600, fontSize: { xs: "1rem", md: "0.9rem" }, color: temaOscuro ? "#fff" : "#111", fontFamily: "Poppins, sans-serif", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
+                          <Typography sx={{ fontWeight: 600, fontSize: "0.9rem", color: temaOscuro ? "#fff" : "#111", fontFamily: "Poppins, sans-serif", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>
                             {trabajo.SitioWeb}
                           </Typography>
                           <Box sx={{ px: 0.9, py: 0.1, borderRadius: "999px", backgroundImage: getGradient(pct), flexShrink: 0 }}>
-                            <Typography sx={{ fontSize: { xs: "0.7rem", md: "0.6rem" }, fontWeight: 800, color: "#fff", lineHeight: 1.7 }}>{pct}%</Typography>
+                            <Typography sx={{ fontSize: "0.62rem", fontWeight: 800, color: "#fff", lineHeight: 1.7 }}>{pct}%</Typography>
                           </Box>
-                          {!activo && <Typography sx={{ fontSize: { xs: "0.68rem", md: "0.6rem" }, color: "#ef5350", fontWeight: 700, flexShrink: 0 }}>INACTIVO</Typography>}
-                          {listo && activo && <Typography sx={{ fontSize: { xs: "0.68rem", md: "0.6rem" }, color: "#66bb6a", fontWeight: 700, flexShrink: 0 }}>✓ LISTO</Typography>}
-                        </Box>
-                        {/* Slider — solo en desktop dentro de este bloque */}
-                        <Box sx={{ display: { xs: "none", md: "block" } }}>
-                          <Slider
-                            value={pct}
-                            onChange={(_, v) => handleChange(trabajo.SitioWeb, "Porcentaje", v)}
-                            step={5} min={0} max={100} size="small"
-                            sx={{
-                              py: "2px",
-                              "& .MuiSlider-track": { backgroundImage: getGradient(pct), border: "none", height: 4 },
-                              "& .MuiSlider-rail": { height: 4, opacity: temaOscuro ? 0.12 : 0.2, backgroundColor: temaOscuro ? "#fff" : "#000" },
-                              "& .MuiSlider-thumb": { width: 12, height: 12, "&:hover, &.Mui-focusVisible": { boxShadow: "0 0 0 6px rgba(255,255,255,0.1)" } },
-                            }}
-                          />
+                          {!activo && <Typography sx={{ fontSize: "0.62rem", color: "#ef5350", fontWeight: 700, flexShrink: 0 }}>INACTIVO</Typography>}
+                          {listo && activo && <Typography sx={{ fontSize: "0.62rem", color: "#66bb6a", fontWeight: 700, flexShrink: 0 }}>✓ LISTO</Typography>}
                         </Box>
                       </Box>
 
-                      {/* Botones + flecha en desktop */}
-                      <Box sx={{ display: { xs: "none", md: "flex" }, gap: 0, flexShrink: 0, zIndex: 2 }}>
-                        <ActionButton compact title="Editar" color="info" onClick={() => editarTrabajo(trabajo)} icon={<EditRoundedIcon />} />
-                        <ActionButton compact title={activo ? "Guardar" : "Eliminar"} color={activo ? "primary" : "error"}
-                          onClick={() => activo ? handleGuardarClick({ ...trabajo, ...pending }) : abrirDialog(trabajo)}
-                          icon={activo ? (loadingSave === trabajo.SitioWeb ? <CircularProgress size={16} color="inherit" /> : <SaveIcon />) : <DeleteIcon />}
-                        />
-                        <ActionButton compact title={activo ? "Eliminar" : "Restaurar"} color={activo ? "error" : "success"}
-                          onClick={() => activo ? abrirDialog(trabajo) : restaurarTrabajo(trabajo)}
-                          icon={activo ? <DeleteIcon /> : <RestoreIcon />}
-                        />
-                      </Box>
+                      {/* Flecha circular */}
                       {Number(trabajo.TipoApp || trabajo.tipoApp) === 1 && (
-                        <Box sx={{ display: { xs: "none", md: "flex" } }}
-                          className="arrow-icon" component="a" href={`https://${trabajo.SitioWeb}`} target="_blank" rel="noopener noreferrer"
-                          style={{ color: temaOscuro ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.25)", transition: "color 0.2s", textDecoration: "none", alignItems: "center", flexShrink: 0 }}
-                        >
-                          <ArrowForwardIcon sx={{ fontSize: "1.1rem" }} />
-                        </Box>
+                        <Tooltip title={`Ir a ${trabajo.SitioWeb}`} arrow>
+                          <Box
+                            component="a" href={`https://${trabajo.SitioWeb}`} target="_blank" rel="noopener noreferrer"
+                            sx={{
+                              width: 34, height: 34, borderRadius: "50%", flexShrink: 0,
+                              display: "flex", alignItems: "center", justifyContent: "center",
+                              border: `1px solid ${temaOscuro ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.12)"}`,
+                              color: temaOscuro ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.4)",
+                              textDecoration: "none",
+                              transition: "all 0.18s",
+                              "&:hover": {
+                                bgcolor: "#8B0000",
+                                borderColor: "#8B0000",
+                                color: "#fff",
+                                transform: "scale(1.08)",
+                              },
+                            }}
+                          >
+                            <ArrowForwardIcon sx={{ fontSize: "1rem" }} />
+                          </Box>
+                        </Tooltip>
                       )}
                     </Box>
 
-                    {/* Slider mobile */}
-                    <Box sx={{ display: { xs: "block", md: "none" }, px: 0.5, zIndex: 2 }}>
+                    {/* Slider */}
+                    <Box sx={{ px: 0.5, zIndex: 2 }}>
                       <Slider
                         value={pct}
                         onChange={(_, v) => handleChange(trabajo.SitioWeb, "Porcentaje", v)}
-                        step={5} min={0} max={100}
+                        step={5} min={0} max={100} size="small"
                         sx={{
-                          py: "4px",
-                          "& .MuiSlider-track": { backgroundImage: getGradient(pct), border: "none", height: 6 },
-                          "& .MuiSlider-rail": { height: 6, opacity: temaOscuro ? 0.15 : 0.22, backgroundColor: temaOscuro ? "#fff" : "#000" },
-                          "& .MuiSlider-thumb": { width: 22, height: 22, "&:hover, &.Mui-focusVisible": { boxShadow: "0 0 0 8px rgba(255,255,255,0.1)" } },
+                          py: "2px",
+                          "& .MuiSlider-track": { backgroundImage: getGradient(pct), border: "none", height: 4 },
+                          "& .MuiSlider-rail": { height: 4, opacity: temaOscuro ? 0.35 : 0.2, backgroundColor: temaOscuro ? "#fff" : "#000" },
+                          "& .MuiSlider-thumb": { width: 14, height: 14, "&:hover, &.Mui-focusVisible": { boxShadow: "0 0 0 6px rgba(255,255,255,0.1)" } },
                         }}
                       />
                     </Box>
 
-                    {/* Botones + flecha en mobile */}
-                    <Box sx={{ display: { xs: "flex", md: "none" }, alignItems: "center", justifyContent: "space-between", zIndex: 2 }}>
-                      <Box sx={{ display: "flex", gap: 0.5 }}>
-                        <ActionButton title="Editar" color="info" onClick={() => editarTrabajo(trabajo)} icon={<EditRoundedIcon />} />
-                        <ActionButton title={activo ? "Guardar" : "Eliminar"} color={activo ? "primary" : "error"}
-                          onClick={() => activo ? handleGuardarClick({ ...trabajo, ...pending }) : abrirDialog(trabajo)}
-                          icon={activo ? (loadingSave === trabajo.SitioWeb ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />) : <DeleteIcon />}
-                        />
-                        <ActionButton title={activo ? "Eliminar" : "Restaurar"} color={activo ? "error" : "success"}
-                          onClick={() => activo ? abrirDialog(trabajo) : restaurarTrabajo(trabajo)}
-                          icon={activo ? <DeleteIcon /> : <RestoreIcon />}
-                        />
-                      </Box>
-                      {Number(trabajo.TipoApp || trabajo.tipoApp) === 1 && (
-                        <Box component="a" href={`https://${trabajo.SitioWeb}`} target="_blank" rel="noopener noreferrer"
-                          sx={{ color: temaOscuro ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.35)", display: "flex", alignItems: "center", textDecoration: "none", p: 0.5 }}
+                    {/* Acciones — parte inferior de la card */}
+                    <Box sx={{
+                      display: "flex", zIndex: 2,
+                      borderTop: `1px solid ${temaOscuro ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.08)"}`,
+                      mx: -1.5, mb: -1.5,
+                      overflow: "hidden",
+                      borderBottomLeftRadius: 12, borderBottomRightRadius: 12,
+                    }}>
+                      {[
+                        { label: "Editar", icon: <EditRoundedIcon sx={{ fontSize: 14 }} />, color: "#42a5f5", hoverBg: "rgba(66,165,245,0.1)", onClick: () => editarTrabajo(trabajo) },
+                        {
+                          label: activo ? "Guardar" : "Restaurar",
+                          icon: activo ? (loadingSave === trabajo.SitioWeb ? <CircularProgress size={13} color="inherit" /> : <SaveIcon sx={{ fontSize: 14 }} />) : <RestoreIcon sx={{ fontSize: 14 }} />,
+                          color: "#4ade80",
+                          hoverBg: "rgba(74,222,128,0.1)",
+                          onClick: () => activo ? handleGuardarClick({ ...trabajo, ...pending }) : restaurarTrabajo(trabajo),
+                        },
+                        { label: "Eliminar", icon: <DeleteIcon sx={{ fontSize: 14 }} />, color: "#f87171", hoverBg: "rgba(248,113,113,0.1)", onClick: () => abrirDialog(trabajo) },
+                      ].map(({ label, icon, color, hoverBg, onClick }, idx, arr) => (
+                        <Box
+                          key={label}
+                          onClick={onClick}
+                          sx={{
+                            flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 0.6,
+                            py: 0.9, cursor: "pointer",
+                            borderRight: idx < arr.length - 1 ? `1px solid ${temaOscuro ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.08)"}` : "none",
+                            color: temaOscuro ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)",
+                            transition: "all 0.15s",
+                            "&:hover": { bgcolor: hoverBg, color },
+                          }}
                         >
-                          <ArrowForwardIcon sx={{ fontSize: "1.4rem" }} />
+                          {icon}
+                          <Typography sx={{ fontSize: "0.7rem", fontWeight: 600, lineHeight: 1 }}>{label}</Typography>
                         </Box>
-                      )}
+                      ))}
                     </Box>
                   </Paper>
                 </motion.div>
@@ -680,6 +699,7 @@ const ConfigurarTrabajos = () => {
         />
 
 
+    </Box>
     </Box>
   );
 };
