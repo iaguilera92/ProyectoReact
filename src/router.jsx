@@ -3,6 +3,7 @@ import { lazy, Suspense } from "react";
 import { createBrowserRouter, Navigate, useOutletContext } from "react-router-dom";
 import { Box, CircularProgress, Typography } from "@mui/material";
 import App from "./App";
+import AdminLayout from "./components/configuraciones/AdminLayout";
 const Servicios = lazy(() => import("./components/Servicios"));
 const Nosotros = lazy(() => import("./components/Nosotros"));
 const Contacto = lazy(() => import("./components/Contacto"));
@@ -18,6 +19,7 @@ const ConfigurarEnRevision = lazy(() => import("./components/configuraciones/Con
 const Clientes = lazy(() => import("./components/configuraciones/Clientes"));
 const Reserva = lazy(() => import("./components/Reserva"));
 const Reservas = lazy(() => import("./components/configuraciones/Reservas"));
+const PruebasQAS = lazy(() => import("./components/configuraciones/PruebasQAS"));
 const Suscripcion = lazy(() => import("./components/Suscripcion"));
 const SuscripcionPayPal = lazy(() => import("./components/SuscripcionPayPal"));
 //LEGAL
@@ -67,6 +69,12 @@ const withSuspense = (Component) => (
     </Suspense>
 );
 
+const withSuspenseAdmin = (Component) => (
+    <Suspense fallback={<Box sx={{ minHeight: "100vh", bgcolor: "rgba(8,8,12,0.97)" }} />}>
+        <Component />
+    </Suspense>
+);
+
 // ✅ Función para proteger rutas con autenticación
 const isAuthenticated = () => {
     const creds = sessionStorage.getItem("credenciales");
@@ -101,7 +109,6 @@ const router = createBrowserRouter(
                 { path: "contacto", element: withSuspense(Contacto) },
                 { path: "administracion", element: withSuspense(Administracion) },
                 { path: "catalogo", element: withSuspense(Catalogo) },
-                { path: "dashboard", element: withSuspense(Dashboard) },
                 { path: "mmansoulet", element: withSuspense(Mmansoulet) },
                 { path: "reserva", element: withSuspense(Reserva) },
                 { path: "suscripcion", element: withSuspense(Suscripcion) },
@@ -114,41 +121,25 @@ const router = createBrowserRouter(
                     path: "configurar-servicios",
                     element: (
                         <ProtectedRoute>
-                            {withSuspense(ConfigurarServicios)}
+                            {withSuspenseAdmin(ConfigurarServicios)}
                         </ProtectedRoute>
                     ),
                 },
+                // Admin layout compartido — sidebar y navbar persistentes
                 {
-                    path: "configurar-trabajos",
                     element: (
                         <ProtectedRoute>
-                            {withSuspense(ConfigurarTrabajos)}
+                            <AdminLayout />
                         </ProtectedRoute>
                     ),
-                },
-                {
-                    path: "configurar-en-revision",
-                    element: (
-                        <ProtectedRoute>
-                            {withSuspense(ConfigurarEnRevision)}
-                        </ProtectedRoute>
-                    ),
-                },
-                {
-                    path: "clientes",
-                    element: (
-                        <ProtectedRoute>
-                            {withSuspense(Clientes)}
-                        </ProtectedRoute>
-                    ),
-                },
-                {
-                    path: "reservas",
-                    element: (
-                        <ProtectedRoute>
-                            {withSuspense(Reservas)}
-                        </ProtectedRoute>
-                    ),
+                    children: [
+                        { path: "dashboard",              element: withSuspenseAdmin(Dashboard) },
+                        { path: "clientes",               element: withSuspenseAdmin(Clientes) },
+                        { path: "reservas",               element: withSuspenseAdmin(Reservas) },
+                        { path: "configurar-trabajos",    element: withSuspenseAdmin(ConfigurarTrabajos) },
+                        { path: "configurar-en-revision", element: withSuspenseAdmin(ConfigurarEnRevision) },
+                        { path: "pruebas-qas",            element: withSuspenseAdmin(PruebasQAS) },
+                    ],
                 },
             ],
         },

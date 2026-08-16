@@ -2,8 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { IconButton, Snackbar, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Paper, Typography, useMediaQuery, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@mui/material";
 import { styled, keyframes } from "@mui/system";
 import { cargarClientesDesdeExcel } from "../../helpers/HelperClientes";
-import NavbarAdmin from './NavbarAdmin';
-import SidebarAdmin from './SidebarAdmin';
+import { useOutletContext } from "react-router-dom";
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import GroupIcon from "@mui/icons-material/Group";
 import emailjs from "@emailjs/browser";
@@ -142,11 +141,7 @@ const Clientes = () => {
   const [cobrando, setCobrando] = useState(false);
   const [botonesDeshabilitados, setBotonesDeshabilitados] = useState(false);
   const [mostrarTextoAgregar, setMostrarTextoAgregar] = useState(true);
-  const [sidebarOpen, setSidebarOpen] = useState(() => localStorage.getItem("pw-sidebar") !== "false");
-  const toggleSidebar = () => setSidebarOpen(p => { const next = !p; localStorage.setItem("pw-sidebar", String(next)); return next; });
-  const [temaOscuro, setTemaOscuro] = useState(() => localStorage.getItem("pw-tema") !== "claro");
-  const handleTema = (oscuro) => { setTemaOscuro(oscuro); localStorage.setItem("pw-tema", oscuro ? "oscuro" : "claro"); };
-  const [forzarPrd, setForzarPrd] = useState(false);
+  const { temaOscuro, forzarPrd, setNavbarAccion } = useOutletContext();
 
   const datosCliente = (cliente) => { setClienteSeleccionado(cliente); setOpenDialogCliente(true); };
   const MotionBox = motion.create(Box);
@@ -841,53 +836,47 @@ const Clientes = () => {
     }
   };
 
+  useEffect(() => {
+    setNavbarAccion(
+      <Button
+        onClick={() => agregarCliente()}
+        variant="outlined"
+        size="small"
+        sx={{
+          color: temaOscuro ? "white" : "#111",
+          borderColor: temaOscuro ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.3)",
+          fontSize: "0.75rem",
+          px: 1,
+          py: 0.4,
+          minWidth: 36,
+          display: "flex",
+          alignItems: "center",
+          gap: 0,
+          overflow: "hidden",
+          "&:hover": { backgroundColor: temaOscuro ? "#ffffff22" : "#00000011", borderColor: temaOscuro ? "#fff" : "#000" },
+        }}
+      >
+        <AddIcon sx={{ fontSize: 18, flexShrink: 0 }} />
+        <AnimatePresence>
+          {mostrarTextoAgregar && (
+            <motion.span
+              initial={{ maxWidth: 130, opacity: 1, marginLeft: 4 }}
+              exit={{ maxWidth: 0, opacity: 0, marginLeft: 0 }}
+              transition={{ duration: 0.35, ease: "easeInOut" }}
+              style={{ overflow: "hidden", whiteSpace: "nowrap", display: "block" }}
+            >
+              Agregar Cliente
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </Button>
+    );
+    return () => setNavbarAccion(null);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [temaOscuro, mostrarTextoAgregar]);
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden", bgcolor: temaOscuro ? "#0a0a0a" : "#f0f0f0" }}>
-      <NavbarAdmin
-        titulo="Clientes"
-        temaOscuro={temaOscuro}
-        onMenuClick={toggleSidebar}
-        forzarPrd={forzarPrd}
-        onForzarPrd={setForzarPrd}
-        accion={
-          <Button
-            onClick={() => agregarCliente()}
-            variant="outlined"
-            size="small"
-            sx={{
-              color: temaOscuro ? "white" : "#111",
-              borderColor: temaOscuro ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.3)",
-              fontSize: "0.75rem",
-              px: 1,
-              py: 0.4,
-              minWidth: 36,
-              display: "flex",
-              alignItems: "center",
-              gap: 0,
-              overflow: "hidden",
-              "&:hover": { backgroundColor: temaOscuro ? "#ffffff22" : "#00000011", borderColor: temaOscuro ? "#fff" : "#000" },
-            }}
-          >
-            <AddIcon sx={{ fontSize: 18, flexShrink: 0 }} />
-            <AnimatePresence>
-              {mostrarTextoAgregar && (
-                <motion.span
-                  initial={{ maxWidth: 130, opacity: 1, marginLeft: 4 }}
-                  exit={{ maxWidth: 0, opacity: 0, marginLeft: 0 }}
-                  transition={{ duration: 0.35, ease: "easeInOut" }}
-                  style={{ overflow: "hidden", whiteSpace: "nowrap", display: "block" }}
-                >
-                  Agregar Cliente
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </Button>
-        }
-      />
-      <Box sx={{ display: "flex", flex: 1, overflow: "hidden" }}>
-        <SidebarAdmin open={sidebarOpen} temaOscuro={temaOscuro} onTemaChange={handleTema} onClose={() => { setSidebarOpen(false); localStorage.setItem("pw-sidebar", "false"); }} esPrd={forzarPrd} />
-        <Box sx={{ flex: 1, minWidth: 0, width: 0, overflowY: "auto", overflowX: "hidden", pb: 4, px: { xs: 1, md: 3 }, pt: 2 }}>
+    <Box sx={{ flex: 1, minWidth: 0, overflowY: "auto", overflowX: "hidden", pb: 4, px: { xs: 1, md: 3 }, pt: 2 }}>
 
       <Box sx={{ width: "100%" }}>
 
@@ -907,7 +896,7 @@ const Clientes = () => {
                 background: "linear-gradient(145deg, #0a3d1a 0%, #1b5e20 60%, #2e7d32 100%)",
                 boxShadow: "0 6px 24px rgba(27,94,32,0.5), inset 0 1px 0 rgba(255,255,255,0.08)",
                 border: "1px solid rgba(255,255,255,0.08)",
-                position: "relative", overflow: "hidden",
+                position: "relative",
               }}>
                 {/* Shine */}
                 <Box sx={{
@@ -2296,8 +2285,6 @@ const Clientes = () => {
         </motion.div>
       </Snackbar>
 
-        </Box>
-      </Box>
     </Box>
   );
 };

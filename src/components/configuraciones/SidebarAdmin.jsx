@@ -5,6 +5,7 @@ import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
 import PeopleIcon from "@mui/icons-material/People";
 import BuildIcon from "@mui/icons-material/Build";
 import EventNoteIcon from "@mui/icons-material/EventNote";
+import ScienceIcon from "@mui/icons-material/Science";
 import LifebuoyIcon from "@mui/icons-material/HelpOutline";
 import SendIcon from "@mui/icons-material/Send";
 import RefreshIcon from "@mui/icons-material/Refresh";
@@ -25,6 +26,7 @@ const NAV_ITEMS = [
   { label: "En Revisión", icon: <BuildIcon />,           path: "/configurar-en-revision" },
   { label: "Clientes",    icon: <PeopleIcon />,          path: "/clientes" },
   { label: "Reservas",    icon: <EventNoteIcon />,       path: "/reservas" },
+  { label: "Pruebas QAS", icon: <ScienceIcon />,          path: "/pruebas-qas" },
 ];
 
 const FOOTER_ITEMS = [

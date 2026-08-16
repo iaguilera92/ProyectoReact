@@ -147,7 +147,21 @@ create table if not exists tokens_tbk (
   created_at      timestamptz default now()
 );
 
--- 9. CONFIG (reemplaza Seguridad.xlsx — clave/valor global)
+-- 9. PRUEBAS QAS (resultados de pipelines CI/CD Azure DevOps)
+create table if not exists pruebas_qas (
+  id          serial primary key,
+  pipeline_id text not null,
+  estado      text not null default 'passed',
+  total_tests integer not null default 0,
+  tests_passed integer not null default 0,
+  tests_failed integer not null default 0,
+  duracion_ms integer null,
+  detalle     jsonb null,
+  origen      text default 'azure',
+  created_at  timestamptz default now()
+);
+
+-- 10. CONFIG (reemplaza Seguridad.xlsx — clave/valor global)
 create table if not exists config (
   id    serial primary key,
   clave text unique not null,
@@ -175,6 +189,7 @@ alter table pase_mensual          enable row level security;
 alter table reservas              enable row level security;
 alter table suscripciones_paypal  enable row level security;
 alter table tokens_tbk            enable row level security;
+alter table pruebas_qas           disable row level security;
 alter table config                enable row level security;
 
 create policy "allow_all_clientes"             on clientes              for all using (true) with check (true);
@@ -186,4 +201,5 @@ create policy "allow_all_pase_mensual"         on pase_mensual          for all 
 create policy "allow_all_reservas"             on reservas              for all using (true) with check (true);
 create policy "allow_all_suscripciones_paypal" on suscripciones_paypal  for all using (true) with check (true);
 create policy "allow_all_tokens_tbk"           on tokens_tbk            for all using (true) with check (true);
+create policy "allow_all_pruebas_qas"          on pruebas_qas           for all using (true) with check (true);
 create policy "allow_all_config"               on config                for all using (true) with check (true);

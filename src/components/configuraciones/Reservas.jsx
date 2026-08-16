@@ -15,8 +15,7 @@ import {
   Pagination
 } from "@mui/material";
 import { motion } from "framer-motion";
-import NavbarAdmin from "./NavbarAdmin";
-import SidebarAdmin from "./SidebarAdmin";
+import { useOutletContext } from "react-router-dom";
 
 const Reservas = () => {
   const [reservas, setReservas] = useState([]);
@@ -28,11 +27,7 @@ const Reservas = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const paginadas = reservas.slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
-  const [sidebarOpen, setSidebarOpen] = useState(() => localStorage.getItem("pw-sidebar") !== "false");
-  const toggleSidebar = () => setSidebarOpen(p => { const next = !p; localStorage.setItem("pw-sidebar", String(next)); return next; });
-  const [temaOscuro, setTemaOscuro] = useState(() => localStorage.getItem("pw-tema") !== "claro");
-  const handleTema = (oscuro) => { setTemaOscuro(oscuro); localStorage.setItem("pw-tema", oscuro ? "oscuro" : "claro"); };
-  const [forzarPrd, setForzarPrd] = useState(false);
+  const { temaOscuro, forzarPrd } = useOutletContext();
 
   useEffect(() => {
     const fetchReservas = async () => {
@@ -58,23 +53,7 @@ const Reservas = () => {
   }, []);
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden", bgcolor: temaOscuro ? "#0a0a0a" : "#f0f0f0" }}>
-      <NavbarAdmin
-        titulo="Reservas"
-        temaOscuro={temaOscuro}
-        onMenuClick={toggleSidebar}
-        forzarPrd={forzarPrd}
-        onForzarPrd={setForzarPrd}
-      />
-      <Box sx={{ display: "flex", flex: 1, overflow: "hidden" }}>
-        <SidebarAdmin
-          open={sidebarOpen}
-          temaOscuro={temaOscuro}
-          onTemaChange={handleTema}
-          onClose={() => { setSidebarOpen(false); localStorage.setItem("pw-sidebar", "false"); }}
-          esPrd={forzarPrd}
-        />
-        <Box sx={{ flex: 1, minWidth: 0, overflowY: "auto", overflowX: "hidden", pb: 4, px: { xs: 1, md: 4 }, pt: 2 }}>
+    <Box sx={{ flex: 1, minWidth: 0, overflowY: "auto", overflowX: "hidden", pb: 4, px: { xs: 1, md: 4 }, pt: 2 }}>
 
           {/* Encabezado */}
           <Box display="flex" alignItems="center" gap={0.3} mb={2} sx={{ px: 2, py: 1, borderRadius: 2, bgcolor: temaOscuro ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)" }}>
@@ -195,8 +174,6 @@ const Reservas = () => {
             </Paper>
           )}
 
-        </Box>
-      </Box>
     </Box>
   );
 };

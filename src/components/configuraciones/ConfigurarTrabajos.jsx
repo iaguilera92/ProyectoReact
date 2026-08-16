@@ -7,8 +7,7 @@ import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
 import { motion, AnimatePresence } from "framer-motion";
-import NavbarAdmin from './NavbarAdmin';
-import SidebarAdmin from './SidebarAdmin';
+import { useOutletContext } from "react-router-dom";
 import AddIcon from "@mui/icons-material/Add";
 import DialogAgregarTrabajo from "./DialogAgregarTrabajo";
 import DialogTrabajoTerminado from "./DialogTrabajoTerminado";
@@ -58,10 +57,7 @@ const ConfigurarTrabajos = () => {
   const [loadingDialog, setLoadingDialog] = useState(false);
   const [loadingSaveAll, setLoadingSaveAll] = useState(false);
   const [loadingDialogAction, setLoadingDialogAction] = useState(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [temaOscuro, setTemaOscuro] = useState(() => localStorage.getItem("pw-tema") !== "claro");
-  const handleTema = (oscuro) => { setTemaOscuro(oscuro); localStorage.setItem("pw-tema", oscuro ? "oscuro" : "claro"); };
-  const [forzarPrd, setForzarPrd] = useState(false);
+  const { temaOscuro, forzarPrd } = useOutletContext();
   const [mostrarTextoAgregarTrabajo, setMostrarTextoAgregarTrabajo] = useState(true);
   const [paginaActual, setPaginaActual] = useState(1);
   const [dialogFinalizar, setDialogFinalizar] = useState({
@@ -393,91 +389,37 @@ const ConfigurarTrabajos = () => {
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden", bgcolor: temaOscuro ? "#0a0a0a" : "#f0f0f0" }}>
-      {/* Navbar — full width arriba */}
-      <NavbarAdmin
-        titulo="Configurar Trabajos"
-        temaOscuro={temaOscuro}
-        onMenuClick={() => setSidebarOpen(prev => !prev)}
-        forzarPrd={forzarPrd}
-        onForzarPrd={setForzarPrd}
-      />
-      {/* Sidebar + contenido en fila */}
-      <Box sx={{ display: "flex", flex: 1, overflow: "hidden" }}>
-        <SidebarAdmin open={sidebarOpen} temaOscuro={temaOscuro} onTemaChange={handleTema} onClose={() => setSidebarOpen(false)} esPrd={forzarPrd} />
-        <Box sx={{ flex: 1, minWidth: 0, overflowY: "auto", pb: 4, px: { xs: 1, md: 4 }, pt: 2 }}>
+    <Box sx={{ flex: 1, minWidth: 0, overflowY: "auto", overflowX: "hidden", pb: 4, px: { xs: 1, md: 4 }, pt: 2 }}>
 
-        {/* ── Hero Banner — solo desktop ── */}
-        {(() => {
-          const iconBoxSx = {
-            width: 64, height: 64,
-            border: "1px solid rgba(255,255,255,0.35)",
-            bgcolor: "rgba(255,255,255,0.08)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            position: "relative",
-          };
-          const dashedLines = [
-            { top: -40, bottom: -40, left: "-0.5px", borderLeft: "1px dashed rgba(255,255,255,0.55)", maskImage: "linear-gradient(to bottom, transparent, white 30%, white 70%, transparent)" },
-            { top: -40, bottom: -40, right: "-0.5px", borderRight: "1px dashed rgba(255,255,255,0.55)", maskImage: "linear-gradient(to bottom, transparent, white 30%, white 70%, transparent)" },
-            { left: -40, right: -40, top: "-0.5px", borderTop: "1px dashed rgba(255,255,255,0.7)", maskImage: "linear-gradient(to right, transparent, white 30%, white 70%, transparent)" },
-            { left: -40, right: -40, bottom: "-0.5px", borderBottom: "1px dashed rgba(255,255,255,0.7)", maskImage: "linear-gradient(to right, transparent, white 30%, white 70%, transparent)" },
-          ];
-          const icons = [
-            <path key="bolt" d="M13 3l0 7l6 0l-8 11l0 -7l-6 0l8 -11"/>,
-            <g key="pkg"><path d="M12 3l8 4.5l0 9l-8 4.5l-8 -4.5l0 -9l8 -4.5"/><path d="M12 12l8 -4.5"/><path d="M12 12l0 9"/><path d="M12 12l-8 -4.5"/><path d="M16 5.25l-8 4.5"/></g>,
-            <g key="grid"><path d="M4 5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="M14 5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1z"/><path d="M4 15a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="M14 15a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1z"/></g>,
-            <g key="cpu"><path d="M5 6a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z"/><path d="M9 9h6v6H9z"/><path d="M3 10h2"/><path d="M3 14h2"/><path d="M10 3v2"/><path d="M14 3v2"/><path d="M21 10h-2"/><path d="M21 14h-2"/><path d="M14 21v-2"/><path d="M10 21v-2"/></g>,
-          ];
-          return (
-            <Box sx={{ display: { xs: "none", md: "block" }, mb: 3 }}>
-              <Box sx={{ position: "relative", borderRadius: 3, border: "1px solid rgba(255,255,255,0.15)", overflow: "hidden", px: { md: 5, lg: 6 }, py: { md: 5, lg: 6 } }}>
-                {/* Fondo */}
-                <Box sx={{ position: "absolute", inset: 0, zIndex: 0, background: import.meta.env.PROD
-                  ? "linear-gradient(135deg, #0a0a0a 0%, #160505 30%, rgba(120,10,10,0.55) 58%, rgba(150,10,10,0.85) 78%, #8B0000 100%)"
-                  : "linear-gradient(135deg, #0a0a0a 0%, #161616 28%, rgba(17,31,17,1) 52%, rgba(25,60,27,1) 75%, #2e7d32 100%)"
-                }} />
-                {/* Cuadrícula */}
-                <Box sx={{ position: "absolute", inset: 0, zIndex: 0, opacity: 0.6, backgroundImage: ["repeating-linear-gradient(0deg, transparent, transparent 19px, rgba(255,255,255,0.05) 19px, rgba(255,255,255,0.05) 20px, transparent 20px, transparent 39px, rgba(255,255,255,0.05) 39px, rgba(255,255,255,0.05) 40px)", "repeating-linear-gradient(90deg, transparent, transparent 19px, rgba(255,255,255,0.05) 19px, rgba(255,255,255,0.05) 20px, transparent 20px, transparent 39px, rgba(255,255,255,0.05) 39px, rgba(255,255,255,0.05) 40px)", "radial-gradient(circle at 20px 20px, rgba(255,255,255,0.08) 2px, transparent 2px)", "radial-gradient(circle at 40px 40px, rgba(255,255,255,0.08) 2px, transparent 2px)"].join(", "), backgroundSize: "40px 40px, 40px 40px, 40px 40px, 40px 40px" }} />
-
-                {/* Íconos — grupo principal (bolt, package con -translateX, grid) */}
-                <Box sx={{ position: "absolute", top: "50%", right: 104, transform: "translateY(-50%)", zIndex: 1, pointerEvents: "none" }}>
-                  {[{ icon: icons[0], tx: 0 }, { icon: icons[1], tx: -64 }, { icon: icons[2], tx: 0 }].map(({ icon, tx }, i) => (
-                    <Box key={i} sx={{ ...iconBoxSx, transform: tx ? `translateX(${tx}px)` : "none" }}>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.8)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">{icon}</svg>
-                      {dashedLines.map((style, j) => <Box key={j} sx={{ position: "absolute", ...style }} />)}
-                    </Box>
-                  ))}
-                </Box>
-
-                {/* Ícono CPU — translate-x-full, se desvanece a la derecha */}
-                <Box sx={{ position: "absolute", top: "50%", right: 104, transform: "translateY(-50%)", zIndex: 1, pointerEvents: "none" }}>
-                  <Box sx={{ ...iconBoxSx, transform: "translateX(64px)", maskImage: "linear-gradient(to right, white 75%, transparent 100%)" }}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.8)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">{icons[3]}</svg>
-                    {dashedLines.map((style, j) => <Box key={j} sx={{ position: "absolute", ...style }} />)}
-                  </Box>
-                </Box>
-
-                {/* Contenido */}
-                <Box sx={{ position: "relative", zIndex: 2, maxWidth: 520 }}>
-                  <Typography sx={{ fontSize: { md: "1.75rem", lg: "2.25rem" }, fontWeight: 500, color: "#fff", letterSpacing: "-0.035em", lineHeight: 1.2, fontFamily: "'Poppins', sans-serif" }}>
-                    Hola, {nombreUsuario}
-                  </Typography>
-                  <Typography sx={{ mt: 1.5, fontSize: { md: "0.875rem", lg: "1rem" }, color: "rgba(255,255,255,0.78)", lineHeight: 1.6, maxWidth: 430 }}>
-                    Panel de gestión de trabajos en desarrollo. Configura el avance, estados y detalles de cada proyecto activo.
-                  </Typography>
-                  <Box sx={{ mt: 3 }}>
-                    <Button onClick={() => setOpenDialogAgregar(true)} sx={{ bgcolor: "#fff", color: "#0a0a0a", fontWeight: 600, fontSize: "0.82rem", borderRadius: 99, px: 2.5, py: 0.9, textTransform: "none", "&:hover": { bgcolor: "rgba(255,255,255,0.88)" } }}>
-                      + Agregar trabajo
-                    </Button>
-                  </Box>
-                </Box>
-              </Box>
-            </Box>
-          );
-        })()}
-
-
-
+      {/* Header */}
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2.5, flexWrap: "wrap", gap: 1.5 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <SettingsSuggestIcon sx={{ color: temaOscuro ? "rgba(255,255,255,0.7)" : "#1b263b", fontSize: 22 }} />
+          <Typography variant="h6" sx={{ color: temaOscuro ? "#fff" : "#1b263b", fontWeight: 700, fontSize: "1.1rem" }}>
+            Configurar trabajos
+          </Typography>
+        </Box>
+        <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+          <Button
+            variant="contained"
+            startIcon={mostrarTextoAgregarTrabajo ? <AddIcon /> : <AddIcon />}
+            onClick={agregarTrabajo}
+            sx={{
+              bgcolor: "#8B0000",
+              color: "#fff",
+              textTransform: "none",
+              fontWeight: 600,
+              fontSize: "0.85rem",
+              borderRadius: 2,
+              px: 2,
+              boxShadow: "0 2px 10px rgba(139,0,0,0.35)",
+              "&:hover": { bgcolor: "#a00000" },
+            }}
+          >
+            Nuevo trabajo
+          </Button>
+        </motion.div>
+      </Box>
 
         {/* Cards de trabajos */}
         <Box sx={{ position: "relative" }}>
@@ -738,8 +680,6 @@ const ConfigurarTrabajos = () => {
         />
 
 
-        </Box>
-      </Box>
     </Box>
   );
 };

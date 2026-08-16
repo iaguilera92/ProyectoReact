@@ -6,12 +6,10 @@ import {
     useTheme, Snackbar, Alert, Switch, FormControlLabel
 } from "@mui/material";
 import { motion } from "framer-motion";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useOutletContext } from "react-router-dom";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import { PieChart, Pie, Cell, Legend, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import DialogPaseMensual from "./DialogPaseMensual";
-import NavbarAdmin from './configuraciones/NavbarAdmin';
-import SidebarAdmin from './configuraciones/SidebarAdmin';
 import { cargarClientesDesdeExcel } from "../helpers/HelperClientes";
 
 const Contador = ({ valorFinal, texto, subtexto, delay = 0, variant = "h5", iniciar }) => {
@@ -130,11 +128,7 @@ const Dashboard = () => {
     const [clientesActivos, setClientesActivos] = useState(null);
     const [conCupos, setConCupos] = useState(() => localStorage.getItem("ConCupos") === "true");
     const [guardandoConCupos, setGuardandoConCupos] = useState(false);
-    const [sidebarOpen, setSidebarOpen] = useState(() => localStorage.getItem("pw-sidebar") !== "false");
-    const toggleSidebar = () => setSidebarOpen(p => { const next = !p; localStorage.setItem("pw-sidebar", String(next)); return next; });
-    const [temaOscuro, setTemaOscuro] = useState(() => localStorage.getItem("pw-tema") !== "claro");
-    const handleTema = (oscuro) => { setTemaOscuro(oscuro); localStorage.setItem("pw-tema", oscuro ? "oscuro" : "claro"); };
-    const [forzarPrd, setForzarPrd] = useState(false);
+    const { temaOscuro, forzarPrd } = useOutletContext();
 
     //GOOGLE ANALYTICS
     useEffect(() => {
@@ -292,28 +286,18 @@ const Dashboard = () => {
     const dTablet = hayDatos ? dispositivos.tablet : D_DEFAULT.tablet;
 
     return (
-        <Box sx={{ display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden" }}>
-            <NavbarAdmin
-                titulo="Dashboard"
-                temaOscuro={temaOscuro}
-                onMenuClick={toggleSidebar}
-                forzarPrd={forzarPrd}
-                onForzarPrd={setForzarPrd}
-            />
-            <Box sx={{ display: "flex", flex: 1, overflow: "hidden" }}>
-                <SidebarAdmin open={sidebarOpen} temaOscuro={temaOscuro} onTemaChange={handleTema} onClose={() => { setSidebarOpen(false); localStorage.setItem("pw-sidebar", "false"); }} esPrd={forzarPrd} />
-                <Box
-                    sx={{
-                        flex: 1,
-                        minWidth: 0,
-                        overflowY: "auto",
-                        overflowX: "hidden",
-                        pb: 4,
-                        px: { xs: 1, md: 4 },
-                        pt: 2,
-                        bgcolor: temaOscuro ? "#0a0a0a" : "#f0f0f0",
-                    }}
-                >
+        <Box
+            sx={{
+                flex: 1,
+                minWidth: 0,
+                overflowY: "auto",
+                overflowX: "hidden",
+                pb: 4,
+                px: { xs: 1, md: 4 },
+                pt: 2,
+                bgcolor: temaOscuro ? "#0a0a0a" : "#f0f0f0",
+            }}
+        >
 
             {/* ── Hero Banner — solo desktop ── */}
             {(() => {
@@ -333,8 +317,8 @@ const Dashboard = () => {
               ];
               return (
                 <Box sx={{ mb: 1.5 }}>
-                  <Box sx={{ position: "relative", borderRadius: 3, border: "1px solid rgba(255,255,255,0.15)", overflow: "hidden", px: { xs: 2.5, md: 4, lg: 5 }, py: { xs: 2, md: 5, lg: 6 } }}>
-                    <Box sx={{ position: "absolute", inset: 0, zIndex: 0, background: import.meta.env.PROD ? "linear-gradient(135deg, #0a0a0a 0%, #160505 30%, rgba(120,10,10,0.55) 58%, rgba(150,10,10,0.85) 78%, #8B0000 100%)" : "linear-gradient(135deg, #0a0a0a 0%, #161616 28%, rgba(17,31,17,1) 52%, rgba(25,60,27,1) 75%, #2e7d32 100%)" }} />
+                  <Box sx={{ position: "relative", borderRadius: 3, border: "1px solid rgba(255,255,255,0.15)", overflow: "hidden", px: { xs: 2.5, md: 4, lg: 5 }, py: { xs: 2.5, md: 6.5, lg: 8 } }}>
+                    <Box sx={{ position: "absolute", inset: 0, zIndex: 0, background: (forzarPrd || import.meta.env.PROD) ? "linear-gradient(135deg, #0a0a0a 0%, #160505 30%, rgba(120,10,10,0.55) 58%, rgba(150,10,10,0.85) 78%, #8B0000 100%)" : "linear-gradient(135deg, #0a0a0a 0%, #161616 28%, rgba(17,31,17,1) 52%, rgba(25,60,27,1) 75%, #2e7d32 100%)" }} />
                     <Box sx={{ position: "absolute", inset: 0, zIndex: 0, opacity: 0.6, backgroundImage: ["repeating-linear-gradient(0deg, transparent, transparent 19px, rgba(255,255,255,0.05) 19px, rgba(255,255,255,0.05) 20px, transparent 20px, transparent 39px, rgba(255,255,255,0.05) 39px, rgba(255,255,255,0.05) 40px)", "repeating-linear-gradient(90deg, transparent, transparent 19px, rgba(255,255,255,0.05) 19px, rgba(255,255,255,0.05) 20px, transparent 20px, transparent 39px, rgba(255,255,255,0.05) 39px, rgba(255,255,255,0.05) 40px)", "radial-gradient(circle at 20px 20px, rgba(255,255,255,0.08) 2px, transparent 2px)", "radial-gradient(circle at 40px 40px, rgba(255,255,255,0.08) 2px, transparent 2px)"].join(", "), backgroundSize: "40px 40px, 40px 40px, 40px 40px, 40px 40px" }} />
                     {/* Íconos — grupo principal (bolt, package con -translateX, grid) */}
                     <Box sx={{ position: "absolute", top: "50%", right: { xs: 10, md: 100 }, transform: "translateY(-50%)", zIndex: 1, pointerEvents: "none", maskImage: { xs: "linear-gradient(to right, white 40%, transparent 100%)", md: "none" } }}>
@@ -615,8 +599,6 @@ const Dashboard = () => {
                 analyticsDisponible={analyticsDisponible}
             />*/}
 
-                </Box>
-            </Box>
         </Box>
     );
 };

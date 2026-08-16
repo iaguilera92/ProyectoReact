@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../supabase/client";
-import { Snackbar, Alert, Slider, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, IconButton, Slide, Box, Typography, useTheme, useMediaQuery } from "@mui/material";
+import { Snackbar, Alert, Slider, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, IconButton, Slide, Box, Typography, useTheme, useMediaQuery, InputAdornment } from "@mui/material";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
+import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
+import LanguageIcon from "@mui/icons-material/Language";
+import SettingsIcon from "@mui/icons-material/Settings";
 import { motion, AnimatePresence } from "framer-motion";
 import { CircularProgress } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
@@ -132,15 +135,25 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave, trabajoIni
 
 
   const fieldSx = {
-    backgroundColor: "#fff",
-    borderRadius: 2,
     "& .MuiOutlinedInput-root": {
-      borderRadius: 2,
+      borderRadius: 1.5,
+      bgcolor: "#fff",
+      fontSize: "0.88rem",
       "&:hover fieldset": { borderColor: "#FB8C00" },
       "&.Mui-focused fieldset": { borderColor: "#F57C00", borderWidth: 2 },
     },
+    "& .MuiInputLabel-root": { fontSize: "0.88rem" },
     "& .MuiInputLabel-root.Mui-focused": { color: "#F57C00" },
   };
+
+  const SectionLabel = ({ icon, children }) => (
+    <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, mb: 1.25 }}>
+      <Box sx={{ color: "#E65100", display: "flex", alignItems: "center" }}>{icon}</Box>
+      <Typography sx={{ fontSize: "0.7rem", fontWeight: 700, color: "#E65100", textTransform: "uppercase", letterSpacing: "0.09em" }}>
+        {children}
+      </Typography>
+    </Box>
+  );
 
   return (
     <Dialog
@@ -157,8 +170,8 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave, trabajoIni
       PaperProps={{
         sx: {
           mt: { xs: 0, sm: -3 },
-          borderRadius: { xs: 0, sm: 2 },
-          border: "1px solid rgba(255,167,38,.35)",
+          borderRadius: { xs: 0, sm: 2.5 },
+          border: "1px solid rgba(255,167,38,.3)",
           boxShadow: "0 24px 64px rgba(0,0,0,.45)",
           overflow: "hidden",
           height: { xs: "100dvh", sm: "auto" },
@@ -169,128 +182,55 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave, trabajoIni
         },
       }}
     >
-      {/* Header */}
+      {/* ── Header ── */}
       <DialogTitle
         sx={{
           textAlign: "center",
           fontWeight: 700,
           color: "#FFF",
           fontFamily: "'Poppins', sans-serif",
-          py: 2,
-          borderBottom: "1px solid rgba(255,167,38,.35)",
+          py: 2.5,
+          borderBottom: "1px solid rgba(255,167,38,.3)",
           position: "relative",
           overflow: "hidden",
-
           "&::before": {
             content: '""',
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
+            position: "absolute", top: 0, left: 0, width: "100%", height: "100%",
             backgroundImage: "url('/servicio1.webp')",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            zIndex: 0,
-
-            // Desktop
+            backgroundPosition: "center", backgroundRepeat: "no-repeat", zIndex: 0,
             backgroundSize: "130%",
             animation: "zoomInDesktop 2.5s ease-out forwards",
-
-            // Mobile override
-            "@media (max-width:600px)": {
-              backgroundSize: "250%",              // 👈 inicia súper cerca
-              animation: "zoomInMobile 2.5s ease-out forwards",
-            },
-
-            "@keyframes zoomInDesktop": {
-              "0%": { backgroundSize: "150%" },
-              "100%": { backgroundSize: "110%" },
-            },
-            "@keyframes zoomInMobile": {
-              "0%": { backgroundSize: "270%" },   // 👈 más zoom inicial en mobile
-              "100%": { backgroundSize: "140%" }, // 👈 termina aún con presencia
-            },
+            "@media (max-width:600px)": { backgroundSize: "250%", animation: "zoomInMobile 2.5s ease-out forwards" },
+            "@keyframes zoomInDesktop": { "0%": { backgroundSize: "150%" }, "100%": { backgroundSize: "110%" } },
+            "@keyframes zoomInMobile": { "0%": { backgroundSize: "270%" }, "100%": { backgroundSize: "140%" } },
           },
-
           "&::after": {
-            content: '""',
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            bgcolor: "rgba(0,0,0,0.45)", // overlay oscuro
-            zIndex: 1,
+            content: '""', position: "absolute", top: 0, left: 0, width: "100%", height: "100%",
+            bgcolor: "rgba(0,0,0,0.5)", zIndex: 1,
           },
-
-          "& > *": {
-            position: "relative",
-            zIndex: 2,
-          },
+          "& > *": { position: "relative", zIndex: 2 },
         }}
       >
-
-        {/* Botón cerrar */}
         <IconButton
           aria-label="Cerrar"
           onClick={onClose}
           sx={{
-            position: "absolute",
-            top: 8,
-            right: 8,
-            color: "#FFF",
-            zIndex: 4, // 👈 más arriba que ::before y ::after
-            "&:hover": { backgroundColor: "rgba(255,255,255,.15)" },
-
-            // animación al abrir
+            position: "absolute", top: 10, right: 10, color: "#FFF", zIndex: 4,
+            "&:hover": { backgroundColor: "rgba(255,255,255,.12)" },
             animation: open ? "spinTwice 0.6s ease-in-out" : "none",
             animationFillMode: "forwards",
-            "@keyframes spinTwice": {
-              "0%": { transform: "rotate(0deg)" },
-              "100%": { transform: "rotate(720deg)" },
-            },
+            "@keyframes spinTwice": { "0%": { transform: "rotate(0deg)" }, "100%": { transform: "rotate(720deg)" } },
           }}
         >
-          <CloseRoundedIcon sx={{ fontSize: 28 }} />
+          <CloseRoundedIcon sx={{ fontSize: 22 }} />
         </IconButton>
 
-
-        {/* Fila: ícono reloj + título */}
-        <Box
-          sx={{
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: { xs: 0.8, sm: 1.2 }, // espacio entre texto e ícono
-            px: { xs: 1.2, sm: 2 },
-            py: { xs: 0.5, sm: 0.8 },
-            borderRadius: "999px",
-            bgcolor: "rgba(0,0,0,0.55)",
-            backdropFilter: "blur(4px)",
-            boxShadow: "0 4px 14px rgba(0,0,0,.35)",
-          }}
-        >
-          <Typography
-            variant="h6"
-            component="span"
-            sx={{
-              fontWeight: 800,
-              letterSpacing: { xs: "0.3px", sm: "1px" },
-              fontFamily: "'Poppins', sans-serif",
-              color: "#fff",
-              fontSize: { xs: "1.1rem", sm: "1.25rem" },
-            }}
-          >
-            {success ? "¡Éxito!" : modoEditar ? "Editar Trabajo" : "Agregar Trabajo"}
+        <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1, px: 2, py: 0.6, borderRadius: 99, bgcolor: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)" }}>
+          <WorkOutlineIcon sx={{ color: "#FFB74D", fontSize: 18 }} />
+          <Typography sx={{ fontWeight: 700, color: "#fff", fontSize: { xs: "1rem", sm: "1.1rem" }, fontFamily: "'Poppins', sans-serif" }}>
+            {success ? "¡Guardado!" : modoEditar ? "Editar trabajo" : "Nuevo trabajo"}
           </Typography>
-
-          {/* Ícono a la derecha */}
-          <WorkOutlineIcon
-            sx={{ color: "#fff", fontSize: { xs: 20, sm: 24 } }}
-          />
         </Box>
-
       </DialogTitle>
 
       <AnimatePresence>
@@ -305,12 +245,9 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave, trabajoIni
             <DialogContent
               dividers
               sx={{
-                py: 3,
-                pb: 5,
-                bgcolor: success ? "#e6f4ea" : "#FFF8EC",
-                position: "relative",
-                overflow: "auto",
-                flex: 1,
+                py: 3, px: { xs: 2.5, sm: 3 },
+                bgcolor: success ? "#e6f4ea" : "#FFFBF5",
+                position: "relative", overflow: "auto", flex: 1,
               }}
             >
               <AnimatePresence mode="wait">
@@ -321,89 +258,88 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave, trabajoIni
                     animate={{ opacity: 1, height: "auto" }}
                     exit={{ opacity: 0, height: 0 }}
                     transition={{ duration: 0.6, ease: "easeInOut" }}
-                    style={{ overflow: "hidden" }} // controla solo el colapso
+                    style={{ overflow: "hidden" }}
                   >
-                    <Box textAlign="center" sx={{ pt: 2 }}>
+                    <Box textAlign="center" sx={{ py: 3 }}>
                       <motion.div
                         initial={{ scale: 0.5, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.5 }}
                       >
-                        <Box
-                          sx={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            bgcolor: "#4caf50",
-                            borderRadius: "50%",
-                            width: 96,
-                            height: 96,
-                            mb: 2,
-                            mt: 1, // 👈 agrega margen superior
-                            boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
-                          }}
-                        >
-                          <motion.div
-                            initial={{ scale: 0, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            transition={{ duration: 0.5, delay: 1 }}
-                          >
-                            <CheckIcon
-                              sx={{
-                                fontSize: 60,
-                                color: "#fff",
-                                transform: "translateY(2px)", // 👈 menos agresivo que 6px
-                              }}
-                            />
+                        <Box sx={{ display: "inline-flex", alignItems: "center", justifyContent: "center", bgcolor: "#4caf50", borderRadius: "50%", width: 88, height: 88, mb: 2, boxShadow: "0 4px 20px rgba(76,175,80,0.35)" }}>
+                          <motion.div initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.5, delay: 1 }}>
+                            <CheckIcon sx={{ fontSize: 52, color: "#fff", transform: "translateY(2px)" }} />
                           </motion.div>
                         </Box>
                       </motion.div>
                       <Typography variant="h6" fontWeight={700} color="success.dark">
-                        Trabajo creado correctamente!
+                        {modoEditar ? "Trabajo actualizado" : "Trabajo creado correctamente"}
                       </Typography>
                     </Box>
-
                   </motion.div>
                 ) : (
+                  <Box display="flex" flexDirection="column" gap={3}>
 
-                  <Box display="flex" flexDirection="column" gap={2.5}>
-
-                    {/* ── Sección: Trabajo ── */}
+                    {/* ── Datos del trabajo ── */}
                     <Box>
-                      <Typography sx={{ fontSize: "0.72rem", fontWeight: 700, color: "#E65100", textTransform: "uppercase", letterSpacing: "0.08em", mb: 1 }}>
-                        🛠️ Datos del trabajo
-                      </Typography>
+                      <SectionLabel icon={<WorkOutlineIcon sx={{ fontSize: 14 }} />}>Datos del trabajo</SectionLabel>
                       <TextField
-                        label="Nombre / Sitio Web"
+                        label="Nombre / Sitio Web *"
                         name="trabajo"
                         value={form.trabajo}
                         onChange={handleChange}
                         fullWidth
-                        required
                         variant="outlined"
                         size="small"
                         sx={fieldSx}
                       />
                     </Box>
 
-                    {/* ── Sección: Cliente ── */}
+                    {/* ── Tipo ── */}
                     <Box>
-                      <Typography sx={{ fontSize: "0.72rem", fontWeight: 700, color: "#E65100", textTransform: "uppercase", letterSpacing: "0.08em", mb: 1 }}>
-                        👤 Datos del cliente
-                      </Typography>
+                      <SectionLabel icon={<SettingsIcon sx={{ fontSize: 14 }} />}>Tipo de proyecto</SectionLabel>
+                      <Box sx={{ display: "flex", gap: 1 }}>
+                        {[
+                          { val: "1", label: "Sitio Web", icon: <LanguageIcon sx={{ fontSize: 16 }} />, activeColor: "#1565C0", activeBg: "#EBF4FF", activeBorder: "#1976D2" },
+                          { val: "2", label: "Sistema",   icon: <SettingsIcon sx={{ fontSize: 16 }} />, activeColor: "#5E35B1", activeBg: "#F0EBFF", activeBorder: "#673AB7" },
+                        ].map(({ val, label, icon, activeColor, activeBg, activeBorder }) => {
+                          const active = form.tipoApp === val;
+                          return (
+                            <Box
+                              key={val}
+                              onClick={() => setForm(p => ({ ...p, tipoApp: val }))}
+                              sx={{
+                                flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 0.75,
+                                py: 1, px: 1.5, borderRadius: 1.5, cursor: "pointer", userSelect: "none",
+                                border: `1.5px solid ${active ? activeBorder : "#E0E0E0"}`,
+                                bgcolor: active ? activeBg : "#fff",
+                                color: active ? activeColor : "#BDBDBD",
+                                fontWeight: 600, fontSize: "0.83rem",
+                                transition: "all 0.15s ease",
+                                "&:hover": { borderColor: active ? activeBorder : "#F57C00", color: active ? activeColor : "#F57C00" },
+                              }}
+                            >
+                              {icon}
+                              <Typography sx={{ fontSize: "0.83rem", fontWeight: 600, color: "inherit" }}>{label}</Typography>
+                            </Box>
+                          );
+                        })}
+                      </Box>
+                    </Box>
+
+                    {/* ── Datos del cliente ── */}
+                    <Box>
+                      <SectionLabel icon={<PersonOutlineIcon sx={{ fontSize: 14 }} />}>Datos del cliente</SectionLabel>
                       <Box display="flex" flexDirection="column" gap={1.5}>
                         <TextField
-                          label="Nombre Cliente *"
+                          label="Nombre del cliente *"
                           name="nombreCliente"
                           value={form.nombreCliente}
-                          onChange={(e) => {
-                            if (/^[a-zA-ZÀ-ÿ\s]*$/.test(e.target.value)) handleChange(e);
-                          }}
+                          onChange={(e) => { if (/^[a-zA-ZÀ-ÿ\s]*$/.test(e.target.value)) handleChange(e); }}
                           size="small"
                           fullWidth
                           sx={fieldSx}
                         />
-
                         <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 1.5 }}>
                           <TextField
                             label="Email *"
@@ -421,16 +357,12 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave, trabajoIni
                             name="telefonoCliente"
                             type="tel"
                             value={form.telefonoCliente}
-                            onChange={(e) => {
-                              const onlyNums = e.target.value.replace(/\D/g, "");
-                              setForm((prev) => ({ ...prev, telefonoCliente: onlyNums.slice(0, 12) }));
-                            }}
+                            onChange={(e) => { const onlyNums = e.target.value.replace(/\D/g, ""); setForm((prev) => ({ ...prev, telefonoCliente: onlyNums.slice(0, 12) })); }}
                             size="small"
                             inputProps={{ inputMode: "numeric", maxLength: 12 }}
                             sx={{ ...fieldSx, flex: 1 }}
                           />
                         </Box>
-
                         <TextField
                           label="URL Logo"
                           name="logoCliente"
@@ -442,13 +374,10 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave, trabajoIni
                           sx={fieldSx}
                           InputProps={{
                             endAdornment: form.logoCliente ? (
-                              <Box
-                                component="img"
-                                src={form.logoCliente}
-                                alt="preview"
+                              <Box component="img" src={form.logoCliente} alt="preview"
                                 onError={(e) => { e.target.style.display = "none"; }}
                                 onLoad={(e) => { e.target.style.display = "block"; }}
-                                sx={{ width: 30, height: 30, borderRadius: 1, objectFit: "contain", border: "1px solid #eee", bgcolor: "#fff", flexShrink: 0 }}
+                                sx={{ width: 28, height: 28, borderRadius: 1, objectFit: "contain", border: "1px solid #eee", bgcolor: "#fff", flexShrink: 0 }}
                               />
                             ) : null,
                           }}
@@ -456,50 +385,25 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave, trabajoIni
                       </Box>
                     </Box>
 
-                    {/* ── Sección: Tipo + Progreso ── */}
+                    {/* ── Progreso inicial ── */}
                     <Box>
-                      <Typography sx={{ fontSize: "0.72rem", fontWeight: 700, color: "#E65100", textTransform: "uppercase", letterSpacing: "0.08em", mb: 1 }}>
-                        💻 Tipo y progreso
-                      </Typography>
-
-                      {/* Tipo como chips */}
-                      <Box sx={{ display: "flex", gap: 1, mb: 2.5 }}>
-                        {[
-                          { val: "1", label: "🌐 Sitio Web", activeColor: "#1565C0", activeBg: "#E3F2FD", activeBorder: "#1976D2" },
-                          { val: "2", label: "⚙️ Sistema",   activeColor: "#6A1B9A", activeBg: "#F3E5F5", activeBorder: "#7B1FA2" },
-                        ].map(({ val, label, activeColor, activeBg, activeBorder }) => (
-                          <Box
-                            key={val}
-                            onClick={() => setForm(p => ({ ...p, tipoApp: val }))}
-                            sx={{
-                              flex: 1, textAlign: "center", py: 0.9, borderRadius: 2,
-                              cursor: "pointer", fontWeight: 700, fontSize: "0.85rem",
-                              border: form.tipoApp === val ? `2px solid ${activeBorder}` : "2px solid #e0e0e0",
-                              bgcolor: form.tipoApp === val ? activeBg : "#fff",
-                              color: form.tipoApp === val ? activeColor : "#999",
-                              transition: "all 0.18s ease",
-                              userSelect: "none",
-                            }}
-                          >
-                            {label}
-                          </Box>
-                        ))}
+                      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1 }}>
+                        <Typography sx={{ fontSize: "0.7rem", fontWeight: 700, color: "#E65100", textTransform: "uppercase", letterSpacing: "0.09em" }}>
+                          Progreso inicial
+                        </Typography>
+                        <Box sx={{ px: 1.2, py: 0.2, borderRadius: 99, backgroundImage: getGradient(form.progreso) }}>
+                          <Typography sx={{ fontSize: "0.72rem", fontWeight: 800, color: "#fff" }}>{form.progreso}%</Typography>
+                        </Box>
                       </Box>
-
-                      <Typography sx={{ fontSize: "0.78rem", fontWeight: 700, color: "#E65100", mb: 1 }}>
-                        📊 Progreso inicial: <strong>{form.progreso}%</strong>
-                      </Typography>
                       <Slider
                         value={form.progreso}
                         onChange={(e, newValue) => handleChange({ target: { name: "progreso", value: newValue } })}
                         valueLabelDisplay="off"
-                        step={5}
-                        min={0}
-                        max={100}
+                        step={5} min={0} max={100}
                         sx={{
-                          "& .MuiSlider-track": { backgroundImage: getGradient(form.progreso), border: "none", height: 6 },
-                          "& .MuiSlider-rail": { opacity: 0.25, backgroundColor: "#bbb", height: 6 },
-                          "& .MuiSlider-thumb": { width: 18, height: 18, boxShadow: "0 2px 6px rgba(0,0,0,0.2)" },
+                          "& .MuiSlider-track": { backgroundImage: getGradient(form.progreso), border: "none", height: 5 },
+                          "& .MuiSlider-rail": { opacity: 0.2, backgroundColor: "#bbb", height: 5 },
+                          "& .MuiSlider-thumb": { width: 16, height: 16, bgcolor: "#fff", border: "2px solid #FB8C00", boxShadow: "0 2px 6px rgba(0,0,0,0.18)", "&:hover, &.Mui-focusVisible": { boxShadow: "0 0 0 8px rgba(251,140,0,0.12)" } },
                         }}
                       />
                     </Box>
@@ -512,82 +416,37 @@ export default function DialogAgregarTrabajo({ open, onClose, onSave, trabajoIni
       </AnimatePresence>
 
       {loading && (
-        <Box
-          sx={{
-            position: "absolute",
-            inset: 0,
-            bgcolor: "rgba(255,255,255,0.65)",
-            backdropFilter: "blur(3px)",
-            zIndex: 10,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <CircularProgress
-            size={48}
-            sx={{
-              color: "warning.main",
-              animation: "pulse 1.5s infinite",
-              "@keyframes pulse": {
-                "0%": { transform: "scale(1)", opacity: 1 },
-                "50%": { transform: "scale(1.2)", opacity: 0.6 },
-                "100%": { transform: "scale(1)", opacity: 1 },
-              },
-            }}
-          />
+        <Box sx={{ position: "absolute", inset: 0, bgcolor: "rgba(255,255,255,0.7)", backdropFilter: "blur(3px)", zIndex: 10, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <CircularProgress size={44} sx={{ color: "#FB8C00" }} />
         </Box>
       )}
-      {/* FOOTER */}
-      <DialogActions sx={{
-        justifyContent: "center", py: 1.2, background: "linear-gradient(90deg,#FFF3E0,#FFE0B2)", borderTop: "1px solid rgba(255,167,38,.35)",
-      }}>
+
+      {/* ── Footer ── */}
+      <DialogActions sx={{ justifyContent: "flex-end", px: 3, py: 1.5, bgcolor: "#FFF8EE", borderTop: "1px solid rgba(255,167,38,.25)", gap: 1 }}>
         {success ? (
-          <Button
-            variant="contained"
-            color="success"
-            disabled
-            sx={{ fontWeight: 700, textTransform: "none" }}
-          >
-            {modoEditar ? "Trabajo Actualizado ✓" : "Nuevo Trabajo Registrado💰"}
+          <Button variant="contained" color="success" disabled sx={{ fontWeight: 700, textTransform: "none", borderRadius: 1.5 }}>
+            {modoEditar ? "Actualizado ✓" : "Registrado ✓"}
           </Button>
         ) : (
           <>
             <Button
               onClick={onClose}
-              sx={{
-                color: "#E65100",
-                fontWeight: 700,
-                textTransform: "none",
-                px: 3,
-                minWidth: 160,
-                border: "1px solid #E65100",
-                "&:hover": { backgroundColor: "rgba(230,81,0,0.08)" },
-              }}
+              sx={{ color: "#9E9E9E", fontWeight: 600, textTransform: "none", borderRadius: 1.5, px: 2.5, border: "1px solid #E0E0E0", "&:hover": { bgcolor: "rgba(0,0,0,0.04)", borderColor: "#BDBDBD" } }}
             >
               Cancelar
             </Button>
-
             <Button
               variant="contained"
               onClick={handleSave}
               disabled={loading}
               sx={{
-                textTransform: "none",
-                fontWeight: 700,
-                px: 3,
-                minWidth: 160,
-                background: modoEditar
-                  ? "linear-gradient(90deg,#1565C0,#0D47A1)"
-                  : "linear-gradient(90deg,#FF9800,#F57C00)",
-                "&:hover": {
-                  background: modoEditar
-                    ? "linear-gradient(90deg,#1976D2,#1565C0)"
-                    : "linear-gradient(90deg,#FFA726,#FB8C00)",
-                },
+                textTransform: "none", fontWeight: 700, px: 3, borderRadius: 1.5,
+                bgcolor: modoEditar ? "#1565C0" : "#F57C00",
+                "&:hover": { bgcolor: modoEditar ? "#1976D2" : "#EF6C00" },
+                boxShadow: "none",
               }}
             >
-              {modoEditar ? "Guardar Cambios" : "Crear Trabajo"}
+              {modoEditar ? "Guardar cambios" : "Crear trabajo"}
             </Button>
           </>
         )}

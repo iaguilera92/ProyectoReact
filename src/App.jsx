@@ -49,7 +49,7 @@ function App() {
   const [openChat, setOpenChat] = useState(false);
   const [confirmCloseOpen, setConfirmCloseOpen] = useState(false);
   const isMmansouletRoute = location.pathname === "/mmansoulet";
-  const ADMIN_ROUTES = ["/configurar-trabajos", "/dashboard", "/clientes", "/reservas", "/configurar-servicios", "/configurar-en-revision"];
+  const ADMIN_ROUTES = ["/configurar-trabajos", "/dashboard", "/clientes", "/reservas", "/configurar-servicios", "/configurar-en-revision", "/pruebas-qas"];
   const isAdminRoute = ADMIN_ROUTES.includes(location.pathname);
 
   //EFECTO CAMBIAR DE RUTA
@@ -302,7 +302,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      {location.pathname !== "/administracion" && location.pathname !== "/dashboard" && location.pathname !== "/configurar-servicios" && location.pathname !== "/configurar-trabajos" && location.pathname !== "/configurar-en-revision" && location.pathname !== "/clientes" && !isMmansouletRoute && (
+      {!isAdminRoute && location.pathname !== "/administracion" && !isMmansouletRoute && (
         <MusicaApp src="/musica-app.mp3" volume={0.25} btnSize={33} />
       )}
       {/* Pantalla de carga */}
@@ -350,7 +350,7 @@ function App() {
         }}
       >
         {/* Navbar solo si no estás en /administracion */}
-        {location.pathname !== "/administracion" && location.pathname !== "/configurar-trabajos" && location.pathname !== "/dashboard" && location.pathname !== "/clientes" && location.pathname !== "/reservas" && location.pathname !== "/configurar-servicios" && location.pathname !== "/configurar-en-revision" && !isMmansouletRoute && (
+        {!isAdminRoute && location.pathname !== "/administracion" && !isMmansouletRoute && (
           <Suspense fallback={null}>
             <Navbar contactoRef={contactoRef} informationsRef={informationsRef} videoReady={videoReady} />
           </Suspense>
@@ -360,7 +360,7 @@ function App() {
         <Box sx={{ position: "relative" }}>
           <Outlet context={{ showApp, informationsRef, triggerInformations, setHasSeenInformations }} />
 
-          {isFading && (
+          {isFading && !isAdminRoute && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -400,10 +400,10 @@ function App() {
         )}
 
         {/* Footer (excepto en administración) */}
-        {location.pathname !== "/administracion" && location.pathname !== "/dashboard" && location.pathname !== "/configurar-servicios" && location.pathname !== "/configurar-trabajos" && location.pathname !== "/configurar-en-revision" && location.pathname !== "/clientes" && location.pathname !== "/reservas" && !isMmansouletRoute && <Footer />}
+        {!isAdminRoute && location.pathname !== "/administracion" && !isMmansouletRoute && <Footer />}
 
         {/* Botón WhatsApp */}
-        {location.pathname !== "/administracion" && location.pathname !== "/dashboard" && location.pathname !== "/configurar-servicios" && location.pathname !== "/configurar-trabajos" && location.pathname !== "/configurar-en-revision" && location.pathname !== "/clientes" && location.pathname !== "/reservas" && !isMmansouletRoute && (
+        {!isAdminRoute && location.pathname !== "/administracion" && !isMmansouletRoute && (
           <Box sx={{ position: "fixed", bottom: "75px", right: "15px", zIndex: 100, transition: "bottom 0.3s ease", }}>
             <IconButton
               className="pwbot-pulse"

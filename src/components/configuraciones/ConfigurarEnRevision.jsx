@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { CircularProgress, Dialog, Box, Typography, Paper, Table, TableHead, TableRow, TableCell, TableBody, Chip, LinearProgress, Snackbar, Alert, Button, useTheme, useMediaQuery } from "@mui/material";
 import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
 import { motion } from "framer-motion";
-import NavbarAdmin from "./NavbarAdmin";
-import SidebarAdmin from "./SidebarAdmin";
+import { useOutletContext } from "react-router-dom";
 import DialogAgregarTrabajo from "./DialogAgregarTrabajo";
 import { cargarTrabajosEnRevision, obtenerTextoEstado, obtenerColorEstado } from "../../helpers/HelperTrabajosEnRevision";
 
@@ -23,11 +22,7 @@ const ConfigurarEnRevision = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const [sidebarOpen, setSidebarOpen] = useState(() => localStorage.getItem("pw-sidebar") !== "false");
-  const toggleSidebar = () => setSidebarOpen(p => { const next = !p; localStorage.setItem("pw-sidebar", String(next)); return next; });
-  const [temaOscuro, setTemaOscuro] = useState(() => localStorage.getItem("pw-tema") !== "claro");
-  const handleTema = (oscuro) => { setTemaOscuro(oscuro); localStorage.setItem("pw-tema", oscuro ? "oscuro" : "claro"); };
-  const [forzarPrd, setForzarPrd] = useState(false);
+  const { temaOscuro, forzarPrd } = useOutletContext();
 
   useEffect(() => { fetchTrabajos(); }, []);
 
@@ -76,23 +71,8 @@ const ConfigurarEnRevision = () => {
   const cerrarDialogOpciones = () => { setDialogOpcionesOpen(false); setTrabajoParaOpciones(null); };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden", bgcolor: temaOscuro ? "#0a0a0a" : "#f0f0f0" }}>
-      <NavbarAdmin
-        titulo="En Revisión"
-        temaOscuro={temaOscuro}
-        onMenuClick={toggleSidebar}
-        forzarPrd={forzarPrd}
-        onForzarPrd={setForzarPrd}
-      />
-      <Box sx={{ display: "flex", flex: 1, overflow: "hidden" }}>
-        <SidebarAdmin
-          open={sidebarOpen}
-          temaOscuro={temaOscuro}
-          onTemaChange={handleTema}
-          onClose={() => { setSidebarOpen(false); localStorage.setItem("pw-sidebar", "false"); }}
-          esPrd={forzarPrd}
-        />
-        <Box sx={{ flex: 1, minWidth: 0, width: 0, overflowY: "auto", overflowX: "hidden", pb: 4, px: { xs: 1, md: 4 }, pt: 2 }}>
+    <>
+    <Box sx={{ flex: 1, minWidth: 0, overflowY: "auto", overflowX: "hidden", pb: 4, px: { xs: 1, md: 4 }, pt: 2 }}>
 
           {/* Título */}
           <Box display="flex" alignItems="center" gap={1} pb={2}>
@@ -163,7 +143,6 @@ const ConfigurarEnRevision = () => {
           </Snackbar>
 
         </Box>
-      </Box>
 
       {/* Dialog Crear Trabajo */}
       <DialogAgregarTrabajo open={dialogOpen} onClose={cerrarDialog} onSave={handleGuardarTrabajo} trabajoInicial={trabajoSeleccionado} />
@@ -202,7 +181,7 @@ const ConfigurarEnRevision = () => {
           </Button>
         </Box>
       </Dialog>
-    </Box>
+    </>
   );
 };
 
