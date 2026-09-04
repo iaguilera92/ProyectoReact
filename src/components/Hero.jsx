@@ -305,13 +305,14 @@ function Hero({ informationsRef, setVideoReady }) {
                       gutterBottom
                       className="text"
                       sx={{
-                        fontSize: isMobile ? "1.2rem !important" : "1.7rem !important",
+                        fontSize: isMobile ? "0.9rem !important" : "1.7rem !important",
                         fontWeight: 600,
                         textAlign: "center",
                         fontFamily: "'Poppins', sans-serif",
                         lineHeight: 1.2,
-                        minHeight: isMobile ? "3.2rem" : "5rem", // altura fija segÃºn viewport
+                        minHeight: isMobile ? "2.4rem" : "5rem",
                         display: "inline-block",
+                        whiteSpace: isMobile ? "nowrap" : "normal",
                       }}
                     >
                       {(() => {
@@ -334,7 +335,7 @@ function Hero({ informationsRef, setVideoReady }) {
                                 fontWeight: 700,
                                 fontFamily: "'Poppins', sans-serif",
                                 fontSize: "inherit",
-                                padding: "2px 8px",
+                                padding: isMobile ? "1px 5px" : "2px 8px",
                                 borderRadius: "10px",
                                 background:
                                   "linear-gradient(135deg, rgba(93,188,255,0.95) 0%, rgba(120,75,209,0.95) 100%)", // ðŸ'Ž azul a violeta moderno
@@ -369,8 +370,8 @@ function Hero({ informationsRef, setVideoReady }) {
                 }}>
                   {[
                     { dot: "#facc15", text: "+100 proyectos" },
-                    { dot: "#00e676", text: "Pagos Online" },
                     { dot: "#38bdf8", text: "Sitios web" },
+                    { dot: "#00e676", text: "Soluciones Tecnológicas" },
                     { dot: "#a78bfa", text: "Soporte 24/7" },
                   ].map((pill, i) => (
                     <Box key={i} sx={{
@@ -500,7 +501,7 @@ function Hero({ informationsRef, setVideoReady }) {
               )
             }}
           >
-            ¡Descubre cómo se verá tu sitio web!
+            ¡Cotiza tu website gratis!
           </Alert>
         </Snackbar>
 

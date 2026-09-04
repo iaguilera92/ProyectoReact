@@ -245,7 +245,7 @@ const Footer = () => {
           py: 2, gap: 1,
         }}>
           <Typography sx={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.35)", textAlign: "center" }}>
-            © 2026 Plataformas Web – Ignacio Aguilera Garrido
+            © 2026 Plataformas Web
             {version && <span style={{ marginLeft: 8, opacity: 0.5 }}>v{version}</span>}
           </Typography>
           <Typography sx={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.25)" }}>

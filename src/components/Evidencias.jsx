@@ -7,13 +7,13 @@ import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 
 const evidencias = [
-    { url: "https://www.ivelpink.cl",                   label: "ivelpink.cl",               video: "/evidencia1.mp4", logo: "/logos/logo-ivelpink.jpg" },
+    { url: "https://www.ivelpink.cl",                   label: "ivelpink.cl",               video: "/video-ivelpink.mp4", logo: "/logos/logo-ivelpink.jpg", mobileFullWidth: true, mobileObjectFit: "contain", mobileScale: 1.05 },
     { url: "https://www.ingsnt.cl",                     label: "ingsnt.cl",                 video: "/evidencia2.mp4", logo: "/logos/logo-ingsnt.png" },
-    { url: "https://www.masatracker.cl",                label: "masatracker.cl",            video: "/evidencia3.mp4", logo: "/logos/logo-mastracker.png" },
-    { url: "https://www.investigadores-privados.cl",    label: "investigadores-privados.cl",video: "/evidencia4.mp4", logo: "/logos/logo-investigadores-privados.png" },
     { url: "https://www.masautomatizacion.cl",          label: "masautomatizacion.cl",      video: "/evidencia5.mp4", logo: "/logos/logo-masautomatizacion.png" },
+    { url: "https://www.masatracker.cl",                label: "masatracker.cl",            video: "/evidencia3.mp4", logo: "/logos/logo-mastracker.png" },
     { url: "https://www.sifg.cl",                       label: "sifg.cl",                   video: "/evidencia6.mp4", logo: "/logos/logo-sifg.png" },
-    { url: null,                                        label: "autoges-web.cl",            video: "/evidencia7.mp4", logo: "/logos/logo-autoges.png" },
+    { url: "https://www.auracristal.cl",               label: "auracristal.cl",           video: "/video-aura-cristal.mp4", logo: null, mobileFullWidth: true, playbackRate: 3 },
+    { url: "https://www.targonex.cl",                  label: "targonex.cl",               video: "/video-targonex.mp4", logo: null, mobileFullWidth: true, playbackRate: 3 },
 ];
 
 const Evidencias = () => {
@@ -59,6 +59,7 @@ const Evidencias = () => {
     useEffect(() => {
         videosRef.current.forEach((video, index) => {
             if (!video) return;
+            video.playbackRate = evidencias[index].playbackRate || 1;
             const shouldPlay = isMobile
                 ? inView && selectedEvidenceIndex === null
                 : inView && selectedEvidenceIndex === null && index === activeVideoIndex;
@@ -69,28 +70,58 @@ const Evidencias = () => {
     const isActive = (n) => !isMobile && n === activeVideoIndex;
 
     return (
-        <Box sx={{ width: '100%', position: 'relative', mt: '-80px' }}>
+        <Box sx={{ width: '100%', position: 'relative', mt: { xs: 0, md: '-80px' } }}>
 
             {/* ── Sección 1: Marquee ── */}
             <Box sx={{
                 position: 'relative',
-                height: { xs: '80px', sm: '90px', md: '100px' },
+                height: { xs: '180px', sm: '160px', md: '140px' },
+                display: { xs: 'none', md: 'flex' },
                 backgroundImage: `url('fondo-telefono.webp')`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 zIndex: 1,
-                display: 'flex',
-                alignItems: 'center',
+                alignItems: 'flex-start',
+                pt: { xs: 3, sm: 2.5, md: 2 },
                 overflow: 'hidden',
             }}>
                 <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2%', background: 'linear-gradient(to bottom, rgba(0,0,0,0.5), transparent)' }} />
 
                 {/* Marquee */}
                 <Box sx={{ width: '100%', overflow: 'hidden', zIndex: 5 }}>
-                    <motion.div initial={{ x: '100vw' }} animate={{ x: '-100%' }} transition={{ repeat: Infinity, duration: 4, ease: 'linear' }} style={{ display: 'inline-block', whiteSpace: 'nowrap' }}>
-                        <Typography sx={{ fontSize: { xs: '2.2rem', sm: '2.8rem', md: '3.5rem' }, fontWeight: 600, color: 'white', fontFamily: `'Montserrat', sans-serif`, px: 4 }}>
-                            Control total sobre tu{' '}<span style={{ color: '#ffe037' }}>negocio.</span>
-                        </Typography>
+                    <motion.div
+                        initial={{ x: '100vw' }}
+                        animate={{ x: '-100%' }}
+                        transition={{ repeat: Infinity, duration: 18, ease: 'linear' }}
+                        style={{ display: 'inline-flex', whiteSpace: 'nowrap', alignItems: 'center', gap: '3rem' }}
+                    >
+                        {[0, 1].map((k) => (
+                            <Box key={k} sx={{ display: 'inline-flex', alignItems: 'center', gap: '2.5rem', px: 4 }}>
+                                <Typography sx={{
+                                    fontSize: { xs: '2rem', sm: '2.4rem', md: '3rem' },
+                                    fontWeight: 900,
+                                    fontFamily: `'Poppins', sans-serif`,
+                                    letterSpacing: '-0.02em',
+                                    color: 'white',
+                                    textShadow: '0 2px 16px rgba(0,0,0,0.5)',
+                                    lineHeight: 1,
+                                }}>
+                                    Control total sobre tu{' '}
+                                    <Box component="span" sx={{
+                                        background: 'linear-gradient(90deg, #ffe037, #ff9d00)',
+                                        WebkitBackgroundClip: 'text',
+                                        WebkitTextFillColor: 'transparent',
+                                        backgroundClip: 'text',
+                                    }}>negocio.</Box>
+                                </Typography>
+                                <Box sx={{
+                                    width: 6, height: 6, borderRadius: '50%',
+                                    background: 'rgba(255,224,55,0.8)',
+                                    boxShadow: '0 0 8px rgba(255,224,55,0.6)',
+                                    flexShrink: 0,
+                                }} />
+                            </Box>
+                        ))}
                     </motion.div>
                 </Box>
             </Box>
@@ -122,7 +153,7 @@ const Evidencias = () => {
                     }}>
 
                         {/* Título */}
-                        <Box ref={ref} sx={{ mb: { xs: 3, md: 4 } }}>
+                        <Box ref={ref} sx={{ mb: { xs: -3, md: 4 } }}>
                             <Box sx={{ display: "flex", justifyContent: "center", mb: 1.5 }}>
                                 <Box sx={{
                                     display: "inline-flex", alignItems: "center", gap: 1,
@@ -176,7 +207,7 @@ const Evidencias = () => {
                         {isMobile && (
                             <Grid container spacing={2} justifyContent="center">
                                 {evidencias.map((_, n) => (
-                                    <Grid item xs={6} key={n}>
+                                    <Grid item xs={evidencias[n].mobileFullWidth ? 12 : 6} key={n} sx={{ mt: evidencias[n].mobileFullWidth && n === 0 ? 8 : 0 }}>
                                         <VideoCard
                                             ev={evidencias[n]}
                                             n={n}
@@ -188,6 +219,7 @@ const Evidencias = () => {
                                             videosRef={videosRef}
                                             inView={inView}
                                             rowIdx={n}
+                                            mobileFullWidth={evidencias[n].mobileFullWidth}
                                         />
                                     </Grid>
                                 ))}
@@ -242,7 +274,7 @@ const Evidencias = () => {
     );
 };
 
-const VideoCard = ({ ev, n, active, hovered, onHover, onLeave, onClick, videosRef, inView, rowIdx }) => (
+const VideoCard = ({ ev, n, active, hovered, onHover, onLeave, onClick, videosRef, inView, rowIdx, mobileFullWidth }) => (
     <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -273,14 +305,14 @@ const VideoCard = ({ ev, n, active, hovered, onHover, onLeave, onClick, videosRe
             }}
         >
             {/* Video */}
-            <Box sx={{ position: "relative", width: "100%", height: 220 }} onClick={onClick}>
+            <Box sx={{ position: "relative", width: "100%", height: mobileFullWidth ? 200 : 220 }} onClick={onClick}>
                 <CardMedia
                     component="video"
                     ref={(el) => (videosRef.current[n] = el)}
                     src={ev.video}
                     playsInline muted loop preload="metadata" controls={false}
                     disablePictureInPicture controlsList="nodownload nofullscreen noremoteplayback"
-                    sx={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                    sx={{ width: "100%", height: "100%", objectFit: ev.mobileObjectFit || (mobileFullWidth ? "contain" : "cover"), display: "block", backgroundColor: "#000", transform: ev.mobileScale ? `scale(${ev.mobileScale})` : "none" }}
                 />
 
                 {/* Overlay hover */}

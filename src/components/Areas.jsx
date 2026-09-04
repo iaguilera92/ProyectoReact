@@ -12,19 +12,19 @@ const promotions = [
     accent: "#0075FF",
     badge: "Más cotizado",
     descriptors: [
-      "🕐 Soporte y atención continua 24/7",
-      "🛠️ Mantención técnica permanente del sitio",
-      "✏️ Solicitud de mejoras y ajustes incluidos",
-      "🤝 Gestión integral de tu sitio web",
+      "🌐 **Sitio web profesional** desarrollado en 72 hrs",
+      "📦 Hosting + dominio .cl incluido en la mensualidad",
+      "🔧 Cambios y mejoras incluidos sin costo adicional",
+      "📞 Soporte directo con tu equipo 24/7",
     ],
     price:          { CLP: "$29.990",  USD: "$32" },
     priceSinCupos:  { CLP: "$119.990", USD: "$120" },
     mensualSinCupos:{ CLP: "$9.990",   USD: "$11"  },
     periodicidad:   "/mes",
-    cuotas:         { CLP: "2 cuotas: al inicio y al entregar", USD: "2 payments: start & delivery" },
+    cuotas:         { CLP: "2 cuotas: Al inicio y al entregar", USD: "2 payments: start & delivery" },
     extras: [
-      { icon: "💵", label: "$9.990 CLP/mes mensualidad" },
-      { icon: "💳", label: "Webpay / transferencia / débito" },
+      { icon: "💵", label: "$9.990 CLP/mes mensualidad", labelUSD: "$10 USD/mes mensualidad" },
+      { icon: "💳", label: "Formas de pago: Webpay · débito · transferencia" },
     ],
   },
   {
@@ -34,10 +34,10 @@ const promotions = [
     accent: "#FFB300",
     badge: "Más cotizado",
     descriptors: [
-      "💎 Pago único, sin mensualidades",
-      "🎯 Ideal para landing o web institucional",
-      "💼 Imagen profesional desde el día uno",
-      "🧾 Desarrollos se cotizan por separado",
+      "🌐 **Sitio web profesional** entregado en 3 a 7 días",
+      "💎 Pago único en 2 cuotas, sin mensualidades",
+      "📦 Hosting + dominio .cl incluido el primer año",
+      "🔧 Ajustes posteriores se cotizan por separado",
     ],
     price:         { CLP: "$99.990",  USD: "$105" },
     priceSinCupos: { CLP: "$199.990", USD: "$210" },
@@ -46,7 +46,7 @@ const promotions = [
     cuotasSinCupos:{ CLP: "2 cuotas: al inicio y al entregar", USD: "2 payments: start & delivery" },
     extras: [
       { icon: "🚫", label: "Sin mensualidad posterior" },
-      { icon: "💳", label: "Webpay / transferencia / débito" },
+      { icon: "💳", label: "Formas de pago: Webpay · débito · transferencia" },
     ],
   },
   {
@@ -76,25 +76,25 @@ const pilares = [
   {
     icon: "⚡",
     title: "Entrega Rápida",
-    desc: "Tu sitio web listo en menos de 72 horas. Sin esperas, sin excusas.",
+    desc: "Tu sitio web listo en menos de 72 horas. Sin esperas ni excusas.",
     color: "#0075FF",
   },
   {
     icon: "🛡️",
     title: "Soporte 24/7",
-    desc: "Siempre disponibles cuando nos necesites. Tu negocio no para.",
+    desc: "Disponibles cuando más nos necesites. Tu negocio nunca se detiene.",
     color: "#7B1FA2",
   },
   {
     icon: "💰",
-    title: "Precio Justo",
-    desc: "Sin costos ocultos. Transparencia total desde el primer día.",
+    title: "Transparencia Total",
+    desc: "Sin costos ocultos ni sorpresas. Claridad total desde el primer día.",
     color: "#00C853",
   },
   {
     icon: "🏆",
     title: "Experiencia Comprobada",
-    desc: "+46 proyectos entregados en distintas industrias.",
+    desc: "Más de 100 proyectos entregados en distintas industrias del país.",
     color: "#FFB300",
   },
 ];
@@ -177,11 +177,26 @@ const PricingCard = ({ promo, isMobile, currency, toggleCurrency, conCupos, inVi
 
           {/* Descriptors */}
           <Box sx={{ display: "flex", flexDirection: "column", gap: 0.6, flexGrow: 1 }}>
-            {promo.descriptors.map((d, i) => (
-              <Typography key={i} sx={{ fontSize: isMobile ? "0.8rem" : "0.84rem", color: "rgba(255,255,255,0.85)", lineHeight: 1.4 }}>
-                {d}
-              </Typography>
-            ))}
+            {promo.descriptors.map((d, i) => {
+              const parts = d.split(/\*\*(.*?)\*\*/g);
+              return (
+                <Typography key={i} sx={{ fontSize: isMobile ? "0.8rem" : "0.84rem", color: "rgba(255,255,255,0.85)", lineHeight: 1.4 }}>
+                  {parts.map((part, j) =>
+                    j % 2 === 1
+                      ? <Box key={j} component="span" sx={{
+                          fontWeight: 700,
+                          fontFamily: "inherit",
+                          fontSize: "inherit",
+                          background: "linear-gradient(90deg, #38bdf8 0%, #a855f7 100%)",
+                          WebkitBackgroundClip: "text",
+                          WebkitTextFillColor: "transparent",
+                          backgroundClip: "text",
+                        }}>{part}</Box>
+                      : part
+                  )}
+                </Typography>
+              );
+            })}
           </Box>
 
           {/* Bloque precio */}
@@ -242,7 +257,7 @@ const PricingCard = ({ promo, isMobile, currency, toggleCurrency, conCupos, inVi
                 <Box key={i} sx={{ display: "flex", alignItems: "center", gap: 0.8 }}>
                   <Typography sx={{ fontSize: "0.68rem" }}>{ex.icon}</Typography>
                   <Typography sx={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.6)" }}>
-                    {ex.label}
+                    {currency === "USD" && ex.labelUSD ? ex.labelUSD : ex.label}
                   </Typography>
                 </Box>
               ))}
@@ -251,16 +266,54 @@ const PricingCard = ({ promo, isMobile, currency, toggleCurrency, conCupos, inVi
             {/* CTA */}
             <Box component="button" onClick={() => onContact(promo.title)} sx={{
               all: "unset", boxSizing: "border-box", width: "100%",
-              background: "linear-gradient(90deg, #FF9800, #F57C00)",
-              color: "white", border: "2px solid #E65100",
+              background: promo.id !== 3
+                ? "linear-gradient(135deg, #ffd54f, #ff9800 45%, #f57c00 85%)"
+                : "linear-gradient(90deg, #FF9800, #F57C00)",
+              backgroundSize: promo.id !== 3 ? "200% 200%" : undefined,
+              animation: promo.id !== 3 ? "gradientShift 8s ease infinite" : undefined,
+              color: "white",
+              border: promo.id !== 3 ? "2px solid rgba(255,213,79,0.9)" : "2px solid #E65100",
               borderRadius: "10px", py: 0.9,
               fontWeight: 700, fontSize: "0.85rem", cursor: "pointer",
               display: "flex", alignItems: "center", justifyContent: "center", gap: 1,
-              transition: "box-shadow 0.2s",
-              "&:hover": { boxShadow: "0 4px 14px rgba(255,152,0,0.4)" },
+              position: "relative", overflow: "hidden",
+              boxShadow: promo.id !== 3 ? "0 6px 16px rgba(255,152,0,.4)" : undefined,
+              transition: "box-shadow 0.2s, transform 0.2s",
+              "&:hover": {
+                boxShadow: promo.id !== 3
+                  ? "0 0 6px rgba(255,167,38,.6), inset 0 0 6px rgba(255,255,255,0.25)"
+                  : "0 4px 14px rgba(255,152,0,0.4)",
+                transform: "translateY(-1px) scale(1.02)",
+              },
+              ...(promo.id !== 3 && {
+                "&::before": {
+                  content: '""', position: "absolute", inset: "-2px", borderRadius: "inherit",
+                  background: "linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.9) 10%, #fff59d 20%, rgba(255,255,255,0.9) 30%, transparent 40%)",
+                  backgroundRepeat: "no-repeat", backgroundSize: "300% 300%",
+                  animation: "shineBorderSweep 3s linear infinite, pulseGlow 4s ease-in-out infinite",
+                  pointerEvents: "none", zIndex: 2,
+                  mask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+                  maskComposite: "exclude",
+                  WebkitMask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+                  WebkitMaskComposite: "xor",
+                },
+                "&::after": {
+                  content: '""', position: "absolute", inset: 0,
+                  background: "linear-gradient(130deg, transparent 40%, rgba(255,255,255,0.8) 50%, transparent 60%)",
+                  transform: "translateX(-100%)", animation: "shineDiagonal 4s ease-in-out infinite",
+                  borderRadius: "inherit", pointerEvents: "none", zIndex: 1,
+                },
+                "&:hover::after": { animation: "shineDiagonal 1.2s ease-in-out" },
+                "@keyframes shineBorderSweep": { "0%": { backgroundPosition: "-300% 0" }, "100%": { backgroundPosition: "300% 0" } },
+                "@keyframes pulseGlow": { "0%, 100%": { filter: "drop-shadow(0 0 6px rgba(255,223,0,.35))" }, "50%": { filter: "drop-shadow(0 0 14px rgba(255,223,0,.75))" } },
+                "@keyframes shineDiagonal": { "0%": { transform: "translateX(-120%)" }, "100%": { transform: "translateX(120%)" } },
+                "@keyframes gradientShift": { "0%": { backgroundPosition: "0% 50%" }, "50%": { backgroundPosition: "100% 50%" }, "100%": { backgroundPosition: "0% 50%" } },
+              }),
             }}>
               Solicitar Cotización
-              <Box component="img" src="/clic.jpg" alt="clic" sx={{ filter: "invert(1) brightness(2)", width: 22, height: "auto" }} />
+              {promo.id !== 3 && (
+                <Box component="img" src="/clic.jpg" alt="clic" sx={{ filter: "invert(1) brightness(2)", width: 22, height: "auto", position: "relative", zIndex: 3 }} />
+              )}
             </Box>
           </Box>
         </Box>
@@ -271,37 +324,83 @@ const PricingCard = ({ promo, isMobile, currency, toggleCurrency, conCupos, inVi
 
 const PilarCard = ({ pilar, index, inView }) => (
   <motion.div
-    initial={{ opacity: 0, scale: 0.9 }}
-    animate={inView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
-    transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 * index }}
-    style={{ height: "100%" }}
+    initial={{ opacity: 0, y: 30 }}
+    animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+    transition={{ duration: 0.55, ease: "easeOut", delay: 0.12 * index }}
+    style={{ display: "flex", flex: 1, width: "100%" }}
   >
     <Box sx={{
-      borderRadius: "16px",
-      background: "rgba(6, 20, 40, 0.7)",
-      backdropFilter: "blur(10px)",
-      border: `1.5px solid ${pilar.color}44`,
+      width: "100%",
+      borderRadius: "22px",
+      background: `linear-gradient(145deg, rgba(255,255,255,0.96) 0%, rgba(240,245,255,0.92) 100%)`,
+      backdropFilter: "blur(20px)",
+      border: "1px solid rgba(255,255,255,0.9)",
+      boxShadow: `0 8px 32px rgba(0,0,0,0.12), 0 1px 0 rgba(255,255,255,1) inset, 0 0 0 1px ${pilar.color}22`,
       p: 3,
-      textAlign: "center",
       height: "100%",
       boxSizing: "border-box",
       display: "flex",
       flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      transition: "transform 0.2s, box-shadow 0.2s",
+      position: "relative",
+      overflow: "hidden",
+      transition: "transform 0.25s, box-shadow 0.25s",
       "&:hover": {
-        transform: "translateY(-4px)",
-        boxShadow: `0 12px 32px rgba(0,0,0,0.4), 0 0 0 2px ${pilar.color}55`,
+        transform: "translateY(-6px)",
+        boxShadow: `0 24px 48px rgba(0,0,0,0.18), 0 1px 0 rgba(255,255,255,1) inset, 0 0 0 1.5px ${pilar.color}66`,
+      },
+      "&::before": {
+        content: '""',
+        position: "absolute",
+        top: 0, left: 0, right: 0,
+        height: "4px",
+        background: `linear-gradient(90deg, ${pilar.color}, ${pilar.color}99)`,
+        borderRadius: "22px 22px 0 0",
       },
     }}>
-      <Typography sx={{ fontSize: "2.8rem", mb: 1 }}>{pilar.icon}</Typography>
-      <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 800, fontSize: "0.88rem", color: pilar.color, mb: 0.8, letterSpacing: "0.3px", whiteSpace: "nowrap" }}>
+      {/* Número */}
+      <Typography sx={{
+        position: "absolute", top: 14, right: 16,
+        fontSize: "0.68rem", fontWeight: 800, fontFamily: "'Poppins', sans-serif",
+        color: `${pilar.color}55`, letterSpacing: "0.5px",
+      }}>
+        {String(index + 1).padStart(2, "0")}
+      </Typography>
+
+      {/* Ícono */}
+      <Box sx={{
+        width: 50, height: 50, borderRadius: "15px",
+        background: `linear-gradient(135deg, ${pilar.color}22, ${pilar.color}0a)`,
+        border: `1.5px solid ${pilar.color}44`,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        mb: 2, fontSize: "1.7rem",
+        boxShadow: `0 4px 12px ${pilar.color}22`,
+      }}>
+        {pilar.icon}
+      </Box>
+
+      {/* Título */}
+      <Typography sx={{
+        fontFamily: "'Poppins', sans-serif", fontWeight: 800,
+        fontSize: "0.95rem", color: "#0f172a", mb: 0.7, lineHeight: 1.2,
+        wordBreak: "break-word",
+      }}>
         {pilar.title}
       </Typography>
-      <Typography sx={{ fontSize: "0.85rem", color: "white", lineHeight: 1.6 }}>
+
+      {/* Desc */}
+      <Typography sx={{
+        fontSize: "0.82rem", color: "#475569", lineHeight: 1.65,
+      }}>
         {pilar.desc}
       </Typography>
+
+      {/* Glow de fondo */}
+      <Box sx={{
+        position: "absolute", bottom: -20, right: -20,
+        width: 90, height: 90, borderRadius: "50%",
+        background: `${pilar.color}15`,
+        filter: "blur(18px)", pointerEvents: "none",
+      }} />
     </Box>
   </motion.div>
 );
@@ -336,11 +435,11 @@ const Areas = () => {
     <Box sx={{
       position: "relative",
       backgroundImage: isMobile
-        ? "linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)), url(/fondo-areas2.webp)"
+        ? "linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)), url(/fondo-ofertas.avif)"
         : "linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)), url(/fondo-areas1.webp)",
       backgroundRepeat: "no-repeat",
-      backgroundSize: "100% 100%",
-      backgroundPosition: "center top",
+      backgroundSize: isMobile ? "cover" : "100% 100%",
+      backgroundPosition: isMobile ? "center center" : "center top",
       backgroundAttachment: "scroll",
       paddingTop: "10px !important",
       padding: { xs: 3, md: 10 },

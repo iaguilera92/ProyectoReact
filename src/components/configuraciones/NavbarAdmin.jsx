@@ -94,7 +94,7 @@ export default function NavbarAdmin({ titulo, onMenuClick, accion, temaOscuro = 
 
         {/* Logo */}
         <Box
-          onClick={() => navigate("/dashboard")}
+          onClick={() => navigate("/")}
           sx={{ display: "flex", alignItems: "center", ml: 1, cursor: "pointer", flexShrink: 0 }}
         >
           <Box

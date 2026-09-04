@@ -12,7 +12,7 @@ const VISITA_PRECIOS_KEY = "visita_pago_unico_notificada";
 const RESERVA_TEST_AMOUNT = 50;
 
 // Botón animado extraído — solo monta una vez, no re-renderiza por cambio de currency
-const ClicButton = memo(function ClicButton({ onClick, label, gradient, border }) {
+const ClicButton = memo(function ClicButton({ onClick, label, gradient, border, shine }) {
   return (
     <Box
       component="button"
@@ -21,6 +21,8 @@ const ClicButton = memo(function ClicButton({ onClick, label, gradient, border }
         all: "unset",
         boxSizing: "border-box",
         background: gradient,
+        backgroundSize: shine ? "200% 200%" : undefined,
+        animation: shine ? "gradientShift 8s ease infinite" : undefined,
         color: "white",
         border: `2px solid ${border}`,
         borderRadius: "8px",
@@ -37,10 +39,37 @@ const ClicButton = memo(function ClicButton({ onClick, label, gradient, border }
         gap: "8px",
         mt: 0.3,
         willChange: "transform",
+        position: "relative",
+        overflow: "hidden",
+        boxShadow: shine ? "0 6px 16px rgba(255,152,0,.4)" : undefined,
         "&:hover": {
           transform: "translateY(-1px) scale(1.02)",
-          boxShadow: "0 4px 14px rgba(0,0,0,0.3)",
+          boxShadow: shine ? "0 0 6px rgba(255,167,38,.6), inset 0 0 6px rgba(255,255,255,0.25)" : "0 4px 14px rgba(0,0,0,0.3)",
         },
+        ...(shine && {
+          "&::before": {
+            content: '""', position: "absolute", inset: "-2px", borderRadius: "inherit",
+            background: "linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.9) 10%, #fff59d 20%, rgba(255,255,255,0.9) 30%, transparent 40%)",
+            backgroundRepeat: "no-repeat", backgroundSize: "300% 300%",
+            animation: "shineBorderSweep 3s linear infinite, pulseGlow 4s ease-in-out infinite",
+            pointerEvents: "none", zIndex: 2,
+            mask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+            maskComposite: "exclude",
+            WebkitMask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+            WebkitMaskComposite: "xor",
+          },
+          "&::after": {
+            content: '""', position: "absolute", inset: 0,
+            background: "linear-gradient(130deg, transparent 40%, rgba(255,255,255,0.8) 50%, transparent 60%)",
+            transform: "translateX(-100%)", animation: "shineDiagonal 4s ease-in-out infinite",
+            borderRadius: "inherit", pointerEvents: "none", zIndex: 1,
+          },
+          "&:hover::after": { animation: "shineDiagonal 1.2s ease-in-out" },
+          "@keyframes shineBorderSweep": { "0%": { backgroundPosition: "-300% 0" }, "100%": { backgroundPosition: "300% 0" } },
+          "@keyframes pulseGlow": { "0%, 100%": { filter: "drop-shadow(0 0 6px rgba(255,223,0,.35))" }, "50%": { filter: "drop-shadow(0 0 14px rgba(255,223,0,.75))" } },
+          "@keyframes shineDiagonal": { "0%": { transform: "translateX(-120%)" }, "100%": { transform: "translateX(120%)" } },
+          "@keyframes gradientShift": { "0%": { backgroundPosition: "0% 50%" }, "50%": { backgroundPosition: "100% 50%" }, "100%": { backgroundPosition: "0% 50%" } },
+        }),
       }}
     >
       {label}
@@ -171,11 +200,24 @@ const PromoSlide = memo(function PromoSlide({
 
           {/* Descriptors */}
           <Box sx={{ width: isMobile ? "100%" : "80%", mt: 0.4, display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-            {promo.descriptors.map((desc, idx) => (
-              <Typography key={idx} variant="caption" sx={{ display: "flex", alignItems: "center", mb: 0.35, fontSize: "0.8rem", lineHeight: 1.4, color: "#eee" }}>
-                {desc}
-              </Typography>
-            ))}
+            {promo.descriptors.map((desc, idx) => {
+              const parts = desc.split(/\*\*(.*?)\*\*/g);
+              return (
+                <Typography key={idx} variant="caption" sx={{ display: "flex", alignItems: "center", mb: 0.35, fontSize: "0.8rem", lineHeight: 1.4, color: "#eee" }}>
+                  {parts.map((part, i) =>
+                    i % 2 === 1
+                      ? <Box key={i} component="span" sx={{
+                          fontWeight: 800,
+                          background: "linear-gradient(90deg, #38bdf8 0%, #a855f7 100%)",
+                          WebkitBackgroundClip: "text",
+                          WebkitTextFillColor: "transparent",
+                          backgroundClip: "text",
+                        }}>{part}</Box>
+                      : part
+                  )}
+                </Typography>
+              );
+            })}
           </Box>
 
           {/* Precio principal */}
@@ -395,8 +437,9 @@ const PromoSlide = memo(function PromoSlide({
               <ClicButton
                 onClick={() => handleContactClick(promo.title)}
                 label="Solicitar Cotización"
-                gradient="linear-gradient(90deg, #FF9800, #F57C00)"
-                border="#E65100"
+                gradient="linear-gradient(135deg, #ffd54f, #ff9800 45%, #f57c00 85%)"
+                border="rgba(255, 213, 79, 0.9)"
+                shine={isId1 || isId2}
               />
             )}
           </Box>

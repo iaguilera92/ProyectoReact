@@ -599,7 +599,7 @@ function Navbar({ contactoRef, informationsRef, videoReady }) {
         <Box sx={{ overflowY: 'auto', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
           {/* ── Header ── */}
           <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", px: 2.5, pt: 2.5, pb: 2, borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
-            <Box component="img" src="/logo-plataformas-web.png" alt="Logo" sx={{ height: 42, objectFit: "contain" }} />
+            <Box component="img" src="/logo-plataformas-web.png" alt="Logo" onClick={LogoInicio} sx={{ height: 42, objectFit: "contain", cursor: "pointer" }} />
             <IconButton
               onClick={() => setOpen(false)}
               sx={{ color: "rgba(255,255,255,0.7)", "&:hover": { color: "#fff", backgroundColor: "rgba(255,255,255,0.08)" }, animation: open ? `${rotateTwice} 0.8s ease-in-out` : "none" }}

@@ -6,7 +6,7 @@ import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 
 const evidencias = [
-  { url: "https://www.aura-cristal.cl",            label: "aura-cristal.cl",           video: "/video-aura-cristal.mp4", logo: null, playbackRate: 3 },
+  { url: "https://www.auracristal.cl",            label: "auracristal.cl",           video: "/video-aura-cristal.mp4", logo: null, playbackRate: 3 },
   { url: "https://www.targonex.cl",                label: "targonex.cl",               video: "/video-targonex.mp4",     logo: null, playbackRate: 3 },
   { url: "https://www.ivelpink.cl",                label: "ivelpink.cl",               video: "/video-ivelpink.mp4", logo: "/logos/logo-ivelpink.jpg" },
   { url: "https://www.ingsnt.cl",                  label: "ingsnt.cl",                 video: "/evidencia2.mp4", logo: "/logos/logo-ingsnt.png", objectFit: "contain" },

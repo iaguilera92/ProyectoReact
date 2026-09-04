@@ -565,7 +565,7 @@ function Features({ videoReady }) {
       >
         <Box ref={ref}>
           {/* Título sección */}
-          <Box sx={{ mb: { xs: 1.8, md: 2.2 } }}>
+          <Box sx={{ mb: { xs: 1.8, md: 2.2 }, display: { xs: 'none', md: 'block' } }}>
             {/* Título con gradiente */}
             <motion.div
               initial={{ opacity: 0, y: 18 }}
@@ -790,6 +790,32 @@ function Features({ videoReady }) {
                       </Card>
                     </SwiperSlide>
                   </Swiper>
+                </motion.div>
+              </Grid>
+
+              {/* Título + subtítulo mobile (debajo del slide) */}
+              <Grid item xs={12} sx={{ mt: 0.5 }}>
+                <motion.div
+                  initial={{ opacity: 0, y: 18 }}
+                  animate={hasAnimated ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
+                  transition={{ duration: prefersReducedMotion ? 0 : 0.55, ease: "easeOut", delay: prefersReducedMotion ? 0 : 1.1 }}
+                >
+                  <Typography sx={{
+                    fontSize: "1.18rem", fontWeight: 900, color: "#fff",
+                    lineHeight: 1.1, mb: 0.8, letterSpacing: "-0.02em", textWrap: "balance",
+                  }}>
+                    Contrata nuestros{" "}
+                    <Box component="span" sx={{
+                      background: "linear-gradient(90deg, #2c95e3 0%, #a855f7 100%)",
+                      WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+                    }}>servicios:</Box>
+                  </Typography>
+                  <Typography sx={{
+                    fontSize: "0.72rem", color: "rgba(255,255,255,0.42)",
+                    fontWeight: 400, lineHeight: 1.5, fontStyle: "italic",
+                  }}>
+                    Cuéntanos qué necesitas y lo construimos para ti.
+                  </Typography>
                 </motion.div>
               </Grid>
 

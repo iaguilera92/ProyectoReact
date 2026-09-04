@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { Box, Grid, Card, CardContent, Typography, Collapse, Button, useTheme, Link, Container, useMediaQuery } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import LanguageIcon from '@mui/icons-material/Language';
@@ -97,16 +97,33 @@ const Servicios = () => {
 
       <Box ref={containerRef} sx={{ pt: 12, pb: 4, px: { xs: 1, md: 4 } }}>
         <Box textAlign="center" mb={3} px={2}>
-          <Typography variant={isMobile ? "h5" : "h3"} fontWeight={700} sx={{ color: 'white', display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'center' }}>
-            {"Nuestros Servicios".split("").map((char, i) => (
-              <motion.span key={i} custom={i} variants={letterVariants} initial="hidden" animate="visible" style={{ display: 'inline-block' }}>
-                {char === " " ? "\u00A0" : char}
-              </motion.span>
-            ))}
-          </Typography>
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1, duration: 0.8, ease: 'easeOut' }}>
-            <Typography variant="body1" color="white" sx={{ maxWidth: 800, mx: 'auto', fontSize: '1.2rem', fontFamily: '"Segoe UI", sans-serif', lineHeight: 1.6, opacity: 0.9, mt: 1 }}>
-              Desarrollamos sitios web y sistemas para todos los negocios.
+          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: 'easeOut' }}>
+            {/* Label con l\u00EDneas */}
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2, mb: 1.5 }}>
+              <Box sx={{ flex: 1, maxWidth: 80, height: '1px', background: 'linear-gradient(90deg, transparent, rgba(0,212,255,0.5))' }} />
+              <Typography sx={{
+                fontSize: '0.7rem', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase',
+                fontFamily: "'Poppins', sans-serif",
+                background: 'linear-gradient(90deg, #38bdf8, #00e5ff)',
+                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+              }}>
+                tecnología que integramos
+              </Typography>
+              <Box sx={{ flex: 1, maxWidth: 80, height: '1px', background: 'linear-gradient(90deg, rgba(0,212,255,0.5), transparent)' }} />
+            </Box>
+            <Typography sx={{
+              fontFamily: "'Poppins', sans-serif", fontWeight: 800,
+              fontSize: { xs: '1.6rem', md: '2rem' },
+              color: 'white', lineHeight: 1.2, mb: 1,
+            }}>
+              Impulsa tu negocio con tecnología
+            </Typography>
+            <Typography sx={{
+              fontSize: { xs: '0.85rem', md: '0.95rem' },
+              color: 'rgba(255,255,255,0.6)',
+              maxWidth: 460, mx: 'auto', lineHeight: 1.6,
+            }}>
+              Herramientas modernas para que tu sitio crezca, rinda y destaque
             </Typography>
           </motion.div>
         </Box>

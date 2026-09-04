@@ -9,7 +9,7 @@ const fadeUp = {
 };
 
 const stats = [
-  { value: "+46", label: "Proyectos entregados" },
+  { value: "+100", label: "Proyectos entregados" },
   { value: "9+", label: "Años de experiencia" },
   { value: "24/7", label: "Soporte disponible" },
   { value: "100%", label: "Clientes satisfechos" },
@@ -97,7 +97,7 @@ const Nosotros = () => {
               </Typography>
               <Box sx={{ flex: 1, maxWidth: 80, height: "1px", background: "linear-gradient(90deg, rgba(0,212,255,0.5), transparent)" }} />
             </Box>
-            <Typography sx={{ fontFamily: "Poppins, sans-serif", fontWeight: 800, fontSize: { xs: "2.2rem", md: "3.2rem" }, color: "#fff", lineHeight: 1.15, mb: 1.5 }}>
+            <Typography sx={{ fontFamily: "Poppins, sans-serif", fontWeight: 800, fontSize: { xs: "1.6rem", md: "2rem" }, color: "#fff", lineHeight: 1.15, mb: 1.5 }}>
               Somos <span style={{ background: "linear-gradient(135deg,#38bdf8,#00e5ff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Plataformas Web</span>
             </Typography>
             <Typography sx={{ fontFamily: "Poppins, sans-serif", fontSize: { xs: "0.9rem", md: "1.05rem" }, color: "rgba(255,255,255,0.55)", maxWidth: 560, mx: "auto", lineHeight: 1.7 }}>
