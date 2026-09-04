@@ -1,19 +1,13 @@
-const AWS = require("aws-sdk");
-const XLSX = require("xlsx");
-require("dotenv").config();
+const { createClient } = require("@supabase/supabase-js");
 
-// 🪣 Configuración base
-const BUCKET_NAME = process.env.BUCKET_NAME || "plataformas-web-buckets";
-const REGION = process.env.MY_AWS_REGION || "us-east-2";
-const FILE_KEY = "Clientes.xlsx";
+if (!global.WebSocket) {
+    global.WebSocket = class { constructor() {} close() {} send() {} };
+}
 
-AWS.config.update({
-    accessKeyId: process.env.MY_AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.MY_AWS_SECRET_ACCESS_KEY,
-    region: REGION,
-});
-
-const s3 = new AWS.S3();
+const supabase = createClient(
+    process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL,
+    process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY
+);
 
 const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
@@ -47,58 +41,25 @@ exports.handler = async (event) => {
             };
         }
 
-        // 📥 Leer archivo desde S3
-        console.log("📖 Leyendo archivo Clientes.xlsx desde S3...");
-        const s3Data = await s3
-            .getObject({
-                Bucket: BUCKET_NAME,
-                Key: FILE_KEY,
-            })
-            .promise();
+        console.log(`🔍 Buscando cliente con sitio_web: "${sitioWeb}"`);
 
-        const workbook = XLSX.read(s3Data.Body, { type: "buffer" });
-        const hoja = workbook.Sheets[workbook.SheetNames[0]];
-        const datos = XLSX.utils.sheet_to_json(hoja, { defval: "" });
+        const { data: eliminado, error } = await supabase
+            .from("clientes")
+            .delete()
+            .eq("sitio_web", sitioWeb)
+            .select()
+            .single();
 
-        console.log(`📊 Registros actuales: ${datos.length}`);
-
-        // 🔍 Buscar cliente por sitioWeb (ignorando mayúsculas/minúsculas)
-        const index = datos.findIndex(
-            (c) => c.sitioWeb?.toLowerCase() === sitioWeb.toLowerCase()
-        );
-
-        if (index === -1) {
-            console.warn(`⚠️ Cliente con sitioWeb "${sitioWeb}" no encontrado.`);
+        if (error) {
+            console.error("❌ Error Supabase:", error);
             return {
                 statusCode: 404,
                 headers: corsHeaders,
-                body: JSON.stringify({
-                    message: `No se encontró cliente con sitioWeb "${sitioWeb}"`,
-                }),
+                body: JSON.stringify({ message: `No se encontró cliente con sitio_web "${sitioWeb}"` }),
             };
         }
 
-        const eliminado = datos.splice(index, 1)[0];
         console.log("🗑️ Cliente eliminado:", eliminado);
-
-        // 📤 Convertir nuevamente a Excel
-        const nuevaHoja = XLSX.utils.json_to_sheet(datos);
-        workbook.Sheets[workbook.SheetNames[0]] = nuevaHoja;
-        const buffer = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" });
-
-        // ⏫ Subir archivo actualizado
-        console.log("⏫ Subiendo archivo actualizado a S3...");
-        await s3
-            .putObject({
-                Bucket: BUCKET_NAME,
-                Key: FILE_KEY,
-                Body: buffer,
-                ContentType:
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            })
-            .promise();
-
-        console.log("✅ Eliminación completada exitosamente");
 
         return {
             statusCode: 200,

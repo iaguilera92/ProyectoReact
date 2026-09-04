@@ -1,18 +1,13 @@
-const AWS = require("aws-sdk");
-const XLSX = require("xlsx");
-require("dotenv").config();
+const { createClient } = require("@supabase/supabase-js");
 
-const BUCKET_NAME = process.env.BUCKET_NAME || "plataformas-web-buckets";
-const REGION = process.env.MY_AWS_REGION || "us-east-2";
-const FILE_KEY = "Clientes.xlsx";
+if (!global.WebSocket) {
+    global.WebSocket = class { constructor() {} close() {} send() {} };
+}
 
-AWS.config.update({
-    accessKeyId: process.env.MY_AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.MY_AWS_SECRET_ACCESS_KEY,
-    region: REGION,
-});
-
-const s3 = new AWS.S3();
+const supabase = createClient(
+    process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL,
+    process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY
+);
 
 const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
@@ -46,7 +41,6 @@ exports.handler = async (event) => {
             valor,
             estado,
             logoCliente,
-            internacional,
         } = body;
 
         if (!idCliente) {
@@ -57,47 +51,39 @@ exports.handler = async (event) => {
             };
         }
 
-        const s3Data = await s3.getObject({ Bucket: BUCKET_NAME, Key: FILE_KEY }).promise();
-        const workbook = XLSX.read(s3Data.Body, { type: "buffer" });
-        const hoja = workbook.Sheets[workbook.SheetNames[0]];
-        const datos = XLSX.utils.sheet_to_json(hoja, { defval: "" });
+        const campos = {};
+        if (nombreCliente !== undefined) campos.nombre = nombreCliente;
+        if (sitioWeb !== undefined) campos.sitio_web = sitioWeb;
+        if (URL !== undefined) campos.url = URL;
+        if (telefono !== undefined) campos.telefono = telefono;
+        if (correo !== undefined) campos.correo = correo;
+        if (pagado !== undefined) campos.pagado = pagado;
+        if (valor !== undefined) campos.valor = valor;
+        if (estado !== undefined) campos.estado = estado;
+        if (logoCliente !== undefined) campos.logo_url = logoCliente;
 
-        const idx = datos.findIndex((d) => String(d.idCliente) === String(idCliente));
-        if (idx === -1) {
+        const { data: actualizado, error } = await supabase
+            .from("clientes")
+            .update(campos)
+            .eq("id", idCliente)
+            .select()
+            .single();
+
+        if (error) {
+            console.error("❌ Error Supabase:", error);
             return {
                 statusCode: 404,
                 headers: corsHeaders,
-                body: JSON.stringify({ message: "Cliente no encontrado" }),
+                body: JSON.stringify({ message: "Cliente no encontrado", error: error.message }),
             };
         }
 
-        // Actualizar solo los campos enviados
-        if (nombreCliente !== undefined) datos[idx].cliente = nombreCliente;
-        if (sitioWeb !== undefined) datos[idx].sitioWeb = sitioWeb;
-        if (URL !== undefined) datos[idx].URL = URL;
-        if (telefono !== undefined) datos[idx].telefono = telefono;
-        if (correo !== undefined) datos[idx].correo = correo;
-        if (pagado !== undefined) datos[idx].pagado = pagado;
-        if (valor !== undefined) datos[idx].valor = valor;
-        if (estado !== undefined) datos[idx].estado = estado;
-        if (logoCliente !== undefined) datos[idx].logoCliente = logoCliente;
-        if (internacional !== undefined) datos[idx].internacional = internacional;
-
-        const nuevaHoja = XLSX.utils.json_to_sheet(datos);
-        workbook.Sheets[workbook.SheetNames[0]] = nuevaHoja;
-        const buffer = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" });
-
-        await s3.putObject({
-            Bucket: BUCKET_NAME,
-            Key: FILE_KEY,
-            Body: buffer,
-            ContentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        }).promise();
+        console.log("✅ Cliente editado:", actualizado);
 
         return {
             statusCode: 200,
             headers: corsHeaders,
-            body: JSON.stringify({ message: "Cliente actualizado correctamente", idCliente }),
+            body: JSON.stringify({ message: "Cliente actualizado correctamente", cliente: actualizado }),
         };
     } catch (error) {
         console.error("❌ Error al editar cliente:", error);

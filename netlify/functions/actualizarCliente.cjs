@@ -1,18 +1,13 @@
-const AWS = require("aws-sdk");
-const XLSX = require("xlsx");
-require("dotenv").config();
+const { createClient } = require("@supabase/supabase-js");
 
-const BUCKET_NAME = process.env.BUCKET_NAME;
-const REGION = process.env.MY_AWS_REGION || "us-east-1";
-const FILE_KEY = "Clientes.xlsx";
+if (!global.WebSocket) {
+    global.WebSocket = class { constructor() {} close() {} send() {} };
+}
 
-AWS.config.update({
-    accessKeyId: process.env.MY_AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.MY_AWS_SECRET_ACCESS_KEY,
-    region: REGION,
-});
-
-const s3 = new AWS.S3();
+const supabase = createClient(
+    process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL,
+    process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY
+);
 
 const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
@@ -55,93 +50,66 @@ exports.handler = async (event) => {
             };
         }
 
-        // Leer Excel desde S3
-        const s3Data = await s3.getObject({ Bucket: BUCKET_NAME, Key: FILE_KEY }).promise();
-        const workbook = XLSX.read(s3Data.Body, { type: "buffer" });
-        const hoja = workbook.Sheets[workbook.SheetNames[0]];
-        const datos = XLSX.utils.sheet_to_json(hoja, { defval: "" });
-
         const hoy = new Date().toISOString().split("T")[0];
-        const entornoActual = process.env.CONTEXT = "PRODUCCION";
+        const entornoActual = process.env.NODE_ENV === "production" ? "PRODUCCION" : "DESARROLLO";
 
-        let modificado = false;
+        const campos = {};
 
-        const nuevosDatos = datos.map((rowOriginal) => {
-            const row = Object.fromEntries(Object.entries(rowOriginal).map(([k, v]) => [k.toLowerCase(), v]));
-            const rowId = String(row.idcliente || "").trim();
-            const targetId = String(idCliente).trim();
+        if (cobroExitoso === true || cobroExitoso === 1 || cobroExitoso === "1") {
+            campos.pagado = true;
+            campos.fecha_pago = hoy;
+        } else if (revertir === true || revertir === 1 || revertir === "1") {
+            campos.pagado = false;
+            campos.fecha_pago = null;
+        }
 
-            if (rowId === targetId) {
-                modificado = true;
-                console.log("🧩 Cliente encontrado:", rowId);
+        if (typeof suscripcion !== "undefined") {
+            campos.suscripcion = !!suscripcion;
+        }
 
-                const actualizado = { ...rowOriginal };
+        if (tbk_user && typeof tbk_user === "string" && tbk_user.trim() !== "") {
+            campos.tbk_user = tbk_user;
+            campos.entorno_tbk = entornoActual;
+        }
 
-                // ✅ PAGO (seguro)
-                if (cobroExitoso === true || cobroExitoso === 1 || cobroExitoso === "1") {
-                    actualizado.pagado = 1;
-                    actualizado.fechaPago = hoy;
-                } else if (revertir === true || revertir === 1 || revertir === "1") {
-                    actualizado.pagado = 0;
-                    actualizado.fechaPago = "";
-                } else {
-                    actualizado.pagado = row.pagado;
-                    actualizado.fechaPago = row.fechapago || row.fechaPago || "";
-                }
+        if (tarjeta && typeof tarjeta === "string" && tarjeta.trim() !== "") {
+            campos.tarjeta = tarjeta;
+        }
 
-                // ✅ Suscripción
-                if (typeof suscripcion !== "undefined") {
-                    actualizado.Suscripcion = suscripcion ? 1 : 0;
-                }
+        if (tipo_tarjeta && typeof tipo_tarjeta === "string" && tipo_tarjeta.trim() !== "") {
+            campos.tipo_tarjeta = tipo_tarjeta;
+        }
 
-                // ✅ tbk_user
-                if (typeof tbk_user !== "undefined" && tbk_user.trim() !== "") {
-                    actualizado.tbk_user = tbk_user;
-                    actualizado.entorno_tbk = entornoActual;
-                }
-
-                // ✅ Tarjeta
-                if (typeof tarjeta !== "undefined" && tarjeta.trim() !== "") {
-                    actualizado.tarjeta = tarjeta;
-                }
-
-                // ✅ Tipo tarjeta
-                if (typeof tipo_tarjeta !== "undefined" && tipo_tarjeta.trim() !== "") {
-                    actualizado.tipo_tarjeta = tipo_tarjeta;
-                }
-
-                return actualizado;
-            }
-
-            return rowOriginal;
-        });
-
-        if (!modificado) {
+        if (Object.keys(campos).length === 0) {
             return {
-                statusCode: 404,
+                statusCode: 400,
                 headers: corsHeaders,
-                body: JSON.stringify({ message: "Cliente no encontrado" }),
+                body: JSON.stringify({ message: "No hay campos para actualizar" }),
             };
         }
 
-        // Guardar Excel
-        const nuevaHoja = XLSX.utils.json_to_sheet(nuevosDatos);
-        workbook.Sheets[workbook.SheetNames[0]] = nuevaHoja;
-        const buffer = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" });
+        const { data: actualizado, error } = await supabase
+            .from("clientes")
+            .update(campos)
+            .eq("id", idCliente)
+            .select()
+            .single();
 
-        await s3.putObject({
-            Bucket: BUCKET_NAME,
-            Key: FILE_KEY,
-            Body: buffer,
-            ContentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        }).promise();
+        if (error) {
+            console.error("❌ Error Supabase:", error);
+            return {
+                statusCode: 404,
+                headers: corsHeaders,
+                body: JSON.stringify({ message: "Cliente no encontrado", error: error.message }),
+            };
+        }
 
-        console.log("✅ Cliente actualizado correctamente.");
+        console.log("✅ Cliente actualizado correctamente:", actualizado);
 
         return {
             statusCode: 200,
             headers: corsHeaders,
-            body: JSON.stringify({ message: "OK" }),
+            body: JSON.stringify({ message: "OK", cliente: actualizado }),
         };
     } catch (error) {
         console.error("❌ Error al actualizar cliente:", error);
