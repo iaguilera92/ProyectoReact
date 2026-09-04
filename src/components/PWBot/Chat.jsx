@@ -20,17 +20,25 @@ export default function Chat({ onClose, onForceClose }) {
     });
     const [phase, setPhase] = useState("OFFER_SELECTION");
     const [messages, setMessages] = useState([
-        { from: "bot", text: tenant.welcomeMessage, timestamp: new Date() },
+        {
+            from: "bot",
+            text: tenant.welcomeMessage,
+            timestamp: new Date(),
+            quickReplies: [
+                { label: "Ver Ofertas", value: "Si, quiero ver las ofertas", variant: "blue" },
+                { label: "Soy cliente", value: "Soy cliente", variant: "orange", icon: "💎" },
+                {
+                    label: "Hablar con Ejecutivo",
+                    value: "Chat con ejecutivo",
+                    variant: "whatsapp",
+                    icon: "/whatsapp-logo-icon.webp",
+                },
+            ],
+        },
     ]);
     const offerQuickReplies = [
         { label: "Oferta 1", value: "Oferta 1" },
         { label: "Oferta 2", value: "Oferta 2" },
-        {
-            label: "Soy cliente",
-            value: "Soy cliente",
-            variant: "orange",
-            icon: "💎",
-        },
     ];
     const executiveQuickReplies = [
         {
@@ -84,35 +92,6 @@ export default function Chat({ onClose, onForceClose }) {
         }
     });
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setMessages(prev => [
-                ...prev,
-                {
-                    from: "bot",
-                    text: `ℹ️Precio Mercado $300.000 CLP
-
-*Oferta 1: Pago único*
-💰 Reserva inicial: $29.990 CLP
-💵 Pago final: $70.000 CLP
-🧾 Inversión total: $99.990 CLP
-⏱️ Tiempo de desarrollo: 3 a 7 días
-
-*Oferta 2: Suscripción mensual*
-🚀 Desarrollo inicial: $29.990 CLP
-📆 Suscripción mensual: $9.990 CLP
-⚡ Tiempo de desarrollo: 72 hrs
-
-¿Cuál oferta te interesa más? 😊`
-                    ,
-                    quickReplies: offerQuickReplies,
-                    timestamp: new Date(),
-                }
-            ]);
-        }, 800); // 0.8 segundos después
-
-        return () => clearTimeout(timer);
-    }, []);
     const handleSend = async (text) => {
         const textRaw = (text || "").trim();
         const textLower = textRaw.toLowerCase();
@@ -199,6 +178,7 @@ export default function Chat({ onClose, onForceClose }) {
                     messages: updatedMessages,
                     desdeSitioWeb: true,
                     phase: nextPhase,
+                    conCupos: localStorage.getItem("ConCupos") === "true",
                 }),
             });
 

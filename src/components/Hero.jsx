@@ -5,9 +5,9 @@ import "./css/Hero.css";
 import CircularProgress from "@mui/material/CircularProgress";
 
 const texts = [
-  { title: "Si no estás en la web no existes.", palabraClave: "no existes." },
-  { title: "Tu web es la primera impresión.", palabraClave: "primera impresión." },
-  { title: "Un Sitio web trabaja para ti.", palabraClave: "trabaja" }
+  { title: "Tu negocio necesita más que una web.", palabraClave: "más que una web." },
+  { title: "Más que un sitio: un ecosistema digital.", palabraClave: "ecosistema digital." },
+  { title: "Tecnología a medida para crecer.", palabraClave: "a medida" }
 ];
 
 function Hero({ informationsRef, setVideoReady }) {
@@ -254,6 +254,7 @@ function Hero({ informationsRef, setVideoReady }) {
               color: "white",
               zIndex: 2,
               perspective: "1000px",
+              pt: { xs: 4, md: 6 },
             }}
           >
             <Box
@@ -273,7 +274,8 @@ function Hero({ informationsRef, setVideoReady }) {
                   alignItems: "center",
                   justifyContent: "center",
                   textAlign: "center",
-                  mt: 2,
+                  mt: 8,
+                  mb: -6,
                 }}
               >
                 <AnimatePresence mode="wait">
@@ -366,10 +368,10 @@ function Hero({ informationsRef, setVideoReady }) {
                   flexWrap: "wrap", gap: 0.8, mb: 2, mt: isMobile ? -0.5 : 0,
                 }}>
                   {[
-                    { dot: "#facc15", text: "Entrega en 72h" },
-                    { dot: "#00e676", text: "+46 proyectos" },
-                    { dot: "#38bdf8", text: "100% Responsive" },
-                    { dot: "#a78bfa", text: "Soporte real" },
+                    { dot: "#facc15", text: "+100 proyectos" },
+                    { dot: "#00e676", text: "Pagos Online" },
+                    { dot: "#38bdf8", text: "Sitios web" },
+                    { dot: "#a78bfa", text: "Soporte 24/7" },
                   ].map((pill, i) => (
                     <Box key={i} sx={{
                       display: "inline-flex", alignItems: "center", gap: 0.7,
@@ -405,7 +407,7 @@ function Hero({ informationsRef, setVideoReady }) {
                     notificarVisitaPrecios();
                   }}
                 >
-                  <span>Ver nuestros planes</span>
+                  <span>Ver nuestras ofertas</span>
                 </button>
               </motion.div>
             </Box>

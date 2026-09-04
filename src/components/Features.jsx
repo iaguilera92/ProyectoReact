@@ -58,12 +58,15 @@ const featureHighlights = [
   },
   {
     id: "mini-3",
-    label: "A Medida",
-    title: "Chat Bot IA",
-    video: "/feature-3.mp4",
-    objectPosition: "center 30%",
-    toneA: "#f08b32",
-    toneB: "#cf6710",
+    label: "Calidad",
+    title: "Pruebas Automatizadas",
+    video: null,
+    image: "/pruebas_automatizadas.png",
+    icon: "🧪",
+    objectPosition: "center top",
+    toneA: "#ef4444",
+    toneB: "#dc2626",
+    wa: "Hola! Me interesa implementar Pruebas Automatizadas con CI/CD ¿Me comentas?",
   },
   {
     id: "mini-4",
@@ -74,7 +77,29 @@ const featureHighlights = [
     toneA: "#ffcf4d",
     toneB: "#e69a00",
   },
+  {
+    id: "mini-5",
+    label: "Integración",
+    title: "APIs a Medida",
+    video: null,
+    image: "/api.png",
+    icon: "⚡",
+    objectPosition: "center 25%",
+    toneA: "#a855f7",
+    toneB: "#7c3aed",
+    wa: "Hola! Me interesa desarrollar una API a medida ¿Me comentas más?",
+  },
+  {
+    id: "mini-6",
+    label: "A Medida",
+    title: "Chat Bot IA",
+    video: "/feature-3.mp4",
+    objectPosition: "center 30%",
+    toneA: "#f08b32",
+    toneB: "#cf6710",
+  },
 ];
+
 
 const featureDialogMessages = {
   "mini-1": "Gestiona tu negocio, clientes y trabajos en tiempo real.",
@@ -162,7 +187,7 @@ function FeaturePreviewVideo({
       muted
       loop
       playsInline
-      preload="metadata"
+      preload="none"
       onLoadedData={(e) => {
         if (!shouldPlay) {
           try {
@@ -181,6 +206,140 @@ function FeaturePreviewVideo({
         background,
       }}
     />
+  );
+}
+
+function FeatureCard({ option, isMobile, height, selectedFeatureVideo, activePreviewId, setActivePreviewId, handleOpenFeatureVideo, featureHighlights }) {
+  const hasVideo = !!option.video;
+  const pillLabel = hasVideo ? "Revisar" : "Consultar";
+  const handleClick = () => {
+    if (hasVideo) {
+      handleOpenFeatureVideo(option);
+    } else {
+      const msg = encodeURIComponent(option.wa || "");
+      window.open(`https://api.whatsapp.com/send?phone=56946873014&text=${msg}`, "_blank");
+    }
+  };
+  const borderRadius = isMobile ? "24px" : "28px";
+  const fontSize = isMobile ? "0.82rem" : "0.88rem";
+  const iconSize = isMobile ? 20 : 22;
+  const titleSize = isMobile ? "0.86rem" : "1rem";
+  const titlePt = isMobile ? 0.85 : 0.95;
+
+  return (
+    <Box>
+      <motion.div whileTap={{ scale: 0.985 }} whileHover={{ scale: 1.01 }}>
+        <Box
+          role="button"
+          tabIndex={0}
+          aria-label={`Seleccionar ${option.label}`}
+          onClick={handleClick}
+          onMouseEnter={() => hasVideo && setActivePreviewId(option.id)}
+          onMouseLeave={() => hasVideo && setActivePreviewId(featureHighlights[0]?.id ?? null)}
+          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleClick(); } }}
+          sx={{
+            borderRadius,
+            backgroundColor: "#ffffff",
+            border: "1px solid rgba(255,255,255,0.22)",
+            boxShadow: "0 8px 18px rgba(0,0,0,0.12)",
+            overflow: "hidden",
+            cursor: "pointer",
+            transition: "all 0.2s ease",
+            position: "relative",
+            "&:hover": { boxShadow: "0 12px 22px rgba(0,0,0,0.18)" },
+          }}
+        >
+          {hasVideo ? (
+            <FeaturePreviewVideo
+              src={option.video}
+              height={height}
+              objectPosition={option.objectPosition}
+              shouldPlay={!selectedFeatureVideo && activePreviewId === option.id}
+              playbackRate={2}
+              background={`linear-gradient(180deg, ${option.toneA}22 0%, #ffffff 100%)`}
+            />
+          ) : option.image ? (
+            <Box
+              component="img"
+              src={option.image}
+              alt={option.title}
+              sx={{
+                width: "100%",
+                height,
+                objectFit: "cover",
+                objectPosition: option.objectPosition || "center center",
+                display: "block",
+              }}
+            />
+          ) : (
+            <Box
+              sx={{
+                width: "100%",
+                height,
+                background: `linear-gradient(145deg, ${option.toneA}33 0%, ${option.toneB}55 100%)`,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: isMobile ? "2.4rem" : "2.8rem",
+              }}
+            >
+              {option.icon}
+            </Box>
+          )}
+          <Box
+            sx={{
+              position: "absolute",
+              inset: 0,
+              background: "linear-gradient(180deg, rgba(4,12,22,0.42), rgba(4,12,22,0.62))",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              pointerEvents: "none",
+            }}
+          >
+            <Box
+              sx={{
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 0.8,
+                px: isMobile ? 1.6 : 1.9,
+                py: isMobile ? 0.8 : 0.95,
+                borderRadius: "999px",
+                background: "rgba(255,255,255,0.12)",
+                border: "1px solid rgba(255,255,255,0.38)",
+                boxShadow: "0 14px 26px rgba(0,0,0,0.24)",
+                backdropFilter: "blur(8px)",
+              }}
+            >
+              <Typography sx={{ color: "#fff", fontSize, fontWeight: 800, letterSpacing: "0.04em", lineHeight: 1 }}>
+                {pillLabel}
+              </Typography>
+              <Box
+                component="img"
+                src="/clic.jpg"
+                alt={pillLabel}
+                sx={{ width: iconSize, height: iconSize, objectFit: "contain", display: "block", filter: "brightness(0) invert(1)" }}
+              />
+            </Box>
+          </Box>
+        </Box>
+      </motion.div>
+      <Typography
+        sx={{
+          textAlign: "center",
+          fontWeight: 800,
+          fontSize: titleSize,
+          color: "#ffffff",
+          pt: titlePt,
+          px: 0.6,
+          letterSpacing: "0.01em",
+          lineHeight: 1.15,
+        }}
+      >
+        {option.title}
+      </Typography>
+    </Box>
   );
 }
 
@@ -397,6 +556,7 @@ function Features({ videoReady }) {
         sx={{
           py: 0,
           maxWidth: "1500px !important",
+          px: { xs: 2, md: 8, lg: 14 },
           overflow: "visible",
           backgroundColor: "transparent !important", // ✅ fondo transparente
           backdropFilter: "none !important",         // ✅ sin blur
@@ -404,6 +564,59 @@ function Features({ videoReady }) {
         }}
       >
         <Box ref={ref}>
+          {/* Título sección */}
+          <Box sx={{ mb: { xs: 1.8, md: 2.2 } }}>
+            {/* Título con gradiente */}
+            <motion.div
+              initial={{ opacity: 0, y: 18 }}
+              animate={hasAnimated ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
+              transition={{ duration: prefersReducedMotion ? 0 : 0.55, ease: "easeOut", delay: prefersReducedMotion ? 0 : 0.12 }}
+            >
+              <Typography
+                sx={{
+                  fontSize: { xs: "1.18rem", md: "1.45rem" },
+                  fontWeight: 900,
+                  color: "#fff",
+                  lineHeight: 1.1,
+                  mb: 1.1,
+                  letterSpacing: "-0.02em",
+                  textWrap: "balance",
+                }}
+              >
+                Contrata nuestros{" "}
+                <Box
+                  component="span"
+                  sx={{
+                    background: "linear-gradient(90deg, #2c95e3 0%, #a855f7 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
+                  }}
+                >
+                  servicios:
+                </Box>
+              </Typography>
+            </motion.div>
+            {/* Subtitle */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={hasAnimated ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
+              transition={{ duration: prefersReducedMotion ? 0 : 0.5, ease: "easeOut", delay: prefersReducedMotion ? 0 : 0.3 }}
+            >
+              <Typography
+                sx={{
+                  fontSize: { xs: "0.72rem", md: "0.8rem" },
+                  color: "rgba(255,255,255,0.42)",
+                  fontWeight: 400,
+                  lineHeight: 1.5,
+                  fontStyle: "italic",
+                }}
+              >
+                Cuéntanos qué necesitas y lo construimos para ti.
+              </Typography>
+            </motion.div>
+          </Box>
+
           {isMobile ? (
             <Grid container spacing={1.5}>
               <Grid item xs={12} sx={{ mt: "-10px" }}>
@@ -590,111 +803,7 @@ function Features({ videoReady }) {
                         variants={cardAnimation}
                         custom={index + 1}
                       >
-                        <Box>
-                          <motion.div whileTap={{ scale: 0.985 }} whileHover={{ scale: 1.01 }}>
-                            <Box
-                              role="button"
-                              tabIndex={0}
-                              aria-label={`Seleccionar ${option.label}`}
-                              onClick={() => handleOpenFeatureVideo(option)}
-                              onMouseEnter={() => !isMobile && setActivePreviewId(option.id)}
-                              onMouseLeave={() => !isMobile && setActivePreviewId(featureHighlights[0]?.id ?? null)}
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter" || e.key === " ") {
-                                  e.preventDefault();
-                                  handleOpenFeatureVideo(option);
-                                }
-                              }}
-                              sx={{
-                                borderRadius: "24px",
-                                backgroundColor: "#ffffff",
-                                border: "1px solid rgba(255,255,255,0.22)",
-                                boxShadow: "0 8px 18px rgba(0,0,0,0.12)",
-                                overflow: "hidden",
-                                cursor: "pointer",
-                                transition: "all 0.2s ease",
-                                position: "relative",
-                                "&:hover": {
-                                  boxShadow: "0 12px 22px rgba(0,0,0,0.18)",
-                                },
-                              }}
-                            >
-                              <FeaturePreviewVideo
-                                src={option.video}
-                                height={118}
-                                objectPosition={option.objectPosition}
-                                shouldPlay={!selectedFeatureVideo && activePreviewId === option.id}
-                                playbackRate={2}
-                                background={`linear-gradient(180deg, ${option.toneA}22 0%, #ffffff 100%)`}
-                              />
-                              <Box
-                                sx={{
-                                  position: "absolute",
-                                  inset: 0,
-                                  background: "linear-gradient(180deg, rgba(4,12,22,0.42), rgba(4,12,22,0.62))",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  pointerEvents: "none",
-                                }}
-                              >
-                                <Box
-                                  sx={{
-                                    display: "inline-flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    gap: 0.8,
-                                    px: 1.6,
-                                    py: 0.8,
-                                    borderRadius: "999px",
-                                    background: "rgba(255,255,255,0.12)",
-                                    border: "1px solid rgba(255,255,255,0.38)",
-                                    boxShadow: "0 14px 26px rgba(0,0,0,0.24)",
-                                    backdropFilter: "blur(8px)",
-                                  }}
-                                >
-                                  <Typography
-                                    sx={{
-                                      color: "#fff",
-                                      fontSize: "0.82rem",
-                                      fontWeight: 800,
-                                      letterSpacing: "0.04em",
-                                      lineHeight: 1,
-                                    }}
-                                  >
-                                    Revisar
-                                  </Typography>
-                                  <Box
-                                    component="img"
-                                    src="/clic.jpg"
-                                    alt="Click"
-                                    sx={{
-                                      width: 20,
-                                      height: 20,
-                                      objectFit: "contain",
-                                      display: "block",
-                                      filter: "brightness(0) invert(1)",
-                                    }}
-                                  />
-                                </Box>
-                              </Box>
-                            </Box>
-                          </motion.div>
-                          <Typography
-                            sx={{
-                              textAlign: "center",
-                              fontWeight: 800,
-                              fontSize: "0.86rem",
-                              color: "#ffffff",
-                              pt: 0.85,
-                              px: 0.6,
-                              letterSpacing: "0.01em",
-                              lineHeight: 1.15,
-                            }}
-                          >
-                            {option.title}
-                          </Typography>
-                        </Box>
+                        <FeatureCard option={option} isMobile height={118} selectedFeatureVideo={selectedFeatureVideo} activePreviewId={activePreviewId} setActivePreviewId={setActivePreviewId} handleOpenFeatureVideo={handleOpenFeatureVideo} featureHighlights={featureHighlights} />
                       </motion.div>
                     </Grid>
                   ))}
@@ -702,120 +811,16 @@ function Features({ videoReady }) {
               </Grid>
             </Grid>
           ) : (
-            <Grid container spacing={2.2} alignItems="stretch">
+            <Grid container spacing={1.6} alignItems="stretch">
               {featureHighlights.map((option, index) => (
-                <Grid item xs={12} sm={6} md={3} key={option.id}>
+                <Grid item xs={6} md={4} key={option.id}>
                   <motion.div
                     initial="hidden"
                     animate={hasAnimated ? "visible" : "hidden"}
                     variants={cardAnimation}
                     custom={index + 1}
                   >
-                    <Box>
-                      <motion.div whileTap={{ scale: 0.985 }} whileHover={{ scale: 1.01 }}>
-                        <Box
-                          role="button"
-                          tabIndex={0}
-                          aria-label={`Seleccionar ${option.label}`}
-                          onClick={() => handleOpenFeatureVideo(option)}
-                          onMouseEnter={() => setActivePreviewId(option.id)}
-                          onMouseLeave={() => setActivePreviewId(featureHighlights[0]?.id ?? null)}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter" || e.key === " ") {
-                              e.preventDefault();
-                              handleOpenFeatureVideo(option);
-                            }
-                          }}
-                              sx={{
-                                borderRadius: "28px",
-                                backgroundColor: "#ffffff",
-                                border: "1px solid rgba(255,255,255,0.22)",
-                                boxShadow: "0 12px 24px rgba(0,0,0,0.14)",
-                                overflow: "hidden",
-                                cursor: "pointer",
-                                transition: "all 0.2s ease",
-                                position: "relative",
-                                "&:hover": {
-                                  boxShadow: "0 16px 28px rgba(0,0,0,0.18)",
-                                },
-                              }}
-                            >
-                          <FeaturePreviewVideo
-                            src={option.video}
-                            height={138}
-                            objectPosition={option.objectPosition}
-                            shouldPlay={!selectedFeatureVideo && activePreviewId === option.id}
-                            playbackRate={2}
-                            background={`linear-gradient(180deg, ${option.toneA}22 0%, #ffffff 100%)`}
-                          />
-                          <Box
-                            sx={{
-                              position: "absolute",
-                              inset: 0,
-                              background: "linear-gradient(180deg, rgba(4,12,22,0.4), rgba(4,12,22,0.58))",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              pointerEvents: "none",
-                            }}
-                          >
-                            <Box
-                              sx={{
-                                display: "inline-flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                gap: 0.9,
-                                px: 1.9,
-                                py: 0.95,
-                                borderRadius: "999px",
-                                background: "rgba(255,255,255,0.12)",
-                                border: "1px solid rgba(255,255,255,0.42)",
-                                boxShadow: "0 16px 28px rgba(0,0,0,0.24)",
-                                backdropFilter: "blur(8px)",
-                              }}
-                            >
-                              <Typography
-                                sx={{
-                                  color: "#fff",
-                                  fontSize: "0.88rem",
-                                  fontWeight: 800,
-                                  letterSpacing: "0.05em",
-                                  lineHeight: 1,
-                                }}
-                              >
-                                Revisar
-                              </Typography>
-                              <Box
-                                component="img"
-                                src="/clic.jpg"
-                                alt="Click"
-                                sx={{
-                                  width: 22,
-                                  height: 22,
-                                  objectFit: "contain",
-                                  display: "block",
-                                  filter: "brightness(0) invert(1)",
-                                }}
-                              />
-                            </Box>
-                          </Box>
-                        </Box>
-                      </motion.div>
-                      <Typography
-                        sx={{
-                          textAlign: "center",
-                          fontWeight: 800,
-                          fontSize: "1rem",
-                          color: "#ffffff",
-                          pt: 0.95,
-                          px: 0.8,
-                          letterSpacing: "0.01em",
-                          lineHeight: 1.12,
-                        }}
-                      >
-                        {option.title}
-                      </Typography>
-                    </Box>
+                    <FeatureCard option={option} isMobile={false} height={148} selectedFeatureVideo={selectedFeatureVideo} activePreviewId={activePreviewId} setActivePreviewId={setActivePreviewId} handleOpenFeatureVideo={handleOpenFeatureVideo} featureHighlights={featureHighlights} />
                   </motion.div>
                 </Grid>
               ))}
@@ -823,6 +828,8 @@ function Features({ videoReady }) {
           )}
         </Box>
 
+
+        {/* Botón EN DESARROLLO — oculto temporalmente */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={hasAnimated ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
@@ -832,8 +839,8 @@ function Features({ videoReady }) {
             delay: prefersReducedMotion ? 0 : (isMobile ? 0.8 : 0.3),
           }}
           style={{
+            display: "none",
             minHeight: "60px",
-            display: "flex",
             justifyContent: "center",
             marginTop: isMobile ? "40px" : "28px",
             marginBottom: "12px",
