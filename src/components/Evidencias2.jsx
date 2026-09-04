@@ -6,12 +6,14 @@ import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 
 const evidencias = [
-  { url: "https://www.ivelpink.cl",                label: "ivelpink.cl",               video: "/evidencia1.mp4", logo: "/logos/logo-ivelpink.jpg" },
-  { url: "https://www.ingsnt.cl",                  label: "ingsnt.cl",                 video: "/evidencia2.mp4", logo: "/logos/logo-ingsnt.png" },
-  { url: "https://www.masatracker.cl",             label: "masatracker.cl",            video: "/evidencia3.mp4", logo: "/logos/logo-mastracker.png" },
-  { url: "https://www.investigadores-privados.cl", label: "investigadores-privados.cl",video: "/evidencia4.mp4", logo: "/logos/logo-investigadores-privados.png" },
-  { url: "https://www.masautomatizacion.cl",       label: "masautomatizacion.cl",      video: "/evidencia5.mp4", logo: "/logos/logo-masautomatizacion.png" },
-  { url: "https://www.sifg.cl",                    label: "sifg.cl",                   video: "/evidencia6.mp4", logo: "/logos/logo-sifg.png" },
+  { url: "https://www.aura-cristal.cl",            label: "aura-cristal.cl",           video: "/video-aura-cristal.mp4", logo: null, playbackRate: 3 },
+  { url: "https://www.targonex.cl",                label: "targonex.cl",               video: "/video-targonex.mp4",     logo: null, playbackRate: 3 },
+  { url: "https://www.ivelpink.cl",                label: "ivelpink.cl",               video: "/video-ivelpink.mp4", logo: "/logos/logo-ivelpink.jpg" },
+  { url: "https://www.ingsnt.cl",                  label: "ingsnt.cl",                 video: "/evidencia2.mp4", logo: "/logos/logo-ingsnt.png", objectFit: "contain" },
+  { url: "https://www.mastracker.cl",              label: "mastracker.cl",             video: "/evidencia3.mp4", logo: "/logos/logo-mastracker.png", objectFit: "contain" },
+  { url: "https://www.investigadores-privados.cl", label: "investigadores-privados.cl",video: "/evidencia4.mp4", logo: "/logos/logo-investigadores-privados.png", objectFit: "contain" },
+  { url: "https://www.masautomatizacion.cl",       label: "masautomatizacion.cl",      video: "/evidencia5.mp4", logo: "/logos/logo-masautomatizacion.png", objectFit: "contain" },
+  { url: "https://www.sifg.cl",                    label: "sifg.cl",                   video: "/evidencia6.mp4", logo: "/logos/logo-sifg.png", objectFit: "contain" },
   { url: null,                                     label: "autoges-web.cl",            video: "/evidencia7.mp4", logo: "/logos/logo-autoges.png" },
 ];
 
@@ -19,6 +21,7 @@ const SeccionDestacada = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const thumbRefs = useRef([]);
+  const mainVideoRef = useRef(null);
   const [active, setActive] = useState(0);
   const [hovered, setHovered] = useState(null);
   const [paused, setPaused] = useState(false);
@@ -35,13 +38,21 @@ const SeccionDestacada = () => {
     return () => clearInterval(interval);
   }, [sectionInView, paused]);
 
-  // Pause thumbs, play active
+  // Pause thumbs, play active, apply playbackRate
   useEffect(() => {
     thumbRefs.current.forEach((v, i) => {
       if (!v) return;
+      v.playbackRate = evidencias[i].playbackRate || 1;
       i === active ? v.play().catch(() => {}) : v.pause();
     });
   }, [active, sectionInView]);
+
+  // Apply playbackRate to main video on mount/change
+  useEffect(() => {
+    const v = mainVideoRef.current;
+    if (!v) return;
+    v.playbackRate = evidencias[active].playbackRate || 1;
+  }, [active]);
 
   const handleSelect = (i) => {
     setActive(i);
@@ -116,12 +127,14 @@ const SeccionDestacada = () => {
 
                 <motion.video
                   key={active}
+                  ref={mainVideoRef}
                   src={evidencias[active].video}
                   autoPlay playsInline muted loop
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.4 }}
-                  style={{ width: "100%", height: "420px", objectFit: "cover", display: "block" }}
+                  onLoadedMetadata={() => { if (mainVideoRef.current) mainVideoRef.current.playbackRate = evidencias[active].playbackRate || 1; }}
+                  style={{ width: "100%", height: "420px", objectFit: evidencias[active].objectFit || "cover", display: "block", backgroundColor: "#000" }}
                 />
 
                 {/* Info overlay bottom */}
@@ -224,7 +237,7 @@ const SeccionDestacada = () => {
                         src={ev.video}
                         playsInline muted loop preload="metadata"
                         controls={false}
-                        sx={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                        sx={{ width: "100%", height: "100%", objectFit: ev.objectFit || "cover", display: "block" }}
                       />
                       {i !== active && (
                         <Box sx={{

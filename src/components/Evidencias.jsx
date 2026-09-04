@@ -24,7 +24,6 @@ const Evidencias = () => {
     const sectionRef = useRef();
     const [visible, setVisible] = useState(false);
     const [activeVideoIndex, setActiveVideoIndex] = useState(0);
-    const [mobileBatchIndex, setMobileBatchIndex] = useState(0);
     const [selectedEvidenceIndex, setSelectedEvidenceIndex] = useState(null);
     const [hoveredIndex, setHoveredIndex] = useState(null);
 
@@ -32,20 +31,8 @@ const Evidencias = () => {
     const { ref: imagenRef, inView: imagenInView } = useInView({ threshold: 0.3, triggerOnce: true });
     const { ref: muchosMasRef, inView: muchosMasInView } = useInView({ threshold: 0.2, triggerOnce: true });
 
-    const mobileBatches = [[0, 1, 2, 3], [4, 5, 6]];
     // Desktop: dos filas 4+3
     const desktopRows = [[0, 1, 2, 3], [4, 5, 6]];
-
-    // Cycling — mobile
-    useEffect(() => {
-        if (!isMobile || !inView || selectedEvidenceIndex !== null) return;
-        const interval = setInterval(() => {
-            setMobileBatchIndex(prev => (prev + 1) % mobileBatches.length);
-        }, 2500);
-        return () => clearInterval(interval);
-    }, [isMobile, inView, selectedEvidenceIndex]);
-
-    useEffect(() => { if (isMobile) setMobileBatchIndex(0); }, [isMobile]);
 
     // Cycling — desktop
     useEffect(() => {
@@ -72,50 +59,39 @@ const Evidencias = () => {
     useEffect(() => {
         videosRef.current.forEach((video, index) => {
             if (!video) return;
-            const mobileActive = mobileBatches[mobileBatchIndex] || [];
             const shouldPlay = isMobile
-                ? inView && selectedEvidenceIndex === null && mobileActive.includes(index)
+                ? inView && selectedEvidenceIndex === null
                 : inView && selectedEvidenceIndex === null && index === activeVideoIndex;
             shouldPlay ? video.play().catch(() => {}) : video.pause();
         });
-    }, [activeVideoIndex, inView, selectedEvidenceIndex, isMobile, mobileBatchIndex]);
+    }, [activeVideoIndex, inView, selectedEvidenceIndex, isMobile]);
 
     const isActive = (n) => !isMobile && n === activeVideoIndex;
 
     return (
         <Box sx={{ width: '100%', position: 'relative', mt: '-80px' }}>
 
-            {/* ── Sección 1: Hero con teléfono ── */}
+            {/* ── Sección 1: Marquee ── */}
             <Box sx={{
                 position: 'relative',
-                height: isMobile ? '60vh' : '40vh',
-                pt: { xs: 8, sm: 10 },
+                height: { xs: '80px', sm: '90px', md: '100px' },
                 backgroundImage: `url('fondo-telefono.webp')`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 zIndex: 1,
+                display: 'flex',
+                alignItems: 'center',
+                overflow: 'hidden',
             }}>
                 <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2%', background: 'linear-gradient(to bottom, rgba(0,0,0,0.5), transparent)' }} />
 
                 {/* Marquee */}
-                <Box sx={{ width: '100%', overflow: 'hidden', position: 'absolute', top: '30px', left: 0, right: 0, zIndex: 5 }}>
+                <Box sx={{ width: '100%', overflow: 'hidden', zIndex: 5 }}>
                     <motion.div initial={{ x: '100vw' }} animate={{ x: '-100%' }} transition={{ repeat: Infinity, duration: 4, ease: 'linear' }} style={{ display: 'inline-block', whiteSpace: 'nowrap' }}>
                         <Typography sx={{ fontSize: { xs: '2.2rem', sm: '2.8rem', md: '3.5rem' }, fontWeight: 600, color: 'white', fontFamily: `'Montserrat', sans-serif`, px: 4 }}>
                             Control total sobre tu{' '}<span style={{ color: '#ffe037' }}>negocio.</span>
                         </Typography>
                     </motion.div>
-                </Box>
-
-                {/* Phone + video */}
-                <Box ref={imagenRef} sx={{ position: 'absolute', bottom: '5%', left: '27%', width: '100%', maxWidth: '250px', aspectRatio: '572 / 788', zIndex: 3, pointerEvents: 'none' }}>
-                    <motion.video ref={videoRef} src="/video-administracion.mp4" loop muted playsInline preload="none"
-                        initial={{ x: 300, opacity: 0 }} animate={imagenInView ? { x: '0%', opacity: 1 } : { x: 300, opacity: 0 }} transition={{ duration: 1, ease: 'easeOut' }}
-                        style={{ position: 'absolute', top: '5%', left: '12%', width: '54.4%', height: '81.7%', objectFit: 'cover', borderRadius: '10px', zIndex: 0, backgroundColor: 'black' }}
-                    />
-                    <motion.img src="/mano-celular.webp" alt="Decorativo"
-                        initial={{ x: 300, opacity: 0 }} animate={imagenInView ? { x: '0%', opacity: 1 } : { x: 300, opacity: 0 }} transition={{ duration: 1, ease: 'easeOut' }}
-                        style={{ width: '100%', height: 'auto', position: 'absolute', top: 0, left: 0, zIndex: 1, pointerEvents: 'none' }}
-                    />
                 </Box>
             </Box>
 
@@ -199,7 +175,7 @@ const Evidencias = () => {
                         {/* Grid mobile */}
                         {isMobile && (
                             <Grid container spacing={2} justifyContent="center">
-                                {(mobileBatches[mobileBatchIndex] || []).map((n, i) => (
+                                {evidencias.map((_, n) => (
                                     <Grid item xs={6} key={n}>
                                         <VideoCard
                                             ev={evidencias[n]}
@@ -211,7 +187,7 @@ const Evidencias = () => {
                                             onClick={() => setSelectedEvidenceIndex(n)}
                                             videosRef={videosRef}
                                             inView={inView}
-                                            rowIdx={i}
+                                            rowIdx={n}
                                         />
                                     </Grid>
                                 ))}
